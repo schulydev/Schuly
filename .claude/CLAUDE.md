@@ -32,7 +32,7 @@ Flavors: `dev` (`com.schuly.app.dev`, "Schuly DEV") and `prod` (`com.schuly.app`
 The client at `lib/api/` is generated from [SchulyBackend](https://github.com/schulydev/SchulyBackend)'s
 OpenAPI spec. `apigen` chains three steps in `package.json`:
 
-1. `bunx openapi-generator-cli` against the live swagger
+1. `bunx openapi-generator-cli` against the live OpenAPI 3.0 spec (`/openapi/v1.json`)
 2. `apigen:patch` rewrites `lib/api/pubspec.yaml`'s SDK constraint (the generator resets
    it to `>=2.18.0 <4.0.0`, which breaks the build because of a part-file language-version
    mismatch). Implemented as a `bun -e` one-liner so it runs identically on any shell.
