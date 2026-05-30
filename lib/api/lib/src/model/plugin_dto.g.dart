@@ -8,14 +8,14 @@ part of 'plugin_dto.dart';
 
 class _$PluginDto extends PluginDto {
   @override
-  final String? name;
+  final String name;
   @override
-  final String? version;
+  final String version;
 
   factory _$PluginDto([void Function(PluginDtoBuilder)? updates]) =>
       (PluginDtoBuilder()..update(updates))._build();
 
-  _$PluginDto._({this.name, this.version}) : super._();
+  _$PluginDto._({required this.name, required this.version}) : super._();
   @override
   PluginDto rebuild(void Function(PluginDtoBuilder) updates) =>
       (toBuilder()..update(updates)).build();
@@ -86,7 +86,20 @@ class PluginDtoBuilder implements Builder<PluginDto, PluginDtoBuilder> {
   PluginDto build() => _build();
 
   _$PluginDto _build() {
-    final _$result = _$v ?? _$PluginDto._(name: name, version: version);
+    final _$result =
+        _$v ??
+        _$PluginDto._(
+          name: BuiltValueNullFieldError.checkNotNull(
+            name,
+            r'PluginDto',
+            'name',
+          ),
+          version: BuiltValueNullFieldError.checkNotNull(
+            version,
+            r'PluginDto',
+            'version',
+          ),
+        );
     replace(_$result);
     return _$result;
   }

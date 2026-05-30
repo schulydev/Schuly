@@ -8,7 +8,7 @@ part of 'update_application_user_command.dart';
 
 class _$UpdateApplicationUserCommand extends UpdateApplicationUserCommand {
   @override
-  final String? applicationUserId;
+  final String applicationUserId;
   @override
   final String? displayName;
   @override
@@ -19,7 +19,7 @@ class _$UpdateApplicationUserCommand extends UpdateApplicationUserCommand {
   ]) => (UpdateApplicationUserCommandBuilder()..update(updates))._build();
 
   _$UpdateApplicationUserCommand._({
-    this.applicationUserId,
+    required this.applicationUserId,
     this.displayName,
     this.profilePictureUrl,
   }) : super._();
@@ -115,7 +115,11 @@ class UpdateApplicationUserCommandBuilder
     final _$result =
         _$v ??
         _$UpdateApplicationUserCommand._(
-          applicationUserId: applicationUserId,
+          applicationUserId: BuiltValueNullFieldError.checkNotNull(
+            applicationUserId,
+            r'UpdateApplicationUserCommand',
+            'applicationUserId',
+          ),
           displayName: displayName,
           profilePictureUrl: profilePictureUrl,
         );

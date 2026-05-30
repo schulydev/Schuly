@@ -8,7 +8,7 @@ part of 'create_class_command.dart';
 
 class _$CreateClassCommand extends CreateClassCommand {
   @override
-  final String? name;
+  final String name;
   @override
   final String? description;
 
@@ -16,7 +16,7 @@ class _$CreateClassCommand extends CreateClassCommand {
     void Function(CreateClassCommandBuilder)? updates,
   ]) => (CreateClassCommandBuilder()..update(updates))._build();
 
-  _$CreateClassCommand._({this.name, this.description}) : super._();
+  _$CreateClassCommand._({required this.name, this.description}) : super._();
   @override
   CreateClassCommand rebuild(
     void Function(CreateClassCommandBuilder) updates,
@@ -93,7 +93,15 @@ class CreateClassCommandBuilder
 
   _$CreateClassCommand _build() {
     final _$result =
-        _$v ?? _$CreateClassCommand._(name: name, description: description);
+        _$v ??
+        _$CreateClassCommand._(
+          name: BuiltValueNullFieldError.checkNotNull(
+            name,
+            r'CreateClassCommand',
+            'name',
+          ),
+          description: description,
+        );
     replace(_$result);
     return _$result;
   }

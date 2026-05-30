@@ -10,9 +10,9 @@ class _$ApplicationUserDto extends ApplicationUserDto {
   @override
   final String? id;
   @override
-  final String? externalId;
+  final String externalId;
   @override
-  final String? email;
+  final String email;
   @override
   final String? displayName;
   @override
@@ -30,8 +30,8 @@ class _$ApplicationUserDto extends ApplicationUserDto {
 
   _$ApplicationUserDto._({
     this.id,
-    this.externalId,
-    this.email,
+    required this.externalId,
+    required this.email,
     this.displayName,
     this.profilePictureUrl,
     this.createdAt,
@@ -170,8 +170,16 @@ class ApplicationUserDtoBuilder
           _$v ??
           _$ApplicationUserDto._(
             id: id,
-            externalId: externalId,
-            email: email,
+            externalId: BuiltValueNullFieldError.checkNotNull(
+              externalId,
+              r'ApplicationUserDto',
+              'externalId',
+            ),
+            email: BuiltValueNullFieldError.checkNotNull(
+              email,
+              r'ApplicationUserDto',
+              'email',
+            ),
             displayName: displayName,
             profilePictureUrl: profilePictureUrl,
             createdAt: createdAt,

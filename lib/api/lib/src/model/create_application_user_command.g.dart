@@ -8,9 +8,9 @@ part of 'create_application_user_command.dart';
 
 class _$CreateApplicationUserCommand extends CreateApplicationUserCommand {
   @override
-  final String? externalId;
+  final String externalId;
   @override
-  final String? email;
+  final String email;
   @override
   final String? displayName;
 
@@ -19,8 +19,8 @@ class _$CreateApplicationUserCommand extends CreateApplicationUserCommand {
   ]) => (CreateApplicationUserCommandBuilder()..update(updates))._build();
 
   _$CreateApplicationUserCommand._({
-    this.externalId,
-    this.email,
+    required this.externalId,
+    required this.email,
     this.displayName,
   }) : super._();
   @override
@@ -113,8 +113,16 @@ class CreateApplicationUserCommandBuilder
     final _$result =
         _$v ??
         _$CreateApplicationUserCommand._(
-          externalId: externalId,
-          email: email,
+          externalId: BuiltValueNullFieldError.checkNotNull(
+            externalId,
+            r'CreateApplicationUserCommand',
+            'externalId',
+          ),
+          email: BuiltValueNullFieldError.checkNotNull(
+            email,
+            r'CreateApplicationUserCommand',
+            'email',
+          ),
           displayName: displayName,
         );
     replace(_$result);
