@@ -5,7 +5,7 @@
 import 'package:schuly_api/api.dart';
 ```
 
-All URIs are relative to *http://localhost*
+All URIs are relative to *http://localhost:5033*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
@@ -122,7 +122,7 @@ try {
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **connectOdaOrgRequest** | [**ConnectOdaOrgRequest**](ConnectOdaOrgRequest.md)|  | [optional] 
+ **connectOdaOrgRequest** | [**ConnectOdaOrgRequest**](ConnectOdaOrgRequest.md)|  | 
 
 ### Return type
 
@@ -244,7 +244,7 @@ try {
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **connectAccountRequest** | [**ConnectAccountRequest**](ConnectAccountRequest.md)|  | [optional] 
+ **connectAccountRequest** | [**ConnectAccountRequest**](ConnectAccountRequest.md)|  | 
 
 ### Return type
 

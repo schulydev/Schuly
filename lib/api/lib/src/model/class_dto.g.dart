@@ -10,7 +10,7 @@ class _$ClassDto extends ClassDto {
   @override
   final String? id;
   @override
-  final String? name;
+  final String name;
   @override
   final String? description;
   @override
@@ -29,7 +29,7 @@ class _$ClassDto extends ClassDto {
 
   _$ClassDto._({
     this.id,
-    this.name,
+    required this.name,
     this.description,
     this.schoolId,
     this.schoolName,
@@ -166,7 +166,11 @@ class ClassDtoBuilder implements Builder<ClassDto, ClassDtoBuilder> {
           _$v ??
           _$ClassDto._(
             id: id,
-            name: name,
+            name: BuiltValueNullFieldError.checkNotNull(
+              name,
+              r'ClassDto',
+              'name',
+            ),
             description: description,
             schoolId: schoolId,
             schoolName: schoolName,

@@ -8,14 +8,14 @@ import 'package:schuly_api/api.dart';
 ## Properties
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**entryType** | [**AgendaEntryType**](AgendaEntryType.md) |  | [optional] 
-**title** | **String** |  | [optional] 
-**description** | **String** |  | [optional] 
-**place** | **String** |  | [optional] 
-**date** | [**DateTime**](DateTime.md) |  | [optional] 
-**classId** | **String** |  | [optional] 
-**schoolId** | **String** |  | [optional] 
-**schoolUserId** | **String** |  | [optional] 
+**entryType** | [**AgendaEntryType**](AgendaEntryType.md) |  | 
+**title** | **String** |  | 
+**description** | **String** |  | 
+**place** | **String** |  | 
+**date** | [**DateTime**](DateTime.md) |  | 
+**classId** | **String** |  | 
+**schoolId** | **String** |  | 
+**schoolUserId** | **String** |  | 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
 

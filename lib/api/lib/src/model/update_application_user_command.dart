@@ -17,7 +17,7 @@ part 'update_application_user_command.g.dart';
 @BuiltValue()
 abstract class UpdateApplicationUserCommand implements Built<UpdateApplicationUserCommand, UpdateApplicationUserCommandBuilder> {
   @BuiltValueField(wireName: r'applicationUserId')
-  String? get applicationUserId;
+  String get applicationUserId;
 
   @BuiltValueField(wireName: r'displayName')
   String? get displayName;
@@ -48,27 +48,21 @@ class _$UpdateApplicationUserCommandSerializer implements PrimitiveSerializer<Up
     UpdateApplicationUserCommand object, {
     FullType specifiedType = FullType.unspecified,
   }) sync* {
-    if (object.applicationUserId != null) {
-      yield r'applicationUserId';
-      yield serializers.serialize(
-        object.applicationUserId,
-        specifiedType: const FullType(String),
-      );
-    }
-    if (object.displayName != null) {
-      yield r'displayName';
-      yield serializers.serialize(
-        object.displayName,
-        specifiedType: const FullType.nullable(String),
-      );
-    }
-    if (object.profilePictureUrl != null) {
-      yield r'profilePictureUrl';
-      yield serializers.serialize(
-        object.profilePictureUrl,
-        specifiedType: const FullType.nullable(String),
-      );
-    }
+    yield r'applicationUserId';
+    yield serializers.serialize(
+      object.applicationUserId,
+      specifiedType: const FullType(String),
+    );
+    yield r'displayName';
+    yield object.displayName == null ? null : serializers.serialize(
+      object.displayName,
+      specifiedType: const FullType.nullable(String),
+    );
+    yield r'profilePictureUrl';
+    yield object.profilePictureUrl == null ? null : serializers.serialize(
+      object.profilePictureUrl,
+      specifiedType: const FullType.nullable(String),
+    );
   }
 
   @override

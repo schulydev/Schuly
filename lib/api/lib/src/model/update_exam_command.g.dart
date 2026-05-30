@@ -8,26 +8,26 @@ part of 'update_exam_command.dart';
 
 class _$UpdateExamCommand extends UpdateExamCommand {
   @override
-  final String? examId;
+  final String examId;
   @override
-  final String? name;
+  final String name;
   @override
   final String? description;
   @override
-  final ExamType? type;
+  final ExamType type;
   @override
-  final String? classId;
+  final String classId;
 
   factory _$UpdateExamCommand([
     void Function(UpdateExamCommandBuilder)? updates,
   ]) => (UpdateExamCommandBuilder()..update(updates))._build();
 
   _$UpdateExamCommand._({
-    this.examId,
-    this.name,
+    required this.examId,
+    required this.name,
     this.description,
-    this.type,
-    this.classId,
+    required this.type,
+    required this.classId,
   }) : super._();
   @override
   UpdateExamCommand rebuild(void Function(UpdateExamCommandBuilder) updates) =>
@@ -130,11 +130,27 @@ class UpdateExamCommandBuilder
     final _$result =
         _$v ??
         _$UpdateExamCommand._(
-          examId: examId,
-          name: name,
+          examId: BuiltValueNullFieldError.checkNotNull(
+            examId,
+            r'UpdateExamCommand',
+            'examId',
+          ),
+          name: BuiltValueNullFieldError.checkNotNull(
+            name,
+            r'UpdateExamCommand',
+            'name',
+          ),
           description: description,
-          type: type,
-          classId: classId,
+          type: BuiltValueNullFieldError.checkNotNull(
+            type,
+            r'UpdateExamCommand',
+            'type',
+          ),
+          classId: BuiltValueNullFieldError.checkNotNull(
+            classId,
+            r'UpdateExamCommand',
+            'classId',
+          ),
         );
     replace(_$result);
     return _$result;

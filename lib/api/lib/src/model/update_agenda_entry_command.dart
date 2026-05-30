@@ -24,14 +24,14 @@ part 'update_agenda_entry_command.g.dart';
 @BuiltValue()
 abstract class UpdateAgendaEntryCommand implements Built<UpdateAgendaEntryCommand, UpdateAgendaEntryCommandBuilder> {
   @BuiltValueField(wireName: r'agendaEntryId')
-  String? get agendaEntryId;
+  String get agendaEntryId;
 
   @BuiltValueField(wireName: r'entryType')
-  AgendaEntryType? get entryType;
+  AgendaEntryType get entryType;
   // enum entryTypeEnum {  Event,  Lesson,  Test,  Holiday,  };
 
   @BuiltValueField(wireName: r'title')
-  String? get title;
+  String get title;
 
   @BuiltValueField(wireName: r'description')
   String? get description;
@@ -40,7 +40,7 @@ abstract class UpdateAgendaEntryCommand implements Built<UpdateAgendaEntryComman
   String? get place;
 
   @BuiltValueField(wireName: r'date')
-  DateTime? get date;
+  DateTime get date;
 
   @BuiltValueField(wireName: r'classId')
   String? get classId;
@@ -74,69 +74,51 @@ class _$UpdateAgendaEntryCommandSerializer implements PrimitiveSerializer<Update
     UpdateAgendaEntryCommand object, {
     FullType specifiedType = FullType.unspecified,
   }) sync* {
-    if (object.agendaEntryId != null) {
-      yield r'agendaEntryId';
-      yield serializers.serialize(
-        object.agendaEntryId,
-        specifiedType: const FullType(String),
-      );
-    }
-    if (object.entryType != null) {
-      yield r'entryType';
-      yield serializers.serialize(
-        object.entryType,
-        specifiedType: const FullType(AgendaEntryType),
-      );
-    }
-    if (object.title != null) {
-      yield r'title';
-      yield serializers.serialize(
-        object.title,
-        specifiedType: const FullType.nullable(String),
-      );
-    }
-    if (object.description != null) {
-      yield r'description';
-      yield serializers.serialize(
-        object.description,
-        specifiedType: const FullType.nullable(String),
-      );
-    }
-    if (object.place != null) {
-      yield r'place';
-      yield serializers.serialize(
-        object.place,
-        specifiedType: const FullType.nullable(String),
-      );
-    }
-    if (object.date != null) {
-      yield r'date';
-      yield serializers.serialize(
-        object.date,
-        specifiedType: const FullType(DateTime),
-      );
-    }
-    if (object.classId != null) {
-      yield r'classId';
-      yield serializers.serialize(
-        object.classId,
-        specifiedType: const FullType.nullable(String),
-      );
-    }
-    if (object.schoolId != null) {
-      yield r'schoolId';
-      yield serializers.serialize(
-        object.schoolId,
-        specifiedType: const FullType.nullable(String),
-      );
-    }
-    if (object.schoolUserId != null) {
-      yield r'schoolUserId';
-      yield serializers.serialize(
-        object.schoolUserId,
-        specifiedType: const FullType.nullable(String),
-      );
-    }
+    yield r'agendaEntryId';
+    yield serializers.serialize(
+      object.agendaEntryId,
+      specifiedType: const FullType(String),
+    );
+    yield r'entryType';
+    yield serializers.serialize(
+      object.entryType,
+      specifiedType: const FullType(AgendaEntryType),
+    );
+    yield r'title';
+    yield serializers.serialize(
+      object.title,
+      specifiedType: const FullType(String),
+    );
+    yield r'description';
+    yield object.description == null ? null : serializers.serialize(
+      object.description,
+      specifiedType: const FullType.nullable(String),
+    );
+    yield r'place';
+    yield object.place == null ? null : serializers.serialize(
+      object.place,
+      specifiedType: const FullType.nullable(String),
+    );
+    yield r'date';
+    yield serializers.serialize(
+      object.date,
+      specifiedType: const FullType(DateTime),
+    );
+    yield r'classId';
+    yield object.classId == null ? null : serializers.serialize(
+      object.classId,
+      specifiedType: const FullType.nullable(String),
+    );
+    yield r'schoolId';
+    yield object.schoolId == null ? null : serializers.serialize(
+      object.schoolId,
+      specifiedType: const FullType.nullable(String),
+    );
+    yield r'schoolUserId';
+    yield object.schoolUserId == null ? null : serializers.serialize(
+      object.schoolUserId,
+      specifiedType: const FullType.nullable(String),
+    );
   }
 
   @override
@@ -177,9 +159,8 @@ class _$UpdateAgendaEntryCommandSerializer implements PrimitiveSerializer<Update
         case r'title':
           final valueDes = serializers.deserialize(
             value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
-          if (valueDes == null) continue;
+            specifiedType: const FullType(String),
+          ) as String;
           result.title = valueDes;
           break;
         case r'description':

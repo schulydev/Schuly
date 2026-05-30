@@ -8,29 +8,29 @@ part of 'update_absence_command.dart';
 
 class _$UpdateAbsenceCommand extends UpdateAbsenceCommand {
   @override
-  final String? absenceId;
+  final String absenceId;
   @override
-  final String? reason;
+  final String reason;
   @override
-  final AbsenceType? type;
+  final AbsenceType type;
   @override
-  final DateTime? from;
+  final DateTime from;
   @override
-  final DateTime? until;
+  final DateTime until;
   @override
-  final String? schoolUserId;
+  final String schoolUserId;
 
   factory _$UpdateAbsenceCommand([
     void Function(UpdateAbsenceCommandBuilder)? updates,
   ]) => (UpdateAbsenceCommandBuilder()..update(updates))._build();
 
   _$UpdateAbsenceCommand._({
-    this.absenceId,
-    this.reason,
-    this.type,
-    this.from,
-    this.until,
-    this.schoolUserId,
+    required this.absenceId,
+    required this.reason,
+    required this.type,
+    required this.from,
+    required this.until,
+    required this.schoolUserId,
   }) : super._();
   @override
   UpdateAbsenceCommand rebuild(
@@ -142,12 +142,36 @@ class UpdateAbsenceCommandBuilder
     final _$result =
         _$v ??
         _$UpdateAbsenceCommand._(
-          absenceId: absenceId,
-          reason: reason,
-          type: type,
-          from: from,
-          until: until,
-          schoolUserId: schoolUserId,
+          absenceId: BuiltValueNullFieldError.checkNotNull(
+            absenceId,
+            r'UpdateAbsenceCommand',
+            'absenceId',
+          ),
+          reason: BuiltValueNullFieldError.checkNotNull(
+            reason,
+            r'UpdateAbsenceCommand',
+            'reason',
+          ),
+          type: BuiltValueNullFieldError.checkNotNull(
+            type,
+            r'UpdateAbsenceCommand',
+            'type',
+          ),
+          from: BuiltValueNullFieldError.checkNotNull(
+            from,
+            r'UpdateAbsenceCommand',
+            'from',
+          ),
+          until: BuiltValueNullFieldError.checkNotNull(
+            until,
+            r'UpdateAbsenceCommand',
+            'until',
+          ),
+          schoolUserId: BuiltValueNullFieldError.checkNotNull(
+            schoolUserId,
+            r'UpdateAbsenceCommand',
+            'schoolUserId',
+          ),
         );
     replace(_$result);
     return _$result;

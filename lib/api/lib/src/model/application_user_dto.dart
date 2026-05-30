@@ -27,10 +27,10 @@ abstract class ApplicationUserDto implements Built<ApplicationUserDto, Applicati
   String? get id;
 
   @BuiltValueField(wireName: r'externalId')
-  String? get externalId;
+  String get externalId;
 
   @BuiltValueField(wireName: r'email')
-  String? get email;
+  String get email;
 
   @BuiltValueField(wireName: r'displayName')
   String? get displayName;
@@ -78,14 +78,14 @@ class _$ApplicationUserDtoSerializer implements PrimitiveSerializer<ApplicationU
       );
     }
     yield r'externalId';
-    yield object.externalId == null ? null : serializers.serialize(
+    yield serializers.serialize(
       object.externalId,
-      specifiedType: const FullType.nullable(String),
+      specifiedType: const FullType(String),
     );
     yield r'email';
-    yield object.email == null ? null : serializers.serialize(
+    yield serializers.serialize(
       object.email,
-      specifiedType: const FullType.nullable(String),
+      specifiedType: const FullType(String),
     );
     if (object.displayName != null) {
       yield r'displayName';
@@ -119,7 +119,7 @@ class _$ApplicationUserDtoSerializer implements PrimitiveSerializer<ApplicationU
       yield r'schoolUsers';
       yield serializers.serialize(
         object.schoolUsers,
-        specifiedType: const FullType.nullable(BuiltList, [FullType(SchoolUserSummaryDto)]),
+        specifiedType: const FullType(BuiltList, [FullType(SchoolUserSummaryDto)]),
       );
     }
   }
@@ -155,17 +155,15 @@ class _$ApplicationUserDtoSerializer implements PrimitiveSerializer<ApplicationU
         case r'externalId':
           final valueDes = serializers.deserialize(
             value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
-          if (valueDes == null) continue;
+            specifiedType: const FullType(String),
+          ) as String;
           result.externalId = valueDes;
           break;
         case r'email':
           final valueDes = serializers.deserialize(
             value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
-          if (valueDes == null) continue;
+            specifiedType: const FullType(String),
+          ) as String;
           result.email = valueDes;
           break;
         case r'displayName':
@@ -201,9 +199,8 @@ class _$ApplicationUserDtoSerializer implements PrimitiveSerializer<ApplicationU
         case r'schoolUsers':
           final valueDes = serializers.deserialize(
             value,
-            specifiedType: const FullType.nullable(BuiltList, [FullType(SchoolUserSummaryDto)]),
-          ) as BuiltList<SchoolUserSummaryDto>?;
-          if (valueDes == null) continue;
+            specifiedType: const FullType(BuiltList, [FullType(SchoolUserSummaryDto)]),
+          ) as BuiltList<SchoolUserSummaryDto>;
           result.schoolUsers.replace(valueDes);
           break;
         default:

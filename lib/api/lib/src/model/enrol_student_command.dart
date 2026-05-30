@@ -16,10 +16,10 @@ part 'enrol_student_command.g.dart';
 @BuiltValue()
 abstract class EnrolStudentCommand implements Built<EnrolStudentCommand, EnrolStudentCommandBuilder> {
   @BuiltValueField(wireName: r'userId')
-  String? get userId;
+  String get userId;
 
   @BuiltValueField(wireName: r'classId')
-  String? get classId;
+  String get classId;
 
   EnrolStudentCommand._();
 
@@ -44,20 +44,16 @@ class _$EnrolStudentCommandSerializer implements PrimitiveSerializer<EnrolStuden
     EnrolStudentCommand object, {
     FullType specifiedType = FullType.unspecified,
   }) sync* {
-    if (object.userId != null) {
-      yield r'userId';
-      yield serializers.serialize(
-        object.userId,
-        specifiedType: const FullType(String),
-      );
-    }
-    if (object.classId != null) {
-      yield r'classId';
-      yield serializers.serialize(
-        object.classId,
-        specifiedType: const FullType(String),
-      );
-    }
+    yield r'userId';
+    yield serializers.serialize(
+      object.userId,
+      specifiedType: const FullType(String),
+    );
+    yield r'classId';
+    yield serializers.serialize(
+      object.classId,
+      specifiedType: const FullType(String),
+    );
   }
 
   @override

@@ -56,13 +56,13 @@ abstract class SchoolUserDto implements Built<SchoolUserDto, SchoolUserDtoBuilde
   String? get schoolName;
 
   @BuiltValueField(wireName: r'firstName')
-  String? get firstName;
+  String get firstName;
 
   @BuiltValueField(wireName: r'lastName')
-  String? get lastName;
+  String get lastName;
 
   @BuiltValueField(wireName: r'email')
-  String? get email;
+  String get email;
 
   @BuiltValueField(wireName: r'privateEmail')
   String? get privateEmail;
@@ -166,19 +166,19 @@ class _$SchoolUserDtoSerializer implements PrimitiveSerializer<SchoolUserDto> {
       );
     }
     yield r'firstName';
-    yield object.firstName == null ? null : serializers.serialize(
+    yield serializers.serialize(
       object.firstName,
-      specifiedType: const FullType.nullable(String),
+      specifiedType: const FullType(String),
     );
     yield r'lastName';
-    yield object.lastName == null ? null : serializers.serialize(
+    yield serializers.serialize(
       object.lastName,
-      specifiedType: const FullType.nullable(String),
+      specifiedType: const FullType(String),
     );
     yield r'email';
-    yield object.email == null ? null : serializers.serialize(
+    yield serializers.serialize(
       object.email,
-      specifiedType: const FullType.nullable(String),
+      specifiedType: const FullType(String),
     );
     if (object.privateEmail != null) {
       yield r'privateEmail';
@@ -269,21 +269,21 @@ class _$SchoolUserDtoSerializer implements PrimitiveSerializer<SchoolUserDto> {
       yield r'absences';
       yield serializers.serialize(
         object.absences,
-        specifiedType: const FullType.nullable(BuiltList, [FullType(AbsenceDto)]),
+        specifiedType: const FullType(BuiltList, [FullType(AbsenceDto)]),
       );
     }
     if (object.grades != null) {
       yield r'grades';
       yield serializers.serialize(
         object.grades,
-        specifiedType: const FullType.nullable(BuiltList, [FullType(GradeDto)]),
+        specifiedType: const FullType(BuiltList, [FullType(GradeDto)]),
       );
     }
     if (object.classes != null) {
       yield r'classes';
       yield serializers.serialize(
         object.classes,
-        specifiedType: const FullType.nullable(BuiltList, [FullType(UserClassDto)]),
+        specifiedType: const FullType(BuiltList, [FullType(UserClassDto)]),
       );
     }
   }
@@ -341,25 +341,22 @@ class _$SchoolUserDtoSerializer implements PrimitiveSerializer<SchoolUserDto> {
         case r'firstName':
           final valueDes = serializers.deserialize(
             value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
-          if (valueDes == null) continue;
+            specifiedType: const FullType(String),
+          ) as String;
           result.firstName = valueDes;
           break;
         case r'lastName':
           final valueDes = serializers.deserialize(
             value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
-          if (valueDes == null) continue;
+            specifiedType: const FullType(String),
+          ) as String;
           result.lastName = valueDes;
           break;
         case r'email':
           final valueDes = serializers.deserialize(
             value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
-          if (valueDes == null) continue;
+            specifiedType: const FullType(String),
+          ) as String;
           result.email = valueDes;
           break;
         case r'privateEmail':
@@ -463,25 +460,22 @@ class _$SchoolUserDtoSerializer implements PrimitiveSerializer<SchoolUserDto> {
         case r'absences':
           final valueDes = serializers.deserialize(
             value,
-            specifiedType: const FullType.nullable(BuiltList, [FullType(AbsenceDto)]),
-          ) as BuiltList<AbsenceDto>?;
-          if (valueDes == null) continue;
+            specifiedType: const FullType(BuiltList, [FullType(AbsenceDto)]),
+          ) as BuiltList<AbsenceDto>;
           result.absences.replace(valueDes);
           break;
         case r'grades':
           final valueDes = serializers.deserialize(
             value,
-            specifiedType: const FullType.nullable(BuiltList, [FullType(GradeDto)]),
-          ) as BuiltList<GradeDto>?;
-          if (valueDes == null) continue;
+            specifiedType: const FullType(BuiltList, [FullType(GradeDto)]),
+          ) as BuiltList<GradeDto>;
           result.grades.replace(valueDes);
           break;
         case r'classes':
           final valueDes = serializers.deserialize(
             value,
-            specifiedType: const FullType.nullable(BuiltList, [FullType(UserClassDto)]),
-          ) as BuiltList<UserClassDto>?;
-          if (valueDes == null) continue;
+            specifiedType: const FullType(BuiltList, [FullType(UserClassDto)]),
+          ) as BuiltList<UserClassDto>;
           result.classes.replace(valueDes);
           break;
         default:

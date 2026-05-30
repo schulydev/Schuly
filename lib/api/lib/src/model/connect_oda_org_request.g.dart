@@ -8,9 +8,9 @@ part of 'connect_oda_org_request.dart';
 
 class _$ConnectOdaOrgRequest extends ConnectOdaOrgRequest {
   @override
-  final String? username;
+  final String username;
   @override
-  final String? password;
+  final String password;
   @override
   final String? baseUrl;
   @override
@@ -21,8 +21,8 @@ class _$ConnectOdaOrgRequest extends ConnectOdaOrgRequest {
   ]) => (ConnectOdaOrgRequestBuilder()..update(updates))._build();
 
   _$ConnectOdaOrgRequest._({
-    this.username,
-    this.password,
+    required this.username,
+    required this.password,
     this.baseUrl,
     this.displayName,
   }) : super._();
@@ -120,8 +120,16 @@ class ConnectOdaOrgRequestBuilder
     final _$result =
         _$v ??
         _$ConnectOdaOrgRequest._(
-          username: username,
-          password: password,
+          username: BuiltValueNullFieldError.checkNotNull(
+            username,
+            r'ConnectOdaOrgRequest',
+            'username',
+          ),
+          password: BuiltValueNullFieldError.checkNotNull(
+            password,
+            r'ConnectOdaOrgRequest',
+            'password',
+          ),
           baseUrl: baseUrl,
           displayName: displayName,
         );

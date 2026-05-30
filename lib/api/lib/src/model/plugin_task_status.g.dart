@@ -8,11 +8,11 @@ part of 'plugin_task_status.dart';
 
 class _$PluginTaskStatus extends PluginTaskStatus {
   @override
-  final String? name;
+  final String name;
   @override
-  final double? intervalSeconds;
+  final double intervalSeconds;
   @override
-  final String? lastStatus;
+  final String lastStatus;
   @override
   final DateTime? lastStartedAt;
   @override
@@ -24,28 +24,28 @@ class _$PluginTaskStatus extends PluginTaskStatus {
   @override
   final DateTime? nextRunAt;
   @override
-  final int? totalRuns;
+  final int totalRuns;
   @override
-  final int? totalFailures;
+  final int totalFailures;
   @override
-  final int? consecutiveFailures;
+  final int consecutiveFailures;
 
   factory _$PluginTaskStatus([
     void Function(PluginTaskStatusBuilder)? updates,
   ]) => (PluginTaskStatusBuilder()..update(updates))._build();
 
   _$PluginTaskStatus._({
-    this.name,
-    this.intervalSeconds,
-    this.lastStatus,
+    required this.name,
+    required this.intervalSeconds,
+    required this.lastStatus,
     this.lastStartedAt,
     this.lastFinishedAt,
     this.lastDurationMs,
     this.lastError,
     this.nextRunAt,
-    this.totalRuns,
-    this.totalFailures,
-    this.consecutiveFailures,
+    required this.totalRuns,
+    required this.totalFailures,
+    required this.consecutiveFailures,
   }) : super._();
   @override
   PluginTaskStatus rebuild(void Function(PluginTaskStatusBuilder) updates) =>
@@ -202,17 +202,41 @@ class PluginTaskStatusBuilder
     final _$result =
         _$v ??
         _$PluginTaskStatus._(
-          name: name,
-          intervalSeconds: intervalSeconds,
-          lastStatus: lastStatus,
+          name: BuiltValueNullFieldError.checkNotNull(
+            name,
+            r'PluginTaskStatus',
+            'name',
+          ),
+          intervalSeconds: BuiltValueNullFieldError.checkNotNull(
+            intervalSeconds,
+            r'PluginTaskStatus',
+            'intervalSeconds',
+          ),
+          lastStatus: BuiltValueNullFieldError.checkNotNull(
+            lastStatus,
+            r'PluginTaskStatus',
+            'lastStatus',
+          ),
           lastStartedAt: lastStartedAt,
           lastFinishedAt: lastFinishedAt,
           lastDurationMs: lastDurationMs,
           lastError: lastError,
           nextRunAt: nextRunAt,
-          totalRuns: totalRuns,
-          totalFailures: totalFailures,
-          consecutiveFailures: consecutiveFailures,
+          totalRuns: BuiltValueNullFieldError.checkNotNull(
+            totalRuns,
+            r'PluginTaskStatus',
+            'totalRuns',
+          ),
+          totalFailures: BuiltValueNullFieldError.checkNotNull(
+            totalFailures,
+            r'PluginTaskStatus',
+            'totalFailures',
+          ),
+          consecutiveFailures: BuiltValueNullFieldError.checkNotNull(
+            consecutiveFailures,
+            r'PluginTaskStatus',
+            'consecutiveFailures',
+          ),
         );
     replace(_$result);
     return _$result;

@@ -31,7 +31,7 @@ abstract class AgendaEntryDto implements Built<AgendaEntryDto, AgendaEntryDtoBui
   // enum entryTypeEnum {  Event,  Lesson,  Test,  Holiday,  };
 
   @BuiltValueField(wireName: r'title')
-  String? get title;
+  String get title;
 
   @BuiltValueField(wireName: r'description')
   String? get description;
@@ -87,9 +87,9 @@ class _$AgendaEntryDtoSerializer implements PrimitiveSerializer<AgendaEntryDto> 
       specifiedType: const FullType(AgendaEntryType),
     );
     yield r'title';
-    yield object.title == null ? null : serializers.serialize(
+    yield serializers.serialize(
       object.title,
-      specifiedType: const FullType.nullable(String),
+      specifiedType: const FullType(String),
     );
     if (object.description != null) {
       yield r'description';
@@ -171,9 +171,8 @@ class _$AgendaEntryDtoSerializer implements PrimitiveSerializer<AgendaEntryDto> 
         case r'title':
           final valueDes = serializers.deserialize(
             value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
-          if (valueDes == null) continue;
+            specifiedType: const FullType(String),
+          ) as String;
           result.title = valueDes;
           break;
         case r'description':

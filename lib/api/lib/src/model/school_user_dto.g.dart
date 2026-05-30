@@ -16,11 +16,11 @@ class _$SchoolUserDto extends SchoolUserDto {
   @override
   final String? schoolName;
   @override
-  final String? firstName;
+  final String firstName;
   @override
-  final String? lastName;
+  final String lastName;
   @override
-  final String? email;
+  final String email;
   @override
   final String? privateEmail;
   @override
@@ -62,9 +62,9 @@ class _$SchoolUserDto extends SchoolUserDto {
     this.applicationUserId,
     this.schoolId,
     this.schoolName,
-    this.firstName,
-    this.lastName,
-    this.email,
+    required this.firstName,
+    required this.lastName,
+    required this.email,
     this.privateEmail,
     this.phoneNumber,
     this.profilePictureUrl,
@@ -338,9 +338,21 @@ class SchoolUserDtoBuilder
             applicationUserId: applicationUserId,
             schoolId: schoolId,
             schoolName: schoolName,
-            firstName: firstName,
-            lastName: lastName,
-            email: email,
+            firstName: BuiltValueNullFieldError.checkNotNull(
+              firstName,
+              r'SchoolUserDto',
+              'firstName',
+            ),
+            lastName: BuiltValueNullFieldError.checkNotNull(
+              lastName,
+              r'SchoolUserDto',
+              'lastName',
+            ),
+            email: BuiltValueNullFieldError.checkNotNull(
+              email,
+              r'SchoolUserDto',
+              'email',
+            ),
             privateEmail: privateEmail,
             phoneNumber: phoneNumber,
             profilePictureUrl: profilePictureUrl,

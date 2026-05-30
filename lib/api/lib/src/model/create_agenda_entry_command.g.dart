@@ -8,15 +8,15 @@ part of 'create_agenda_entry_command.dart';
 
 class _$CreateAgendaEntryCommand extends CreateAgendaEntryCommand {
   @override
-  final AgendaEntryType? entryType;
+  final AgendaEntryType entryType;
   @override
-  final String? title;
+  final String title;
   @override
   final String? description;
   @override
   final String? place;
   @override
-  final DateTime? date;
+  final DateTime date;
   @override
   final String? classId;
   @override
@@ -29,11 +29,11 @@ class _$CreateAgendaEntryCommand extends CreateAgendaEntryCommand {
   ]) => (CreateAgendaEntryCommandBuilder()..update(updates))._build();
 
   _$CreateAgendaEntryCommand._({
-    this.entryType,
-    this.title,
+    required this.entryType,
+    required this.title,
     this.description,
     this.place,
-    this.date,
+    required this.date,
     this.classId,
     this.schoolId,
     this.schoolUserId,
@@ -165,11 +165,23 @@ class CreateAgendaEntryCommandBuilder
     final _$result =
         _$v ??
         _$CreateAgendaEntryCommand._(
-          entryType: entryType,
-          title: title,
+          entryType: BuiltValueNullFieldError.checkNotNull(
+            entryType,
+            r'CreateAgendaEntryCommand',
+            'entryType',
+          ),
+          title: BuiltValueNullFieldError.checkNotNull(
+            title,
+            r'CreateAgendaEntryCommand',
+            'title',
+          ),
           description: description,
           place: place,
-          date: date,
+          date: BuiltValueNullFieldError.checkNotNull(
+            date,
+            r'CreateAgendaEntryCommand',
+            'date',
+          ),
           classId: classId,
           schoolId: schoolId,
           schoolUserId: schoolUserId,

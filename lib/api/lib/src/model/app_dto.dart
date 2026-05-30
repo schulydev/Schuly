@@ -20,22 +20,22 @@ part 'app_dto.g.dart';
 @BuiltValue()
 abstract class AppDto implements Built<AppDto, AppDtoBuilder> {
   @BuiltValueField(wireName: r'authority')
-  String? get authority;
+  String get authority;
 
   @BuiltValueField(wireName: r'clientId')
-  String? get clientId;
+  String get clientId;
 
   @BuiltValueField(wireName: r'redirectUri')
-  String? get redirectUri;
+  String get redirectUri;
 
   @BuiltValueField(wireName: r'postLogoutRedirectUri')
-  String? get postLogoutRedirectUri;
+  String get postLogoutRedirectUri;
 
   @BuiltValueField(wireName: r'scope')
-  String? get scope;
+  String get scope;
 
   @BuiltValueField(wireName: r'version')
-  String? get version;
+  String get version;
 
   AppDto._();
 
@@ -60,48 +60,36 @@ class _$AppDtoSerializer implements PrimitiveSerializer<AppDto> {
     AppDto object, {
     FullType specifiedType = FullType.unspecified,
   }) sync* {
-    if (object.authority != null) {
-      yield r'authority';
-      yield serializers.serialize(
-        object.authority,
-        specifiedType: const FullType.nullable(String),
-      );
-    }
-    if (object.clientId != null) {
-      yield r'clientId';
-      yield serializers.serialize(
-        object.clientId,
-        specifiedType: const FullType.nullable(String),
-      );
-    }
-    if (object.redirectUri != null) {
-      yield r'redirectUri';
-      yield serializers.serialize(
-        object.redirectUri,
-        specifiedType: const FullType.nullable(String),
-      );
-    }
-    if (object.postLogoutRedirectUri != null) {
-      yield r'postLogoutRedirectUri';
-      yield serializers.serialize(
-        object.postLogoutRedirectUri,
-        specifiedType: const FullType.nullable(String),
-      );
-    }
-    if (object.scope != null) {
-      yield r'scope';
-      yield serializers.serialize(
-        object.scope,
-        specifiedType: const FullType.nullable(String),
-      );
-    }
-    if (object.version != null) {
-      yield r'version';
-      yield serializers.serialize(
-        object.version,
-        specifiedType: const FullType.nullable(String),
-      );
-    }
+    yield r'authority';
+    yield serializers.serialize(
+      object.authority,
+      specifiedType: const FullType(String),
+    );
+    yield r'clientId';
+    yield serializers.serialize(
+      object.clientId,
+      specifiedType: const FullType(String),
+    );
+    yield r'redirectUri';
+    yield serializers.serialize(
+      object.redirectUri,
+      specifiedType: const FullType(String),
+    );
+    yield r'postLogoutRedirectUri';
+    yield serializers.serialize(
+      object.postLogoutRedirectUri,
+      specifiedType: const FullType(String),
+    );
+    yield r'scope';
+    yield serializers.serialize(
+      object.scope,
+      specifiedType: const FullType(String),
+    );
+    yield r'version';
+    yield serializers.serialize(
+      object.version,
+      specifiedType: const FullType(String),
+    );
   }
 
   @override
@@ -128,49 +116,43 @@ class _$AppDtoSerializer implements PrimitiveSerializer<AppDto> {
         case r'authority':
           final valueDes = serializers.deserialize(
             value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
-          if (valueDes == null) continue;
+            specifiedType: const FullType(String),
+          ) as String;
           result.authority = valueDes;
           break;
         case r'clientId':
           final valueDes = serializers.deserialize(
             value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
-          if (valueDes == null) continue;
+            specifiedType: const FullType(String),
+          ) as String;
           result.clientId = valueDes;
           break;
         case r'redirectUri':
           final valueDes = serializers.deserialize(
             value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
-          if (valueDes == null) continue;
+            specifiedType: const FullType(String),
+          ) as String;
           result.redirectUri = valueDes;
           break;
         case r'postLogoutRedirectUri':
           final valueDes = serializers.deserialize(
             value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
-          if (valueDes == null) continue;
+            specifiedType: const FullType(String),
+          ) as String;
           result.postLogoutRedirectUri = valueDes;
           break;
         case r'scope':
           final valueDes = serializers.deserialize(
             value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
-          if (valueDes == null) continue;
+            specifiedType: const FullType(String),
+          ) as String;
           result.scope = valueDes;
           break;
         case r'version':
           final valueDes = serializers.deserialize(
             value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
-          if (valueDes == null) continue;
+            specifiedType: const FullType(String),
+          ) as String;
           result.version = valueDes;
           break;
         default:

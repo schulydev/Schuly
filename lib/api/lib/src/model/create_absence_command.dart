@@ -20,20 +20,20 @@ part 'create_absence_command.g.dart';
 @BuiltValue()
 abstract class CreateAbsenceCommand implements Built<CreateAbsenceCommand, CreateAbsenceCommandBuilder> {
   @BuiltValueField(wireName: r'reason')
-  String? get reason;
+  String get reason;
 
   @BuiltValueField(wireName: r'type')
-  AbsenceType? get type;
+  AbsenceType get type;
   // enum typeEnum {  Absence,  Delay,  };
 
   @BuiltValueField(wireName: r'from')
-  DateTime? get from;
+  DateTime get from;
 
   @BuiltValueField(wireName: r'until')
-  DateTime? get until;
+  DateTime get until;
 
   @BuiltValueField(wireName: r'schoolUserId')
-  String? get schoolUserId;
+  String get schoolUserId;
 
   CreateAbsenceCommand._();
 
@@ -58,41 +58,31 @@ class _$CreateAbsenceCommandSerializer implements PrimitiveSerializer<CreateAbse
     CreateAbsenceCommand object, {
     FullType specifiedType = FullType.unspecified,
   }) sync* {
-    if (object.reason != null) {
-      yield r'reason';
-      yield serializers.serialize(
-        object.reason,
-        specifiedType: const FullType.nullable(String),
-      );
-    }
-    if (object.type != null) {
-      yield r'type';
-      yield serializers.serialize(
-        object.type,
-        specifiedType: const FullType(AbsenceType),
-      );
-    }
-    if (object.from != null) {
-      yield r'from';
-      yield serializers.serialize(
-        object.from,
-        specifiedType: const FullType(DateTime),
-      );
-    }
-    if (object.until != null) {
-      yield r'until';
-      yield serializers.serialize(
-        object.until,
-        specifiedType: const FullType(DateTime),
-      );
-    }
-    if (object.schoolUserId != null) {
-      yield r'schoolUserId';
-      yield serializers.serialize(
-        object.schoolUserId,
-        specifiedType: const FullType(String),
-      );
-    }
+    yield r'reason';
+    yield serializers.serialize(
+      object.reason,
+      specifiedType: const FullType(String),
+    );
+    yield r'type';
+    yield serializers.serialize(
+      object.type,
+      specifiedType: const FullType(AbsenceType),
+    );
+    yield r'from';
+    yield serializers.serialize(
+      object.from,
+      specifiedType: const FullType(DateTime),
+    );
+    yield r'until';
+    yield serializers.serialize(
+      object.until,
+      specifiedType: const FullType(DateTime),
+    );
+    yield r'schoolUserId';
+    yield serializers.serialize(
+      object.schoolUserId,
+      specifiedType: const FullType(String),
+    );
   }
 
   @override
@@ -119,9 +109,8 @@ class _$CreateAbsenceCommandSerializer implements PrimitiveSerializer<CreateAbse
         case r'reason':
           final valueDes = serializers.deserialize(
             value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
-          if (valueDes == null) continue;
+            specifiedType: const FullType(String),
+          ) as String;
           result.reason = valueDes;
           break;
         case r'type':

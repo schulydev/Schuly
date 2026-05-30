@@ -23,13 +23,13 @@ abstract class MySchoolDto implements Built<MySchoolDto, MySchoolDtoBuilder> {
   String? get id;
 
   @BuiltValueField(wireName: r'name')
-  String? get name;
+  String get name;
 
   @BuiltValueField(wireName: r'email')
-  String? get email;
+  String get email;
 
   @BuiltValueField(wireName: r'fullName')
-  String? get fullName;
+  String get fullName;
 
   @BuiltValueField(wireName: r'logoUrl')
   String? get logoUrl;
@@ -68,19 +68,19 @@ class _$MySchoolDtoSerializer implements PrimitiveSerializer<MySchoolDto> {
       );
     }
     yield r'name';
-    yield object.name == null ? null : serializers.serialize(
+    yield serializers.serialize(
       object.name,
-      specifiedType: const FullType.nullable(String),
+      specifiedType: const FullType(String),
     );
     yield r'email';
-    yield object.email == null ? null : serializers.serialize(
+    yield serializers.serialize(
       object.email,
-      specifiedType: const FullType.nullable(String),
+      specifiedType: const FullType(String),
     );
     yield r'fullName';
-    yield object.fullName == null ? null : serializers.serialize(
+    yield serializers.serialize(
       object.fullName,
-      specifiedType: const FullType.nullable(String),
+      specifiedType: const FullType(String),
     );
     if (object.logoUrl != null) {
       yield r'logoUrl';
@@ -129,25 +129,22 @@ class _$MySchoolDtoSerializer implements PrimitiveSerializer<MySchoolDto> {
         case r'name':
           final valueDes = serializers.deserialize(
             value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
-          if (valueDes == null) continue;
+            specifiedType: const FullType(String),
+          ) as String;
           result.name = valueDes;
           break;
         case r'email':
           final valueDes = serializers.deserialize(
             value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
-          if (valueDes == null) continue;
+            specifiedType: const FullType(String),
+          ) as String;
           result.email = valueDes;
           break;
         case r'fullName':
           final valueDes = serializers.deserialize(
             value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
-          if (valueDes == null) continue;
+            specifiedType: const FullType(String),
+          ) as String;
           result.fullName = valueDes;
           break;
         case r'logoUrl':

@@ -12,9 +12,9 @@ class _$SemesterSubjectGradeDto extends SemesterSubjectGradeDto {
   @override
   final String? semesterReportId;
   @override
-  final String? subjectCode;
+  final String subjectCode;
   @override
-  final String? subjectName;
+  final String subjectName;
   @override
   final String? subjectTypeMarker;
   @override
@@ -29,8 +29,8 @@ class _$SemesterSubjectGradeDto extends SemesterSubjectGradeDto {
   _$SemesterSubjectGradeDto._({
     this.id,
     this.semesterReportId,
-    this.subjectCode,
-    this.subjectName,
+    required this.subjectCode,
+    required this.subjectName,
     this.subjectTypeMarker,
     this.grade,
     this.marker,
@@ -158,8 +158,16 @@ class SemesterSubjectGradeDtoBuilder
         _$SemesterSubjectGradeDto._(
           id: id,
           semesterReportId: semesterReportId,
-          subjectCode: subjectCode,
-          subjectName: subjectName,
+          subjectCode: BuiltValueNullFieldError.checkNotNull(
+            subjectCode,
+            r'SemesterSubjectGradeDto',
+            'subjectCode',
+          ),
+          subjectName: BuiltValueNullFieldError.checkNotNull(
+            subjectName,
+            r'SemesterSubjectGradeDto',
+            'subjectName',
+          ),
           subjectTypeMarker: subjectTypeMarker,
           grade: grade,
           marker: marker,

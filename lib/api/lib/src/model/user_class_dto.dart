@@ -19,7 +19,7 @@ abstract class UserClassDto implements Built<UserClassDto, UserClassDtoBuilder> 
   String get classId;
 
   @BuiltValueField(wireName: r'className')
-  String? get className;
+  String get className;
 
   UserClassDto._();
 
@@ -50,9 +50,9 @@ class _$UserClassDtoSerializer implements PrimitiveSerializer<UserClassDto> {
       specifiedType: const FullType(String),
     );
     yield r'className';
-    yield object.className == null ? null : serializers.serialize(
+    yield serializers.serialize(
       object.className,
-      specifiedType: const FullType.nullable(String),
+      specifiedType: const FullType(String),
     );
   }
 
@@ -87,9 +87,8 @@ class _$UserClassDtoSerializer implements PrimitiveSerializer<UserClassDto> {
         case r'className':
           final valueDes = serializers.deserialize(
             value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
-          if (valueDes == null) continue;
+            specifiedType: const FullType(String),
+          ) as String;
           result.className = valueDes;
           break;
         default:

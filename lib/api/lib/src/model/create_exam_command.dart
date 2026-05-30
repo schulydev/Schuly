@@ -19,17 +19,17 @@ part 'create_exam_command.g.dart';
 @BuiltValue()
 abstract class CreateExamCommand implements Built<CreateExamCommand, CreateExamCommandBuilder> {
   @BuiltValueField(wireName: r'name')
-  String? get name;
+  String get name;
 
   @BuiltValueField(wireName: r'description')
   String? get description;
 
   @BuiltValueField(wireName: r'type')
-  ExamType? get type;
+  ExamType get type;
   // enum typeEnum {  Classic,  FinalExam,  };
 
   @BuiltValueField(wireName: r'classId')
-  String? get classId;
+  String get classId;
 
   CreateExamCommand._();
 
@@ -54,34 +54,26 @@ class _$CreateExamCommandSerializer implements PrimitiveSerializer<CreateExamCom
     CreateExamCommand object, {
     FullType specifiedType = FullType.unspecified,
   }) sync* {
-    if (object.name != null) {
-      yield r'name';
-      yield serializers.serialize(
-        object.name,
-        specifiedType: const FullType.nullable(String),
-      );
-    }
-    if (object.description != null) {
-      yield r'description';
-      yield serializers.serialize(
-        object.description,
-        specifiedType: const FullType.nullable(String),
-      );
-    }
-    if (object.type != null) {
-      yield r'type';
-      yield serializers.serialize(
-        object.type,
-        specifiedType: const FullType(ExamType),
-      );
-    }
-    if (object.classId != null) {
-      yield r'classId';
-      yield serializers.serialize(
-        object.classId,
-        specifiedType: const FullType(String),
-      );
-    }
+    yield r'name';
+    yield serializers.serialize(
+      object.name,
+      specifiedType: const FullType(String),
+    );
+    yield r'description';
+    yield object.description == null ? null : serializers.serialize(
+      object.description,
+      specifiedType: const FullType.nullable(String),
+    );
+    yield r'type';
+    yield serializers.serialize(
+      object.type,
+      specifiedType: const FullType(ExamType),
+    );
+    yield r'classId';
+    yield serializers.serialize(
+      object.classId,
+      specifiedType: const FullType(String),
+    );
   }
 
   @override
@@ -108,9 +100,8 @@ class _$CreateExamCommandSerializer implements PrimitiveSerializer<CreateExamCom
         case r'name':
           final valueDes = serializers.deserialize(
             value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
-          if (valueDes == null) continue;
+            specifiedType: const FullType(String),
+          ) as String;
           result.name = valueDes;
           break;
         case r'description':

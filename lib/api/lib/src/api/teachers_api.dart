@@ -248,7 +248,7 @@ class TeachersApi {
   /// Returns a [Future] containing a [Response] with a [String] as data
   /// Throws [DioException] if API call or serialization fails
   Future<Response<String>> apiTeachersPost({ 
-    CreateTeacherCommand? createTeacherCommand,
+    required CreateTeacherCommand createTeacherCommand,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
     Map<String, dynamic>? extra,
@@ -279,7 +279,7 @@ class TeachersApi {
 
     try {
       const _type = FullType(CreateTeacherCommand);
-      _bodyData = createTeacherCommand == null ? null : _serializers.serialize(createTeacherCommand, specifiedType: _type);
+      _bodyData = _serializers.serialize(createTeacherCommand, specifiedType: _type);
 
     } catch(error, stackTrace) {
       throw DioException(
@@ -345,7 +345,7 @@ class TeachersApi {
   /// Returns a [Future]
   /// Throws [DioException] if API call or serialization fails
   Future<Response<void>> apiTeachersPut({ 
-    UpdateTeacherCommand? updateTeacherCommand,
+    required UpdateTeacherCommand updateTeacherCommand,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
     Map<String, dynamic>? extra,
@@ -376,7 +376,7 @@ class TeachersApi {
 
     try {
       const _type = FullType(UpdateTeacherCommand);
-      _bodyData = updateTeacherCommand == null ? null : _serializers.serialize(updateTeacherCommand, specifiedType: _type);
+      _bodyData = _serializers.serialize(updateTeacherCommand, specifiedType: _type);
 
     } catch(error, stackTrace) {
       throw DioException(

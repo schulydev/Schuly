@@ -12,7 +12,7 @@ class _$StudentDocumentDto extends StudentDocumentDto {
   @override
   final String? schoolUserId;
   @override
-  final String? title;
+  final String title;
   @override
   final String? comment;
   @override
@@ -41,7 +41,7 @@ class _$StudentDocumentDto extends StudentDocumentDto {
   _$StudentDocumentDto._({
     this.id,
     this.schoolUserId,
-    this.title,
+    required this.title,
     this.comment,
     this.category,
     this.enteredBy,
@@ -224,7 +224,11 @@ class StudentDocumentDtoBuilder
         _$StudentDocumentDto._(
           id: id,
           schoolUserId: schoolUserId,
-          title: title,
+          title: BuiltValueNullFieldError.checkNotNull(
+            title,
+            r'StudentDocumentDto',
+            'title',
+          ),
           comment: comment,
           category: category,
           enteredBy: enteredBy,

@@ -18,10 +18,10 @@ part 'connect_oda_org_request.g.dart';
 @BuiltValue()
 abstract class ConnectOdaOrgRequest implements Built<ConnectOdaOrgRequest, ConnectOdaOrgRequestBuilder> {
   @BuiltValueField(wireName: r'username')
-  String? get username;
+  String get username;
 
   @BuiltValueField(wireName: r'password')
-  String? get password;
+  String get password;
 
   @BuiltValueField(wireName: r'baseUrl')
   String? get baseUrl;
@@ -52,34 +52,26 @@ class _$ConnectOdaOrgRequestSerializer implements PrimitiveSerializer<ConnectOda
     ConnectOdaOrgRequest object, {
     FullType specifiedType = FullType.unspecified,
   }) sync* {
-    if (object.username != null) {
-      yield r'username';
-      yield serializers.serialize(
-        object.username,
-        specifiedType: const FullType.nullable(String),
-      );
-    }
-    if (object.password != null) {
-      yield r'password';
-      yield serializers.serialize(
-        object.password,
-        specifiedType: const FullType.nullable(String),
-      );
-    }
-    if (object.baseUrl != null) {
-      yield r'baseUrl';
-      yield serializers.serialize(
-        object.baseUrl,
-        specifiedType: const FullType.nullable(String),
-      );
-    }
-    if (object.displayName != null) {
-      yield r'displayName';
-      yield serializers.serialize(
-        object.displayName,
-        specifiedType: const FullType.nullable(String),
-      );
-    }
+    yield r'username';
+    yield serializers.serialize(
+      object.username,
+      specifiedType: const FullType(String),
+    );
+    yield r'password';
+    yield serializers.serialize(
+      object.password,
+      specifiedType: const FullType(String),
+    );
+    yield r'baseUrl';
+    yield object.baseUrl == null ? null : serializers.serialize(
+      object.baseUrl,
+      specifiedType: const FullType.nullable(String),
+    );
+    yield r'displayName';
+    yield object.displayName == null ? null : serializers.serialize(
+      object.displayName,
+      specifiedType: const FullType.nullable(String),
+    );
   }
 
   @override
@@ -106,17 +98,15 @@ class _$ConnectOdaOrgRequestSerializer implements PrimitiveSerializer<ConnectOda
         case r'username':
           final valueDes = serializers.deserialize(
             value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
-          if (valueDes == null) continue;
+            specifiedType: const FullType(String),
+          ) as String;
           result.username = valueDes;
           break;
         case r'password':
           final valueDes = serializers.deserialize(
             value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
-          if (valueDes == null) continue;
+            specifiedType: const FullType(String),
+          ) as String;
           result.password = valueDes;
           break;
         case r'baseUrl':

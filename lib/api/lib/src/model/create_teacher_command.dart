@@ -19,16 +19,16 @@ part 'create_teacher_command.g.dart';
 @BuiltValue()
 abstract class CreateTeacherCommand implements Built<CreateTeacherCommand, CreateTeacherCommandBuilder> {
   @BuiltValueField(wireName: r'schoolId')
-  String? get schoolId;
+  String get schoolId;
 
   @BuiltValueField(wireName: r'firstName')
-  String? get firstName;
+  String get firstName;
 
   @BuiltValueField(wireName: r'lastName')
-  String? get lastName;
+  String get lastName;
 
   @BuiltValueField(wireName: r'code')
-  String? get code;
+  String get code;
 
   @BuiltValueField(wireName: r'email')
   String? get email;
@@ -56,41 +56,31 @@ class _$CreateTeacherCommandSerializer implements PrimitiveSerializer<CreateTeac
     CreateTeacherCommand object, {
     FullType specifiedType = FullType.unspecified,
   }) sync* {
-    if (object.schoolId != null) {
-      yield r'schoolId';
-      yield serializers.serialize(
-        object.schoolId,
-        specifiedType: const FullType(String),
-      );
-    }
-    if (object.firstName != null) {
-      yield r'firstName';
-      yield serializers.serialize(
-        object.firstName,
-        specifiedType: const FullType.nullable(String),
-      );
-    }
-    if (object.lastName != null) {
-      yield r'lastName';
-      yield serializers.serialize(
-        object.lastName,
-        specifiedType: const FullType.nullable(String),
-      );
-    }
-    if (object.code != null) {
-      yield r'code';
-      yield serializers.serialize(
-        object.code,
-        specifiedType: const FullType.nullable(String),
-      );
-    }
-    if (object.email != null) {
-      yield r'email';
-      yield serializers.serialize(
-        object.email,
-        specifiedType: const FullType.nullable(String),
-      );
-    }
+    yield r'schoolId';
+    yield serializers.serialize(
+      object.schoolId,
+      specifiedType: const FullType(String),
+    );
+    yield r'firstName';
+    yield serializers.serialize(
+      object.firstName,
+      specifiedType: const FullType(String),
+    );
+    yield r'lastName';
+    yield serializers.serialize(
+      object.lastName,
+      specifiedType: const FullType(String),
+    );
+    yield r'code';
+    yield serializers.serialize(
+      object.code,
+      specifiedType: const FullType(String),
+    );
+    yield r'email';
+    yield object.email == null ? null : serializers.serialize(
+      object.email,
+      specifiedType: const FullType.nullable(String),
+    );
   }
 
   @override
@@ -124,25 +114,22 @@ class _$CreateTeacherCommandSerializer implements PrimitiveSerializer<CreateTeac
         case r'firstName':
           final valueDes = serializers.deserialize(
             value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
-          if (valueDes == null) continue;
+            specifiedType: const FullType(String),
+          ) as String;
           result.firstName = valueDes;
           break;
         case r'lastName':
           final valueDes = serializers.deserialize(
             value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
-          if (valueDes == null) continue;
+            specifiedType: const FullType(String),
+          ) as String;
           result.lastName = valueDes;
           break;
         case r'code':
           final valueDes = serializers.deserialize(
             value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
-          if (valueDes == null) continue;
+            specifiedType: const FullType(String),
+          ) as String;
           result.code = valueDes;
           break;
         case r'email':

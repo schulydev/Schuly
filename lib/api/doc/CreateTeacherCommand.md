@@ -8,11 +8,11 @@ import 'package:schuly_api/api.dart';
 ## Properties
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**schoolId** | **String** |  | [optional] 
-**firstName** | **String** |  | [optional] 
-**lastName** | **String** |  | [optional] 
-**code** | **String** |  | [optional] 
-**email** | **String** |  | [optional] 
+**schoolId** | **String** |  | 
+**firstName** | **String** |  | 
+**lastName** | **String** |  | 
+**code** | **String** |  | 
+**email** | **String** |  | 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
 

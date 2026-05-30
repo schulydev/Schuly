@@ -117,7 +117,7 @@ class ExamsApi {
   /// Returns a [Future]
   /// Throws [DioException] if API call or serialization fails
   Future<Response<void>> apiExamsGradePost({ 
-    AddGradeToExamCommand? addGradeToExamCommand,
+    required AddGradeToExamCommand addGradeToExamCommand,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
     Map<String, dynamic>? extra,
@@ -148,7 +148,7 @@ class ExamsApi {
 
     try {
       const _type = FullType(AddGradeToExamCommand);
-      _bodyData = addGradeToExamCommand == null ? null : _serializers.serialize(addGradeToExamCommand, specifiedType: _type);
+      _bodyData = _serializers.serialize(addGradeToExamCommand, specifiedType: _type);
 
     } catch(error, stackTrace) {
       throw DioException(
@@ -241,7 +241,7 @@ class ExamsApi {
   /// Returns a [Future]
   /// Throws [DioException] if API call or serialization fails
   Future<Response<void>> apiExamsPost({ 
-    CreateExamCommand? createExamCommand,
+    required CreateExamCommand createExamCommand,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
     Map<String, dynamic>? extra,
@@ -272,7 +272,7 @@ class ExamsApi {
 
     try {
       const _type = FullType(CreateExamCommand);
-      _bodyData = createExamCommand == null ? null : _serializers.serialize(createExamCommand, specifiedType: _type);
+      _bodyData = _serializers.serialize(createExamCommand, specifiedType: _type);
 
     } catch(error, stackTrace) {
       throw DioException(
@@ -313,7 +313,7 @@ class ExamsApi {
   /// Returns a [Future]
   /// Throws [DioException] if API call or serialization fails
   Future<Response<void>> apiExamsPut({ 
-    UpdateExamCommand? updateExamCommand,
+    required UpdateExamCommand updateExamCommand,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
     Map<String, dynamic>? extra,
@@ -344,7 +344,7 @@ class ExamsApi {
 
     try {
       const _type = FullType(UpdateExamCommand);
-      _bodyData = updateExamCommand == null ? null : _serializers.serialize(updateExamCommand, specifiedType: _type);
+      _bodyData = _serializers.serialize(updateExamCommand, specifiedType: _type);
 
     } catch(error, stackTrace) {
       throw DioException(

@@ -36,7 +36,7 @@ class OAuthApi {
   /// Throws [DioException] if API call or serialization fails
   Future<Response<void>> apiPluginsSchulwareAccountsAccountIdAuthOauthCallbackPost({ 
     required String accountId,
-    OAuthCallbackRequest? oAuthCallbackRequest,
+    required OAuthCallbackRequest oAuthCallbackRequest,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
     Map<String, dynamic>? extra,
@@ -67,7 +67,7 @@ class OAuthApi {
 
     try {
       const _type = FullType(OAuthCallbackRequest);
-      _bodyData = oAuthCallbackRequest == null ? null : _serializers.serialize(oAuthCallbackRequest, specifiedType: _type);
+      _bodyData = _serializers.serialize(oAuthCallbackRequest, specifiedType: _type);
 
     } catch(error, stackTrace) {
       throw DioException(
