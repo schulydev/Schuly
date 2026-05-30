@@ -27,10 +27,10 @@ abstract class SemesterSubjectGradeDto implements Built<SemesterSubjectGradeDto,
   String? get semesterReportId;
 
   @BuiltValueField(wireName: r'subjectCode')
-  String? get subjectCode;
+  String get subjectCode;
 
   @BuiltValueField(wireName: r'subjectName')
-  String? get subjectName;
+  String get subjectName;
 
   @BuiltValueField(wireName: r'subjectTypeMarker')
   String? get subjectTypeMarker;
@@ -79,14 +79,14 @@ class _$SemesterSubjectGradeDtoSerializer implements PrimitiveSerializer<Semeste
       );
     }
     yield r'subjectCode';
-    yield object.subjectCode == null ? null : serializers.serialize(
+    yield serializers.serialize(
       object.subjectCode,
-      specifiedType: const FullType.nullable(String),
+      specifiedType: const FullType(String),
     );
     yield r'subjectName';
-    yield object.subjectName == null ? null : serializers.serialize(
+    yield serializers.serialize(
       object.subjectName,
-      specifiedType: const FullType.nullable(String),
+      specifiedType: const FullType(String),
     );
     if (object.subjectTypeMarker != null) {
       yield r'subjectTypeMarker';
@@ -149,17 +149,15 @@ class _$SemesterSubjectGradeDtoSerializer implements PrimitiveSerializer<Semeste
         case r'subjectCode':
           final valueDes = serializers.deserialize(
             value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
-          if (valueDes == null) continue;
+            specifiedType: const FullType(String),
+          ) as String;
           result.subjectCode = valueDes;
           break;
         case r'subjectName':
           final valueDes = serializers.deserialize(
             value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
-          if (valueDes == null) continue;
+            specifiedType: const FullType(String),
+          ) as String;
           result.subjectName = valueDes;
           break;
         case r'subjectTypeMarker':

@@ -8,7 +8,7 @@ part of 'connect_account_request.dart';
 
 class _$ConnectAccountRequest extends ConnectAccountRequest {
   @override
-  final String? schulnetzBaseUrl;
+  final String schulnetzBaseUrl;
   @override
   final String? schulwareApiBaseUrl;
   @override
@@ -21,7 +21,7 @@ class _$ConnectAccountRequest extends ConnectAccountRequest {
   ]) => (ConnectAccountRequestBuilder()..update(updates))._build();
 
   _$ConnectAccountRequest._({
-    this.schulnetzBaseUrl,
+    required this.schulnetzBaseUrl,
     this.schulwareApiBaseUrl,
     this.displayName,
     this.schoolUserId,
@@ -122,7 +122,11 @@ class ConnectAccountRequestBuilder
     final _$result =
         _$v ??
         _$ConnectAccountRequest._(
-          schulnetzBaseUrl: schulnetzBaseUrl,
+          schulnetzBaseUrl: BuiltValueNullFieldError.checkNotNull(
+            schulnetzBaseUrl,
+            r'ConnectAccountRequest',
+            'schulnetzBaseUrl',
+          ),
           schulwareApiBaseUrl: schulwareApiBaseUrl,
           displayName: displayName,
           schoolUserId: schoolUserId,

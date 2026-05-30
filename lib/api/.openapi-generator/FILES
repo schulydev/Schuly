@@ -139,4 +139,3 @@ lib/src/model/user_class_dto.dart
 lib/src/model/user_state.dart
 lib/src/serializers.dart
 pubspec.yaml
-test/plugin_task_status_test.dart

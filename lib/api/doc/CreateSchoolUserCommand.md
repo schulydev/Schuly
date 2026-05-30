@@ -8,19 +8,19 @@ import 'package:schuly_api/api.dart';
 ## Properties
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**applicationUserId** | **String** |  | [optional] 
-**schoolId** | **String** |  | [optional] 
-**firstName** | **String** |  | [optional] 
-**lastName** | **String** |  | [optional] 
-**email** | **String** |  | [optional] 
-**privateEmail** | **String** |  | [optional] 
-**phoneNumber** | **String** |  | [optional] 
-**street** | **String** |  | [optional] 
-**city** | **String** |  | [optional] 
-**zip** | **String** |  | [optional] 
-**birthday** | [**Date**](Date.md) |  | [optional] 
-**entryDate** | [**Date**](Date.md) |  | [optional] 
-**role** | [**Roles**](Roles.md) |  | [optional] 
+**applicationUserId** | **String** |  | 
+**schoolId** | **String** |  | 
+**firstName** | **String** |  | 
+**lastName** | **String** |  | 
+**email** | **String** |  | 
+**privateEmail** | **String** |  | 
+**phoneNumber** | **String** |  | 
+**street** | **String** |  | 
+**city** | **String** |  | 
+**zip** | **String** |  | 
+**birthday** | [**Date**](Date.md) |  | 
+**entryDate** | [**Date**](Date.md) |  | 
+**role** | [**Roles**](Roles.md) |  | 
 **profilePictureUrl** | **String** |  | [optional] 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

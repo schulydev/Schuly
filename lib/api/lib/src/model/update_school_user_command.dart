@@ -28,7 +28,7 @@ part 'update_school_user_command.g.dart';
 @BuiltValue()
 abstract class UpdateSchoolUserCommand implements Built<UpdateSchoolUserCommand, UpdateSchoolUserCommandBuilder> {
   @BuiltValueField(wireName: r'schoolUserId')
-  String? get schoolUserId;
+  String get schoolUserId;
 
   @BuiltValueField(wireName: r'firstName')
   String? get firstName;
@@ -87,83 +87,61 @@ class _$UpdateSchoolUserCommandSerializer implements PrimitiveSerializer<UpdateS
     UpdateSchoolUserCommand object, {
     FullType specifiedType = FullType.unspecified,
   }) sync* {
-    if (object.schoolUserId != null) {
-      yield r'schoolUserId';
-      yield serializers.serialize(
-        object.schoolUserId,
-        specifiedType: const FullType(String),
-      );
-    }
-    if (object.firstName != null) {
-      yield r'firstName';
-      yield serializers.serialize(
-        object.firstName,
-        specifiedType: const FullType.nullable(String),
-      );
-    }
-    if (object.lastName != null) {
-      yield r'lastName';
-      yield serializers.serialize(
-        object.lastName,
-        specifiedType: const FullType.nullable(String),
-      );
-    }
-    if (object.email != null) {
-      yield r'email';
-      yield serializers.serialize(
-        object.email,
-        specifiedType: const FullType.nullable(String),
-      );
-    }
-    if (object.privateEmail != null) {
-      yield r'privateEmail';
-      yield serializers.serialize(
-        object.privateEmail,
-        specifiedType: const FullType.nullable(String),
-      );
-    }
-    if (object.phoneNumber != null) {
-      yield r'phoneNumber';
-      yield serializers.serialize(
-        object.phoneNumber,
-        specifiedType: const FullType.nullable(String),
-      );
-    }
-    if (object.street != null) {
-      yield r'street';
-      yield serializers.serialize(
-        object.street,
-        specifiedType: const FullType.nullable(String),
-      );
-    }
-    if (object.city != null) {
-      yield r'city';
-      yield serializers.serialize(
-        object.city,
-        specifiedType: const FullType.nullable(String),
-      );
-    }
-    if (object.zip != null) {
-      yield r'zip';
-      yield serializers.serialize(
-        object.zip,
-        specifiedType: const FullType.nullable(String),
-      );
-    }
-    if (object.leaveDate != null) {
-      yield r'leaveDate';
-      yield serializers.serialize(
-        object.leaveDate,
-        specifiedType: const FullType.nullable(Date),
-      );
-    }
-    if (object.state != null) {
-      yield r'state';
-      yield serializers.serialize(
-        object.state,
-        specifiedType: const FullType(UserState),
-      );
-    }
+    yield r'schoolUserId';
+    yield serializers.serialize(
+      object.schoolUserId,
+      specifiedType: const FullType(String),
+    );
+    yield r'firstName';
+    yield object.firstName == null ? null : serializers.serialize(
+      object.firstName,
+      specifiedType: const FullType.nullable(String),
+    );
+    yield r'lastName';
+    yield object.lastName == null ? null : serializers.serialize(
+      object.lastName,
+      specifiedType: const FullType.nullable(String),
+    );
+    yield r'email';
+    yield object.email == null ? null : serializers.serialize(
+      object.email,
+      specifiedType: const FullType.nullable(String),
+    );
+    yield r'privateEmail';
+    yield object.privateEmail == null ? null : serializers.serialize(
+      object.privateEmail,
+      specifiedType: const FullType.nullable(String),
+    );
+    yield r'phoneNumber';
+    yield object.phoneNumber == null ? null : serializers.serialize(
+      object.phoneNumber,
+      specifiedType: const FullType.nullable(String),
+    );
+    yield r'street';
+    yield object.street == null ? null : serializers.serialize(
+      object.street,
+      specifiedType: const FullType.nullable(String),
+    );
+    yield r'city';
+    yield object.city == null ? null : serializers.serialize(
+      object.city,
+      specifiedType: const FullType.nullable(String),
+    );
+    yield r'zip';
+    yield object.zip == null ? null : serializers.serialize(
+      object.zip,
+      specifiedType: const FullType.nullable(String),
+    );
+    yield r'leaveDate';
+    yield object.leaveDate == null ? null : serializers.serialize(
+      object.leaveDate,
+      specifiedType: const FullType.nullable(Date),
+    );
+    yield r'state';
+    yield object.state == null ? null : serializers.serialize(
+      object.state,
+      specifiedType: const FullType.nullable(UserState),
+    );
     if (object.profilePictureUrl != null) {
       yield r'profilePictureUrl';
       yield serializers.serialize(
@@ -276,8 +254,9 @@ class _$UpdateSchoolUserCommandSerializer implements PrimitiveSerializer<UpdateS
         case r'state':
           final valueDes = serializers.deserialize(
             value,
-            specifiedType: const FullType(UserState),
-          ) as UserState;
+            specifiedType: const FullType.nullable(UserState),
+          ) as UserState?;
+          if (valueDes == null) continue;
           result.state = valueDes;
           break;
         case r'profilePictureUrl':

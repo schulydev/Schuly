@@ -12,7 +12,7 @@ class _$AgendaEntryDto extends AgendaEntryDto {
   @override
   final AgendaEntryType entryType;
   @override
-  final String? title;
+  final String title;
   @override
   final String? description;
   @override
@@ -32,7 +32,7 @@ class _$AgendaEntryDto extends AgendaEntryDto {
   _$AgendaEntryDto._({
     this.id,
     required this.entryType,
-    this.title,
+    required this.title,
     this.description,
     this.place,
     required this.date,
@@ -178,7 +178,11 @@ class AgendaEntryDtoBuilder
             r'AgendaEntryDto',
             'entryType',
           ),
-          title: title,
+          title: BuiltValueNullFieldError.checkNotNull(
+            title,
+            r'AgendaEntryDto',
+            'title',
+          ),
           description: description,
           place: place,
           date: BuiltValueNullFieldError.checkNotNull(

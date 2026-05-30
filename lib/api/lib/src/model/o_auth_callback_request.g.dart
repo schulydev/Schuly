@@ -8,9 +8,9 @@ part of 'o_auth_callback_request.dart';
 
 class _$OAuthCallbackRequest extends OAuthCallbackRequest {
   @override
-  final String? code;
+  final String code;
   @override
-  final String? codeVerifier;
+  final String codeVerifier;
   @override
   final String? state;
   @override
@@ -23,8 +23,8 @@ class _$OAuthCallbackRequest extends OAuthCallbackRequest {
   ]) => (OAuthCallbackRequestBuilder()..update(updates))._build();
 
   _$OAuthCallbackRequest._({
-    this.code,
-    this.codeVerifier,
+    required this.code,
+    required this.codeVerifier,
     this.state,
     this.contextState,
     this.userAgent,
@@ -131,8 +131,16 @@ class OAuthCallbackRequestBuilder
     final _$result =
         _$v ??
         _$OAuthCallbackRequest._(
-          code: code,
-          codeVerifier: codeVerifier,
+          code: BuiltValueNullFieldError.checkNotNull(
+            code,
+            r'OAuthCallbackRequest',
+            'code',
+          ),
+          codeVerifier: BuiltValueNullFieldError.checkNotNull(
+            codeVerifier,
+            r'OAuthCallbackRequest',
+            'codeVerifier',
+          ),
           state: state,
           contextState: contextState,
           userAgent: userAgent,

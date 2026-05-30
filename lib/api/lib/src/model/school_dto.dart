@@ -31,7 +31,7 @@ abstract class SchoolDto implements Built<SchoolDto, SchoolDtoBuilder> {
   String? get id;
 
   @BuiltValueField(wireName: r'name')
-  String? get name;
+  String get name;
 
   @BuiltValueField(wireName: r'description')
   String? get description;
@@ -100,9 +100,9 @@ class _$SchoolDtoSerializer implements PrimitiveSerializer<SchoolDto> {
       );
     }
     yield r'name';
-    yield object.name == null ? null : serializers.serialize(
+    yield serializers.serialize(
       object.name,
-      specifiedType: const FullType.nullable(String),
+      specifiedType: const FullType(String),
     );
     if (object.description != null) {
       yield r'description';
@@ -221,9 +221,8 @@ class _$SchoolDtoSerializer implements PrimitiveSerializer<SchoolDto> {
         case r'name':
           final valueDes = serializers.deserialize(
             value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
-          if (valueDes == null) continue;
+            specifiedType: const FullType(String),
+          ) as String;
           result.name = valueDes;
           break;
         case r'description':

@@ -8,26 +8,26 @@ part of 'create_absence_command.dart';
 
 class _$CreateAbsenceCommand extends CreateAbsenceCommand {
   @override
-  final String? reason;
+  final String reason;
   @override
-  final AbsenceType? type;
+  final AbsenceType type;
   @override
-  final DateTime? from;
+  final DateTime from;
   @override
-  final DateTime? until;
+  final DateTime until;
   @override
-  final String? schoolUserId;
+  final String schoolUserId;
 
   factory _$CreateAbsenceCommand([
     void Function(CreateAbsenceCommandBuilder)? updates,
   ]) => (CreateAbsenceCommandBuilder()..update(updates))._build();
 
   _$CreateAbsenceCommand._({
-    this.reason,
-    this.type,
-    this.from,
-    this.until,
-    this.schoolUserId,
+    required this.reason,
+    required this.type,
+    required this.from,
+    required this.until,
+    required this.schoolUserId,
   }) : super._();
   @override
   CreateAbsenceCommand rebuild(
@@ -131,11 +131,31 @@ class CreateAbsenceCommandBuilder
     final _$result =
         _$v ??
         _$CreateAbsenceCommand._(
-          reason: reason,
-          type: type,
-          from: from,
-          until: until,
-          schoolUserId: schoolUserId,
+          reason: BuiltValueNullFieldError.checkNotNull(
+            reason,
+            r'CreateAbsenceCommand',
+            'reason',
+          ),
+          type: BuiltValueNullFieldError.checkNotNull(
+            type,
+            r'CreateAbsenceCommand',
+            'type',
+          ),
+          from: BuiltValueNullFieldError.checkNotNull(
+            from,
+            r'CreateAbsenceCommand',
+            'from',
+          ),
+          until: BuiltValueNullFieldError.checkNotNull(
+            until,
+            r'CreateAbsenceCommand',
+            'until',
+          ),
+          schoolUserId: BuiltValueNullFieldError.checkNotNull(
+            schoolUserId,
+            r'CreateAbsenceCommand',
+            'schoolUserId',
+          ),
         );
     replace(_$result);
     return _$result;

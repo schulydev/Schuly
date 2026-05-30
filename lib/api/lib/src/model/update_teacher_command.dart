@@ -19,7 +19,7 @@ part 'update_teacher_command.g.dart';
 @BuiltValue()
 abstract class UpdateTeacherCommand implements Built<UpdateTeacherCommand, UpdateTeacherCommandBuilder> {
   @BuiltValueField(wireName: r'teacherId')
-  String? get teacherId;
+  String get teacherId;
 
   @BuiltValueField(wireName: r'firstName')
   String? get firstName;
@@ -56,41 +56,31 @@ class _$UpdateTeacherCommandSerializer implements PrimitiveSerializer<UpdateTeac
     UpdateTeacherCommand object, {
     FullType specifiedType = FullType.unspecified,
   }) sync* {
-    if (object.teacherId != null) {
-      yield r'teacherId';
-      yield serializers.serialize(
-        object.teacherId,
-        specifiedType: const FullType(String),
-      );
-    }
-    if (object.firstName != null) {
-      yield r'firstName';
-      yield serializers.serialize(
-        object.firstName,
-        specifiedType: const FullType.nullable(String),
-      );
-    }
-    if (object.lastName != null) {
-      yield r'lastName';
-      yield serializers.serialize(
-        object.lastName,
-        specifiedType: const FullType.nullable(String),
-      );
-    }
-    if (object.code != null) {
-      yield r'code';
-      yield serializers.serialize(
-        object.code,
-        specifiedType: const FullType.nullable(String),
-      );
-    }
-    if (object.email != null) {
-      yield r'email';
-      yield serializers.serialize(
-        object.email,
-        specifiedType: const FullType.nullable(String),
-      );
-    }
+    yield r'teacherId';
+    yield serializers.serialize(
+      object.teacherId,
+      specifiedType: const FullType(String),
+    );
+    yield r'firstName';
+    yield object.firstName == null ? null : serializers.serialize(
+      object.firstName,
+      specifiedType: const FullType.nullable(String),
+    );
+    yield r'lastName';
+    yield object.lastName == null ? null : serializers.serialize(
+      object.lastName,
+      specifiedType: const FullType.nullable(String),
+    );
+    yield r'code';
+    yield object.code == null ? null : serializers.serialize(
+      object.code,
+      specifiedType: const FullType.nullable(String),
+    );
+    yield r'email';
+    yield object.email == null ? null : serializers.serialize(
+      object.email,
+      specifiedType: const FullType.nullable(String),
+    );
   }
 
   @override

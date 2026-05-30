@@ -8,17 +8,17 @@ part of 'update_agenda_entry_command.dart';
 
 class _$UpdateAgendaEntryCommand extends UpdateAgendaEntryCommand {
   @override
-  final String? agendaEntryId;
+  final String agendaEntryId;
   @override
-  final AgendaEntryType? entryType;
+  final AgendaEntryType entryType;
   @override
-  final String? title;
+  final String title;
   @override
   final String? description;
   @override
   final String? place;
   @override
-  final DateTime? date;
+  final DateTime date;
   @override
   final String? classId;
   @override
@@ -31,12 +31,12 @@ class _$UpdateAgendaEntryCommand extends UpdateAgendaEntryCommand {
   ]) => (UpdateAgendaEntryCommandBuilder()..update(updates))._build();
 
   _$UpdateAgendaEntryCommand._({
-    this.agendaEntryId,
-    this.entryType,
-    this.title,
+    required this.agendaEntryId,
+    required this.entryType,
+    required this.title,
     this.description,
     this.place,
-    this.date,
+    required this.date,
     this.classId,
     this.schoolId,
     this.schoolUserId,
@@ -177,12 +177,28 @@ class UpdateAgendaEntryCommandBuilder
     final _$result =
         _$v ??
         _$UpdateAgendaEntryCommand._(
-          agendaEntryId: agendaEntryId,
-          entryType: entryType,
-          title: title,
+          agendaEntryId: BuiltValueNullFieldError.checkNotNull(
+            agendaEntryId,
+            r'UpdateAgendaEntryCommand',
+            'agendaEntryId',
+          ),
+          entryType: BuiltValueNullFieldError.checkNotNull(
+            entryType,
+            r'UpdateAgendaEntryCommand',
+            'entryType',
+          ),
+          title: BuiltValueNullFieldError.checkNotNull(
+            title,
+            r'UpdateAgendaEntryCommand',
+            'title',
+          ),
           description: description,
           place: place,
-          date: date,
+          date: BuiltValueNullFieldError.checkNotNull(
+            date,
+            r'UpdateAgendaEntryCommand',
+            'date',
+          ),
           classId: classId,
           schoolId: schoolId,
           schoolUserId: schoolUserId,

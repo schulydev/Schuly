@@ -17,10 +17,10 @@ part 'create_application_user_command.g.dart';
 @BuiltValue()
 abstract class CreateApplicationUserCommand implements Built<CreateApplicationUserCommand, CreateApplicationUserCommandBuilder> {
   @BuiltValueField(wireName: r'externalId')
-  String? get externalId;
+  String get externalId;
 
   @BuiltValueField(wireName: r'email')
-  String? get email;
+  String get email;
 
   @BuiltValueField(wireName: r'displayName')
   String? get displayName;
@@ -48,27 +48,21 @@ class _$CreateApplicationUserCommandSerializer implements PrimitiveSerializer<Cr
     CreateApplicationUserCommand object, {
     FullType specifiedType = FullType.unspecified,
   }) sync* {
-    if (object.externalId != null) {
-      yield r'externalId';
-      yield serializers.serialize(
-        object.externalId,
-        specifiedType: const FullType.nullable(String),
-      );
-    }
-    if (object.email != null) {
-      yield r'email';
-      yield serializers.serialize(
-        object.email,
-        specifiedType: const FullType.nullable(String),
-      );
-    }
-    if (object.displayName != null) {
-      yield r'displayName';
-      yield serializers.serialize(
-        object.displayName,
-        specifiedType: const FullType.nullable(String),
-      );
-    }
+    yield r'externalId';
+    yield serializers.serialize(
+      object.externalId,
+      specifiedType: const FullType(String),
+    );
+    yield r'email';
+    yield serializers.serialize(
+      object.email,
+      specifiedType: const FullType(String),
+    );
+    yield r'displayName';
+    yield object.displayName == null ? null : serializers.serialize(
+      object.displayName,
+      specifiedType: const FullType.nullable(String),
+    );
   }
 
   @override
@@ -95,17 +89,15 @@ class _$CreateApplicationUserCommandSerializer implements PrimitiveSerializer<Cr
         case r'externalId':
           final valueDes = serializers.deserialize(
             value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
-          if (valueDes == null) continue;
+            specifiedType: const FullType(String),
+          ) as String;
           result.externalId = valueDes;
           break;
         case r'email':
           final valueDes = serializers.deserialize(
             value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
-          if (valueDes == null) continue;
+            specifiedType: const FullType(String),
+          ) as String;
           result.email = valueDes;
           break;
         case r'displayName':

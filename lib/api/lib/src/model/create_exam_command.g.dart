@@ -8,20 +8,24 @@ part of 'create_exam_command.dart';
 
 class _$CreateExamCommand extends CreateExamCommand {
   @override
-  final String? name;
+  final String name;
   @override
   final String? description;
   @override
-  final ExamType? type;
+  final ExamType type;
   @override
-  final String? classId;
+  final String classId;
 
   factory _$CreateExamCommand([
     void Function(CreateExamCommandBuilder)? updates,
   ]) => (CreateExamCommandBuilder()..update(updates))._build();
 
-  _$CreateExamCommand._({this.name, this.description, this.type, this.classId})
-    : super._();
+  _$CreateExamCommand._({
+    required this.name,
+    this.description,
+    required this.type,
+    required this.classId,
+  }) : super._();
   @override
   CreateExamCommand rebuild(void Function(CreateExamCommandBuilder) updates) =>
       (toBuilder()..update(updates)).build();
@@ -115,10 +119,22 @@ class CreateExamCommandBuilder
     final _$result =
         _$v ??
         _$CreateExamCommand._(
-          name: name,
+          name: BuiltValueNullFieldError.checkNotNull(
+            name,
+            r'CreateExamCommand',
+            'name',
+          ),
           description: description,
-          type: type,
-          classId: classId,
+          type: BuiltValueNullFieldError.checkNotNull(
+            type,
+            r'CreateExamCommand',
+            'type',
+          ),
+          classId: BuiltValueNullFieldError.checkNotNull(
+            classId,
+            r'CreateExamCommand',
+            'classId',
+          ),
         );
     replace(_$result);
     return _$result;

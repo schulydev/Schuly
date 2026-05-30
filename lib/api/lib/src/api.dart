@@ -29,7 +29,7 @@ import 'package:schuly_api/src/api/sync_api.dart';
 import 'package:schuly_api/src/api/teachers_api.dart';
 
 class SchulyApi {
-  static const String basePath = r'http://localhost';
+  static const String basePath = r'http://localhost:5033';
 
   final Dio dio;
   final Serializers serializers;

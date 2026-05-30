@@ -17,10 +17,10 @@ part 'update_class_command.g.dart';
 @BuiltValue()
 abstract class UpdateClassCommand implements Built<UpdateClassCommand, UpdateClassCommandBuilder> {
   @BuiltValueField(wireName: r'classId')
-  String? get classId;
+  String get classId;
 
   @BuiltValueField(wireName: r'name')
-  String? get name;
+  String get name;
 
   @BuiltValueField(wireName: r'description')
   String? get description;
@@ -48,27 +48,21 @@ class _$UpdateClassCommandSerializer implements PrimitiveSerializer<UpdateClassC
     UpdateClassCommand object, {
     FullType specifiedType = FullType.unspecified,
   }) sync* {
-    if (object.classId != null) {
-      yield r'classId';
-      yield serializers.serialize(
-        object.classId,
-        specifiedType: const FullType(String),
-      );
-    }
-    if (object.name != null) {
-      yield r'name';
-      yield serializers.serialize(
-        object.name,
-        specifiedType: const FullType.nullable(String),
-      );
-    }
-    if (object.description != null) {
-      yield r'description';
-      yield serializers.serialize(
-        object.description,
-        specifiedType: const FullType.nullable(String),
-      );
-    }
+    yield r'classId';
+    yield serializers.serialize(
+      object.classId,
+      specifiedType: const FullType(String),
+    );
+    yield r'name';
+    yield serializers.serialize(
+      object.name,
+      specifiedType: const FullType(String),
+    );
+    yield r'description';
+    yield object.description == null ? null : serializers.serialize(
+      object.description,
+      specifiedType: const FullType.nullable(String),
+    );
   }
 
   @override
@@ -102,9 +96,8 @@ class _$UpdateClassCommandSerializer implements PrimitiveSerializer<UpdateClassC
         case r'name':
           final valueDes = serializers.deserialize(
             value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
-          if (valueDes == null) continue;
+            specifiedType: const FullType(String),
+          ) as String;
           result.name = valueDes;
           break;
         case r'description':

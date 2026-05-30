@@ -28,7 +28,7 @@ abstract class ExamDto implements Built<ExamDto, ExamDtoBuilder> {
   String? get id;
 
   @BuiltValueField(wireName: r'name')
-  String? get name;
+  String get name;
 
   @BuiltValueField(wireName: r'description')
   String? get description;
@@ -80,9 +80,9 @@ class _$ExamDtoSerializer implements PrimitiveSerializer<ExamDto> {
       );
     }
     yield r'name';
-    yield object.name == null ? null : serializers.serialize(
+    yield serializers.serialize(
       object.name,
-      specifiedType: const FullType.nullable(String),
+      specifiedType: const FullType(String),
     );
     if (object.description != null) {
       yield r'description';
@@ -121,7 +121,7 @@ class _$ExamDtoSerializer implements PrimitiveSerializer<ExamDto> {
       yield r'grades';
       yield serializers.serialize(
         object.grades,
-        specifiedType: const FullType.nullable(BuiltList, [FullType(GradeDto)]),
+        specifiedType: const FullType(BuiltList, [FullType(GradeDto)]),
       );
     }
   }
@@ -157,9 +157,8 @@ class _$ExamDtoSerializer implements PrimitiveSerializer<ExamDto> {
         case r'name':
           final valueDes = serializers.deserialize(
             value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
-          if (valueDes == null) continue;
+            specifiedType: const FullType(String),
+          ) as String;
           result.name = valueDes;
           break;
         case r'description':
@@ -202,9 +201,8 @@ class _$ExamDtoSerializer implements PrimitiveSerializer<ExamDto> {
         case r'grades':
           final valueDes = serializers.deserialize(
             value,
-            specifiedType: const FullType.nullable(BuiltList, [FullType(GradeDto)]),
-          ) as BuiltList<GradeDto>?;
-          if (valueDes == null) continue;
+            specifiedType: const FullType(BuiltList, [FullType(GradeDto)]),
+          ) as BuiltList<GradeDto>;
           result.grades.replace(valueDes);
           break;
         default:

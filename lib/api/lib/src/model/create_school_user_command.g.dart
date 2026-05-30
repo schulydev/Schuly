@@ -8,15 +8,15 @@ part of 'create_school_user_command.dart';
 
 class _$CreateSchoolUserCommand extends CreateSchoolUserCommand {
   @override
-  final String? applicationUserId;
+  final String applicationUserId;
   @override
-  final String? schoolId;
+  final String schoolId;
   @override
-  final String? firstName;
+  final String firstName;
   @override
-  final String? lastName;
+  final String lastName;
   @override
-  final String? email;
+  final String email;
   @override
   final String? privateEmail;
   @override
@@ -28,11 +28,11 @@ class _$CreateSchoolUserCommand extends CreateSchoolUserCommand {
   @override
   final String? zip;
   @override
-  final Date? birthday;
+  final Date birthday;
   @override
-  final Date? entryDate;
+  final Date entryDate;
   @override
-  final Roles? role;
+  final Roles role;
   @override
   final String? profilePictureUrl;
 
@@ -41,19 +41,19 @@ class _$CreateSchoolUserCommand extends CreateSchoolUserCommand {
   ]) => (CreateSchoolUserCommandBuilder()..update(updates))._build();
 
   _$CreateSchoolUserCommand._({
-    this.applicationUserId,
-    this.schoolId,
-    this.firstName,
-    this.lastName,
-    this.email,
+    required this.applicationUserId,
+    required this.schoolId,
+    required this.firstName,
+    required this.lastName,
+    required this.email,
     this.privateEmail,
     this.phoneNumber,
     this.street,
     this.city,
     this.zip,
-    this.birthday,
-    this.entryDate,
-    this.role,
+    required this.birthday,
+    required this.entryDate,
+    required this.role,
     this.profilePictureUrl,
   }) : super._();
   @override
@@ -233,19 +233,51 @@ class CreateSchoolUserCommandBuilder
     final _$result =
         _$v ??
         _$CreateSchoolUserCommand._(
-          applicationUserId: applicationUserId,
-          schoolId: schoolId,
-          firstName: firstName,
-          lastName: lastName,
-          email: email,
+          applicationUserId: BuiltValueNullFieldError.checkNotNull(
+            applicationUserId,
+            r'CreateSchoolUserCommand',
+            'applicationUserId',
+          ),
+          schoolId: BuiltValueNullFieldError.checkNotNull(
+            schoolId,
+            r'CreateSchoolUserCommand',
+            'schoolId',
+          ),
+          firstName: BuiltValueNullFieldError.checkNotNull(
+            firstName,
+            r'CreateSchoolUserCommand',
+            'firstName',
+          ),
+          lastName: BuiltValueNullFieldError.checkNotNull(
+            lastName,
+            r'CreateSchoolUserCommand',
+            'lastName',
+          ),
+          email: BuiltValueNullFieldError.checkNotNull(
+            email,
+            r'CreateSchoolUserCommand',
+            'email',
+          ),
           privateEmail: privateEmail,
           phoneNumber: phoneNumber,
           street: street,
           city: city,
           zip: zip,
-          birthday: birthday,
-          entryDate: entryDate,
-          role: role,
+          birthday: BuiltValueNullFieldError.checkNotNull(
+            birthday,
+            r'CreateSchoolUserCommand',
+            'birthday',
+          ),
+          entryDate: BuiltValueNullFieldError.checkNotNull(
+            entryDate,
+            r'CreateSchoolUserCommand',
+            'entryDate',
+          ),
+          role: BuiltValueNullFieldError.checkNotNull(
+            role,
+            r'CreateSchoolUserCommand',
+            'role',
+          ),
           profilePictureUrl: profilePictureUrl,
         );
     replace(_$result);

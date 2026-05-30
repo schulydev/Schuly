@@ -168,7 +168,7 @@ class AbsencesApi {
   /// Returns a [Future]
   /// Throws [DioException] if API call or serialization fails
   Future<Response<void>> apiAbsencesPost({ 
-    CreateAbsenceCommand? createAbsenceCommand,
+    required CreateAbsenceCommand createAbsenceCommand,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
     Map<String, dynamic>? extra,
@@ -199,7 +199,7 @@ class AbsencesApi {
 
     try {
       const _type = FullType(CreateAbsenceCommand);
-      _bodyData = createAbsenceCommand == null ? null : _serializers.serialize(createAbsenceCommand, specifiedType: _type);
+      _bodyData = _serializers.serialize(createAbsenceCommand, specifiedType: _type);
 
     } catch(error, stackTrace) {
       throw DioException(
@@ -240,7 +240,7 @@ class AbsencesApi {
   /// Returns a [Future]
   /// Throws [DioException] if API call or serialization fails
   Future<Response<void>> apiAbsencesPut({ 
-    UpdateAbsenceCommand? updateAbsenceCommand,
+    required UpdateAbsenceCommand updateAbsenceCommand,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
     Map<String, dynamic>? extra,
@@ -271,7 +271,7 @@ class AbsencesApi {
 
     try {
       const _type = FullType(UpdateAbsenceCommand);
-      _bodyData = updateAbsenceCommand == null ? null : _serializers.serialize(updateAbsenceCommand, specifiedType: _type);
+      _bodyData = _serializers.serialize(updateAbsenceCommand, specifiedType: _type);
 
     } catch(error, stackTrace) {
       throw DioException(

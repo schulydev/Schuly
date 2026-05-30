@@ -19,10 +19,10 @@ part 'o_auth_callback_request.g.dart';
 @BuiltValue()
 abstract class OAuthCallbackRequest implements Built<OAuthCallbackRequest, OAuthCallbackRequestBuilder> {
   @BuiltValueField(wireName: r'code')
-  String? get code;
+  String get code;
 
   @BuiltValueField(wireName: r'codeVerifier')
-  String? get codeVerifier;
+  String get codeVerifier;
 
   @BuiltValueField(wireName: r'state')
   String? get state;
@@ -56,41 +56,31 @@ class _$OAuthCallbackRequestSerializer implements PrimitiveSerializer<OAuthCallb
     OAuthCallbackRequest object, {
     FullType specifiedType = FullType.unspecified,
   }) sync* {
-    if (object.code != null) {
-      yield r'code';
-      yield serializers.serialize(
-        object.code,
-        specifiedType: const FullType.nullable(String),
-      );
-    }
-    if (object.codeVerifier != null) {
-      yield r'codeVerifier';
-      yield serializers.serialize(
-        object.codeVerifier,
-        specifiedType: const FullType.nullable(String),
-      );
-    }
-    if (object.state != null) {
-      yield r'state';
-      yield serializers.serialize(
-        object.state,
-        specifiedType: const FullType.nullable(String),
-      );
-    }
-    if (object.contextState != null) {
-      yield r'contextState';
-      yield serializers.serialize(
-        object.contextState,
-        specifiedType: const FullType.nullable(String),
-      );
-    }
-    if (object.userAgent != null) {
-      yield r'userAgent';
-      yield serializers.serialize(
-        object.userAgent,
-        specifiedType: const FullType.nullable(String),
-      );
-    }
+    yield r'code';
+    yield serializers.serialize(
+      object.code,
+      specifiedType: const FullType(String),
+    );
+    yield r'codeVerifier';
+    yield serializers.serialize(
+      object.codeVerifier,
+      specifiedType: const FullType(String),
+    );
+    yield r'state';
+    yield object.state == null ? null : serializers.serialize(
+      object.state,
+      specifiedType: const FullType.nullable(String),
+    );
+    yield r'contextState';
+    yield object.contextState == null ? null : serializers.serialize(
+      object.contextState,
+      specifiedType: const FullType.nullable(String),
+    );
+    yield r'userAgent';
+    yield object.userAgent == null ? null : serializers.serialize(
+      object.userAgent,
+      specifiedType: const FullType.nullable(String),
+    );
   }
 
   @override
@@ -117,17 +107,15 @@ class _$OAuthCallbackRequestSerializer implements PrimitiveSerializer<OAuthCallb
         case r'code':
           final valueDes = serializers.deserialize(
             value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
-          if (valueDes == null) continue;
+            specifiedType: const FullType(String),
+          ) as String;
           result.code = valueDes;
           break;
         case r'codeVerifier':
           final valueDes = serializers.deserialize(
             value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
-          if (valueDes == null) continue;
+            specifiedType: const FullType(String),
+          ) as String;
           result.codeVerifier = valueDes;
           break;
         case r'state':

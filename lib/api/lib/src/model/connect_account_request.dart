@@ -18,7 +18,7 @@ part 'connect_account_request.g.dart';
 @BuiltValue()
 abstract class ConnectAccountRequest implements Built<ConnectAccountRequest, ConnectAccountRequestBuilder> {
   @BuiltValueField(wireName: r'schulnetzBaseUrl')
-  String? get schulnetzBaseUrl;
+  String get schulnetzBaseUrl;
 
   @BuiltValueField(wireName: r'schulwareApiBaseUrl')
   String? get schulwareApiBaseUrl;
@@ -52,34 +52,26 @@ class _$ConnectAccountRequestSerializer implements PrimitiveSerializer<ConnectAc
     ConnectAccountRequest object, {
     FullType specifiedType = FullType.unspecified,
   }) sync* {
-    if (object.schulnetzBaseUrl != null) {
-      yield r'schulnetzBaseUrl';
-      yield serializers.serialize(
-        object.schulnetzBaseUrl,
-        specifiedType: const FullType.nullable(String),
-      );
-    }
-    if (object.schulwareApiBaseUrl != null) {
-      yield r'schulwareApiBaseUrl';
-      yield serializers.serialize(
-        object.schulwareApiBaseUrl,
-        specifiedType: const FullType.nullable(String),
-      );
-    }
-    if (object.displayName != null) {
-      yield r'displayName';
-      yield serializers.serialize(
-        object.displayName,
-        specifiedType: const FullType.nullable(String),
-      );
-    }
-    if (object.schoolUserId != null) {
-      yield r'schoolUserId';
-      yield serializers.serialize(
-        object.schoolUserId,
-        specifiedType: const FullType.nullable(String),
-      );
-    }
+    yield r'schulnetzBaseUrl';
+    yield serializers.serialize(
+      object.schulnetzBaseUrl,
+      specifiedType: const FullType(String),
+    );
+    yield r'schulwareApiBaseUrl';
+    yield object.schulwareApiBaseUrl == null ? null : serializers.serialize(
+      object.schulwareApiBaseUrl,
+      specifiedType: const FullType.nullable(String),
+    );
+    yield r'displayName';
+    yield object.displayName == null ? null : serializers.serialize(
+      object.displayName,
+      specifiedType: const FullType.nullable(String),
+    );
+    yield r'schoolUserId';
+    yield object.schoolUserId == null ? null : serializers.serialize(
+      object.schoolUserId,
+      specifiedType: const FullType.nullable(String),
+    );
   }
 
   @override
@@ -106,9 +98,8 @@ class _$ConnectAccountRequestSerializer implements PrimitiveSerializer<ConnectAc
         case r'schulnetzBaseUrl':
           final valueDes = serializers.deserialize(
             value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
-          if (valueDes == null) continue;
+            specifiedType: const FullType(String),
+          ) as String;
           result.schulnetzBaseUrl = valueDes;
           break;
         case r'schulwareApiBaseUrl':

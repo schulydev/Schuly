@@ -30,19 +30,19 @@ part 'create_school_user_command.g.dart';
 @BuiltValue()
 abstract class CreateSchoolUserCommand implements Built<CreateSchoolUserCommand, CreateSchoolUserCommandBuilder> {
   @BuiltValueField(wireName: r'applicationUserId')
-  String? get applicationUserId;
+  String get applicationUserId;
 
   @BuiltValueField(wireName: r'schoolId')
-  String? get schoolId;
+  String get schoolId;
 
   @BuiltValueField(wireName: r'firstName')
-  String? get firstName;
+  String get firstName;
 
   @BuiltValueField(wireName: r'lastName')
-  String? get lastName;
+  String get lastName;
 
   @BuiltValueField(wireName: r'email')
-  String? get email;
+  String get email;
 
   @BuiltValueField(wireName: r'privateEmail')
   String? get privateEmail;
@@ -60,13 +60,13 @@ abstract class CreateSchoolUserCommand implements Built<CreateSchoolUserCommand,
   String? get zip;
 
   @BuiltValueField(wireName: r'birthday')
-  Date? get birthday;
+  Date get birthday;
 
   @BuiltValueField(wireName: r'entryDate')
-  Date? get entryDate;
+  Date get entryDate;
 
   @BuiltValueField(wireName: r'role')
-  Roles? get role;
+  Roles get role;
   // enum roleEnum {  Student,  Teacher,  Administrator,  };
 
   @BuiltValueField(wireName: r'profilePictureUrl')
@@ -95,97 +95,71 @@ class _$CreateSchoolUserCommandSerializer implements PrimitiveSerializer<CreateS
     CreateSchoolUserCommand object, {
     FullType specifiedType = FullType.unspecified,
   }) sync* {
-    if (object.applicationUserId != null) {
-      yield r'applicationUserId';
-      yield serializers.serialize(
-        object.applicationUserId,
-        specifiedType: const FullType(String),
-      );
-    }
-    if (object.schoolId != null) {
-      yield r'schoolId';
-      yield serializers.serialize(
-        object.schoolId,
-        specifiedType: const FullType(String),
-      );
-    }
-    if (object.firstName != null) {
-      yield r'firstName';
-      yield serializers.serialize(
-        object.firstName,
-        specifiedType: const FullType.nullable(String),
-      );
-    }
-    if (object.lastName != null) {
-      yield r'lastName';
-      yield serializers.serialize(
-        object.lastName,
-        specifiedType: const FullType.nullable(String),
-      );
-    }
-    if (object.email != null) {
-      yield r'email';
-      yield serializers.serialize(
-        object.email,
-        specifiedType: const FullType.nullable(String),
-      );
-    }
-    if (object.privateEmail != null) {
-      yield r'privateEmail';
-      yield serializers.serialize(
-        object.privateEmail,
-        specifiedType: const FullType.nullable(String),
-      );
-    }
-    if (object.phoneNumber != null) {
-      yield r'phoneNumber';
-      yield serializers.serialize(
-        object.phoneNumber,
-        specifiedType: const FullType.nullable(String),
-      );
-    }
-    if (object.street != null) {
-      yield r'street';
-      yield serializers.serialize(
-        object.street,
-        specifiedType: const FullType.nullable(String),
-      );
-    }
-    if (object.city != null) {
-      yield r'city';
-      yield serializers.serialize(
-        object.city,
-        specifiedType: const FullType.nullable(String),
-      );
-    }
-    if (object.zip != null) {
-      yield r'zip';
-      yield serializers.serialize(
-        object.zip,
-        specifiedType: const FullType.nullable(String),
-      );
-    }
-    if (object.birthday != null) {
-      yield r'birthday';
-      yield serializers.serialize(
-        object.birthday,
-        specifiedType: const FullType(Date),
-      );
-    }
-    if (object.entryDate != null) {
-      yield r'entryDate';
-      yield serializers.serialize(
-        object.entryDate,
-        specifiedType: const FullType(Date),
-      );
-    }
-    if (object.role != null) {
-      yield r'role';
-      yield serializers.serialize(
-        object.role,
-        specifiedType: const FullType(Roles),
-      );
-    }
+    yield r'applicationUserId';
+    yield serializers.serialize(
+      object.applicationUserId,
+      specifiedType: const FullType(String),
+    );
+    yield r'schoolId';
+    yield serializers.serialize(
+      object.schoolId,
+      specifiedType: const FullType(String),
+    );
+    yield r'firstName';
+    yield serializers.serialize(
+      object.firstName,
+      specifiedType: const FullType(String),
+    );
+    yield r'lastName';
+    yield serializers.serialize(
+      object.lastName,
+      specifiedType: const FullType(String),
+    );
+    yield r'email';
+    yield serializers.serialize(
+      object.email,
+      specifiedType: const FullType(String),
+    );
+    yield r'privateEmail';
+    yield object.privateEmail == null ? null : serializers.serialize(
+      object.privateEmail,
+      specifiedType: const FullType.nullable(String),
+    );
+    yield r'phoneNumber';
+    yield object.phoneNumber == null ? null : serializers.serialize(
+      object.phoneNumber,
+      specifiedType: const FullType.nullable(String),
+    );
+    yield r'street';
+    yield object.street == null ? null : serializers.serialize(
+      object.street,
+      specifiedType: const FullType.nullable(String),
+    );
+    yield r'city';
+    yield object.city == null ? null : serializers.serialize(
+      object.city,
+      specifiedType: const FullType.nullable(String),
+    );
+    yield r'zip';
+    yield object.zip == null ? null : serializers.serialize(
+      object.zip,
+      specifiedType: const FullType.nullable(String),
+    );
+    yield r'birthday';
+    yield serializers.serialize(
+      object.birthday,
+      specifiedType: const FullType(Date),
+    );
+    yield r'entryDate';
+    yield serializers.serialize(
+      object.entryDate,
+      specifiedType: const FullType(Date),
+    );
+    yield r'role';
+    yield serializers.serialize(
+      object.role,
+      specifiedType: const FullType(Roles),
+    );
     if (object.profilePictureUrl != null) {
       yield r'profilePictureUrl';
       yield serializers.serialize(
@@ -233,25 +207,22 @@ class _$CreateSchoolUserCommandSerializer implements PrimitiveSerializer<CreateS
         case r'firstName':
           final valueDes = serializers.deserialize(
             value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
-          if (valueDes == null) continue;
+            specifiedType: const FullType(String),
+          ) as String;
           result.firstName = valueDes;
           break;
         case r'lastName':
           final valueDes = serializers.deserialize(
             value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
-          if (valueDes == null) continue;
+            specifiedType: const FullType(String),
+          ) as String;
           result.lastName = valueDes;
           break;
         case r'email':
           final valueDes = serializers.deserialize(
             value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
-          if (valueDes == null) continue;
+            specifiedType: const FullType(String),
+          ) as String;
           result.email = valueDes;
           break;
         case r'privateEmail':

@@ -39,7 +39,7 @@ class ClassApi {
   /// Returns a [Future]
   /// Throws [DioException] if API call or serialization fails
   Future<Response<void>> apiClassEnrolStudentPost({ 
-    EnrolStudentCommand? enrolStudentCommand,
+    required EnrolStudentCommand enrolStudentCommand,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
     Map<String, dynamic>? extra,
@@ -70,7 +70,7 @@ class ClassApi {
 
     try {
       const _type = FullType(EnrolStudentCommand);
-      _bodyData = enrolStudentCommand == null ? null : _serializers.serialize(enrolStudentCommand, specifiedType: _type);
+      _bodyData = _serializers.serialize(enrolStudentCommand, specifiedType: _type);
 
     } catch(error, stackTrace) {
       throw DioException(
@@ -241,7 +241,7 @@ class ClassApi {
   /// Returns a [Future]
   /// Throws [DioException] if API call or serialization fails
   Future<Response<void>> apiClassPost({ 
-    CreateClassCommand? createClassCommand,
+    required CreateClassCommand createClassCommand,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
     Map<String, dynamic>? extra,
@@ -272,7 +272,7 @@ class ClassApi {
 
     try {
       const _type = FullType(CreateClassCommand);
-      _bodyData = createClassCommand == null ? null : _serializers.serialize(createClassCommand, specifiedType: _type);
+      _bodyData = _serializers.serialize(createClassCommand, specifiedType: _type);
 
     } catch(error, stackTrace) {
       throw DioException(
@@ -313,7 +313,7 @@ class ClassApi {
   /// Returns a [Future]
   /// Throws [DioException] if API call or serialization fails
   Future<Response<void>> apiClassPut({ 
-    UpdateClassCommand? updateClassCommand,
+    required UpdateClassCommand updateClassCommand,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
     Map<String, dynamic>? extra,
@@ -344,7 +344,7 @@ class ClassApi {
 
     try {
       const _type = FullType(UpdateClassCommand);
-      _bodyData = updateClassCommand == null ? null : _serializers.serialize(updateClassCommand, specifiedType: _type);
+      _bodyData = _serializers.serialize(updateClassCommand, specifiedType: _type);
 
     } catch(error, stackTrace) {
       throw DioException(

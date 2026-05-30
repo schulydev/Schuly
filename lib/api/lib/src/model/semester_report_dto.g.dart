@@ -12,13 +12,13 @@ class _$SemesterReportDto extends SemesterReportDto {
   @override
   final String? schoolUserId;
   @override
-  final String? programCode;
+  final String programCode;
   @override
   final int schoolYearStart;
   @override
   final int semesterHalf;
   @override
-  final String? className;
+  final String className;
   @override
   final String? promotionDecision;
   @override
@@ -43,10 +43,10 @@ class _$SemesterReportDto extends SemesterReportDto {
   _$SemesterReportDto._({
     this.id,
     this.schoolUserId,
-    this.programCode,
+    required this.programCode,
     required this.schoolYearStart,
     required this.semesterHalf,
-    this.className,
+    required this.className,
     this.promotionDecision,
     this.gradeAverage,
     this.insufficientGradeCount,
@@ -242,7 +242,11 @@ class SemesterReportDtoBuilder
           _$SemesterReportDto._(
             id: id,
             schoolUserId: schoolUserId,
-            programCode: programCode,
+            programCode: BuiltValueNullFieldError.checkNotNull(
+              programCode,
+              r'SemesterReportDto',
+              'programCode',
+            ),
             schoolYearStart: BuiltValueNullFieldError.checkNotNull(
               schoolYearStart,
               r'SemesterReportDto',
@@ -253,7 +257,11 @@ class SemesterReportDtoBuilder
               r'SemesterReportDto',
               'semesterHalf',
             ),
-            className: className,
+            className: BuiltValueNullFieldError.checkNotNull(
+              className,
+              r'SemesterReportDto',
+              'className',
+            ),
             promotionDecision: promotionDecision,
             gradeAverage: gradeAverage,
             insufficientGradeCount: insufficientGradeCount,

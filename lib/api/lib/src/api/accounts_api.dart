@@ -137,7 +137,7 @@ class AccountsApi {
   /// Returns a [Future]
   /// Throws [DioException] if API call or serialization fails
   Future<Response<void>> apiPluginsOdaorgAccountsPost({ 
-    ConnectOdaOrgRequest? connectOdaOrgRequest,
+    required ConnectOdaOrgRequest connectOdaOrgRequest,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
     Map<String, dynamic>? extra,
@@ -168,7 +168,7 @@ class AccountsApi {
 
     try {
       const _type = FullType(ConnectOdaOrgRequest);
-      _bodyData = connectOdaOrgRequest == null ? null : _serializers.serialize(connectOdaOrgRequest, specifiedType: _type);
+      _bodyData = _serializers.serialize(connectOdaOrgRequest, specifiedType: _type);
 
     } catch(error, stackTrace) {
       throw DioException(
@@ -311,7 +311,7 @@ class AccountsApi {
   /// Returns a [Future]
   /// Throws [DioException] if API call or serialization fails
   Future<Response<void>> apiPluginsSchulwareAccountsPost({ 
-    ConnectAccountRequest? connectAccountRequest,
+    required ConnectAccountRequest connectAccountRequest,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
     Map<String, dynamic>? extra,
@@ -342,7 +342,7 @@ class AccountsApi {
 
     try {
       const _type = FullType(ConnectAccountRequest);
-      _bodyData = connectAccountRequest == null ? null : _serializers.serialize(connectAccountRequest, specifiedType: _type);
+      _bodyData = _serializers.serialize(connectAccountRequest, specifiedType: _type);
 
     } catch(error, stackTrace) {
       throw DioException(

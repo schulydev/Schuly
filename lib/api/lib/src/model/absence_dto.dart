@@ -25,7 +25,7 @@ abstract class AbsenceDto implements Built<AbsenceDto, AbsenceDtoBuilder> {
   String? get id;
 
   @BuiltValueField(wireName: r'reason')
-  String? get reason;
+  String get reason;
 
   @BuiltValueField(wireName: r'type')
   AbsenceType get type;
@@ -74,9 +74,9 @@ class _$AbsenceDtoSerializer implements PrimitiveSerializer<AbsenceDto> {
       );
     }
     yield r'reason';
-    yield object.reason == null ? null : serializers.serialize(
+    yield serializers.serialize(
       object.reason,
-      specifiedType: const FullType.nullable(String),
+      specifiedType: const FullType(String),
     );
     yield r'type';
     yield serializers.serialize(
@@ -140,9 +140,8 @@ class _$AbsenceDtoSerializer implements PrimitiveSerializer<AbsenceDto> {
         case r'reason':
           final valueDes = serializers.deserialize(
             value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
-          if (valueDes == null) continue;
+            specifiedType: const FullType(String),
+          ) as String;
           result.reason = valueDes;
           break;
         case r'type':

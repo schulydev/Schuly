@@ -34,7 +34,7 @@ abstract class StudentDocumentDto implements Built<StudentDocumentDto, StudentDo
   String? get schoolUserId;
 
   @BuiltValueField(wireName: r'title')
-  String? get title;
+  String get title;
 
   @BuiltValueField(wireName: r'comment')
   String? get comment;
@@ -104,9 +104,9 @@ class _$StudentDocumentDtoSerializer implements PrimitiveSerializer<StudentDocum
       );
     }
     yield r'title';
-    yield object.title == null ? null : serializers.serialize(
+    yield serializers.serialize(
       object.title,
-      specifiedType: const FullType.nullable(String),
+      specifiedType: const FullType(String),
     );
     if (object.comment != null) {
       yield r'comment';
@@ -218,9 +218,8 @@ class _$StudentDocumentDtoSerializer implements PrimitiveSerializer<StudentDocum
         case r'title':
           final valueDes = serializers.deserialize(
             value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
-          if (valueDes == null) continue;
+            specifiedType: const FullType(String),
+          ) as String;
           result.title = valueDes;
           break;
         case r'comment':

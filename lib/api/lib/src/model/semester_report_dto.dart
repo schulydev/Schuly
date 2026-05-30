@@ -36,7 +36,7 @@ abstract class SemesterReportDto implements Built<SemesterReportDto, SemesterRep
   String? get schoolUserId;
 
   @BuiltValueField(wireName: r'programCode')
-  String? get programCode;
+  String get programCode;
 
   @BuiltValueField(wireName: r'schoolYearStart')
   int get schoolYearStart;
@@ -45,7 +45,7 @@ abstract class SemesterReportDto implements Built<SemesterReportDto, SemesterRep
   int get semesterHalf;
 
   @BuiltValueField(wireName: r'className')
-  String? get className;
+  String get className;
 
   @BuiltValueField(wireName: r'promotionDecision')
   String? get promotionDecision;
@@ -109,9 +109,9 @@ class _$SemesterReportDtoSerializer implements PrimitiveSerializer<SemesterRepor
       );
     }
     yield r'programCode';
-    yield object.programCode == null ? null : serializers.serialize(
+    yield serializers.serialize(
       object.programCode,
-      specifiedType: const FullType.nullable(String),
+      specifiedType: const FullType(String),
     );
     yield r'schoolYearStart';
     yield serializers.serialize(
@@ -124,9 +124,9 @@ class _$SemesterReportDtoSerializer implements PrimitiveSerializer<SemesterRepor
       specifiedType: const FullType(int),
     );
     yield r'className';
-    yield object.className == null ? null : serializers.serialize(
+    yield serializers.serialize(
       object.className,
-      specifiedType: const FullType.nullable(String),
+      specifiedType: const FullType(String),
     );
     if (object.promotionDecision != null) {
       yield r'promotionDecision';
@@ -181,7 +181,7 @@ class _$SemesterReportDtoSerializer implements PrimitiveSerializer<SemesterRepor
       yield r'subjects';
       yield serializers.serialize(
         object.subjects,
-        specifiedType: const FullType.nullable(BuiltList, [FullType(SemesterSubjectGradeDto)]),
+        specifiedType: const FullType(BuiltList, [FullType(SemesterSubjectGradeDto)]),
       );
     }
   }
@@ -224,9 +224,8 @@ class _$SemesterReportDtoSerializer implements PrimitiveSerializer<SemesterRepor
         case r'programCode':
           final valueDes = serializers.deserialize(
             value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
-          if (valueDes == null) continue;
+            specifiedType: const FullType(String),
+          ) as String;
           result.programCode = valueDes;
           break;
         case r'schoolYearStart':
@@ -246,9 +245,8 @@ class _$SemesterReportDtoSerializer implements PrimitiveSerializer<SemesterRepor
         case r'className':
           final valueDes = serializers.deserialize(
             value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
-          if (valueDes == null) continue;
+            specifiedType: const FullType(String),
+          ) as String;
           result.className = valueDes;
           break;
         case r'promotionDecision':
@@ -310,9 +308,8 @@ class _$SemesterReportDtoSerializer implements PrimitiveSerializer<SemesterRepor
         case r'subjects':
           final valueDes = serializers.deserialize(
             value,
-            specifiedType: const FullType.nullable(BuiltList, [FullType(SemesterSubjectGradeDto)]),
-          ) as BuiltList<SemesterSubjectGradeDto>?;
-          if (valueDes == null) continue;
+            specifiedType: const FullType(BuiltList, [FullType(SemesterSubjectGradeDto)]),
+          ) as BuiltList<SemesterSubjectGradeDto>;
           result.subjects.replace(valueDes);
           break;
         default:

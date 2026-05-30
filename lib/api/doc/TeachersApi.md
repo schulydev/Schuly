@@ -5,7 +5,7 @@
 import 'package:schuly_api/api.dart';
 ```
 
-All URIs are relative to *http://localhost*
+All URIs are relative to *http://localhost:5033*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
@@ -166,7 +166,7 @@ try {
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **createTeacherCommand** | [**CreateTeacherCommand**](CreateTeacherCommand.md)|  | [optional] 
+ **createTeacherCommand** | [**CreateTeacherCommand**](CreateTeacherCommand.md)|  | 
 
 ### Return type
 
@@ -208,7 +208,7 @@ try {
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **updateTeacherCommand** | [**UpdateTeacherCommand**](UpdateTeacherCommand.md)|  | [optional] 
+ **updateTeacherCommand** | [**UpdateTeacherCommand**](UpdateTeacherCommand.md)|  | 
 
 ### Return type
 

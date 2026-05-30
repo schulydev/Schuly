@@ -10,7 +10,7 @@ class _$ExamDto extends ExamDto {
   @override
   final String? id;
   @override
-  final String? name;
+  final String name;
   @override
   final String? description;
   @override
@@ -29,7 +29,7 @@ class _$ExamDto extends ExamDto {
 
   _$ExamDto._({
     this.id,
-    this.name,
+    required this.name,
     this.description,
     this.type,
     required this.classAverage,
@@ -164,7 +164,11 @@ class ExamDtoBuilder implements Builder<ExamDto, ExamDtoBuilder> {
           _$v ??
           _$ExamDto._(
             id: id,
-            name: name,
+            name: BuiltValueNullFieldError.checkNotNull(
+              name,
+              r'ExamDto',
+              'name',
+            ),
             description: description,
             type: type,
             classAverage: BuiltValueNullFieldError.checkNotNull(

@@ -10,7 +10,7 @@ class _$AbsenceDto extends AbsenceDto {
   @override
   final String? id;
   @override
-  final String? reason;
+  final String reason;
   @override
   final AbsenceType type;
   @override
@@ -27,7 +27,7 @@ class _$AbsenceDto extends AbsenceDto {
 
   _$AbsenceDto._({
     this.id,
-    this.reason,
+    required this.reason,
     required this.type,
     required this.from,
     required this.until,
@@ -150,7 +150,11 @@ class AbsenceDtoBuilder implements Builder<AbsenceDto, AbsenceDtoBuilder> {
         _$v ??
         _$AbsenceDto._(
           id: id,
-          reason: reason,
+          reason: BuiltValueNullFieldError.checkNotNull(
+            reason,
+            r'AbsenceDto',
+            'reason',
+          ),
           type: BuiltValueNullFieldError.checkNotNull(
             type,
             r'AbsenceDto',

@@ -18,13 +18,13 @@ part 'add_grade_to_exam_command.g.dart';
 @BuiltValue()
 abstract class AddGradeToExamCommand implements Built<AddGradeToExamCommand, AddGradeToExamCommandBuilder> {
   @BuiltValueField(wireName: r'examId')
-  String? get examId;
+  String get examId;
 
   @BuiltValueField(wireName: r'studentId')
-  String? get studentId;
+  String get studentId;
 
   @BuiltValueField(wireName: r'grade')
-  double? get grade;
+  double get grade;
 
   @BuiltValueField(wireName: r'weight')
   double? get weight;
@@ -34,7 +34,8 @@ abstract class AddGradeToExamCommand implements Built<AddGradeToExamCommand, Add
   factory AddGradeToExamCommand([void updates(AddGradeToExamCommandBuilder b)]) = _$AddGradeToExamCommand;
 
   @BuiltValueHook(initializeBuilder: true)
-  static void _defaults(AddGradeToExamCommandBuilder b) => b;
+  static void _defaults(AddGradeToExamCommandBuilder b) => b
+      ..weight = 1;
 
   @BuiltValueSerializer(custom: true)
   static Serializer<AddGradeToExamCommand> get serializer => _$AddGradeToExamCommandSerializer();
@@ -52,27 +53,21 @@ class _$AddGradeToExamCommandSerializer implements PrimitiveSerializer<AddGradeT
     AddGradeToExamCommand object, {
     FullType specifiedType = FullType.unspecified,
   }) sync* {
-    if (object.examId != null) {
-      yield r'examId';
-      yield serializers.serialize(
-        object.examId,
-        specifiedType: const FullType(String),
-      );
-    }
-    if (object.studentId != null) {
-      yield r'studentId';
-      yield serializers.serialize(
-        object.studentId,
-        specifiedType: const FullType(String),
-      );
-    }
-    if (object.grade != null) {
-      yield r'grade';
-      yield serializers.serialize(
-        object.grade,
-        specifiedType: const FullType(double),
-      );
-    }
+    yield r'examId';
+    yield serializers.serialize(
+      object.examId,
+      specifiedType: const FullType(String),
+    );
+    yield r'studentId';
+    yield serializers.serialize(
+      object.studentId,
+      specifiedType: const FullType(String),
+    );
+    yield r'grade';
+    yield serializers.serialize(
+      object.grade,
+      specifiedType: const FullType(double),
+    );
     if (object.weight != null) {
       yield r'weight';
       yield serializers.serialize(

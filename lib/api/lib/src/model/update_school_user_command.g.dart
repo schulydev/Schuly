@@ -8,7 +8,7 @@ part of 'update_school_user_command.dart';
 
 class _$UpdateSchoolUserCommand extends UpdateSchoolUserCommand {
   @override
-  final String? schoolUserId;
+  final String schoolUserId;
   @override
   final String? firstName;
   @override
@@ -37,7 +37,7 @@ class _$UpdateSchoolUserCommand extends UpdateSchoolUserCommand {
   ]) => (UpdateSchoolUserCommandBuilder()..update(updates))._build();
 
   _$UpdateSchoolUserCommand._({
-    this.schoolUserId,
+    required this.schoolUserId,
     this.firstName,
     this.lastName,
     this.email,
@@ -210,7 +210,11 @@ class UpdateSchoolUserCommandBuilder
     final _$result =
         _$v ??
         _$UpdateSchoolUserCommand._(
-          schoolUserId: schoolUserId,
+          schoolUserId: BuiltValueNullFieldError.checkNotNull(
+            schoolUserId,
+            r'UpdateSchoolUserCommand',
+            'schoolUserId',
+          ),
           firstName: firstName,
           lastName: lastName,
           email: email,

@@ -327,7 +327,7 @@ class SchoolsApi {
   /// Returns a [Future] containing a [Response] with a [String] as data
   /// Throws [DioException] if API call or serialization fails
   Future<Response<String>> apiSchoolsPost({ 
-    CreateSchoolCommand? createSchoolCommand,
+    required CreateSchoolCommand createSchoolCommand,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
     Map<String, dynamic>? extra,
@@ -358,7 +358,7 @@ class SchoolsApi {
 
     try {
       const _type = FullType(CreateSchoolCommand);
-      _bodyData = createSchoolCommand == null ? null : _serializers.serialize(createSchoolCommand, specifiedType: _type);
+      _bodyData = _serializers.serialize(createSchoolCommand, specifiedType: _type);
 
     } catch(error, stackTrace) {
       throw DioException(
@@ -424,7 +424,7 @@ class SchoolsApi {
   /// Returns a [Future]
   /// Throws [DioException] if API call or serialization fails
   Future<Response<void>> apiSchoolsPut({ 
-    UpdateSchoolCommand? updateSchoolCommand,
+    required UpdateSchoolCommand updateSchoolCommand,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
     Map<String, dynamic>? extra,
@@ -455,7 +455,7 @@ class SchoolsApi {
 
     try {
       const _type = FullType(UpdateSchoolCommand);
-      _bodyData = updateSchoolCommand == null ? null : _serializers.serialize(updateSchoolCommand, specifiedType: _type);
+      _bodyData = _serializers.serialize(updateSchoolCommand, specifiedType: _type);
 
     } catch(error, stackTrace) {
       throw DioException(

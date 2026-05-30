@@ -25,13 +25,13 @@ part 'plugin_task_status.g.dart';
 @BuiltValue()
 abstract class PluginTaskStatus implements Built<PluginTaskStatus, PluginTaskStatusBuilder> {
   @BuiltValueField(wireName: r'name')
-  String? get name;
+  String get name;
 
   @BuiltValueField(wireName: r'intervalSeconds')
-  double? get intervalSeconds;
+  double get intervalSeconds;
 
   @BuiltValueField(wireName: r'lastStatus')
-  String? get lastStatus;
+  String get lastStatus;
 
   @BuiltValueField(wireName: r'lastStartedAt')
   DateTime? get lastStartedAt;
@@ -49,13 +49,13 @@ abstract class PluginTaskStatus implements Built<PluginTaskStatus, PluginTaskSta
   DateTime? get nextRunAt;
 
   @BuiltValueField(wireName: r'totalRuns')
-  int? get totalRuns;
+  int get totalRuns;
 
   @BuiltValueField(wireName: r'totalFailures')
-  int? get totalFailures;
+  int get totalFailures;
 
   @BuiltValueField(wireName: r'consecutiveFailures')
-  int? get consecutiveFailures;
+  int get consecutiveFailures;
 
   PluginTaskStatus._();
 
@@ -80,83 +80,61 @@ class _$PluginTaskStatusSerializer implements PrimitiveSerializer<PluginTaskStat
     PluginTaskStatus object, {
     FullType specifiedType = FullType.unspecified,
   }) sync* {
-    if (object.name != null) {
-      yield r'name';
-      yield serializers.serialize(
-        object.name,
-        specifiedType: const FullType.nullable(String),
-      );
-    }
-    if (object.intervalSeconds != null) {
-      yield r'intervalSeconds';
-      yield serializers.serialize(
-        object.intervalSeconds,
-        specifiedType: const FullType(double),
-      );
-    }
-    if (object.lastStatus != null) {
-      yield r'lastStatus';
-      yield serializers.serialize(
-        object.lastStatus,
-        specifiedType: const FullType.nullable(String),
-      );
-    }
-    if (object.lastStartedAt != null) {
-      yield r'lastStartedAt';
-      yield serializers.serialize(
-        object.lastStartedAt,
-        specifiedType: const FullType.nullable(DateTime),
-      );
-    }
-    if (object.lastFinishedAt != null) {
-      yield r'lastFinishedAt';
-      yield serializers.serialize(
-        object.lastFinishedAt,
-        specifiedType: const FullType.nullable(DateTime),
-      );
-    }
-    if (object.lastDurationMs != null) {
-      yield r'lastDurationMs';
-      yield serializers.serialize(
-        object.lastDurationMs,
-        specifiedType: const FullType.nullable(int),
-      );
-    }
-    if (object.lastError != null) {
-      yield r'lastError';
-      yield serializers.serialize(
-        object.lastError,
-        specifiedType: const FullType.nullable(String),
-      );
-    }
-    if (object.nextRunAt != null) {
-      yield r'nextRunAt';
-      yield serializers.serialize(
-        object.nextRunAt,
-        specifiedType: const FullType.nullable(DateTime),
-      );
-    }
-    if (object.totalRuns != null) {
-      yield r'totalRuns';
-      yield serializers.serialize(
-        object.totalRuns,
-        specifiedType: const FullType(int),
-      );
-    }
-    if (object.totalFailures != null) {
-      yield r'totalFailures';
-      yield serializers.serialize(
-        object.totalFailures,
-        specifiedType: const FullType(int),
-      );
-    }
-    if (object.consecutiveFailures != null) {
-      yield r'consecutiveFailures';
-      yield serializers.serialize(
-        object.consecutiveFailures,
-        specifiedType: const FullType(int),
-      );
-    }
+    yield r'name';
+    yield serializers.serialize(
+      object.name,
+      specifiedType: const FullType(String),
+    );
+    yield r'intervalSeconds';
+    yield serializers.serialize(
+      object.intervalSeconds,
+      specifiedType: const FullType(double),
+    );
+    yield r'lastStatus';
+    yield serializers.serialize(
+      object.lastStatus,
+      specifiedType: const FullType(String),
+    );
+    yield r'lastStartedAt';
+    yield object.lastStartedAt == null ? null : serializers.serialize(
+      object.lastStartedAt,
+      specifiedType: const FullType.nullable(DateTime),
+    );
+    yield r'lastFinishedAt';
+    yield object.lastFinishedAt == null ? null : serializers.serialize(
+      object.lastFinishedAt,
+      specifiedType: const FullType.nullable(DateTime),
+    );
+    yield r'lastDurationMs';
+    yield object.lastDurationMs == null ? null : serializers.serialize(
+      object.lastDurationMs,
+      specifiedType: const FullType.nullable(int),
+    );
+    yield r'lastError';
+    yield object.lastError == null ? null : serializers.serialize(
+      object.lastError,
+      specifiedType: const FullType.nullable(String),
+    );
+    yield r'nextRunAt';
+    yield object.nextRunAt == null ? null : serializers.serialize(
+      object.nextRunAt,
+      specifiedType: const FullType.nullable(DateTime),
+    );
+    yield r'totalRuns';
+    yield serializers.serialize(
+      object.totalRuns,
+      specifiedType: const FullType(int),
+    );
+    yield r'totalFailures';
+    yield serializers.serialize(
+      object.totalFailures,
+      specifiedType: const FullType(int),
+    );
+    yield r'consecutiveFailures';
+    yield serializers.serialize(
+      object.consecutiveFailures,
+      specifiedType: const FullType(int),
+    );
   }
 
   @override
@@ -183,9 +161,8 @@ class _$PluginTaskStatusSerializer implements PrimitiveSerializer<PluginTaskStat
         case r'name':
           final valueDes = serializers.deserialize(
             value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
-          if (valueDes == null) continue;
+            specifiedType: const FullType(String),
+          ) as String;
           result.name = valueDes;
           break;
         case r'intervalSeconds':
@@ -198,9 +175,8 @@ class _$PluginTaskStatusSerializer implements PrimitiveSerializer<PluginTaskStat
         case r'lastStatus':
           final valueDes = serializers.deserialize(
             value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
-          if (valueDes == null) continue;
+            specifiedType: const FullType(String),
+          ) as String;
           result.lastStatus = valueDes;
           break;
         case r'lastStartedAt':

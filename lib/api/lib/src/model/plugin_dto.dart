@@ -16,10 +16,10 @@ part 'plugin_dto.g.dart';
 @BuiltValue()
 abstract class PluginDto implements Built<PluginDto, PluginDtoBuilder> {
   @BuiltValueField(wireName: r'name')
-  String? get name;
+  String get name;
 
   @BuiltValueField(wireName: r'version')
-  String? get version;
+  String get version;
 
   PluginDto._();
 
@@ -44,20 +44,16 @@ class _$PluginDtoSerializer implements PrimitiveSerializer<PluginDto> {
     PluginDto object, {
     FullType specifiedType = FullType.unspecified,
   }) sync* {
-    if (object.name != null) {
-      yield r'name';
-      yield serializers.serialize(
-        object.name,
-        specifiedType: const FullType.nullable(String),
-      );
-    }
-    if (object.version != null) {
-      yield r'version';
-      yield serializers.serialize(
-        object.version,
-        specifiedType: const FullType.nullable(String),
-      );
-    }
+    yield r'name';
+    yield serializers.serialize(
+      object.name,
+      specifiedType: const FullType(String),
+    );
+    yield r'version';
+    yield serializers.serialize(
+      object.version,
+      specifiedType: const FullType(String),
+    );
   }
 
   @override
@@ -84,17 +80,15 @@ class _$PluginDtoSerializer implements PrimitiveSerializer<PluginDto> {
         case r'name':
           final valueDes = serializers.deserialize(
             value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
-          if (valueDes == null) continue;
+            specifiedType: const FullType(String),
+          ) as String;
           result.name = valueDes;
           break;
         case r'version':
           final valueDes = serializers.deserialize(
             value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
-          if (valueDes == null) continue;
+            specifiedType: const FullType(String),
+          ) as String;
           result.version = valueDes;
           break;
         default:

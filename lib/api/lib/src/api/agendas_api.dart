@@ -168,7 +168,7 @@ class AgendasApi {
   /// Returns a [Future]
   /// Throws [DioException] if API call or serialization fails
   Future<Response<void>> apiAgendasPost({ 
-    CreateAgendaEntryCommand? createAgendaEntryCommand,
+    required CreateAgendaEntryCommand createAgendaEntryCommand,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
     Map<String, dynamic>? extra,
@@ -199,7 +199,7 @@ class AgendasApi {
 
     try {
       const _type = FullType(CreateAgendaEntryCommand);
-      _bodyData = createAgendaEntryCommand == null ? null : _serializers.serialize(createAgendaEntryCommand, specifiedType: _type);
+      _bodyData = _serializers.serialize(createAgendaEntryCommand, specifiedType: _type);
 
     } catch(error, stackTrace) {
       throw DioException(
@@ -240,7 +240,7 @@ class AgendasApi {
   /// Returns a [Future]
   /// Throws [DioException] if API call or serialization fails
   Future<Response<void>> apiAgendasPut({ 
-    UpdateAgendaEntryCommand? updateAgendaEntryCommand,
+    required UpdateAgendaEntryCommand updateAgendaEntryCommand,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
     Map<String, dynamic>? extra,
@@ -271,7 +271,7 @@ class AgendasApi {
 
     try {
       const _type = FullType(UpdateAgendaEntryCommand);
-      _bodyData = updateAgendaEntryCommand == null ? null : _serializers.serialize(updateAgendaEntryCommand, specifiedType: _type);
+      _bodyData = _serializers.serialize(updateAgendaEntryCommand, specifiedType: _type);
 
     } catch(error, stackTrace) {
       throw DioException(

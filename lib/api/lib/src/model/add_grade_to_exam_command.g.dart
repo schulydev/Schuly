@@ -8,11 +8,11 @@ part of 'add_grade_to_exam_command.dart';
 
 class _$AddGradeToExamCommand extends AddGradeToExamCommand {
   @override
-  final String? examId;
+  final String examId;
   @override
-  final String? studentId;
+  final String studentId;
   @override
-  final double? grade;
+  final double grade;
   @override
   final double? weight;
 
@@ -21,9 +21,9 @@ class _$AddGradeToExamCommand extends AddGradeToExamCommand {
   ]) => (AddGradeToExamCommandBuilder()..update(updates))._build();
 
   _$AddGradeToExamCommand._({
-    this.examId,
-    this.studentId,
-    this.grade,
+    required this.examId,
+    required this.studentId,
+    required this.grade,
     this.weight,
   }) : super._();
   @override
@@ -120,9 +120,21 @@ class AddGradeToExamCommandBuilder
     final _$result =
         _$v ??
         _$AddGradeToExamCommand._(
-          examId: examId,
-          studentId: studentId,
-          grade: grade,
+          examId: BuiltValueNullFieldError.checkNotNull(
+            examId,
+            r'AddGradeToExamCommand',
+            'examId',
+          ),
+          studentId: BuiltValueNullFieldError.checkNotNull(
+            studentId,
+            r'AddGradeToExamCommand',
+            'studentId',
+          ),
+          grade: BuiltValueNullFieldError.checkNotNull(
+            grade,
+            r'AddGradeToExamCommand',
+            'grade',
+          ),
           weight: weight,
         );
     replace(_$result);
