@@ -8,15 +8,16 @@ part of 'enrol_student_command.dart';
 
 class _$EnrolStudentCommand extends EnrolStudentCommand {
   @override
-  final String? userId;
+  final String userId;
   @override
-  final String? classId;
+  final String classId;
 
   factory _$EnrolStudentCommand([
     void Function(EnrolStudentCommandBuilder)? updates,
   ]) => (EnrolStudentCommandBuilder()..update(updates))._build();
 
-  _$EnrolStudentCommand._({this.userId, this.classId}) : super._();
+  _$EnrolStudentCommand._({required this.userId, required this.classId})
+    : super._();
   @override
   EnrolStudentCommand rebuild(
     void Function(EnrolStudentCommandBuilder) updates,
@@ -93,7 +94,19 @@ class EnrolStudentCommandBuilder
 
   _$EnrolStudentCommand _build() {
     final _$result =
-        _$v ?? _$EnrolStudentCommand._(userId: userId, classId: classId);
+        _$v ??
+        _$EnrolStudentCommand._(
+          userId: BuiltValueNullFieldError.checkNotNull(
+            userId,
+            r'EnrolStudentCommand',
+            'userId',
+          ),
+          classId: BuiltValueNullFieldError.checkNotNull(
+            classId,
+            r'EnrolStudentCommand',
+            'classId',
+          ),
+        );
     replace(_$result);
     return _$result;
   }

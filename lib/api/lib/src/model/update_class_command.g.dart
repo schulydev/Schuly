@@ -8,9 +8,9 @@ part of 'update_class_command.dart';
 
 class _$UpdateClassCommand extends UpdateClassCommand {
   @override
-  final String? classId;
+  final String classId;
   @override
-  final String? name;
+  final String name;
   @override
   final String? description;
 
@@ -18,8 +18,11 @@ class _$UpdateClassCommand extends UpdateClassCommand {
     void Function(UpdateClassCommandBuilder)? updates,
   ]) => (UpdateClassCommandBuilder()..update(updates))._build();
 
-  _$UpdateClassCommand._({this.classId, this.name, this.description})
-    : super._();
+  _$UpdateClassCommand._({
+    required this.classId,
+    required this.name,
+    this.description,
+  }) : super._();
   @override
   UpdateClassCommand rebuild(
     void Function(UpdateClassCommandBuilder) updates,
@@ -106,8 +109,16 @@ class UpdateClassCommandBuilder
     final _$result =
         _$v ??
         _$UpdateClassCommand._(
-          classId: classId,
-          name: name,
+          classId: BuiltValueNullFieldError.checkNotNull(
+            classId,
+            r'UpdateClassCommand',
+            'classId',
+          ),
+          name: BuiltValueNullFieldError.checkNotNull(
+            name,
+            r'UpdateClassCommand',
+            'name',
+          ),
           description: description,
         );
     replace(_$result);

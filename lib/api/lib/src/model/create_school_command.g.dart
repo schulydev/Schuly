@@ -8,7 +8,7 @@ part of 'create_school_command.dart';
 
 class _$CreateSchoolCommand extends CreateSchoolCommand {
   @override
-  final String? name;
+  final String name;
   @override
   final String? description;
   @override
@@ -35,7 +35,7 @@ class _$CreateSchoolCommand extends CreateSchoolCommand {
   ]) => (CreateSchoolCommandBuilder()..update(updates))._build();
 
   _$CreateSchoolCommand._({
-    this.name,
+    required this.name,
     this.description,
     this.email,
     this.phoneNumber,
@@ -197,7 +197,11 @@ class CreateSchoolCommandBuilder
     final _$result =
         _$v ??
         _$CreateSchoolCommand._(
-          name: name,
+          name: BuiltValueNullFieldError.checkNotNull(
+            name,
+            r'CreateSchoolCommand',
+            'name',
+          ),
           description: description,
           email: email,
           phoneNumber: phoneNumber,

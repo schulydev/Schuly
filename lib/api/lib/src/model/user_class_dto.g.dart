@@ -10,12 +10,13 @@ class _$UserClassDto extends UserClassDto {
   @override
   final String classId;
   @override
-  final String? className;
+  final String className;
 
   factory _$UserClassDto([void Function(UserClassDtoBuilder)? updates]) =>
       (UserClassDtoBuilder()..update(updates))._build();
 
-  _$UserClassDto._({required this.classId, this.className}) : super._();
+  _$UserClassDto._({required this.classId, required this.className})
+    : super._();
   @override
   UserClassDto rebuild(void Function(UserClassDtoBuilder) updates) =>
       (toBuilder()..update(updates)).build();
@@ -97,7 +98,11 @@ class UserClassDtoBuilder
             r'UserClassDto',
             'classId',
           ),
-          className: className,
+          className: BuiltValueNullFieldError.checkNotNull(
+            className,
+            r'UserClassDto',
+            'className',
+          ),
         );
     replace(_$result);
     return _$result;

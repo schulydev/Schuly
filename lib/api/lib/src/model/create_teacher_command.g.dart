@@ -8,13 +8,13 @@ part of 'create_teacher_command.dart';
 
 class _$CreateTeacherCommand extends CreateTeacherCommand {
   @override
-  final String? schoolId;
+  final String schoolId;
   @override
-  final String? firstName;
+  final String firstName;
   @override
-  final String? lastName;
+  final String lastName;
   @override
-  final String? code;
+  final String code;
   @override
   final String? email;
 
@@ -23,10 +23,10 @@ class _$CreateTeacherCommand extends CreateTeacherCommand {
   ]) => (CreateTeacherCommandBuilder()..update(updates))._build();
 
   _$CreateTeacherCommand._({
-    this.schoolId,
-    this.firstName,
-    this.lastName,
-    this.code,
+    required this.schoolId,
+    required this.firstName,
+    required this.lastName,
+    required this.code,
     this.email,
   }) : super._();
   @override
@@ -131,10 +131,26 @@ class CreateTeacherCommandBuilder
     final _$result =
         _$v ??
         _$CreateTeacherCommand._(
-          schoolId: schoolId,
-          firstName: firstName,
-          lastName: lastName,
-          code: code,
+          schoolId: BuiltValueNullFieldError.checkNotNull(
+            schoolId,
+            r'CreateTeacherCommand',
+            'schoolId',
+          ),
+          firstName: BuiltValueNullFieldError.checkNotNull(
+            firstName,
+            r'CreateTeacherCommand',
+            'firstName',
+          ),
+          lastName: BuiltValueNullFieldError.checkNotNull(
+            lastName,
+            r'CreateTeacherCommand',
+            'lastName',
+          ),
+          code: BuiltValueNullFieldError.checkNotNull(
+            code,
+            r'CreateTeacherCommand',
+            'code',
+          ),
           email: email,
         );
     replace(_$result);

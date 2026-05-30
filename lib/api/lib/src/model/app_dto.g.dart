@@ -8,28 +8,28 @@ part of 'app_dto.dart';
 
 class _$AppDto extends AppDto {
   @override
-  final String? authority;
+  final String authority;
   @override
-  final String? clientId;
+  final String clientId;
   @override
-  final String? redirectUri;
+  final String redirectUri;
   @override
-  final String? postLogoutRedirectUri;
+  final String postLogoutRedirectUri;
   @override
-  final String? scope;
+  final String scope;
   @override
-  final String? version;
+  final String version;
 
   factory _$AppDto([void Function(AppDtoBuilder)? updates]) =>
       (AppDtoBuilder()..update(updates))._build();
 
   _$AppDto._({
-    this.authority,
-    this.clientId,
-    this.redirectUri,
-    this.postLogoutRedirectUri,
-    this.scope,
-    this.version,
+    required this.authority,
+    required this.clientId,
+    required this.redirectUri,
+    required this.postLogoutRedirectUri,
+    required this.scope,
+    required this.version,
   }) : super._();
   @override
   AppDto rebuild(void Function(AppDtoBuilder) updates) =>
@@ -139,12 +139,36 @@ class AppDtoBuilder implements Builder<AppDto, AppDtoBuilder> {
     final _$result =
         _$v ??
         _$AppDto._(
-          authority: authority,
-          clientId: clientId,
-          redirectUri: redirectUri,
-          postLogoutRedirectUri: postLogoutRedirectUri,
-          scope: scope,
-          version: version,
+          authority: BuiltValueNullFieldError.checkNotNull(
+            authority,
+            r'AppDto',
+            'authority',
+          ),
+          clientId: BuiltValueNullFieldError.checkNotNull(
+            clientId,
+            r'AppDto',
+            'clientId',
+          ),
+          redirectUri: BuiltValueNullFieldError.checkNotNull(
+            redirectUri,
+            r'AppDto',
+            'redirectUri',
+          ),
+          postLogoutRedirectUri: BuiltValueNullFieldError.checkNotNull(
+            postLogoutRedirectUri,
+            r'AppDto',
+            'postLogoutRedirectUri',
+          ),
+          scope: BuiltValueNullFieldError.checkNotNull(
+            scope,
+            r'AppDto',
+            'scope',
+          ),
+          version: BuiltValueNullFieldError.checkNotNull(
+            version,
+            r'AppDto',
+            'version',
+          ),
         );
     replace(_$result);
     return _$result;

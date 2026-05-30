@@ -14,11 +14,11 @@ class _$TeacherDto extends TeacherDto {
   @override
   final String? schoolName;
   @override
-  final String? firstName;
+  final String firstName;
   @override
-  final String? lastName;
+  final String lastName;
   @override
-  final String? code;
+  final String code;
   @override
   final String? email;
 
@@ -29,9 +29,9 @@ class _$TeacherDto extends TeacherDto {
     this.id,
     this.schoolId,
     this.schoolName,
-    this.firstName,
-    this.lastName,
-    this.code,
+    required this.firstName,
+    required this.lastName,
+    required this.code,
     this.email,
   }) : super._();
   @override
@@ -152,9 +152,21 @@ class TeacherDtoBuilder implements Builder<TeacherDto, TeacherDtoBuilder> {
           id: id,
           schoolId: schoolId,
           schoolName: schoolName,
-          firstName: firstName,
-          lastName: lastName,
-          code: code,
+          firstName: BuiltValueNullFieldError.checkNotNull(
+            firstName,
+            r'TeacherDto',
+            'firstName',
+          ),
+          lastName: BuiltValueNullFieldError.checkNotNull(
+            lastName,
+            r'TeacherDto',
+            'lastName',
+          ),
+          code: BuiltValueNullFieldError.checkNotNull(
+            code,
+            r'TeacherDto',
+            'code',
+          ),
           email: email,
         );
     replace(_$result);

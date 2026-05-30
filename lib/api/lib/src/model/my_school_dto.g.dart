@@ -10,11 +10,11 @@ class _$MySchoolDto extends MySchoolDto {
   @override
   final String? id;
   @override
-  final String? name;
+  final String name;
   @override
-  final String? email;
+  final String email;
   @override
-  final String? fullName;
+  final String fullName;
   @override
   final String? logoUrl;
   @override
@@ -25,9 +25,9 @@ class _$MySchoolDto extends MySchoolDto {
 
   _$MySchoolDto._({
     this.id,
-    this.name,
-    this.email,
-    this.fullName,
+    required this.name,
+    required this.email,
+    required this.fullName,
     this.logoUrl,
     this.profilePictureUrl,
   }) : super._();
@@ -140,9 +140,21 @@ class MySchoolDtoBuilder implements Builder<MySchoolDto, MySchoolDtoBuilder> {
         _$v ??
         _$MySchoolDto._(
           id: id,
-          name: name,
-          email: email,
-          fullName: fullName,
+          name: BuiltValueNullFieldError.checkNotNull(
+            name,
+            r'MySchoolDto',
+            'name',
+          ),
+          email: BuiltValueNullFieldError.checkNotNull(
+            email,
+            r'MySchoolDto',
+            'email',
+          ),
+          fullName: BuiltValueNullFieldError.checkNotNull(
+            fullName,
+            r'MySchoolDto',
+            'fullName',
+          ),
           logoUrl: logoUrl,
           profilePictureUrl: profilePictureUrl,
         );

@@ -11,10 +11,14 @@ class OidcConfig {
   static const redirectUri = 'schulytest://callback';
   static const callbackScheme = 'schulytest';
 
-  // LAN address of the dev box (Wi-Fi, no cable needed). Use
-  // `http://localhost:5033` + `adb reverse tcp:5033 tcp:5033` for USB, or
-  // `http://10.0.2.2:5033` for the emulator.
-  static const backendBaseUrl = 'http://192.168.188.93:5033';
+  // Backend base URL. Override per build — never hardcode a machine IP here:
+  //   flutter build apk --dart-define=BACKEND_BASE_URL=http://<dev-box-lan-ip>:5033
+  // Defaults to localhost: use `adb reverse tcp:5033 tcp:5033` over USB, or
+  // `http://10.0.2.2:5033` on the emulator.
+  static const backendBaseUrl = String.fromEnvironment(
+    'BACKEND_BASE_URL',
+    defaultValue: 'http://localhost:5033',
+  );
 
   static const tokenEndpoint = '$authority/api/oidc/token';
   static const authorizationEndpoint = '$authority/authorize';
