@@ -16,6 +16,9 @@ part 'o_auth_callback_request.g.dart';
 /// * [state] 
 /// * [contextState] 
 /// * [userAgent] 
+/// * [webSessionId] 
+/// * [webSessionUserId] 
+/// * [webSessionTransId] 
 @BuiltValue()
 abstract class OAuthCallbackRequest implements Built<OAuthCallbackRequest, OAuthCallbackRequestBuilder> {
   @BuiltValueField(wireName: r'code')
@@ -32,6 +35,15 @@ abstract class OAuthCallbackRequest implements Built<OAuthCallbackRequest, OAuth
 
   @BuiltValueField(wireName: r'userAgent')
   String? get userAgent;
+
+  @BuiltValueField(wireName: r'webSessionId')
+  String? get webSessionId;
+
+  @BuiltValueField(wireName: r'webSessionUserId')
+  String? get webSessionUserId;
+
+  @BuiltValueField(wireName: r'webSessionTransId')
+  String? get webSessionTransId;
 
   OAuthCallbackRequest._();
 
@@ -81,6 +93,27 @@ class _$OAuthCallbackRequestSerializer implements PrimitiveSerializer<OAuthCallb
       object.userAgent,
       specifiedType: const FullType.nullable(String),
     );
+    if (object.webSessionId != null) {
+      yield r'webSessionId';
+      yield serializers.serialize(
+        object.webSessionId,
+        specifiedType: const FullType.nullable(String),
+      );
+    }
+    if (object.webSessionUserId != null) {
+      yield r'webSessionUserId';
+      yield serializers.serialize(
+        object.webSessionUserId,
+        specifiedType: const FullType.nullable(String),
+      );
+    }
+    if (object.webSessionTransId != null) {
+      yield r'webSessionTransId';
+      yield serializers.serialize(
+        object.webSessionTransId,
+        specifiedType: const FullType.nullable(String),
+      );
+    }
   }
 
   @override
@@ -141,6 +174,30 @@ class _$OAuthCallbackRequestSerializer implements PrimitiveSerializer<OAuthCallb
           ) as String?;
           if (valueDes == null) continue;
           result.userAgent = valueDes;
+          break;
+        case r'webSessionId':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType.nullable(String),
+          ) as String?;
+          if (valueDes == null) continue;
+          result.webSessionId = valueDes;
+          break;
+        case r'webSessionUserId':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType.nullable(String),
+          ) as String?;
+          if (valueDes == null) continue;
+          result.webSessionUserId = valueDes;
+          break;
+        case r'webSessionTransId':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType.nullable(String),
+          ) as String?;
+          if (valueDes == null) continue;
+          result.webSessionTransId = valueDes;
           break;
         default:
           unhandled.add(key);

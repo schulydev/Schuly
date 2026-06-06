@@ -84,8 +84,10 @@ class _ConnectAccountScreenState extends State<ConnectAccountScreen> {
       if (!mounted) return;
       final result = await Navigator.of(context).push<SchulnetzOAuthResult>(
         MaterialPageRoute(
-          builder: (_) =>
-              SchulnetzOAuthScreen(authorizationUrl: authorizationUrl),
+          builder: (_) => SchulnetzOAuthScreen(
+            authorizationUrl: authorizationUrl,
+            schulnetzBaseUrl: url,
+          ),
         ),
       );
       if (result == null) {
@@ -103,7 +105,10 @@ class _ConnectAccountScreenState extends State<ConnectAccountScreen> {
           ..codeVerifier = codeVerifier
           ..state = result.state
           ..contextState = result.contextState
-          ..userAgent = result.userAgent),
+          ..userAgent = result.userAgent
+          ..webSessionId = result.webSessionId
+          ..webSessionUserId = result.webSessionUserId
+          ..webSessionTransId = result.webSessionTransId),
       );
 
       if (mounted) Navigator.of(context).pop(accountId);
