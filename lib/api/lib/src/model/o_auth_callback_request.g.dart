@@ -17,6 +17,12 @@ class _$OAuthCallbackRequest extends OAuthCallbackRequest {
   final String? contextState;
   @override
   final String? userAgent;
+  @override
+  final String? webSessionId;
+  @override
+  final String? webSessionUserId;
+  @override
+  final String? webSessionTransId;
 
   factory _$OAuthCallbackRequest([
     void Function(OAuthCallbackRequestBuilder)? updates,
@@ -28,6 +34,9 @@ class _$OAuthCallbackRequest extends OAuthCallbackRequest {
     this.state,
     this.contextState,
     this.userAgent,
+    this.webSessionId,
+    this.webSessionUserId,
+    this.webSessionTransId,
   }) : super._();
   @override
   OAuthCallbackRequest rebuild(
@@ -46,7 +55,10 @@ class _$OAuthCallbackRequest extends OAuthCallbackRequest {
         codeVerifier == other.codeVerifier &&
         state == other.state &&
         contextState == other.contextState &&
-        userAgent == other.userAgent;
+        userAgent == other.userAgent &&
+        webSessionId == other.webSessionId &&
+        webSessionUserId == other.webSessionUserId &&
+        webSessionTransId == other.webSessionTransId;
   }
 
   @override
@@ -57,6 +69,9 @@ class _$OAuthCallbackRequest extends OAuthCallbackRequest {
     _$hash = $jc(_$hash, state.hashCode);
     _$hash = $jc(_$hash, contextState.hashCode);
     _$hash = $jc(_$hash, userAgent.hashCode);
+    _$hash = $jc(_$hash, webSessionId.hashCode);
+    _$hash = $jc(_$hash, webSessionUserId.hashCode);
+    _$hash = $jc(_$hash, webSessionTransId.hashCode);
     _$hash = $jf(_$hash);
     return _$hash;
   }
@@ -68,7 +83,10 @@ class _$OAuthCallbackRequest extends OAuthCallbackRequest {
           ..add('codeVerifier', codeVerifier)
           ..add('state', state)
           ..add('contextState', contextState)
-          ..add('userAgent', userAgent))
+          ..add('userAgent', userAgent)
+          ..add('webSessionId', webSessionId)
+          ..add('webSessionUserId', webSessionUserId)
+          ..add('webSessionTransId', webSessionTransId))
         .toString();
   }
 }
@@ -97,6 +115,20 @@ class OAuthCallbackRequestBuilder
   String? get userAgent => _$this._userAgent;
   set userAgent(String? userAgent) => _$this._userAgent = userAgent;
 
+  String? _webSessionId;
+  String? get webSessionId => _$this._webSessionId;
+  set webSessionId(String? webSessionId) => _$this._webSessionId = webSessionId;
+
+  String? _webSessionUserId;
+  String? get webSessionUserId => _$this._webSessionUserId;
+  set webSessionUserId(String? webSessionUserId) =>
+      _$this._webSessionUserId = webSessionUserId;
+
+  String? _webSessionTransId;
+  String? get webSessionTransId => _$this._webSessionTransId;
+  set webSessionTransId(String? webSessionTransId) =>
+      _$this._webSessionTransId = webSessionTransId;
+
   OAuthCallbackRequestBuilder() {
     OAuthCallbackRequest._defaults(this);
   }
@@ -109,6 +141,9 @@ class OAuthCallbackRequestBuilder
       _state = $v.state;
       _contextState = $v.contextState;
       _userAgent = $v.userAgent;
+      _webSessionId = $v.webSessionId;
+      _webSessionUserId = $v.webSessionUserId;
+      _webSessionTransId = $v.webSessionTransId;
       _$v = null;
     }
     return this;
@@ -144,6 +179,9 @@ class OAuthCallbackRequestBuilder
           state: state,
           contextState: contextState,
           userAgent: userAgent,
+          webSessionId: webSessionId,
+          webSessionUserId: webSessionUserId,
+          webSessionTransId: webSessionTransId,
         );
     replace(_$result);
     return _$result;

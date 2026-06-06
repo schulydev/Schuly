@@ -1,10 +1,6 @@
-import 'dart:io';
-
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
-import 'package:open_filex/open_filex.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:schuly_api/schuly_api.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -13,6 +9,7 @@ import '../../services/active_account_service.dart';
 import '../../services/api_client.dart';
 import '../../services/school_data_service.dart';
 import '../classes/class_detail_screen.dart';
+import '../documents/documents_page.dart';
 
 /// Account tab — profile details, enrolled classes, app info, and the account
 /// switcher + sign out.
@@ -37,33 +34,6 @@ class _AccountPageState extends State<AccountPage> {
   String? _version;
   bool _syncing = false;
   String? _syncMsg;
-  String? _downloadingId;
-
-  /// Downloads a document's bytes through the authed Dio and opens it with the
-  /// system viewer.
-  Future<void> _openDocument(StudentDocumentDto doc) async {
-    final id = doc.id;
-    if (id == null) return;
-    setState(() => _downloadingId = id);
-    try {
-      final res = await ApiClient.instance.dio.get<List<int>>(
-        '/api/documents/$id',
-        options: Options(responseType: ResponseType.bytes),
-      );
-      final dir = await getTemporaryDirectory();
-      final name = (doc.fileName?.isNotEmpty ?? false) ? doc.fileName! : 'document-$id';
-      final file = File('${dir.path}/$name');
-      await file.writeAsBytes(res.data ?? const []);
-      await OpenFilex.open(file.path);
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('Could not open document: $e')));
-      }
-    } finally {
-      if (mounted) setState(() => _downloadingId = null);
-    }
-  }
 
   @override
   void initState() {
@@ -172,7 +142,6 @@ class _AccountPageState extends State<AccountPage> {
               .join(', '),
         ),
         _InfoTile(icon: FIcons.cake, label: 'Birthday', value: fmtDate(me?.birthday)),
-        _InfoTile(icon: FIcons.logIn, label: 'Joined', value: fmtDate(me?.entryDate)),
         const SizedBox(height: 20),
         if (classes.isNotEmpty) ...[
           _SectionLabel('My classes'),
@@ -210,27 +179,20 @@ class _AccountPageState extends State<AccountPage> {
             ),
           const SizedBox(height: 12),
         ],
-        if (SchoolDataService.instance.documents.isNotEmpty) ...[
-          _SectionLabel('Documents'),
-          for (final dDoc in SchoolDataService.instance.documents)
-            Padding(
-              padding: const EdgeInsets.only(bottom: 8),
-              child: FTile(
-                prefix: _downloadingId == dDoc.id
-                    ? const SizedBox(
-                        width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2))
-                    : const Icon(FIcons.fileText),
-                title: Text(dDoc.title?.isNotEmpty == true ? dDoc.title! : (dDoc.fileName ?? 'Document')),
-                subtitle: Text([
-                  dDoc.category,
-                  if (dDoc.fileSizeBytes != null) _fmtSize(dDoc.fileSizeBytes!),
-                ].whereType<String>().where((s) => s.isNotEmpty).join(' · ')),
-                suffix: const Icon(FIcons.download),
-                onPress: _downloadingId == null ? () => _openDocument(dDoc) : null,
-              ),
-            ),
-          const SizedBox(height: 12),
-        ],
+        _SectionLabel('Documents'),
+        Padding(
+          padding: const EdgeInsets.only(bottom: 12),
+          child: FTile(
+            prefix: const Icon(FIcons.folder),
+            title: const Text('Documents'),
+            details: SchoolDataService.instance.documents.isNotEmpty
+                ? Text('${SchoolDataService.instance.documents.length}')
+                : null,
+            suffix: const Icon(FIcons.chevronRight),
+            onPress: () => Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => const DocumentsScreen())),
+          ),
+        ),
         _SectionLabel('App'),
         Padding(
           padding: const EdgeInsets.only(bottom: 8),
@@ -271,12 +233,6 @@ class _AccountPageState extends State<AccountPage> {
       ],
       ),
     );
-  }
-
-  static String _fmtSize(int bytes) {
-    if (bytes < 1024) return '$bytes B';
-    if (bytes < 1024 * 1024) return '${(bytes / 1024).toStringAsFixed(0)} KB';
-    return '${(bytes / (1024 * 1024)).toStringAsFixed(1)} MB';
   }
 
   static String _roleLabel(Roles? r) => switch (r) {
