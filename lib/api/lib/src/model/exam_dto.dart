@@ -5,6 +5,7 @@
 // ignore_for_file: unused_element
 import 'package:built_collection/built_collection.dart';
 import 'package:schuly_api/src/model/exam_type.dart';
+import 'package:schuly_api/src/model/date.dart';
 import 'package:schuly_api/src/model/grade_dto.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
@@ -18,6 +19,7 @@ part 'exam_dto.g.dart';
 /// * [name] 
 /// * [description] 
 /// * [type] 
+/// * [date] 
 /// * [classAverage] 
 /// * [classId] 
 /// * [schoolId] 
@@ -36,6 +38,9 @@ abstract class ExamDto implements Built<ExamDto, ExamDtoBuilder> {
   @BuiltValueField(wireName: r'type')
   ExamType? get type;
   // enum typeEnum {  Classic,  FinalExam,  };
+
+  @BuiltValueField(wireName: r'date')
+  Date? get date;
 
   @BuiltValueField(wireName: r'classAverage')
   double get classAverage;
@@ -96,6 +101,13 @@ class _$ExamDtoSerializer implements PrimitiveSerializer<ExamDto> {
       yield serializers.serialize(
         object.type,
         specifiedType: const FullType(ExamType),
+      );
+    }
+    if (object.date != null) {
+      yield r'date';
+      yield serializers.serialize(
+        object.date,
+        specifiedType: const FullType.nullable(Date),
       );
     }
     yield r'classAverage';
@@ -175,6 +187,14 @@ class _$ExamDtoSerializer implements PrimitiveSerializer<ExamDto> {
             specifiedType: const FullType(ExamType),
           ) as ExamType;
           result.type = valueDes;
+          break;
+        case r'date':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType.nullable(Date),
+          ) as Date?;
+          if (valueDes == null) continue;
+          result.date = valueDes;
           break;
         case r'classAverage':
           final valueDes = serializers.deserialize(

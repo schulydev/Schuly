@@ -12,6 +12,7 @@ Name | Type | Description | Notes
 **name** | **String** |  | 
 **description** | **String** |  | [optional] 
 **type** | [**ExamType**](ExamType.md) |  | [optional] 
+**date** | [**Date**](Date.md) |  | [optional] 
 **classAverage** | **double** |  | 
 **classId** | **String** |  | [optional] 
 **schoolId** | **String** |  | [optional] 

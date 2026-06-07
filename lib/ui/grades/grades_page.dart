@@ -13,46 +13,108 @@ class GradesPage extends StatelessWidget {
   Widget build(BuildContext context) => const _GradesView();
 }
 
-class _GradesView extends StatelessWidget {
+class _GradesView extends StatefulWidget {
   const _GradesView();
+
+  @override
+  State<_GradesView> createState() => _GradesViewState();
+}
+
+class _GradesViewState extends State<_GradesView> {
+  // Selected semester as a sortable key (year*10 + half); null = auto-pick newest.
+  int? _selectedKey;
+
+  // Swiss school year: Aug–Jan counts as the 1st semester, Feb–Jul as the 2nd.
+  // A null date → key 0 ("Undated"), so dateless grades still show somewhere.
+  static int _semesterKey(Date? d) {
+    if (d == null) return 0;
+    if (d.month >= 8) return d.year * 10 + 1;
+    if (d.month <= 1) return (d.year - 1) * 10 + 1;
+    return (d.year - 1) * 10 + 2;
+  }
+
+  static String _semesterLabel(int key) {
+    if (key == 0) return 'Undated';
+    final year = key ~/ 10, half = key % 10;
+    final a = (year % 100).toString().padLeft(2, '0');
+    final b = ((year + 1) % 100).toString().padLeft(2, '0');
+    return '$half. $a/$b'; // mirrors Schulnetz, e.g. "2. 25/26"
+  }
 
   @override
   Widget build(BuildContext context) {
     final svc = SchoolDataService.instance;
     final myGrades = svc.myGradesByExam;
 
-    final byClass = <String, List<ExamDto>>{};
-    for (final e in svc.exams) {
-      if (e.id != null && myGrades.containsKey(e.id)) {
-        byClass.putIfAbsent(e.classId ?? '—', () => []).add(e);
-      }
+    // Exams I have a grade for, paired with their derived semester.
+    final graded = [
+      for (final e in svc.exams)
+        if (e.id != null && myGrades.containsKey(e.id)) e,
+    ];
+    if (graded.isEmpty) {
+      return _RefreshableEmpty(onRefresh: svc.refresh, text: 'No grades yet');
     }
+
+    final semesters = {for (final e in graded) _semesterKey(e.date)}.toList()
+      ..sort((a, b) => b.compareTo(a)); // newest first
+    final selected = (_selectedKey != null && semesters.contains(_selectedKey))
+        ? _selectedKey!
+        : semesters.first;
+
+    // Group the selected semester's exams by class, each sorted by date.
     final classNames = <String?, String?>{
       for (final c in (svc.me?.classes ?? const <UserClassDto>[])) c.classId: c.className,
       ...svc.classNameById,
     };
-
-    if (byClass.isEmpty) {
-      return _RefreshableEmpty(onRefresh: svc.refresh, text: 'No grades yet');
+    final byClass = <String, List<ExamDto>>{};
+    for (final e in graded) {
+      if (_semesterKey(e.date) != selected) continue;
+      byClass.putIfAbsent(e.classId ?? '—', () => []).add(e);
+    }
+    for (final list in byClass.values) {
+      list.sort((a, b) => (a.date?.compareTo(b.date ?? a.date!) ?? 0));
     }
 
-    return RefreshIndicator(
-      onRefresh: svc.refresh,
-      child: ListView(
-        physics: const AlwaysScrollableScrollPhysics(),
-        padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
-        children: [
-          for (final entry in byClass.entries)
-            Padding(
-              padding: const EdgeInsets.only(bottom: 10),
-              child: _ClassSection(
-                title: classNames[entry.key] ?? 'Class',
-                exams: entry.value,
-                myGrades: myGrades,
+    return Column(
+      children: [
+        if (semesters.length > 1)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+            child: Align(
+              alignment: Alignment.centerRight,
+              child: SizedBox(
+                width: 150,
+                child: FSelect<int>(
+                  control: FSelectControl<int>.lifted(
+                    value: selected,
+                    onChange: (k) => setState(() => _selectedKey = k ?? selected),
+                  ),
+                  items: {for (final k in semesters) _semesterLabel(k): k},
+                ),
               ),
             ),
-        ],
-      ),
+          ),
+        Expanded(
+          child: RefreshIndicator(
+            onRefresh: svc.refresh,
+            child: ListView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
+              children: [
+                for (final entry in byClass.entries)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 10),
+                    child: _ClassSection(
+                      title: classNames[entry.key] ?? 'Class',
+                      exams: entry.value,
+                      myGrades: myGrades,
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
@@ -96,7 +158,7 @@ class _ClassSection extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(bottom: 8),
             child: FTile(
-              title: Text(e.name ?? 'Exam'),
+              title: Text(e.name),
               subtitle: Text([
                 if ((myGrades[e.id]?.weighting ?? 1) != 1) 'weight ${formatGrade(myGrades[e.id]!.weighting ?? 1)}',
                 'class ⌀ ${formatGrade(e.classAverage)}',
@@ -167,7 +229,7 @@ class _ExamDetailSheet extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(exam.name ?? 'Exam', style: typography.lg.copyWith(fontWeight: FontWeight.w700)),
+          Text(exam.name, style: typography.lg.copyWith(fontWeight: FontWeight.w700)),
           if ((exam.description?.isNotEmpty ?? false)) ...[
             const SizedBox(height: 4),
             Text(exam.description!, style: TextStyle(color: colors.mutedForeground)),
