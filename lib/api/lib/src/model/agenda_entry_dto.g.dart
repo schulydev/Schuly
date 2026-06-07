@@ -20,6 +20,8 @@ class _$AgendaEntryDto extends AgendaEntryDto {
   @override
   final DateTime date;
   @override
+  final DateTime? endDate;
+  @override
   final String? classId;
   @override
   final String? schoolId;
@@ -36,6 +38,7 @@ class _$AgendaEntryDto extends AgendaEntryDto {
     this.description,
     this.place,
     required this.date,
+    this.endDate,
     this.classId,
     this.schoolId,
     this.schoolUserId,
@@ -57,6 +60,7 @@ class _$AgendaEntryDto extends AgendaEntryDto {
         description == other.description &&
         place == other.place &&
         date == other.date &&
+        endDate == other.endDate &&
         classId == other.classId &&
         schoolId == other.schoolId &&
         schoolUserId == other.schoolUserId;
@@ -71,6 +75,7 @@ class _$AgendaEntryDto extends AgendaEntryDto {
     _$hash = $jc(_$hash, description.hashCode);
     _$hash = $jc(_$hash, place.hashCode);
     _$hash = $jc(_$hash, date.hashCode);
+    _$hash = $jc(_$hash, endDate.hashCode);
     _$hash = $jc(_$hash, classId.hashCode);
     _$hash = $jc(_$hash, schoolId.hashCode);
     _$hash = $jc(_$hash, schoolUserId.hashCode);
@@ -87,6 +92,7 @@ class _$AgendaEntryDto extends AgendaEntryDto {
           ..add('description', description)
           ..add('place', place)
           ..add('date', date)
+          ..add('endDate', endDate)
           ..add('classId', classId)
           ..add('schoolId', schoolId)
           ..add('schoolUserId', schoolUserId))
@@ -122,6 +128,10 @@ class AgendaEntryDtoBuilder
   DateTime? get date => _$this._date;
   set date(DateTime? date) => _$this._date = date;
 
+  DateTime? _endDate;
+  DateTime? get endDate => _$this._endDate;
+  set endDate(DateTime? endDate) => _$this._endDate = endDate;
+
   String? _classId;
   String? get classId => _$this._classId;
   set classId(String? classId) => _$this._classId = classId;
@@ -147,6 +157,7 @@ class AgendaEntryDtoBuilder
       _description = $v.description;
       _place = $v.place;
       _date = $v.date;
+      _endDate = $v.endDate;
       _classId = $v.classId;
       _schoolId = $v.schoolId;
       _schoolUserId = $v.schoolUserId;
@@ -190,6 +201,7 @@ class AgendaEntryDtoBuilder
             r'AgendaEntryDto',
             'date',
           ),
+          endDate: endDate,
           classId: classId,
           schoolId: schoolId,
           schoolUserId: schoolUserId,

@@ -98,9 +98,16 @@ class SchoolDataService extends ChangeNotifier {
       final myClassIds = {
         for (final c in (_me?.classes ?? const <UserClassDto>[])) c.classId,
       };
+      final meId = _me?.id;
       final agenda = await _api.getAgendasApi().apiAgendasGet();
       _agenda = (agenda.data ?? BuiltList<AgendaEntryDto>())
-          .where((a) => myClassIds.isEmpty || myClassIds.contains(a.classId))
+          // Scraped lessons + holidays are scoped to the SchoolUser (no class);
+          // class-scoped entries are matched by the user's class membership.
+          .where((a) =>
+              (meId != null && a.schoolUserId == meId) ||
+              a.entryType == AgendaEntryType.holiday ||
+              myClassIds.isEmpty ||
+              myClassIds.contains(a.classId))
           .toList(growable: false);
 
       final absences = await _api.getAbsencesApi().apiAbsencesGet();
@@ -113,7 +120,6 @@ class SchoolDataService extends ChangeNotifier {
           .where((c) => c.schoolId == schoolId)
           .toList(growable: false);
 
-      final meId = _me?.id;
       final reports = await _api.getSemesterReportsApi().apiSemesterReportsGet();
       _reports = (reports.data ?? BuiltList<SemesterReportDto>())
           .where((r) => meId == null || r.schoolUserId == meId)
