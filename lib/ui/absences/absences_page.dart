@@ -18,8 +18,6 @@ class AbsencesPage extends StatelessWidget {
     final absences = svc.absences.toList()
       ..sort((a, b) => b.from.compareTo(a.from));
 
-    final delays = absences.where((a) => a.type == AbsenceType.delay).length;
-
     return Scaffold(
       backgroundColor: Colors.transparent,
       floatingActionButton: FButton(
@@ -34,19 +32,6 @@ class AbsencesPage extends StatelessWidget {
           physics: const AlwaysScrollableScrollPhysics(),
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 88),
           children: [
-            FCard(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    _Stat(label: 'Total', value: '${absences.length}'),
-                    _Stat(label: 'Delays', value: '$delays'),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(height: 12),
             if (absences.isEmpty)
               Padding(
                 padding: const EdgeInsets.only(top: 40),
@@ -86,24 +71,6 @@ class AbsencesPage extends StatelessWidget {
     String d(DateTime x) => '${x.day}.${x.month}.${x.year}';
     final f = d(from);
     return until.difference(from).inDays.abs() < 1 ? f : '$f – ${d(until)}';
-  }
-}
-
-class _Stat extends StatelessWidget {
-  final String label;
-  final String value;
-  const _Stat({required this.label, required this.value});
-  @override
-  Widget build(BuildContext context) {
-    final t = context.theme.typography;
-    final c = context.theme.colors;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(value, style: t.xl2.copyWith(fontWeight: FontWeight.w700)),
-        Text(label, style: t.sm.copyWith(color: c.mutedForeground)),
-      ],
-    );
   }
 }
 
