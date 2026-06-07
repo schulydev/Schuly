@@ -16,6 +16,8 @@ class _$ExamDto extends ExamDto {
   @override
   final ExamType? type;
   @override
+  final Date? date;
+  @override
   final double classAverage;
   @override
   final String? classId;
@@ -32,6 +34,7 @@ class _$ExamDto extends ExamDto {
     required this.name,
     this.description,
     this.type,
+    this.date,
     required this.classAverage,
     this.classId,
     this.schoolId,
@@ -52,6 +55,7 @@ class _$ExamDto extends ExamDto {
         name == other.name &&
         description == other.description &&
         type == other.type &&
+        date == other.date &&
         classAverage == other.classAverage &&
         classId == other.classId &&
         schoolId == other.schoolId &&
@@ -65,6 +69,7 @@ class _$ExamDto extends ExamDto {
     _$hash = $jc(_$hash, name.hashCode);
     _$hash = $jc(_$hash, description.hashCode);
     _$hash = $jc(_$hash, type.hashCode);
+    _$hash = $jc(_$hash, date.hashCode);
     _$hash = $jc(_$hash, classAverage.hashCode);
     _$hash = $jc(_$hash, classId.hashCode);
     _$hash = $jc(_$hash, schoolId.hashCode);
@@ -80,6 +85,7 @@ class _$ExamDto extends ExamDto {
           ..add('name', name)
           ..add('description', description)
           ..add('type', type)
+          ..add('date', date)
           ..add('classAverage', classAverage)
           ..add('classId', classId)
           ..add('schoolId', schoolId)
@@ -106,6 +112,10 @@ class ExamDtoBuilder implements Builder<ExamDto, ExamDtoBuilder> {
   ExamType? _type;
   ExamType? get type => _$this._type;
   set type(ExamType? type) => _$this._type = type;
+
+  Date? _date;
+  Date? get date => _$this._date;
+  set date(Date? date) => _$this._date = date;
 
   double? _classAverage;
   double? get classAverage => _$this._classAverage;
@@ -135,6 +145,7 @@ class ExamDtoBuilder implements Builder<ExamDto, ExamDtoBuilder> {
       _name = $v.name;
       _description = $v.description;
       _type = $v.type;
+      _date = $v.date;
       _classAverage = $v.classAverage;
       _classId = $v.classId;
       _schoolId = $v.schoolId;
@@ -171,6 +182,7 @@ class ExamDtoBuilder implements Builder<ExamDto, ExamDtoBuilder> {
             ),
             description: description,
             type: type,
+            date: date,
             classAverage: BuiltValueNullFieldError.checkNotNull(
               classAverage,
               r'ExamDto',
