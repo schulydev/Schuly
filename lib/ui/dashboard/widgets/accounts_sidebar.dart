@@ -3,6 +3,7 @@ import 'package:forui/forui.dart';
 
 import '../../../domain/schulware_account.dart';
 import '../../../services/active_account_service.dart';
+import '../../settings/settings_screen.dart';
 import 'add_school_modal.dart';
 
 /// Teams-style left-edge account switcher. Top shows the signed-in identity
@@ -152,6 +153,16 @@ class AccountsSidebar extends StatelessWidget {
                         prefix: const Icon(FIcons.plus),
                         title: const Text('Add school account'),
                         onPress: () => _add(context),
+                      ),
+                      const SizedBox(height: 4),
+                      FTile(
+                        prefix: const Icon(FIcons.settings),
+                        title: const Text('Settings'),
+                        onPress: () {
+                          Navigator.of(context).maybePop();
+                          parentNavigator.push(MaterialPageRoute(
+                              builder: (_) => const SettingsScreen()));
+                        },
                       ),
                       if (onSignOut != null) ...[
                         const SizedBox(height: 4),

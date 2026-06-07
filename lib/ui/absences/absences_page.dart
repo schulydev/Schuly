@@ -45,7 +45,7 @@ class AbsencesPage extends StatelessWidget {
                   padding: const EdgeInsets.only(bottom: 8),
                   child: FTile(
                     prefix: const Icon(FIcons.calendarOff),
-                    title: Text(a.reason?.isNotEmpty == true ? a.reason! : 'Absence'),
+                    title: Text(a.reason.isNotEmpty ? a.reason : 'Absence'),
                     subtitle: Text(_rangeLabel(a.from, a.until)),
                     suffix: _TypeBadge(a.type),
                     onPress: () => _openForm(context, existing: a),
@@ -203,9 +203,14 @@ class _AbsenceFormState extends State<_AbsenceForm> {
   Widget build(BuildContext context) {
     final colors = context.theme.colors;
     String d(DateTime x) => '${x.day}.${x.month}.${x.year}';
+    // showFSheet strips MediaQuery.padding (so SafeArea is a no-op); viewPadding
+    // survives. Clear whichever is taller — the keyboard (viewInsets) or the
+    // Android gesture/nav bar (viewPadding) — so the Save button is never hidden.
+    final keyboard = MediaQuery.viewInsetsOf(context).bottom;
+    final navBar = MediaQuery.viewPaddingOf(context).bottom;
     return Container(
       decoration: BoxDecoration(color: colors.background),
-      padding: EdgeInsets.fromLTRB(16, 16, 16, 16 + MediaQuery.viewInsetsOf(context).bottom),
+      padding: EdgeInsets.fromLTRB(16, 16, 16, 16 + (keyboard > navBar ? keyboard : navBar)),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,

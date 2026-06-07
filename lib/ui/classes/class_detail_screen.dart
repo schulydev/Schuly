@@ -52,7 +52,7 @@ class _ClassDetailScreenState extends State<ClassDetailScreen> {
 
     Widget body;
     if (_loading) {
-      body = const Center(child: CircularProgressIndicator());
+      body = const Center(child: FCircularProgress());
     } else if (_error != null) {
       body = Center(
         child: Padding(

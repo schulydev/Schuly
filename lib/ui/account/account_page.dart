@@ -16,13 +16,11 @@ import '../documents/documents_page.dart';
 class AccountPage extends StatefulWidget {
   final String? pictureUrl;
   final String? userName;
-  final VoidCallback onOpenSwitcher;
   final VoidCallback onSignOut;
   const AccountPage({
     super.key,
     required this.pictureUrl,
     required this.userName,
-    required this.onOpenSwitcher,
     required this.onSignOut,
   });
 
@@ -34,17 +32,51 @@ class _AccountPageState extends State<AccountPage> {
   String? _version;
   bool _syncing = false;
   String? _syncMsg;
+  DateTime? _lastSync;
+  String? _syncStatus;
+  String? _syncError;
 
   @override
   void initState() {
     super.initState();
     _loadVersion();
+    _loadSyncStatus();
   }
 
+  /// Reads the active account's last-sync time / status / error off the plugin's
+  /// `…/sync` endpoint so the user can see when data was last refreshed and why
+  /// a sync failed.
+  Future<void> _loadSyncStatus() async {
+    try {
+      final active = ActiveAccountService.instance.active;
+      final accountId = active?.pluginAccountId;
+      if (accountId == null) return;
+      final sync = ApiClient.instance.api.getSyncApi();
+      final res = active!.provider == 'odaorg'
+          ? await sync.apiPluginsOdaorgAccountsAccountIdSyncGet(accountId: accountId)
+          : await sync.apiPluginsSchulwareAccountsAccountIdSyncGet(accountId: accountId);
+      final data = res.data as Map<String, dynamic>?;
+      if (!mounted || data == null) return;
+      setState(() {
+        final last = data['lastSync'];
+        _lastSync = last is String ? DateTime.tryParse(last)?.toLocal() : null;
+        _syncStatus = data['syncStatus']?.toString();
+        _syncError = data['syncError']?.toString();
+      });
+    } catch (_) {/* non-critical */}
+  }
+
+  /// The version shown is the active provider's plugin version (Schulware /
+  /// OdaOrg), read off its `…/status` endpoint — not the backend app version.
   Future<void> _loadVersion() async {
     try {
-      final res = await ApiClient.instance.api.getAppApi().apiAppGet();
-      if (mounted) setState(() => _version = res.data?.version);
+      final active = ActiveAccountService.instance.active;
+      final status = ApiClient.instance.api.getStatusApi();
+      final res = active?.provider == 'odaorg'
+          ? await status.apiPluginsOdaorgStatusGet()
+          : await status.apiPluginsSchulwareStatusGet();
+      final data = res.data as Map<String, dynamic>?;
+      if (mounted) setState(() => _version = data?['version']?.toString());
     } catch (_) {/* non-critical */}
   }
 
@@ -70,6 +102,7 @@ class _AccountPageState extends State<AccountPage> {
         await sync.apiPluginsSchulwareAccountsAccountIdSyncPost(accountId: accountId);
       }
       await SchoolDataService.instance.refresh();
+      await _loadSyncStatus();
       if (mounted) setState(() => _syncMsg = 'Synced just now');
     } on DioException catch (e) {
       if (mounted) setState(() => _syncMsg = 'Sync failed (${e.response?.statusCode ?? 'network'})');
@@ -102,6 +135,7 @@ class _AccountPageState extends State<AccountPage> {
       onRefresh: () async {
         await SchoolDataService.instance.refresh();
         await _loadVersion();
+        await _loadSyncStatus();
       },
       child: ListView(
       physics: const AlwaysScrollableScrollPhysics(),
@@ -193,13 +227,12 @@ class _AccountPageState extends State<AccountPage> {
                 MaterialPageRoute(builder: (_) => const DocumentsScreen())),
           ),
         ),
-        _SectionLabel('App'),
+        _SectionLabel('Plugin'),
         Padding(
           padding: const EdgeInsets.only(bottom: 8),
           child: FTile(
             prefix: _syncing
-                ? const SizedBox(
-                    width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2))
+                ? const FCircularProgress()
                 : const Icon(FIcons.refreshCw),
             title: const Text('Sync now'),
             subtitle: _syncMsg != null
@@ -211,9 +244,15 @@ class _AccountPageState extends State<AccountPage> {
         Padding(
           padding: const EdgeInsets.only(bottom: 8),
           child: FTile(
-            prefix: const Icon(FIcons.repeat),
-            title: const Text('Switch account'),
-            onPress: widget.onOpenSwitcher,
+            prefix: Icon(
+              (_syncError?.isNotEmpty ?? false) ? FIcons.circleAlert : FIcons.circleCheck,
+              color: (_syncError?.isNotEmpty ?? false) ? colors.destructive : null,
+            ),
+            title: const Text('Last sync'),
+            subtitle: (_syncError?.isNotEmpty ?? false)
+                ? Text(_syncError!, style: TextStyle(color: colors.destructive))
+                : (_syncStatus != null ? Text(_syncStatus!) : null),
+            details: Text(_lastSync != null ? _fmtSyncTime(_lastSync!) : 'Never'),
           ),
         ),
         Padding(
@@ -233,6 +272,14 @@ class _AccountPageState extends State<AccountPage> {
       ],
       ),
     );
+  }
+
+  static String _fmtSyncTime(DateTime t) {
+    final d = DateTime.now().difference(t);
+    if (d.inMinutes < 1) return 'just now';
+    if (d.inMinutes < 60) return '${d.inMinutes}m ago';
+    if (d.inHours < 24) return '${d.inHours}h ago';
+    return '${t.day}.${t.month}.${t.year}';
   }
 
   static String _roleLabel(Roles? r) => switch (r) {

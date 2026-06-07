@@ -193,8 +193,7 @@ class _FolderTileState extends State<_FolderTile> {
                       padding: const EdgeInsets.only(bottom: 8),
                       child: FTile(
                         prefix: widget.downloadingId == doc.id
-                            ? const SizedBox(
-                                width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2))
+                            ? const FCircularProgress()
                             : const Icon(FIcons.fileText),
                         title: Text(doc.title.isNotEmpty ? doc.title : (doc.fileName ?? 'Document')),
                         subtitle: Text([

@@ -117,14 +117,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
           AccountPage(
             pictureUrl: _pictureUrl,
             userName: _userName,
-            onOpenSwitcher: _openSidebar,
             onSignOut: widget.onSignOut,
           ),
         ];
 
         Widget body;
         if (data.loading && data.me == null) {
-          body = const Center(child: CircularProgressIndicator());
+          body = const Center(child: FCircularProgress());
         } else if (data.error != null && data.me == null) {
           body = Center(
             child: Padding(
