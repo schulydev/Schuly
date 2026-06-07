@@ -18,6 +18,7 @@ part 'agenda_entry_dto.g.dart';
 /// * [description] 
 /// * [place] 
 /// * [date] 
+/// * [endDate] 
 /// * [classId] 
 /// * [schoolId] 
 /// * [schoolUserId] 
@@ -41,6 +42,9 @@ abstract class AgendaEntryDto implements Built<AgendaEntryDto, AgendaEntryDtoBui
 
   @BuiltValueField(wireName: r'date')
   DateTime get date;
+
+  @BuiltValueField(wireName: r'endDate')
+  DateTime? get endDate;
 
   @BuiltValueField(wireName: r'classId')
   String? get classId;
@@ -110,6 +114,13 @@ class _$AgendaEntryDtoSerializer implements PrimitiveSerializer<AgendaEntryDto> 
       object.date,
       specifiedType: const FullType(DateTime),
     );
+    if (object.endDate != null) {
+      yield r'endDate';
+      yield serializers.serialize(
+        object.endDate,
+        specifiedType: const FullType.nullable(DateTime),
+      );
+    }
     if (object.classId != null) {
       yield r'classId';
       yield serializers.serialize(
@@ -197,6 +208,14 @@ class _$AgendaEntryDtoSerializer implements PrimitiveSerializer<AgendaEntryDto> 
             specifiedType: const FullType(DateTime),
           ) as DateTime;
           result.date = valueDes;
+          break;
+        case r'endDate':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType.nullable(DateTime),
+          ) as DateTime?;
+          if (valueDes == null) continue;
+          result.endDate = valueDes;
           break;
         case r'classId':
           final valueDes = serializers.deserialize(

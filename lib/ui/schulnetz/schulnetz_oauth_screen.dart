@@ -3,14 +3,13 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 
-/// Result of the Schulnetz OAuth WebView flow. Mirrors what the Kotlin
-/// test-app captures (see C:\Coding\SchulwareAPI\test-app\…\WebscrapeTab.kt):
-/// the final mobile `code`/`state` plus a Playwright-format `storage_state`
-/// JSON blob (cookies + per-origin localStorage) and the WebView's UA — and,
-/// additionally, the Schulnetz PHP **web session** (PHPSESSID + the
-/// `id`/`transid` URL params off the dashboard) that powers the scraper-only
-/// document/report-card pages. The web-session fields are nullable: if capture
-/// fails the login still succeeds with Mobile-only sync.
+/// Result of the Schulnetz OAuth WebView flow. Carries the mobile `code` (for
+/// the Mobile token exchange) plus a Playwright-format `storage_state` blob and
+/// the WebView's UA — and, additionally, the **PHP web session** read straight
+/// off the cookie jar after the school's web login (PHPSESSID + the id/transid
+/// URL params from a dashboard nav link). This is the approach the working
+/// test-app uses. The web fields are nullable: if capture fails the login still
+/// succeeds (the scraper pages just stay off).
 class SchulnetzOAuthResult {
   final String code;
   final String? state;
@@ -36,7 +35,8 @@ class SchulnetzOAuthScreen extends StatefulWidget {
   final String authorizationUrl;
 
   /// School root (e.g. https://schulnetz.bbbaden.ch). After the mobile code is
-  /// captured we navigate here to harvest the PHP web session.
+  /// captured we navigate here to drive the school's *web* login and read the
+  /// resulting PHP session off the cookie jar.
   final String schulnetzBaseUrl;
   const SchulnetzOAuthScreen({
     super.key,
@@ -49,30 +49,20 @@ class SchulnetzOAuthScreen extends StatefulWidget {
 }
 
 class _SchulnetzOAuthScreenState extends State<SchulnetzOAuthScreen> {
-  // origin (scheme://host) → list of {name, value} maps scraped from window.localStorage
   final Map<String, List<Map<String, String>>> _capturedLocalStorage = {};
 
   _Phase _phase = _Phase.mobileLogin;
-  Timer? _webSessionTimeout;
+  Timer? _webTimeout;
 
-  // Mobile-login result, stashed once the callback fires so we can continue to
-  // the web-session harvest before popping.
   String? _code;
   String? _state;
   String? _contextState;
 
-  // How long to wait for the dashboard (PHPSESSID + id/transid) before giving
-  // up and returning Mobile-only. The SSO cookies already exist from the mobile
-  // login, so the redirect chain is usually a second or two.
-  static const _webSessionWait = Duration(seconds: 20);
+  static const _webWait = Duration(seconds: 25);
 
-  // Real Chrome UA so MS doesn't fall into edge fallback paths.
   static const _userAgent =
       'Mozilla/5.0 (Linux; Android 14; Mobile) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Mobile Safari/537.36';
 
-  // Every host the SSO chain plausibly touches. Cookie manager only returns
-  // cookies that would be sent for the queried URL, so we union over all of
-  // these. Same list as the Kotlin tester.
   static const _originsToProbe = <String>[
     'https://schulnetz.bbbaden.ch',
     'https://schulnetz.web.app',
@@ -91,7 +81,7 @@ class _SchulnetzOAuthScreenState extends State<SchulnetzOAuthScreen> {
 
   @override
   void dispose() {
-    _webSessionTimeout?.cancel();
+    _webTimeout?.cancel();
     super.dispose();
   }
 
@@ -101,9 +91,7 @@ class _SchulnetzOAuthScreenState extends State<SchulnetzOAuthScreen> {
     if (_phase == _Phase.done) return NavigationActionPolicy.CANCEL;
     if (uri == null) return NavigationActionPolicy.ALLOW;
 
-    // The FINAL Schulnetz-issued mobile code lives only at
-    // schulnetz.web.app/callback. Strictly host-gate. MS also redirects with a
-    // code= param mid-chain, which we must let through.
+    // Mobile flow — the final mobile code is issued at schulnetz.web.app/callback.
     if (_phase == _Phase.mobileLogin &&
         uri.host == 'schulnetz.web.app' &&
         uri.path == '/callback' &&
@@ -112,10 +100,16 @@ class _SchulnetzOAuthScreenState extends State<SchulnetzOAuthScreen> {
       _state = uri.queryParameters['state'];
       _contextState = await _buildContextState();
 
-      // Continue, in the same authenticated WebView, to the school root to
-      // harvest the PHP web session for the scraper-only pages.
+      // Drop any stale Schulnetz cookie so the school mints a FRESH PHP session
+      // (a stale PHPSESSID is what made earlier captures unauthenticated), then
+      // drive the school web login in the same authenticated WebView.
+      try {
+        await CookieManager.instance()
+            .deleteCookies(url: WebUri(widget.schulnetzBaseUrl));
+      } catch (_) {}
+
       _phase = _Phase.webSession;
-      _webSessionTimeout = Timer(_webSessionWait, _finishMobileOnly);
+      _webTimeout = Timer(_webWait, _finishMobileOnly);
       await c.loadUrl(
           urlRequest: URLRequest(url: WebUri('${widget.schulnetzBaseUrl}/')));
       return NavigationActionPolicy.CANCEL;
@@ -130,8 +124,8 @@ class _SchulnetzOAuthScreenState extends State<SchulnetzOAuthScreen> {
     final host = url.host;
     if (scheme.isEmpty || host.isEmpty) return;
 
-    // During the web-session phase, every time a Schulnetz-host page settles
-    // try to harvest PHPSESSID + id + transid off the dashboard.
+    // During the web phase, every time a Schulnetz-host page settles, try to
+    // read the authenticated PHP session off the dashboard (test-app approach).
     if (_phase == _Phase.webSession && host == _schulnetzHost) {
       await _tryCaptureWebSession(c);
     }
@@ -153,17 +147,15 @@ class _SchulnetzOAuthScreenState extends State<SchulnetzOAuthScreen> {
               .toList();
         }
       }
-    } catch (_) {
-      // origin had no accessible localStorage; ignore.
-    }
+    } catch (_) {}
   }
 
-  /// Pull PHPSESSID from the cookie jar and id/transid from any dashboard
-  /// nav link. All three must be present; otherwise wait for the next page.
+  /// Read PHPSESSID from the cookie jar and id/transid from a dashboard nav
+  /// link. All three must be present (only the authenticated dashboard has the
+  /// pageid links); otherwise wait for the next page.
   Future<void> _tryCaptureWebSession(InAppWebViewController c) async {
     if (_phase != _Phase.webSession) return;
 
-    // CookieManager returns even HttpOnly cookies (unlike document.cookie).
     final cookies = await CookieManager.instance()
         .getCookies(url: WebUri(widget.schulnetzBaseUrl));
     String? sessionId;
@@ -173,7 +165,7 @@ class _SchulnetzOAuthScreenState extends State<SchulnetzOAuthScreen> {
         break;
       }
     }
-    if (sessionId == null || sessionId.isEmpty) return; // page still loading
+    if (sessionId == null || sessionId.isEmpty) return;
 
     final raw = await c.evaluateJavascript(source: r'''
       (function(){
@@ -194,16 +186,13 @@ class _SchulnetzOAuthScreenState extends State<SchulnetzOAuthScreen> {
           id = decoded['id']?.toString();
           transid = decoded['transid']?.toString();
         }
-      } catch (_) {/* malformed → treat as not-yet-ready */}
+      } catch (_) {}
     }
     if (id == null || id.isEmpty || transid == null || transid.isEmpty) return;
 
-    _finish(
-        webSessionId: sessionId, webSessionUserId: id, webSessionTransId: transid);
+    _finish(webSessionId: sessionId, webSessionUserId: id, webSessionTransId: transid);
   }
 
-  /// Web-session capture timed out — return with the mobile code only. Grades,
-  /// agenda and absences still sync via the Mobile API; documents stay off.
   void _finishMobileOnly() => _finish();
 
   void _finish({
@@ -213,7 +202,7 @@ class _SchulnetzOAuthScreenState extends State<SchulnetzOAuthScreen> {
   }) {
     if (_phase == _Phase.done || _code == null || _contextState == null) return;
     _phase = _Phase.done;
-    _webSessionTimeout?.cancel();
+    _webTimeout?.cancel();
     if (!mounted) return;
     Navigator.of(context).pop(SchulnetzOAuthResult(
       code: _code!,
@@ -226,12 +215,10 @@ class _SchulnetzOAuthScreenState extends State<SchulnetzOAuthScreen> {
     ));
   }
 
-  /// Snapshot cookies (across all SSO origins) + localStorage into a
-  /// Playwright `storage_state` JSON blob.
   Future<String> _buildContextState() async {
     final cm = CookieManager.instance();
     final cookies = <Map<String, String>>[];
-    final seen = <String>{}; // dedupe domain|name|value
+    final seen = <String>{};
 
     final origins =
         {..._originsToProbe, ..._capturedLocalStorage.keys}.toList();
@@ -277,6 +264,8 @@ class _SchulnetzOAuthScreenState extends State<SchulnetzOAuthScreen> {
           domStorageEnabled: true,
           databaseEnabled: true,
           thirdPartyCookiesEnabled: true,
+          cacheEnabled: false,
+          clearCache: true,
           userAgent: _userAgent,
         ),
         shouldOverrideUrlLoading: _shouldOverride,

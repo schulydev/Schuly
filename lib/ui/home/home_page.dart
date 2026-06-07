@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
+import 'package:schuly_api/schuly_api.dart';
 
 import '../../services/school_data_service.dart';
 import '../core/grade_color.dart';
@@ -18,20 +19,29 @@ class HomePage extends StatelessWidget {
     bool sameDay(DateTime d) => d.year == today.year && d.month == today.month && d.day == today.day;
     DateTime dayOf(DateTime d) => DateTime(d.year, d.month, d.day);
 
-    final todayEntries = svc.agenda.where((a) => sameDay(a.date)).toList()
+    bool isHoliday(AgendaEntryDto a) => a.entryType == AgendaEntryType.holiday;
+
+    final todayEntries = svc.agenda.where((a) => !isHoliday(a) && sameDay(a.date)).toList()
       ..sort((a, b) => a.date.compareTo(b.date));
 
-    final upcoming = svc.agenda.where((a) => dayOf(a.date).isAfter(today)).toList()
+    final upcoming = svc.agenda.where((a) => !isHoliday(a) && dayOf(a.date).isAfter(today)).toList()
+      ..sort((a, b) => a.date.compareTo(b.date));
+
+    // Current or upcoming holidays (those whose end—or start—hasn't passed).
+    final holidays = svc.agenda
+        .where((a) => isHoliday(a) && !dayOf(a.endDate ?? a.date).isBefore(today))
+        .toList()
       ..sort((a, b) => a.date.compareTo(b.date));
 
     final myGrades = svc.myGradesByExam;
     final examName = {for (final e in svc.exams) e.id: e.name};
     // Only real grades on the latest-grades card (drop ungraded 0 placeholders).
+    // Latest 4 grades (Schulnetz returns them oldest-first, so newest = reversed).
     final recentGrades = myGrades.entries
         .where((e) => isGraded(e.value.score))
         .toList()
         .reversed
-        .take(5)
+        .take(4)
         .toList();
 
     final recentAbsences = svc.absences.toList()
@@ -65,6 +75,20 @@ class HomePage extends StatelessWidget {
                 prefix: const Icon(FIcons.calendarDays),
                 title: Text(t.title?.isNotEmpty == true ? t.title! : 'Entry'),
                 subtitle: Text('${_dateLabel(t.date)} · ${_time(t.date)}'),
+              ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        _Section(
+          title: 'Next holiday',
+          emptyText: 'No upcoming holidays',
+          tiles: [
+            if (holidays.isNotEmpty)
+              FTile(
+                prefix: const Icon(FIcons.treePalm),
+                title: Text(holidays.first.title.isNotEmpty ? holidays.first.title : 'Holiday'),
+                subtitle: Text(_holidayRange(holidays.first.date, holidays.first.endDate)),
+                details: Text(_countdown(today, holidays.first.date)),
               ),
           ],
         ),
@@ -107,6 +131,19 @@ class HomePage extends StatelessWidget {
   static String _dateLabel(DateTime d) {
     const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
     return '${days[d.weekday - 1]} ${d.day}.${d.month}.';
+  }
+
+  static String _countdown(DateTime today, DateTime from) {
+    final days = DateTime(from.year, from.month, from.day).difference(today).inDays;
+    if (days <= 0) return 'now';
+    if (days == 1) return 'tomorrow';
+    return 'in $days days';
+  }
+
+  static String _holidayRange(DateTime from, DateTime? end) {
+    String d(DateTime x) => '${x.day}.${x.month}.${x.year}';
+    if (end == null || end.difference(from).inDays.abs() < 1) return d(from);
+    return '${d(from)} – ${d(end)}';
   }
 
   static String _rangeLabel(DateTime from, DateTime? until) {

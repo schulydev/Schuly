@@ -1,7 +1,10 @@
 class OidcConfig {
   static const authority = 'https://auth.gaggao.com';
   static const clientId = 'fe2e0db0-69e3-48e3-845c-561f7a36d280';
-  static const scope = 'openid profile email groups picture';
+  // `offline_access` is required for Pocket ID to issue a refresh token —
+  // without it the silent token refresh has nothing to work with and the user
+  // gets bounced to re-login the moment the access token expires.
+  static const scope = 'openid profile email groups picture offline_access';
 
   // Custom scheme deep link. Pocket ID redirects here after login; Android
   // routes it back to the app via the schulytest:// intent filter, so the

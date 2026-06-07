@@ -14,6 +14,7 @@ Name | Type | Description | Notes
 **description** | **String** |  | [optional] 
 **place** | **String** |  | [optional] 
 **date** | [**DateTime**](DateTime.md) |  | 
+**endDate** | [**DateTime**](DateTime.md) |  | [optional] 
 **classId** | **String** |  | [optional] 
 **schoolId** | **String** |  | [optional] 
 **schoolUserId** | **String** |  | [optional] 
