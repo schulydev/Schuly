@@ -71,7 +71,7 @@ class _RootScreenState extends State<RootScreen> {
     final signedIn = _signedIn;
 
     if (signedIn == null) {
-      return const FScaffold(child: Center(child: CircularProgressIndicator()));
+      return const FScaffold(child: Center(child: FCircularProgress()));
     }
 
     if (signedIn) {
