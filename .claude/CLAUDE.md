@@ -12,7 +12,7 @@ Minimal Flutter app. UI built with [Forui](https://forui.dev) (`FTheme` + `F*` w
 - No AI / Claude attribution in commits or PRs. Ever.
 - No test plans in PRs. PR body is **Summary** + `Closes #<issue>` only.
 - Commit subject: short imperative.
-- PR labels: `bug`, `enhancement`, `refactor`, `stale`.
+- PR labels: `bug`, `enhancement`, `feature`, `refactor`, `CI/CD`, `dependencies`, `documentation`.
 
 ## Tasks (preferred)
 
