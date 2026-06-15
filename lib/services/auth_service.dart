@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:flutter/foundation.dart';
 import 'package:app_links/app_links.dart';
 import 'package:crypto/crypto.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -27,6 +28,36 @@ class AuthService {
   static const _kAccessTokenKey = 'auth.access_token';
   static const _kIdTokenKey = 'auth.id_token';
   static const _kRefreshTokenKey = 'auth.refresh_token';
+
+  /// OIDC tokens live in the platform keystore (Android EncryptedSharedPrefs /
+  /// iOS Keychain), not plaintext SharedPreferences.
+  static const _storage = FlutterSecureStorage(
+    aOptions: AndroidOptions(encryptedSharedPreferences: true),
+  );
+
+  /// One-shot migration of tokens written by older builds into SharedPreferences.
+  /// Memoised so it runs at most once per process.
+  static Future<void>? _migration;
+  static Future<void> _ensureMigrated() => _migration ??= _migrate();
+
+  static Future<void> _migrate() async {
+    // Already in secure storage → nothing to carry over.
+    if (await _storage.containsKey(key: _kAccessTokenKey)) return;
+
+    final prefs = await SharedPreferences.getInstance();
+    final access = prefs.getString(_kAccessTokenKey);
+    if (access == null) return; // fresh install or already migrated + signed out
+
+    final idToken = prefs.getString(_kIdTokenKey);
+    final refresh = prefs.getString(_kRefreshTokenKey);
+    await _storage.write(key: _kAccessTokenKey, value: access);
+    if (idToken != null) await _storage.write(key: _kIdTokenKey, value: idToken);
+    if (refresh != null) await _storage.write(key: _kRefreshTokenKey, value: refresh);
+
+    await prefs.remove(_kAccessTokenKey);
+    await prefs.remove(_kIdTokenKey);
+    await prefs.remove(_kRefreshTokenKey);
+  }
 
   static final AppLinks _appLinks = AppLinks();
 
@@ -125,22 +156,24 @@ class AuthService {
   }
 
   static Future<void> _persist(AuthTokens tokens) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_kAccessTokenKey, tokens.accessToken);
-    if (tokens.idToken != null) await prefs.setString(_kIdTokenKey, tokens.idToken!);
+    await _ensureMigrated();
+    await _storage.write(key: _kAccessTokenKey, value: tokens.accessToken);
+    if (tokens.idToken != null) {
+      await _storage.write(key: _kIdTokenKey, value: tokens.idToken!);
+    }
     if (tokens.refreshToken != null) {
-      await prefs.setString(_kRefreshTokenKey, tokens.refreshToken!);
+      await _storage.write(key: _kRefreshTokenKey, value: tokens.refreshToken!);
     }
   }
 
   static Future<String?> getAccessToken() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(_kAccessTokenKey);
+    await _ensureMigrated();
+    return _storage.read(key: _kAccessTokenKey);
   }
 
   static Future<String?> getRefreshToken() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(_kRefreshTokenKey);
+    await _ensureMigrated();
+    return _storage.read(key: _kRefreshTokenKey);
   }
 
   /// Exchanges the stored refresh token for a fresh access token and persists
@@ -182,8 +215,8 @@ class AuthService {
   /// malformed. Pure local decode — no signature verification, which is fine
   /// since the token was already validated at exchange time.
   static Future<Map<String, dynamic>?> getIdTokenClaims() async {
-    final prefs = await SharedPreferences.getInstance();
-    final idToken = prefs.getString(_kIdTokenKey);
+    await _ensureMigrated();
+    final idToken = await _storage.read(key: _kIdTokenKey);
     if (idToken == null) return null;
     final parts = idToken.split('.');
     if (parts.length != 3) return null;
@@ -196,6 +229,10 @@ class AuthService {
   }
 
   static Future<void> signOut() async {
+    await _storage.delete(key: _kAccessTokenKey);
+    await _storage.delete(key: _kIdTokenKey);
+    await _storage.delete(key: _kRefreshTokenKey);
+    // Clear any tokens an older build may have left in SharedPreferences too.
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_kAccessTokenKey);
     await prefs.remove(_kIdTokenKey);
