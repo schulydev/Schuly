@@ -123,7 +123,7 @@ class _AccountPageState extends State<AccountPage> {
     String fmtDate(Date? d) => d == null ? '—' : '${d.day}.${d.month}.${d.year}';
     final fullName = me == null
         ? (widget.userName ?? '—')
-        : '${me.firstName ?? ''} ${me.lastName ?? ''}'.trim();
+        : '${me.firstName} ${me.lastName}'.trim();
     final initial = fullName.isNotEmpty ? fullName.characters.first.toUpperCase() : '?';
     final fallback = Text(initial,
         style: TextStyle(color: colors.mutedForeground, fontWeight: FontWeight.w600));
@@ -184,12 +184,12 @@ class _AccountPageState extends State<AccountPage> {
               padding: const EdgeInsets.only(bottom: 8),
               child: FTile(
                 prefix: const Icon(FIcons.users),
-                title: Text(c.className ?? 'Class'),
+                title: Text(c.className),
                 suffix: const Icon(FIcons.chevronRight),
                 onPress: () => Navigator.of(context).push(MaterialPageRoute(
                   builder: (_) => ClassDetailScreen(
                     classId: c.classId,
-                    title: c.className ?? 'Class',
+                    title: c.className,
                   ),
                 )),
               ),
@@ -203,8 +203,8 @@ class _AccountPageState extends State<AccountPage> {
               padding: const EdgeInsets.only(bottom: 8),
               child: FTile(
                 prefix: const Icon(FIcons.user),
-                title: Text('${t.firstName ?? ''} ${t.lastName ?? ''}'.trim()),
-                subtitle: (t.code?.isNotEmpty ?? false) ? Text(t.code!) : null,
+                title: Text('${t.firstName} ${t.lastName}'.trim()),
+                subtitle: t.code.isNotEmpty ? Text(t.code) : null,
                 suffix: (t.email?.isNotEmpty ?? false) ? const Icon(FIcons.mail) : null,
                 onPress: (t.email?.isNotEmpty ?? false)
                     ? () => launchUrl(Uri(scheme: 'mailto', path: t.email))

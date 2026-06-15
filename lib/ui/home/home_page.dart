@@ -60,7 +60,7 @@ class HomePage extends StatelessWidget {
             for (final l in todayEntries)
               FTile(
                 prefix: const Icon(FIcons.calendarDays),
-                title: Text(l.title?.isNotEmpty == true ? l.title! : 'Entry'),
+                title: Text(l.title.isNotEmpty == true ? l.title : 'Entry'),
                 subtitle: Text([_time(l.date), l.place].whereType<String>().where((s) => s.isNotEmpty).join(' · ')),
               ),
           ],
@@ -73,7 +73,7 @@ class HomePage extends StatelessWidget {
             for (final t in upcoming.take(5))
               FTile(
                 prefix: const Icon(FIcons.calendarDays),
-                title: Text(t.title?.isNotEmpty == true ? t.title! : 'Entry'),
+                title: Text(t.title.isNotEmpty == true ? t.title : 'Entry'),
                 subtitle: Text('${_dateLabel(t.date)} · ${_time(t.date)}'),
               ),
           ],
@@ -112,7 +112,7 @@ class HomePage extends StatelessWidget {
             for (final a in recentAbsences.take(4))
               FTile(
                 prefix: const Icon(FIcons.calendarOff),
-                title: Text(a.reason?.isNotEmpty == true ? a.reason! : 'Absence'),
+                title: Text(a.reason.isNotEmpty == true ? a.reason : 'Absence'),
                 subtitle: Text(_rangeLabel(a.from, a.until)),
               ),
           ],
