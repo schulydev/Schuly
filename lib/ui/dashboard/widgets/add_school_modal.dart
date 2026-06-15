@@ -1,63 +1,49 @@
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 
+import '../../../domain/school_system.dart';
+import '../../../services/school_systems_service.dart';
 import '../../odaorg/connect_odaorg_screen.dart';
 import '../../schulnetz/connect_account_screen.dart';
 
-/// A school system the user can connect. Today only Schulnetz; the modal is
-/// shaped as a list so additional providers slot in without UX churn.
-class SchoolSystem {
-  final String id;
-  final String label;
-  final String assetPath;
-  /// When false the card is rendered greyed out with a "coming soon" hint
-  /// and tapping is a no-op. Lets us advertise upcoming integrations without
-  /// wiring them.
-  final bool enabled;
-  const SchoolSystem({
-    required this.id,
-    required this.label,
-    required this.assetPath,
-    this.enabled = true,
-  });
-}
+/// Local logo assets keyed by school-system key. Backend-advertised systems we
+/// don't yet bundle an asset for fall back to a generic icon.
+const _systemAssets = <String, String>{
+  'schulnetz': 'assets/schoolsystems/schulnetz.webp',
+  'odaorg': 'assets/schoolsystems/odaorg.webp',
+};
 
-const _systems = <SchoolSystem>[
-  SchoolSystem(
-    id: 'schulnetz',
-    label: 'Schulnetz',
-    assetPath: 'assets/schoolsystems/schulnetz.webp',
-  ),
-  SchoolSystem(
-    id: 'odaorg',
-    label: 'OdAOrg',
-    assetPath: 'assets/schoolsystems/odaorg.webp',
-  ),
-];
-
-/// Full add-school flow: show the school-system picker, then run the chosen
-/// system's connect screen. Returns the new account id, or null if the user
-/// cancelled at any step. [navigator] is the navigator the connect screen is
-/// pushed onto — pass the dashboard's, not a sheet/dialog navigator that may
-/// be torn down mid-flow.
+/// Full add-school flow: fetch the backend's school-system catalog, show the
+/// picker, then run the chosen system's connect screen. Returns the new account
+/// id, or null if the user cancelled at any step. [navigator] is the navigator
+/// the connect screen is pushed onto — pass the dashboard's, not a sheet/dialog
+/// navigator that may be torn down mid-flow.
 Future<String?> runAddSchoolFlow(
   BuildContext context,
   NavigatorState navigator,
 ) async {
-  final system = await showAddSchoolModal(context);
-  if (system == null) return null;
-  // Each provider has its own connect screen — Schulnetz uses OAuth (WebView),
-  // OdAOrg uses username/password.
-  final Widget screen = switch (system) {
-    'odaorg' => const ConnectOdaOrgScreen(),
+  final systems = await SchoolSystemsService.fetch();
+  if (!context.mounted) return null;
+
+  final systemKey = await showAddSchoolModal(context, systems);
+  if (systemKey == null) return null;
+
+  final system = systems.firstWhere((s) => s.key == systemKey);
+  // Branch on how the system logs in: credentials (OdAOrg) uses a
+  // username/password screen, everything else uses the OAuth (WebView) flow.
+  final Widget screen = switch (system.loginMethod) {
+    'credentials' => const ConnectOdaOrgScreen(),
     _ => const ConnectAccountScreen(),
   };
   return navigator.push<String>(MaterialPageRoute(builder: (_) => screen));
 }
 
-/// Shows the school-system picker. Resolves to the chosen [SchoolSystem.id]
-/// or `null` if the user dismissed.
-Future<String?> showAddSchoolModal(BuildContext context) {
+/// Shows the school-system picker for [systems]. Resolves to the chosen
+/// [SchoolSystem.key] or `null` if the user dismissed.
+Future<String?> showAddSchoolModal(
+  BuildContext context,
+  List<SchoolSystem> systems,
+) {
   return showFDialog<String>(
     context: context,
     builder: (dialogCtx, style, animation) => FDialog(
@@ -68,10 +54,11 @@ Future<String?> showAddSchoolModal(BuildContext context) {
         runSpacing: 12,
         alignment: WrapAlignment.center,
         children: [
-          for (final s in _systems)
+          for (final s in systems)
             _SystemCard(
               system: s,
-              onTap: s.enabled ? () => Navigator.of(dialogCtx).pop(s.id) : null,
+              onTap:
+                  s.enabled ? () => Navigator.of(dialogCtx).pop(s.key) : null,
             ),
         ],
       ),
@@ -94,6 +81,7 @@ class _SystemCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.theme.colors;
     final disabled = onTap == null;
+    final asset = _systemAssets[system.key];
     return Opacity(
       opacity: disabled ? 0.5 : 1.0,
       child: SizedBox(
@@ -107,10 +95,13 @@ class _SystemCard extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Image.asset(system.assetPath, width: 48, height: 48),
+                  if (asset != null)
+                    Image.asset(asset, width: 48, height: 48)
+                  else
+                    Icon(Icons.school, size: 48, color: colors.mutedForeground),
                   const SizedBox(height: 10),
                   Text(
-                    system.label,
+                    system.displayName,
                     textAlign: TextAlign.center,
                     style: const TextStyle(fontWeight: FontWeight.w600),
                   ),
