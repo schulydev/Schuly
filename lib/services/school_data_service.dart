@@ -4,6 +4,10 @@ import 'package:schuly_api/schuly_api.dart';
 
 import 'active_account_service.dart';
 import 'api_client.dart';
+import 'app_mode_service.dart';
+import 'private_account_store.dart';
+import 'private_data_adapter.dart';
+import 'schulware_proxy_client.dart';
 
 /// Loads and caches the per-school data the UI renders: the signed-in user's
 /// SchoolUser record (with nested grades/absences/classes), plus the school's
@@ -61,6 +65,11 @@ class SchoolDataService extends ChangeNotifier {
   }
 
   Future<void> refresh() async {
+    if (AppModeService.instance.isPrivate) {
+      await _refreshPrivate();
+      return;
+    }
+
     final schoolId = ActiveAccountService.instance.active?.id;
     if (schoolId == null) {
       _me = null;
@@ -134,6 +143,43 @@ class SchoolDataService extends ChangeNotifier {
       _documents = (documents.data ?? BuiltList<StudentDocumentDto>())
           .where((d) => meId == null || d.schoolUserId == meId)
           .toList(growable: false);
+    } catch (e) {
+      _error = e;
+    } finally {
+      _loading = false;
+      notifyListeners();
+    }
+  }
+
+  /// Private mode: pull data from the stateless proxy with the on-device
+  /// credentials and adapt it into the same DTOs the UI renders. Nothing here
+  /// touches a Schuly account; features without a proxy source stay empty.
+  Future<void> _refreshPrivate() async {
+    final account = await PrivateAccountStore.instance.load();
+    if (account == null) {
+      clear();
+      return;
+    }
+
+    _loading = true;
+    _error = null;
+    notifyListeners();
+    try {
+      final proxy = SchulwareProxyClient.instance;
+      final info = await proxy.userInfo(account);
+      final grades = await proxy.grades(account);
+      final exams = await proxy.exams(account);
+      final absences = await proxy.absences(account);
+      final agenda = await proxy.agenda(account);
+
+      _me = PrivateDataAdapter.schoolUser(info, grades, absences);
+      _exams = PrivateDataAdapter.exams(exams);
+      _absences = PrivateDataAdapter.absencesList(absences);
+      _agenda = PrivateDataAdapter.agenda(agenda);
+      _classes = const [];
+      _reports = const [];
+      _teachers = const [];
+      _documents = const [];
     } catch (e) {
       _error = e;
     } finally {
