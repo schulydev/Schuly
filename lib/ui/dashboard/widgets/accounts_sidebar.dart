@@ -3,6 +3,7 @@ import 'package:forui/forui.dart';
 
 import '../../../domain/schulware_account.dart';
 import '../../../services/active_account_service.dart';
+import '../../../services/app_mode_service.dart';
 import '../../settings/settings_screen.dart';
 import 'add_school_modal.dart';
 
@@ -87,6 +88,7 @@ class AccountsSidebar extends StatelessWidget {
         builder: (context, _) {
           final svc = ActiveAccountService.instance;
           final active = svc.active;
+          final isPrivate = AppModeService.instance.isPrivate;
 
           // showFSheet strips MediaQuery.padding, so SafeArea is a no-op here.
           // viewPadding survives, so pad the content with it manually — keeps
@@ -106,55 +108,71 @@ class AccountsSidebar extends StatelessWidget {
                   pictureUrl: pictureUrl,
                 ),
                 FDivider(style: (s) => s.copyWith(padding: EdgeInsets.zero)),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 12, 20, 6),
-                  child: Text(
-                    'Schools'.toUpperCase(),
-                    style: typography.xs.copyWith(
-                      color: colors.mutedForeground,
-                      fontWeight: FontWeight.w600,
-                      letterSpacing: 0.5,
+                if (!isPrivate)
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 12, 20, 6),
+                    child: Text(
+                      'Schools'.toUpperCase(),
+                      style: typography.xs.copyWith(
+                        color: colors.mutedForeground,
+                        fontWeight: FontWeight.w600,
+                        letterSpacing: 0.5,
+                      ),
                     ),
                   ),
-                ),
                 Expanded(
-                  child: ListView(
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
-                    children: [
-                      for (final s in svc.schools)
-                        FTile(
-                          prefix: _SchoolAvatar(logoUrl: s.logoUrl, fallbackAsset: s.logoAsset),
-                          title: Text(s.name),
-                          subtitle: (s.fullName?.isNotEmpty ?? false)
-                              ? Text(s.fullName!)
-                              : (s.email?.isNotEmpty ?? false)
-                                  ? Text(s.email!)
-                                  : null,
-                          suffix: s.id == active?.id
-                              ? Icon(FIcons.check, color: colors.primary)
-                              : null,
-                          onPress: () async {
-                            await svc.setActive(s.id);
-                            if (context.mounted) {
-                              Navigator.of(context).maybePop();
-                            }
-                          },
-                          onLongPress: () => _confirmRemove(context, s),
+                  child: isPrivate
+                      ? Center(
+                          child: Padding(
+                            padding: const EdgeInsets.all(24),
+                            child: Text(
+                              'Private mode — your data stays on this device.',
+                              textAlign: TextAlign.center,
+                              style: typography.sm
+                                  .copyWith(color: colors.mutedForeground),
+                            ),
+                          ),
+                        )
+                      : ListView(
+                          padding: const EdgeInsets.symmetric(horizontal: 12),
+                          children: [
+                            for (final s in svc.schools)
+                              FTile(
+                                prefix: _SchoolAvatar(
+                                    logoUrl: s.logoUrl, fallbackAsset: s.logoAsset),
+                                title: Text(s.name),
+                                subtitle: (s.fullName?.isNotEmpty ?? false)
+                                    ? Text(s.fullName!)
+                                    : (s.email?.isNotEmpty ?? false)
+                                        ? Text(s.email!)
+                                        : null,
+                                suffix: s.id == active?.id
+                                    ? Icon(FIcons.check, color: colors.primary)
+                                    : null,
+                                onPress: () async {
+                                  await svc.setActive(s.id);
+                                  if (context.mounted) {
+                                    Navigator.of(context).maybePop();
+                                  }
+                                },
+                                onLongPress: () => _confirmRemove(context, s),
+                              ),
+                          ],
                         ),
-                    ],
-                  ),
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 12),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      FTile(
-                        prefix: const Icon(FIcons.plus),
-                        title: const Text('Add school account'),
-                        onPress: () => _add(context),
-                      ),
-                      const SizedBox(height: 4),
+                      if (!isPrivate) ...[
+                        FTile(
+                          prefix: const Icon(FIcons.plus),
+                          title: const Text('Add school account'),
+                          onPress: () => _add(context),
+                        ),
+                        const SizedBox(height: 4),
+                      ],
                       FTile(
                         prefix: const Icon(FIcons.settings),
                         title: const Text('Settings'),
