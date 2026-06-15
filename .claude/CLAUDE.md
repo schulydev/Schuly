@@ -2,6 +2,24 @@
 
 Minimal Flutter app. UI built with [Forui](https://forui.dev) (`FTheme` + `F*` widgets).
 
+## App modes (account vs private)
+
+The app runs in one of two modes, chosen at the gate (`AppModeService`):
+
+- **Account mode** — OIDC login (Pocket ID) via `ApiClient`; data lives server-side
+  and the backend syncs it. The normal flow.
+- **Private / secure mode** — **no Schuly login, no OIDC**. Credentials live only in
+  the device keystore (`PrivateAccountStore`); data is fetched live from the backend's
+  **anonymous** stateless proxy endpoints with **clean `Dio`** clients
+  (`SchulwareProxyClient`, `OdaorgProxyClient`) and never persisted server-side.
+
+Both modes render the system picker + login forms from the backend catalog
+(`GET /api/app/school-systems`) — systems, login fields, and stateless endpoint
+paths are **never hardcoded** in the client. The private connect flow is one generic
+screen driven by `loginMethod` (`oauth-webview` / `credentials`).
+
+See `docs/architecture-modes.md` for the full diagram.
+
 ## Workflow rules (enforced)
 
 - Never work on `main`. Create an issue (labeled) → branch `feature/<issue#>_PascalCase`
