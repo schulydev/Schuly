@@ -103,6 +103,60 @@ class SchulwareProxyClient {
     return res.data == null ? null : PrivateUserInfo.fromJson(res.data!);
   }
 
+  /// Fetches everything the private dashboard needs. If the access token has
+  /// expired (a 401 from any call), does one passwordless refresh from the
+  /// stored `context_state`, retries, and reports the rotated account back via
+  /// [SchulwarePrivateData.refreshedAccount] so the caller can persist it.
+  Future<SchulwarePrivateData> fetchAll(PrivateAccount account) async {
+    try {
+      return await _fetchAll(account, null);
+    } on DioException catch (e) {
+      if (e.response?.statusCode != 401) rethrow;
+      final refreshed = await _refreshAccount(account);
+      if (refreshed == null) rethrow;
+      return await _fetchAll(refreshed, refreshed);
+    }
+  }
+
+  Future<SchulwarePrivateData> _fetchAll(
+      PrivateAccount a, PrivateAccount? refreshed) async {
+    final info = await userInfo(a);
+    final g = await grades(a);
+    final e = await exams(a);
+    final ab = await absences(a);
+    final ag = await agenda(a);
+    return SchulwarePrivateData(
+      userInfo: info,
+      grades: g,
+      exams: e,
+      absences: ab,
+      agenda: ag,
+      refreshedAccount: refreshed,
+    );
+  }
+
+  /// Runs a passwordless refresh and returns an account carrying the new token
+  /// and rotated context_state, or null if it isn't possible / failed.
+  Future<PrivateAccount?> _refreshAccount(PrivateAccount a) async {
+    if (a.contextState == null || a.userAgent == null) return null;
+    final r = await refresh(
+      schulnetzBaseUrl: a.baseUrl,
+      userAgent: a.userAgent!,
+      contextState: a.contextState!,
+    );
+    if (!r.success || r.accessToken == null) return null;
+    return PrivateAccount(
+      systemKey: a.systemKey,
+      loginMethod: a.loginMethod,
+      baseUrl: a.baseUrl,
+      displayName: a.displayName,
+      accessToken: r.accessToken,
+      refreshToken: r.refreshToken ?? a.refreshToken,
+      contextState: r.contextState ?? a.contextState,
+      userAgent: a.userAgent,
+    );
+  }
+
   Future<List<T>> _list<T>(
     String path,
     PrivateAccount a,
@@ -119,4 +173,23 @@ class SchulwareProxyClient {
         'X-Schulware-Token': a.accessToken ?? '',
         'X-Schulnetz-Base-Url': a.baseUrl,
       };
+}
+
+/// Everything the private dashboard pulls in one pass. [refreshedAccount] is
+/// non-null when the token was refreshed mid-fetch and should be persisted.
+class SchulwarePrivateData {
+  final PrivateUserInfo? userInfo;
+  final List<PrivateGrade> grades;
+  final List<PrivateExam> exams;
+  final List<PrivateAbsence> absences;
+  final List<PrivateAgendaEvent> agenda;
+  final PrivateAccount? refreshedAccount;
+  const SchulwarePrivateData({
+    required this.userInfo,
+    required this.grades,
+    required this.exams,
+    required this.absences,
+    required this.agenda,
+    this.refreshedAccount,
+  });
 }
