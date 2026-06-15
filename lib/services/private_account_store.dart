@@ -15,6 +15,9 @@ class PrivateAccount {
   final String baseUrl;
   final String displayName;
 
+  /// Base path of the system's stateless plugin endpoints (from the catalog).
+  final String statelessBasePath;
+
   // oauth-webview:
   final String? accessToken;
   final String? refreshToken;
@@ -34,6 +37,7 @@ class PrivateAccount {
     required this.loginMethod,
     required this.baseUrl,
     required this.displayName,
+    required this.statelessBasePath,
     this.accessToken,
     this.refreshToken,
     this.contextState,
@@ -49,6 +53,7 @@ class PrivateAccount {
         'loginMethod': loginMethod,
         'baseUrl': baseUrl,
         'displayName': displayName,
+        'statelessBasePath': statelessBasePath,
         'accessToken': accessToken,
         'refreshToken': refreshToken,
         'contextState': contextState,
@@ -62,6 +67,10 @@ class PrivateAccount {
         loginMethod: json['loginMethod'] as String? ?? 'oauth-webview',
         baseUrl: json['baseUrl'] as String? ?? '',
         displayName: json['displayName'] as String? ?? 'School',
+        statelessBasePath: json['statelessBasePath'] as String? ??
+            ((json['loginMethod'] as String? ?? 'oauth-webview') == 'credentials'
+                ? '/api/plugins/odaorg/stateless'
+                : '/api/plugins/schulware/stateless'),
         accessToken: json['accessToken'] as String?,
         refreshToken: json['refreshToken'] as String?,
         contextState: json['contextState'] as String?,

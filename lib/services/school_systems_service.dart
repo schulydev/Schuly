@@ -24,12 +24,14 @@ class SchoolSystemsService {
       key: 'schulnetz',
       displayName: 'Schulnetz',
       loginMethod: 'oauth-webview',
+      statelessBasePath: '/api/plugins/schulware/stateless',
       sortOrder: 0,
     ),
     SchoolSystem(
       key: 'odaorg',
       displayName: 'OdAOrg',
       loginMethod: 'credentials',
+      statelessBasePath: '/api/plugins/odaorg/stateless',
       sortOrder: 1,
     ),
   ];
