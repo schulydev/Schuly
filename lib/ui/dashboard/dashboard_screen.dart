@@ -3,7 +3,9 @@ import 'package:flutter/services.dart';
 import 'package:forui/forui.dart';
 
 import '../../services/active_account_service.dart';
+import '../../services/app_mode_service.dart';
 import '../../services/auth_service.dart';
+import '../../services/private_account_store.dart';
 import '../../services/school_data_service.dart';
 import '../absences/absences_page.dart';
 import '../account/account_page.dart';
@@ -27,6 +29,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   String? _pictureUrl;
   String? _userName;
   String? _userEmail;
+  String? _privateTitle;
   int _index = 0;
 
   @override
@@ -55,6 +58,19 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   Future<void> _bootstrap() async {
+    // Private mode: no Pocket ID / school switcher — just load proxied data.
+    if (AppModeService.instance.isPrivate) {
+      final account = await PrivateAccountStore.instance.load();
+      if (mounted) {
+        setState(() {
+          _userName = account?.displayName;
+          _privateTitle = account?.displayName;
+        });
+      }
+      await SchoolDataService.instance.refresh();
+      return;
+    }
+
     final claims = await AuthService.getIdTokenClaims();
     if (mounted && claims != null) {
       setState(() {
@@ -138,8 +154,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
         return FScaffold(
           header: _TopBar(
-            title: active?.name ?? 'Schuly',
-            subtitle: active?.fullName,
+            title: AppModeService.instance.isPrivate
+                ? (_privateTitle ?? 'Schuly')
+                : (active?.name ?? 'Schuly'),
+            subtitle:
+                AppModeService.instance.isPrivate ? null : active?.fullName,
             pictureUrl: _pictureUrl,
             userName: _userName,
             onAvatar: _openSidebar,
