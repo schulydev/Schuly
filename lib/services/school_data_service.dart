@@ -41,7 +41,7 @@ class SchoolDataService extends ChangeNotifier {
   Map<String, String> get classNameById {
     final out = <String, String>{};
     for (final c in _classes) {
-      if (c.id != null && (c.name?.isNotEmpty ?? false)) out[c.id!] = c.name!;
+      if (c.id != null && c.name.isNotEmpty) out[c.id!] = c.name;
     }
     return out;
   }
