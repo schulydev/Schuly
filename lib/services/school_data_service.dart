@@ -167,18 +167,16 @@ class SchoolDataService extends ChangeNotifier {
     notifyListeners();
     try {
       if (account.isOauth) {
-        // OAuth systems (Schulnetz): separate mobile endpoints.
-        final proxy = SchulwareProxyClient.instance;
-        final info = await proxy.userInfo(account);
-        final grades = await proxy.grades(account);
-        final exams = await proxy.exams(account);
-        final absences = await proxy.absences(account);
-        final agenda = await proxy.agenda(account);
-
-        _me = PrivateDataAdapter.schoolUser(info, grades, absences);
-        _exams = PrivateDataAdapter.exams(exams);
-        _absences = PrivateDataAdapter.absencesList(absences);
-        _agenda = PrivateDataAdapter.agenda(agenda);
+        // OAuth systems (Schulnetz): batched mobile endpoints with a
+        // passwordless token refresh on expiry.
+        final d = await SchulwareProxyClient.instance.fetchAll(account);
+        if (d.refreshedAccount != null) {
+          await PrivateAccountStore.instance.save(d.refreshedAccount!);
+        }
+        _me = PrivateDataAdapter.schoolUser(d.userInfo, d.grades, d.absences);
+        _exams = PrivateDataAdapter.exams(d.exams);
+        _absences = PrivateDataAdapter.absencesList(d.absences);
+        _agenda = PrivateDataAdapter.agenda(d.agenda);
       } else {
         // Credentials systems (OdAOrg): one scrape pass returns everything.
         final d = await OdaorgProxyClient.instance.data(account);
