@@ -4,15 +4,18 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 /// On-device credentials for a private-mode (account-free) connection.
 /// Held only in the device keystore — never sent to or stored on a Schuly
-/// account. Supports both providers: Schulnetz (OAuth tokens + context_state)
-/// and OdAOrg (username/password).
+/// account. Provider-agnostic: [loginMethod] (from the backend catalog) drives
+/// how the connection authenticates and where its data is fetched.
 class PrivateAccount {
-  /// `'schulnetz'` or `'odaorg'`.
-  final String provider;
+  /// The catalog system key this connection belongs to (e.g. `schulnetz`).
+  final String systemKey;
+
+  /// Backend-provided discriminator: `oauth-webview` or `credentials`.
+  final String loginMethod;
   final String baseUrl;
   final String displayName;
 
-  // Schulnetz (OAuth):
+  // oauth-webview:
   final String? accessToken;
   final String? refreshToken;
 
@@ -22,12 +25,13 @@ class PrivateAccount {
   /// Exact WebView user-agent captured at login (Microsoft pins cookies to UA).
   final String? userAgent;
 
-  // OdAOrg (credentials):
+  // credentials:
   final String? username;
   final String? password;
 
   const PrivateAccount({
-    required this.provider,
+    required this.systemKey,
+    required this.loginMethod,
     required this.baseUrl,
     required this.displayName,
     this.accessToken,
@@ -38,43 +42,11 @@ class PrivateAccount {
     this.password,
   });
 
-  bool get isSchulnetz => provider == 'schulnetz';
-  bool get isOdaorg => provider == 'odaorg';
-
-  factory PrivateAccount.schulnetz({
-    required String baseUrl,
-    required String displayName,
-    required String accessToken,
-    String? refreshToken,
-    required String contextState,
-    required String userAgent,
-  }) =>
-      PrivateAccount(
-        provider: 'schulnetz',
-        baseUrl: baseUrl,
-        displayName: displayName,
-        accessToken: accessToken,
-        refreshToken: refreshToken,
-        contextState: contextState,
-        userAgent: userAgent,
-      );
-
-  factory PrivateAccount.odaorg({
-    required String baseUrl,
-    required String displayName,
-    required String username,
-    required String password,
-  }) =>
-      PrivateAccount(
-        provider: 'odaorg',
-        baseUrl: baseUrl,
-        displayName: displayName,
-        username: username,
-        password: password,
-      );
+  bool get isOauth => loginMethod == 'oauth-webview';
 
   Map<String, dynamic> toJson() => {
-        'provider': provider,
+        'systemKey': systemKey,
+        'loginMethod': loginMethod,
         'baseUrl': baseUrl,
         'displayName': displayName,
         'accessToken': accessToken,
@@ -86,9 +58,9 @@ class PrivateAccount {
       };
 
   factory PrivateAccount.fromJson(Map<String, dynamic> json) => PrivateAccount(
-        provider: json['provider'] as String? ?? 'schulnetz',
-        baseUrl:
-            (json['baseUrl'] ?? json['schulnetzBaseUrl']) as String? ?? '',
+        systemKey: json['systemKey'] as String? ?? 'schulnetz',
+        loginMethod: json['loginMethod'] as String? ?? 'oauth-webview',
+        baseUrl: json['baseUrl'] as String? ?? '',
         displayName: json['displayName'] as String? ?? 'School',
         accessToken: json['accessToken'] as String?,
         refreshToken: json['refreshToken'] as String?,
