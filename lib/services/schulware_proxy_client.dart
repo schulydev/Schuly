@@ -13,8 +13,6 @@ class SchulwareProxyClient {
   SchulwareProxyClient._();
   static final SchulwareProxyClient instance = SchulwareProxyClient._();
 
-  static const _base = '/api/plugins/schulware/stateless';
-
   final Dio _dio = Dio(BaseOptions(
     baseUrl: OidcConfig.backendBaseUrl,
     connectTimeout: const Duration(seconds: 10),
@@ -24,9 +22,10 @@ class SchulwareProxyClient {
   // --- Auth ---
 
   /// Starts OAuth: returns the Schulnetz authorize URL + PKCE verifier.
-  Future<PrivateAuthorizeUrl> authorizeUrl(String schulnetzBaseUrl) async {
+  Future<PrivateAuthorizeUrl> authorizeUrl(
+      String basePath, String schulnetzBaseUrl) async {
     final res = await _dio.get<Map<String, dynamic>>(
-      '$_base/authorize-url',
+      '$basePath/authorize-url',
       queryParameters: {'schulnetzBaseUrl': schulnetzBaseUrl},
     );
     return PrivateAuthorizeUrl.fromJson(res.data ?? const {});
@@ -34,13 +33,14 @@ class SchulwareProxyClient {
 
   /// Exchanges the OAuth code for tokens.
   Future<PrivateTokens> exchangeCode({
+    required String basePath,
     required String code,
     required String codeVerifier,
     String? state,
     required String schulnetzBaseUrl,
   }) async {
     final res = await _dio.post<Map<String, dynamic>>(
-      '$_base/oauth/callback',
+      '$basePath/oauth/callback',
       data: {
         'code': code,
         'codeVerifier': codeVerifier,
@@ -53,12 +53,13 @@ class SchulwareProxyClient {
 
   /// Passwordless refresh from a stored context_state (JSON string).
   Future<PrivateRefreshResult> refresh({
+    required String basePath,
     required String schulnetzBaseUrl,
     required String userAgent,
     required String contextState,
   }) async {
     final res = await _dio.post<Map<String, dynamic>>(
-      '$_base/refresh',
+      '$basePath/refresh',
       data: {
         'schulnetzBaseUrl': schulnetzBaseUrl,
         'userAgent': userAgent,
@@ -97,7 +98,7 @@ class SchulwareProxyClient {
 
   Future<PrivateUserInfo?> userInfo(PrivateAccount a) async {
     final res = await _dio.get<Map<String, dynamic>>(
-      '$_base/userinfo',
+      '${a.statelessBasePath}/userinfo',
       options: Options(headers: _headers(a)),
     );
     return res.data == null ? null : PrivateUserInfo.fromJson(res.data!);
@@ -140,6 +141,7 @@ class SchulwareProxyClient {
   Future<PrivateAccount?> _refreshAccount(PrivateAccount a) async {
     if (a.contextState == null || a.userAgent == null) return null;
     final r = await refresh(
+      basePath: a.statelessBasePath,
       schulnetzBaseUrl: a.baseUrl,
       userAgent: a.userAgent!,
       contextState: a.contextState!,
@@ -150,6 +152,7 @@ class SchulwareProxyClient {
       loginMethod: a.loginMethod,
       baseUrl: a.baseUrl,
       displayName: a.displayName,
+      statelessBasePath: a.statelessBasePath,
       accessToken: r.accessToken,
       refreshToken: r.refreshToken ?? a.refreshToken,
       contextState: r.contextState ?? a.contextState,
@@ -162,7 +165,7 @@ class SchulwareProxyClient {
     PrivateAccount a,
     T Function(Map<String, dynamic>) fromJson,
   ) async {
-    final res = await _dio.get<List<dynamic>>('$_base$path',
+    final res = await _dio.get<List<dynamic>>('${a.statelessBasePath}$path',
         options: Options(headers: _headers(a)));
     return (res.data ?? const [])
         .map((e) => fromJson(e as Map<String, dynamic>))

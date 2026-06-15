@@ -25,8 +25,6 @@ class OdaorgProxyClient {
   OdaorgProxyClient._();
   static final OdaorgProxyClient instance = OdaorgProxyClient._();
 
-  static const _base = '/api/plugins/odaorg/stateless';
-
   final Dio _dio = Dio(BaseOptions(
     baseUrl: OidcConfig.backendBaseUrl,
     connectTimeout: const Duration(seconds: 10),
@@ -35,7 +33,7 @@ class OdaorgProxyClient {
 
   Future<OdaorgData> data(PrivateAccount account) async {
     final res = await _dio.post<Map<String, dynamic>>(
-      '$_base/data',
+      '${account.statelessBasePath}/data',
       data: {
         'baseUrl': account.baseUrl,
         'username': account.username,
