@@ -36,7 +36,7 @@ class MySchool {
   }) =>
       MySchool(
         id: dto.id ?? '',
-        name: (dto.name?.isNotEmpty ?? false) ? dto.name! : 'School',
+        name: dto.name.isNotEmpty ? dto.name : 'School',
         email: dto.email,
         fullName: dto.fullName,
         provider: provider,

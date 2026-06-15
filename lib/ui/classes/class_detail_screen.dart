@@ -65,7 +65,7 @@ class _ClassDetailScreenState extends State<ClassDetailScreen> {
       body = Center(child: Text('Not found', style: TextStyle(color: colors.mutedForeground)));
     } else {
       final students = (c.students ?? const <SchoolUserDto>[]).toList()
-        ..sort((a, b) => '${a.lastName}'.compareTo('${b.lastName}'));
+        ..sort((a, b) => a.lastName.compareTo(b.lastName));
       final exams = c.exams ?? const <ExamDto>[];
       final agenda = (c.agenda ?? const <AgendaEntryDto>[]).toList()
         ..sort((a, b) => a.date.compareTo(b.date));
@@ -89,9 +89,9 @@ class _ClassDetailScreenState extends State<ClassDetailScreen> {
                   child: FTile(
                     prefix: _StudentAvatar(
                       url: OidcConfig.resolveUrl(s.profilePictureUrl),
-                      name: '${s.firstName ?? ''} ${s.lastName ?? ''}'.trim(),
+                      name: '${s.firstName} ${s.lastName}'.trim(),
                     ),
-                    title: Text('${s.firstName ?? ''} ${s.lastName ?? ''}'.trim()),
+                    title: Text('${s.firstName} ${s.lastName}'.trim()),
                   ),
                 ),
               const SizedBox(height: 12),
@@ -102,7 +102,7 @@ class _ClassDetailScreenState extends State<ClassDetailScreen> {
                 Padding(
                   padding: const EdgeInsets.only(bottom: 8),
                   child: FTile(
-                    title: Text(e.name ?? 'Exam'),
+                    title: Text(e.name),
                     subtitle: Text('class ⌀ ${formatGrade(e.classAverage)}'),
                     suffix: isGraded(e.classAverage)
                         ? GradePill(e.classAverage)
@@ -118,7 +118,7 @@ class _ClassDetailScreenState extends State<ClassDetailScreen> {
                   padding: const EdgeInsets.only(bottom: 8),
                   child: FTile(
                     prefix: const Icon(FIcons.calendarDays),
-                    title: Text(a.title?.isNotEmpty == true ? a.title! : 'Entry'),
+                    title: Text(a.title.isNotEmpty == true ? a.title : 'Entry'),
                     subtitle: Text('${a.date.day}.${a.date.month}.${a.date.year}'),
                   ),
                 ),

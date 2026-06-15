@@ -136,7 +136,7 @@ class _EntryTile extends StatelessWidget {
     final time = _timeRange(entry.date);
     return FTile(
       prefix: Icon(icon, color: color),
-      title: Text(entry.title?.isNotEmpty == true ? entry.title! : label),
+      title: Text(entry.title.isNotEmpty == true ? entry.title : label),
       subtitle: Text([time, entry.place].whereType<String>().where((s) => s.isNotEmpty).join(' · ')),
       suffix: _TypeBadge(label: label, color: color),
     );
