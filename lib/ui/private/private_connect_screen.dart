@@ -75,8 +75,9 @@ class _PrivateConnectScreenState extends State<PrivateConnectScreen> {
   }
 
   Future<void> _connectOauth(String baseUrl, String name) async {
+    final basePath = _system.resolvedStatelessBasePath;
     final proxy = SchulwareProxyClient.instance;
-    final auth = await proxy.authorizeUrl(baseUrl);
+    final auth = await proxy.authorizeUrl(basePath, baseUrl);
     if (auth.authorizationUrl == null || auth.codeVerifier == null) {
       setState(() => _error = 'Failed to start login');
       return;
@@ -95,6 +96,7 @@ class _PrivateConnectScreenState extends State<PrivateConnectScreen> {
       return;
     }
     final tokens = await proxy.exchangeCode(
+      basePath: basePath,
       code: result.code,
       codeVerifier: auth.codeVerifier!,
       state: result.state,
@@ -109,6 +111,7 @@ class _PrivateConnectScreenState extends State<PrivateConnectScreen> {
       loginMethod: _system.loginMethod,
       baseUrl: baseUrl,
       displayName: name,
+      statelessBasePath: basePath,
       accessToken: tokens.accessToken,
       refreshToken: tokens.refreshToken,
       contextState: result.contextState,
@@ -123,6 +126,7 @@ class _PrivateConnectScreenState extends State<PrivateConnectScreen> {
       loginMethod: _system.loginMethod,
       baseUrl: baseUrl,
       displayName: name,
+      statelessBasePath: _system.resolvedStatelessBasePath,
       username: _form.value('username'),
       password: _form.value('password'),
     );

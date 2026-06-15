@@ -7,6 +7,10 @@ class SchoolSystem {
   final String? logoUrl;
   final String? schulwareApiBaseUrl;
 
+  /// Base path of this system's stateless plugin endpoints (private mode),
+  /// e.g. `/api/plugins/schulware/stateless`. Served by the catalog.
+  final String? statelessBasePath;
+
   /// How the app drives the login: `oauth-webview` or `credentials`.
   final String loginMethod;
   final bool enabled;
@@ -19,10 +23,19 @@ class SchoolSystem {
     required this.loginMethod,
     this.logoUrl,
     this.schulwareApiBaseUrl,
+    this.statelessBasePath,
     this.enabled = true,
     this.sortOrder = 0,
     this.loginFields = const [],
   });
+
+  /// The stateless base path, falling back to the conventional plugin route by
+  /// login method for catalogs that predate the `statelessBasePath` field.
+  String get resolvedStatelessBasePath =>
+      statelessBasePath ??
+      (loginMethod == 'credentials'
+          ? '/api/plugins/odaorg/stateless'
+          : '/api/plugins/schulware/stateless');
 
   factory SchoolSystem.fromJson(Map<String, dynamic> json) {
     final fields = (json['loginFields'] as List<dynamic>? ?? [])
@@ -33,6 +46,7 @@ class SchoolSystem {
       displayName: json['displayName'] as String,
       logoUrl: json['logoUrl'] as String?,
       schulwareApiBaseUrl: json['schulwareApiBaseUrl'] as String?,
+      statelessBasePath: json['statelessBasePath'] as String?,
       loginMethod: json['loginMethod'] as String? ?? 'oauth-webview',
       enabled: json['enabled'] as bool? ?? true,
       sortOrder: json['sortOrder'] as int? ?? 0,
