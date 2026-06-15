@@ -177,6 +177,7 @@ class SchoolDataService extends ChangeNotifier {
         _exams = PrivateDataAdapter.exams(d.exams);
         _absences = PrivateDataAdapter.absencesList(d.absences);
         _agenda = PrivateDataAdapter.agenda(d.agenda);
+        _classes = PrivateDataAdapter.classes(d.grades, d.exams);
       } else {
         // Credentials systems (OdAOrg): one scrape pass returns everything.
         final d = await OdaorgProxyClient.instance.data(account);
@@ -184,8 +185,10 @@ class SchoolDataService extends ChangeNotifier {
         _exams = PrivateDataAdapter.exams(d.exams);
         _absences = const [];
         _agenda = PrivateDataAdapter.agenda(d.agenda);
+        _classes = PrivateDataAdapter.classes(d.grades, d.exams);
       }
-      _classes = const [];
+      // Reports, teachers and documents are scraper-only / not exposed by
+      // SchulwareAPI mobile, so they have no stateless source in private mode.
       _reports = const [];
       _teachers = const [];
       _documents = const [];

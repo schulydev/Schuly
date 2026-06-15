@@ -73,4 +73,29 @@ class PrivateDataAdapter {
 
   static List<AgendaEntryDto> agenda(List<PrivateAgendaEvent> e) =>
       e.map(agendaEntry).toList(growable: false);
+
+  /// Derives the student's classes from the distinct subjects across their
+  /// grades and exams, attaching each subject's exams — mirroring how the
+  /// account-mode backend sync creates a Class per course. (SchulwareAPI mobile
+  /// has no standalone classes endpoint, so this is the private-mode analogue.)
+  static List<ClassDto> classes(
+    List<PrivateGrade> grades,
+    List<PrivateExam> exams,
+  ) {
+    final subjects = <String>{};
+    for (final g in grades) {
+      if (g.subject != null && g.subject!.isNotEmpty) subjects.add(g.subject!);
+    }
+    for (final e in exams) {
+      if (e.subject != null && e.subject!.isNotEmpty) subjects.add(e.subject!);
+    }
+    final sorted = subjects.toList()..sort();
+    return sorted
+        .map((subject) => ClassDto((b) => b
+          ..id = 'private-class-$subject'
+          ..name = subject
+          ..exams = ListBuilder<ExamDto>(
+              exams.where((e) => e.subject == subject).map(exam))))
+        .toList(growable: false);
+  }
 }
