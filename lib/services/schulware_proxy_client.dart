@@ -116,7 +116,7 @@ class SchulwareProxyClient {
   }
 
   Map<String, String> _headers(PrivateAccount a) => {
-        'X-Schulware-Token': a.accessToken,
-        'X-Schulnetz-Base-Url': a.schulnetzBaseUrl,
+        'X-Schulware-Token': a.accessToken ?? '',
+        'X-Schulnetz-Base-Url': a.baseUrl,
       };
 }

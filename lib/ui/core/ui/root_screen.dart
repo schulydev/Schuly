@@ -7,7 +7,7 @@ import '../../../services/app_mode_service.dart';
 import '../../../services/auth_service.dart';
 import '../../../services/private_account_store.dart';
 import '../../dashboard/dashboard_screen.dart';
-import '../../schulnetz/private_connect_screen.dart';
+import '../../private/private_connect_flow.dart';
 
 /// Tier-1 gate. In **account** mode the user signs in with Pocket ID; in
 /// **private** mode they connect a school directly (no account) and the creds
@@ -69,10 +69,8 @@ class _RootScreenState extends State<RootScreen> {
   }
 
   Future<void> _connectPrivate() async {
-    final ok = await Navigator.of(context).push<bool>(
-      MaterialPageRoute(builder: (_) => const PrivateConnectScreen()),
-    );
-    if (ok == true) await _refresh();
+    final ok = await runPrivateConnectFlow(context);
+    if (ok) await _refresh();
   }
 
   Future<void> _signOut() async {

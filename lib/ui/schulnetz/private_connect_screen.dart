@@ -78,8 +78,8 @@ class _PrivateConnectScreenState extends State<PrivateConnectScreen> {
 
       // 4. Persist everything on-device for passwordless refresh + data calls.
       final name = _nameCtrl.text.trim();
-      await PrivateAccountStore.instance.save(PrivateAccount(
-        schulnetzBaseUrl: url,
+      await PrivateAccountStore.instance.save(PrivateAccount.schulnetz(
+        baseUrl: url,
         displayName: name.isEmpty ? 'Schulnetz' : name,
         accessToken: tokens.accessToken!,
         refreshToken: tokens.refreshToken,

@@ -2,59 +2,100 @@ import 'dart:convert';
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-/// On-device credentials for a private-mode (account-free) Schulnetz connection.
-/// Held only in the device keystore — never sent to or stored on a Schuly account.
+/// On-device credentials for a private-mode (account-free) connection.
+/// Held only in the device keystore — never sent to or stored on a Schuly
+/// account. Supports both providers: Schulnetz (OAuth tokens + context_state)
+/// and OdAOrg (username/password).
 class PrivateAccount {
-  final String schulnetzBaseUrl;
+  /// `'schulnetz'` or `'odaorg'`.
+  final String provider;
+  final String baseUrl;
   final String displayName;
-  final String accessToken;
+
+  // Schulnetz (OAuth):
+  final String? accessToken;
   final String? refreshToken;
 
-  /// Opaque Playwright storage_state blob (JSON string) used for passwordless refresh.
-  final String contextState;
+  /// Opaque Playwright storage_state blob (JSON string) for passwordless refresh.
+  final String? contextState;
 
   /// Exact WebView user-agent captured at login (Microsoft pins cookies to UA).
-  final String userAgent;
+  final String? userAgent;
+
+  // OdAOrg (credentials):
+  final String? username;
+  final String? password;
 
   const PrivateAccount({
-    required this.schulnetzBaseUrl,
+    required this.provider,
+    required this.baseUrl,
     required this.displayName,
-    required this.accessToken,
-    required this.contextState,
-    required this.userAgent,
+    this.accessToken,
     this.refreshToken,
+    this.contextState,
+    this.userAgent,
+    this.username,
+    this.password,
   });
 
-  PrivateAccount copyWith({
-    String? accessToken,
+  bool get isSchulnetz => provider == 'schulnetz';
+  bool get isOdaorg => provider == 'odaorg';
+
+  factory PrivateAccount.schulnetz({
+    required String baseUrl,
+    required String displayName,
+    required String accessToken,
     String? refreshToken,
-    String? contextState,
+    required String contextState,
+    required String userAgent,
   }) =>
       PrivateAccount(
-        schulnetzBaseUrl: schulnetzBaseUrl,
+        provider: 'schulnetz',
+        baseUrl: baseUrl,
         displayName: displayName,
-        accessToken: accessToken ?? this.accessToken,
-        refreshToken: refreshToken ?? this.refreshToken,
-        contextState: contextState ?? this.contextState,
+        accessToken: accessToken,
+        refreshToken: refreshToken,
+        contextState: contextState,
         userAgent: userAgent,
       );
 
+  factory PrivateAccount.odaorg({
+    required String baseUrl,
+    required String displayName,
+    required String username,
+    required String password,
+  }) =>
+      PrivateAccount(
+        provider: 'odaorg',
+        baseUrl: baseUrl,
+        displayName: displayName,
+        username: username,
+        password: password,
+      );
+
   Map<String, dynamic> toJson() => {
-        'schulnetzBaseUrl': schulnetzBaseUrl,
+        'provider': provider,
+        'baseUrl': baseUrl,
         'displayName': displayName,
         'accessToken': accessToken,
         'refreshToken': refreshToken,
         'contextState': contextState,
         'userAgent': userAgent,
+        'username': username,
+        'password': password,
       };
 
   factory PrivateAccount.fromJson(Map<String, dynamic> json) => PrivateAccount(
-        schulnetzBaseUrl: json['schulnetzBaseUrl'] as String,
-        displayName: json['displayName'] as String? ?? 'Schulnetz',
-        accessToken: json['accessToken'] as String,
+        provider: json['provider'] as String? ?? 'schulnetz',
+        baseUrl:
+            (json['baseUrl'] ?? json['schulnetzBaseUrl']) as String? ?? '',
+        displayName: json['displayName'] as String? ?? 'School',
+        accessToken: json['accessToken'] as String?,
         refreshToken: json['refreshToken'] as String?,
-        contextState: json['contextState'] as String,
-        userAgent: json['userAgent'] as String,
+        contextState: json['contextState'] as String?,
+        userAgent: json['userAgent'] as String?,
+        username: json['username'] as String?,
+        password: json['password'] as String?,
       );
 }
 
