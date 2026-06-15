@@ -166,15 +166,8 @@ class SchoolDataService extends ChangeNotifier {
     _error = null;
     notifyListeners();
     try {
-      if (account.isOdaorg) {
-        // OdAOrg: one scrape pass returns everything.
-        final d = await OdaorgProxyClient.instance.data(account);
-        _me = PrivateDataAdapter.schoolUser(d.userInfo, d.grades, const []);
-        _exams = PrivateDataAdapter.exams(d.exams);
-        _absences = const [];
-        _agenda = PrivateDataAdapter.agenda(d.agenda);
-      } else {
-        // Schulnetz: separate mobile endpoints.
+      if (account.isOauth) {
+        // OAuth systems (Schulnetz): separate mobile endpoints.
         final proxy = SchulwareProxyClient.instance;
         final info = await proxy.userInfo(account);
         final grades = await proxy.grades(account);
@@ -186,6 +179,13 @@ class SchoolDataService extends ChangeNotifier {
         _exams = PrivateDataAdapter.exams(exams);
         _absences = PrivateDataAdapter.absencesList(absences);
         _agenda = PrivateDataAdapter.agenda(agenda);
+      } else {
+        // Credentials systems (OdAOrg): one scrape pass returns everything.
+        final d = await OdaorgProxyClient.instance.data(account);
+        _me = PrivateDataAdapter.schoolUser(d.userInfo, d.grades, const []);
+        _exams = PrivateDataAdapter.exams(d.exams);
+        _absences = const [];
+        _agenda = PrivateDataAdapter.agenda(d.agenda);
       }
       _classes = const [];
       _reports = const [];
