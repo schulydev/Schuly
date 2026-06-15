@@ -3,33 +3,40 @@ import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 import 'package:schuly_api/schuly_api.dart';
 
+import '../../domain/school_system.dart';
 import '../../services/api_client.dart';
+import '../widgets/dynamic_login_form.dart';
 
 /// Connects an OdaOrg account. Unlike Schulnetz (OAuth/WebView), OdaOrg uses
 /// plain username/password credentials posted to the backend, which then runs
-/// the initial sync. Pops with the new account id (String) on success.
+/// the initial sync. Pops with the new account id (String) on success. The
+/// login inputs are rendered from [system]'s backend-described `loginFields`.
 class ConnectOdaOrgScreen extends StatefulWidget {
-  const ConnectOdaOrgScreen({super.key});
+  final SchoolSystem system;
+  const ConnectOdaOrgScreen({required this.system, super.key});
 
   @override
   State<ConnectOdaOrgScreen> createState() => _ConnectOdaOrgScreenState();
 }
 
 class _ConnectOdaOrgScreenState extends State<ConnectOdaOrgScreen> {
-  final _userCtrl = TextEditingController();
-  final _passCtrl = TextEditingController();
-  final _urlCtrl = TextEditingController(text: 'https://www.oda.org');
-  final _nameCtrl = TextEditingController(text: 'OdAOrg');
+  late final DynamicLoginFormController _form;
+  late final TextEditingController _nameCtrl;
   bool _busy = false;
   String? _error;
 
   SchulyApi get _api => ApiClient.instance.api;
 
   @override
+  void initState() {
+    super.initState();
+    _form = DynamicLoginFormController(widget.system.loginFields);
+    _nameCtrl = TextEditingController(text: widget.system.displayName);
+  }
+
+  @override
   void dispose() {
-    _userCtrl.dispose();
-    _passCtrl.dispose();
-    _urlCtrl.dispose();
+    _form.dispose();
     _nameCtrl.dispose();
     super.dispose();
   }
@@ -43,10 +50,9 @@ class _ConnectOdaOrgScreenState extends State<ConnectOdaOrgScreen> {
   }
 
   Future<void> _connect() async {
-    final user = _userCtrl.text.trim();
-    final pass = _passCtrl.text;
-    if (user.isEmpty || pass.isEmpty) {
-      setState(() => _error = 'Username and password are required');
+    final missing = _form.validateRequired();
+    if (missing != null) {
+      setState(() => _error = missing);
       return;
     }
     setState(() {
@@ -57,9 +63,9 @@ class _ConnectOdaOrgScreenState extends State<ConnectOdaOrgScreen> {
       final accountsApi = _api.getAccountsApi();
       final create = await accountsApi.apiPluginsOdaorgAccountsPost(
         connectOdaOrgRequest: ConnectOdaOrgRequest((b) => b
-          ..username = user
-          ..password = pass
-          ..baseUrl = _urlCtrl.text.trim()
+          ..username = _form.value('username')
+          ..password = _form.value('password')
+          ..baseUrl = _form.value('baseUrl')
           ..displayName = _nameCtrl.text.trim()),
       );
       final accountId = _expectJson<Map<String, dynamic>>(create)['id'] as String;
@@ -84,30 +90,14 @@ class _ConnectOdaOrgScreenState extends State<ConnectOdaOrgScreen> {
     final colors = context.theme.colors;
     return FScaffold(
       header: FHeader.nested(
-        title: const Text('Add OdAOrg Account'),
+        title: Text('Add ${widget.system.displayName} Account'),
         prefixes: [FHeaderAction.back(onPress: () => Navigator.of(context).pop())],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         spacing: 16,
         children: [
-          FTextField(
-            control: FTextFieldControl.managed(controller: _userCtrl),
-            label: const Text('Username'),
-            hint: 'e.g. LRN26487',
-            autocorrect: false,
-          ),
-          FTextField(
-            control: FTextFieldControl.managed(controller: _passCtrl),
-            label: const Text('Password'),
-            obscureText: true,
-            autocorrect: false,
-          ),
-          FTextField(
-            control: FTextFieldControl.managed(controller: _urlCtrl),
-            label: const Text('Base URL'),
-            keyboardType: TextInputType.url,
-          ),
+          DynamicLoginForm(controller: _form),
           FTextField(
             control: FTextFieldControl.managed(controller: _nameCtrl),
             label: const Text('Display Name'),

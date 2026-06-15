@@ -32,8 +32,8 @@ Future<String?> runAddSchoolFlow(
   // Branch on how the system logs in: credentials (OdAOrg) uses a
   // username/password screen, everything else uses the OAuth (WebView) flow.
   final Widget screen = switch (system.loginMethod) {
-    'credentials' => const ConnectOdaOrgScreen(),
-    _ => const ConnectAccountScreen(),
+    'credentials' => ConnectOdaOrgScreen(system: system),
+    _ => ConnectAccountScreen(system: system),
   };
   return navigator.push<String>(MaterialPageRoute(builder: (_) => screen));
 }

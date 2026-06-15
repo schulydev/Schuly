@@ -2,31 +2,42 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 import 'package:schuly_api/schuly_api.dart';
+import '../../domain/school_system.dart';
 import '../../services/api_client.dart';
+import '../widgets/dynamic_login_form.dart';
 import 'schulnetz_oauth_screen.dart';
 
 /// Connects a Schulnetz school account on the backend.
 ///
 /// Pushed as its own route. Pops with the new account id (`String`) on success
-/// or `null` if the user cancels / a failure occurred.
+/// or `null` if the user cancels / a failure occurred. The login inputs are
+/// rendered from [system]'s backend-described `loginFields`.
 class ConnectAccountScreen extends StatefulWidget {
-  const ConnectAccountScreen({super.key});
+  final SchoolSystem system;
+  const ConnectAccountScreen({required this.system, super.key});
 
   @override
   State<ConnectAccountScreen> createState() => _ConnectAccountScreenState();
 }
 
 class _ConnectAccountScreenState extends State<ConnectAccountScreen> {
-  final _urlCtrl = TextEditingController(text: 'https://schulnetz.bbbaden.ch');
-  final _nameCtrl = TextEditingController(text: 'BBBaden');
+  late final DynamicLoginFormController _form;
+  late final TextEditingController _nameCtrl;
   bool _busy = false;
   String? _error;
 
   SchulyApi get _api => ApiClient.instance.api;
 
   @override
+  void initState() {
+    super.initState();
+    _form = DynamicLoginFormController(widget.system.loginFields);
+    _nameCtrl = TextEditingController(text: widget.system.displayName);
+  }
+
+  @override
   void dispose() {
-    _urlCtrl.dispose();
+    _form.dispose();
     _nameCtrl.dispose();
     super.dispose();
   }
@@ -40,12 +51,17 @@ class _ConnectAccountScreenState extends State<ConnectAccountScreen> {
   }
 
   Future<void> _create() async {
+    final missing = _form.validateRequired();
+    if (missing != null) {
+      setState(() => _error = missing);
+      return;
+    }
     setState(() {
       _busy = true;
       _error = null;
     });
     try {
-      final url = _urlCtrl.text.trim();
+      final url = _form.value('baseUrl');
       final accountsApi = _api.getAccountsApi();
       final oauthApi = _api.getOAuthApi();
       String? accountId;
@@ -130,7 +146,7 @@ class _ConnectAccountScreenState extends State<ConnectAccountScreen> {
     final colors = context.theme.colors;
     return FScaffold(
       header: FHeader.nested(
-        title: const Text('Add Schulnetz Account'),
+        title: Text('Add ${widget.system.displayName} Account'),
         prefixes: [
           FHeaderAction.back(
             onPress: () => Navigator.of(context).pop(),
@@ -141,12 +157,7 @@ class _ConnectAccountScreenState extends State<ConnectAccountScreen> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         spacing: 16,
         children: [
-          FTextField(
-            control: FTextFieldControl.managed(controller: _urlCtrl),
-            label: const Text('Schulnetz Base URL'),
-            hint: 'https://schulnetz.example.ch',
-            keyboardType: TextInputType.url,
-          ),
+          DynamicLoginForm(controller: _form),
           FTextField(
             control: FTextFieldControl.managed(controller: _nameCtrl),
             label: const Text('Display Name'),
