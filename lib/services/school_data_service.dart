@@ -5,6 +5,7 @@ import 'package:schuly_api/schuly_api.dart';
 import 'active_account_service.dart';
 import 'api_client.dart';
 import 'app_mode_service.dart';
+import 'odaorg_proxy_client.dart';
 import 'private_account_store.dart';
 import 'private_data_adapter.dart';
 import 'schulware_proxy_client.dart';
@@ -165,17 +166,27 @@ class SchoolDataService extends ChangeNotifier {
     _error = null;
     notifyListeners();
     try {
-      final proxy = SchulwareProxyClient.instance;
-      final info = await proxy.userInfo(account);
-      final grades = await proxy.grades(account);
-      final exams = await proxy.exams(account);
-      final absences = await proxy.absences(account);
-      final agenda = await proxy.agenda(account);
+      if (account.isOdaorg) {
+        // OdAOrg: one scrape pass returns everything.
+        final d = await OdaorgProxyClient.instance.data(account);
+        _me = PrivateDataAdapter.schoolUser(d.userInfo, d.grades, const []);
+        _exams = PrivateDataAdapter.exams(d.exams);
+        _absences = const [];
+        _agenda = PrivateDataAdapter.agenda(d.agenda);
+      } else {
+        // Schulnetz: separate mobile endpoints.
+        final proxy = SchulwareProxyClient.instance;
+        final info = await proxy.userInfo(account);
+        final grades = await proxy.grades(account);
+        final exams = await proxy.exams(account);
+        final absences = await proxy.absences(account);
+        final agenda = await proxy.agenda(account);
 
-      _me = PrivateDataAdapter.schoolUser(info, grades, absences);
-      _exams = PrivateDataAdapter.exams(exams);
-      _absences = PrivateDataAdapter.absencesList(absences);
-      _agenda = PrivateDataAdapter.agenda(agenda);
+        _me = PrivateDataAdapter.schoolUser(info, grades, absences);
+        _exams = PrivateDataAdapter.exams(exams);
+        _absences = PrivateDataAdapter.absencesList(absences);
+        _agenda = PrivateDataAdapter.agenda(agenda);
+      }
       _classes = const [];
       _reports = const [];
       _teachers = const [];
