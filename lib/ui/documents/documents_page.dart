@@ -64,8 +64,10 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
             .post<dynamic>('$base/accounts/$accountId/sync');
       } on DioException catch (e) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Sync failed (${e.response?.statusCode ?? 'network'})')));
+          showFToast(
+            context: context,
+            title: Text('Sync failed (${e.response?.statusCode ?? 'network'})'),
+          );
         }
       } catch (_) {/* fall through to the cache reload */}
     }
@@ -90,8 +92,10 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
       await OpenFilex.open(file.path);
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('Could not open document: $e')));
+        showFToast(
+          context: context,
+          title: Text('Could not open document: $e'),
+        );
       }
     } finally {
       if (mounted) setState(() => _downloadingId = null);

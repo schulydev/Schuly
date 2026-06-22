@@ -40,7 +40,16 @@ class SchulyApp extends StatelessWidget {
             final isDark = mode == ThemeMode.dark ||
                 (mode == ThemeMode.system && platformDark);
             final theme = isDark ? FThemes.zinc.dark : FThemes.zinc.light;
-            return FAnimatedTheme(data: theme, child: child!);
+            // App-wide toaster, anchored at the top so all toasts drop down
+            // from the top edge instead of rising from the bottom.
+            return FAnimatedTheme(
+              data: theme,
+              child: FToaster(
+                style: (s) =>
+                    s.copyWith(toastAlignment: FToastAlignment.topCenter),
+                child: child!,
+              ),
+            );
           },
           home: const RootScreen(),
         );
