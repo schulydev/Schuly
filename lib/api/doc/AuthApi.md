@@ -9,9 +9,52 @@ All URIs are relative to *http://localhost:5033*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
+[**apiAuthLoginPost**](AuthApi.md#apiauthloginpost) | **POST** /api/Auth/login | 
 [**apiAuthMeGet**](AuthApi.md#apiauthmeget) | **GET** /api/Auth/me | 
 [**apiAuthSyncGet**](AuthApi.md#apiauthsyncget) | **GET** /api/Auth/sync | 
 
+
+# **apiAuthLoginPost**
+> apiAuthLoginPost(unifiedLoginRequest)
+
+
+
+### Example
+```dart
+import 'package:schuly_api/api.dart';
+// TODO Configure OAuth2 access token for authorization: OAuth2
+//defaultApiClient.getAuthentication<OAuth>('OAuth2').accessToken = 'YOUR_ACCESS_TOKEN';
+
+final api = SchulyApi().getAuthApi();
+final UnifiedLoginRequest unifiedLoginRequest = ; // UnifiedLoginRequest | 
+
+try {
+    api.apiAuthLoginPost(unifiedLoginRequest);
+} catch on DioException (e) {
+    print('Exception when calling AuthApi->apiAuthLoginPost: $e\n');
+}
+```
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **unifiedLoginRequest** | [**UnifiedLoginRequest**](UnifiedLoginRequest.md)|  | 
+
+### Return type
+
+void (empty response body)
+
+### Authorization
+
+[OAuth2](../README.md#OAuth2)
+
+### HTTP request headers
+
+ - **Content-Type**: application/json, text/json, application/*+json
+ - **Accept**: text/plain, application/json, text/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **apiAuthMeGet**
 > ApplicationUserDto apiAuthMeGet()

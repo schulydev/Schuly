@@ -6,90 +6,94 @@
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
-part 'create_teacher_command.g.dart';
+part 'school_system_login_field_dto.g.dart';
 
-/// CreateTeacherCommand
+/// SchoolSystemLoginFieldDto
 ///
 /// Properties:
-/// * [schoolId] 
-/// * [firstName] 
-/// * [lastName] 
-/// * [code] 
-/// * [email] 
-/// * [applicationUserId] 
+/// * [key] 
+/// * [label] 
+/// * [type] 
+/// * [placeholder] 
+/// * [defaultValue] 
+/// * [required_] 
 @BuiltValue()
-abstract class CreateTeacherCommand implements Built<CreateTeacherCommand, CreateTeacherCommandBuilder> {
-  @BuiltValueField(wireName: r'schoolId')
-  String get schoolId;
+abstract class SchoolSystemLoginFieldDto implements Built<SchoolSystemLoginFieldDto, SchoolSystemLoginFieldDtoBuilder> {
+  @BuiltValueField(wireName: r'key')
+  String get key;
 
-  @BuiltValueField(wireName: r'firstName')
-  String get firstName;
+  @BuiltValueField(wireName: r'label')
+  String get label;
 
-  @BuiltValueField(wireName: r'lastName')
-  String get lastName;
+  @BuiltValueField(wireName: r'type')
+  String get type;
 
-  @BuiltValueField(wireName: r'code')
-  String get code;
+  @BuiltValueField(wireName: r'placeholder')
+  String? get placeholder;
 
-  @BuiltValueField(wireName: r'email')
-  String? get email;
+  @BuiltValueField(wireName: r'defaultValue')
+  String? get defaultValue;
 
-  @BuiltValueField(wireName: r'applicationUserId')
-  String? get applicationUserId;
+  @BuiltValueField(wireName: r'required')
+  bool? get required_;
 
-  CreateTeacherCommand._();
+  SchoolSystemLoginFieldDto._();
 
-  factory CreateTeacherCommand([void updates(CreateTeacherCommandBuilder b)]) = _$CreateTeacherCommand;
+  factory SchoolSystemLoginFieldDto([void updates(SchoolSystemLoginFieldDtoBuilder b)]) = _$SchoolSystemLoginFieldDto;
 
   @BuiltValueHook(initializeBuilder: true)
-  static void _defaults(CreateTeacherCommandBuilder b) => b;
+  static void _defaults(SchoolSystemLoginFieldDtoBuilder b) => b;
 
   @BuiltValueSerializer(custom: true)
-  static Serializer<CreateTeacherCommand> get serializer => _$CreateTeacherCommandSerializer();
+  static Serializer<SchoolSystemLoginFieldDto> get serializer => _$SchoolSystemLoginFieldDtoSerializer();
 }
 
-class _$CreateTeacherCommandSerializer implements PrimitiveSerializer<CreateTeacherCommand> {
+class _$SchoolSystemLoginFieldDtoSerializer implements PrimitiveSerializer<SchoolSystemLoginFieldDto> {
   @override
-  final Iterable<Type> types = const [CreateTeacherCommand, _$CreateTeacherCommand];
+  final Iterable<Type> types = const [SchoolSystemLoginFieldDto, _$SchoolSystemLoginFieldDto];
 
   @override
-  final String wireName = r'CreateTeacherCommand';
+  final String wireName = r'SchoolSystemLoginFieldDto';
 
   Iterable<Object?> _serializeProperties(
     Serializers serializers,
-    CreateTeacherCommand object, {
+    SchoolSystemLoginFieldDto object, {
     FullType specifiedType = FullType.unspecified,
   }) sync* {
-    yield r'schoolId';
+    yield r'key';
     yield serializers.serialize(
-      object.schoolId,
+      object.key,
       specifiedType: const FullType(String),
     );
-    yield r'firstName';
+    yield r'label';
     yield serializers.serialize(
-      object.firstName,
+      object.label,
       specifiedType: const FullType(String),
     );
-    yield r'lastName';
+    yield r'type';
     yield serializers.serialize(
-      object.lastName,
+      object.type,
       specifiedType: const FullType(String),
     );
-    yield r'code';
-    yield serializers.serialize(
-      object.code,
-      specifiedType: const FullType(String),
-    );
-    yield r'email';
-    yield object.email == null ? null : serializers.serialize(
-      object.email,
-      specifiedType: const FullType.nullable(String),
-    );
-    if (object.applicationUserId != null) {
-      yield r'applicationUserId';
+    if (object.placeholder != null) {
+      yield r'placeholder';
       yield serializers.serialize(
-        object.applicationUserId,
+        object.placeholder,
         specifiedType: const FullType.nullable(String),
+      );
+    }
+    if (object.defaultValue != null) {
+      yield r'defaultValue';
+      yield serializers.serialize(
+        object.defaultValue,
+        specifiedType: const FullType.nullable(String),
+      );
+    }
+    if (object.required_ != null) {
+      yield r'required';
+      yield serializers.serialize(
+        object.required_,
+        specifiedType: const FullType(bool),
       );
     }
   }
@@ -97,7 +101,7 @@ class _$CreateTeacherCommandSerializer implements PrimitiveSerializer<CreateTeac
   @override
   Object serialize(
     Serializers serializers,
-    CreateTeacherCommand object, {
+    SchoolSystemLoginFieldDto object, {
     FullType specifiedType = FullType.unspecified,
   }) {
     return _serializeProperties(serializers, object, specifiedType: specifiedType).toList();
@@ -108,56 +112,56 @@ class _$CreateTeacherCommandSerializer implements PrimitiveSerializer<CreateTeac
     Object serialized, {
     FullType specifiedType = FullType.unspecified,
     required List<Object?> serializedList,
-    required CreateTeacherCommandBuilder result,
+    required SchoolSystemLoginFieldDtoBuilder result,
     required List<Object?> unhandled,
   }) {
     for (var i = 0; i < serializedList.length; i += 2) {
       final key = serializedList[i] as String;
       final value = serializedList[i + 1];
       switch (key) {
-        case r'schoolId':
+        case r'key':
           final valueDes = serializers.deserialize(
             value,
             specifiedType: const FullType(String),
           ) as String;
-          result.schoolId = valueDes;
+          result.key = valueDes;
           break;
-        case r'firstName':
+        case r'label':
           final valueDes = serializers.deserialize(
             value,
             specifiedType: const FullType(String),
           ) as String;
-          result.firstName = valueDes;
+          result.label = valueDes;
           break;
-        case r'lastName':
+        case r'type':
           final valueDes = serializers.deserialize(
             value,
             specifiedType: const FullType(String),
           ) as String;
-          result.lastName = valueDes;
+          result.type = valueDes;
           break;
-        case r'code':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(String),
-          ) as String;
-          result.code = valueDes;
-          break;
-        case r'email':
+        case r'placeholder':
           final valueDes = serializers.deserialize(
             value,
             specifiedType: const FullType.nullable(String),
           ) as String?;
           if (valueDes == null) continue;
-          result.email = valueDes;
+          result.placeholder = valueDes;
           break;
-        case r'applicationUserId':
+        case r'defaultValue':
           final valueDes = serializers.deserialize(
             value,
             specifiedType: const FullType.nullable(String),
           ) as String?;
           if (valueDes == null) continue;
-          result.applicationUserId = valueDes;
+          result.defaultValue = valueDes;
+          break;
+        case r'required':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType(bool),
+          ) as bool;
+          result.required_ = valueDes;
           break;
         default:
           unhandled.add(key);
@@ -168,12 +172,12 @@ class _$CreateTeacherCommandSerializer implements PrimitiveSerializer<CreateTeac
   }
 
   @override
-  CreateTeacherCommand deserialize(
+  SchoolSystemLoginFieldDto deserialize(
     Serializers serializers,
     Object serialized, {
     FullType specifiedType = FullType.unspecified,
   }) {
-    final result = CreateTeacherCommandBuilder();
+    final result = SchoolSystemLoginFieldDtoBuilder();
     final serializedList = (serialized as Iterable<Object?>).toList();
     final unhandled = <Object?>[];
     _deserializeProperties(
