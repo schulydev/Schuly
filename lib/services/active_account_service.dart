@@ -3,7 +3,7 @@ import 'package:schuly_api/schuly_api.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../domain/school_system.dart';
-import '../domain/schulware_account.dart';
+import '../domain/my_school.dart';
 import 'api_client.dart';
 import 'school_systems_service.dart';
 

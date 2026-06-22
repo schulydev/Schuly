@@ -9,8 +9,8 @@ import 'auth_service.dart';
 /// every request and transparently refreshes it on a 401.
 class ApiClient {
   ApiClient._() {
-    // The Schulware OAuth-callback endpoint runs the initial sync inline,
-    // which takes well over the generated client's 3s default on cold runs.
+    // The unified plugin login runs the initial sync inline, which takes well
+    // over the generated client's 3s default on cold runs.
     _dio = Dio(BaseOptions(
       baseUrl: OidcConfig.backendBaseUrl,
       connectTimeout: const Duration(seconds: 10),

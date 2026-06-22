@@ -5,10 +5,10 @@ import 'package:schuly_api/schuly_api.dart';
 import 'active_account_service.dart';
 import 'api_client.dart';
 import 'app_mode_service.dart';
-import 'odaorg_proxy_client.dart';
 import 'private_account_store.dart';
 import 'private_data_adapter.dart';
-import 'schulware_proxy_client.dart';
+import 'scrape_proxy_client.dart';
+import 'token_proxy_client.dart';
 
 /// Loads and caches the per-school data the UI renders: the signed-in user's
 /// SchoolUser record (with nested grades/absences/classes), plus the school's
@@ -167,10 +167,10 @@ class SchoolDataService extends ChangeNotifier {
     notifyListeners();
     try {
       if (account.accessToken != null) {
-        // Token-based systems (Schulnetz): batched mobile endpoints with a
-        // passwordless token refresh on expiry. A stored access token is the
-        // marker — credential logins mint one; credential-replay (OdAOrg) doesn't.
-        final d = await SchulwareProxyClient.instance.fetchAll(account);
+        // Token-strategy systems: batched endpoints with a passwordless token
+        // refresh on expiry. A stored access token is the marker — token logins
+        // mint one; scrape (credential-replay) systems don't.
+        final d = await TokenProxyClient.instance.fetchAll(account);
         if (d.refreshedAccount != null) {
           await PrivateAccountStore.instance.save(d.refreshedAccount!);
         }
@@ -180,16 +180,16 @@ class SchoolDataService extends ChangeNotifier {
         _agenda = PrivateDataAdapter.agenda(d.agenda);
         _classes = PrivateDataAdapter.classes(d.grades, d.exams);
       } else {
-        // Credentials systems (OdAOrg): one scrape pass returns everything.
-        final d = await OdaorgProxyClient.instance.data(account);
+        // Scrape-strategy systems: one scrape pass returns everything.
+        final d = await ScrapeProxyClient.instance.data(account);
         _me = PrivateDataAdapter.schoolUser(d.userInfo, d.grades, const []);
         _exams = PrivateDataAdapter.exams(d.exams);
         _absences = const [];
         _agenda = PrivateDataAdapter.agenda(d.agenda);
         _classes = PrivateDataAdapter.classes(d.grades, d.exams);
       }
-      // Reports, teachers and documents are scraper-only / not exposed by
-      // SchulwareAPI mobile, so they have no stateless source in private mode.
+      // Reports, teachers and documents are scraper-only / not exposed by the
+      // token-strategy endpoints, so they have no stateless source in private mode.
       _reports = const [];
       _teachers = const [];
       _documents = const [];

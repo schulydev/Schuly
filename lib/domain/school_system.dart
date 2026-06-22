@@ -5,14 +5,19 @@ class SchoolSystem {
   final String key;
   final String displayName;
   final String? logoUrl;
-  final String? schulwareApiBaseUrl;
+
+  /// How private mode authenticates and fetches data for this system:
+  /// `token` (a headless login mints a bearer token + refreshable session) or
+  /// `scrape` (credentials replayed per fetch). Lets the app pick a strategy
+  /// without knowing the provider.
+  final String? privateAuthStrategy;
 
   /// Base path of this system's stateless plugin endpoints (private mode),
-  /// e.g. `/api/plugins/schulware/stateless`. Served by the catalog.
+  /// e.g. `/api/plugins/<plugin>/stateless`. Served by the catalog.
   final String? statelessBasePath;
 
   /// Base path of this system's plugin endpoints (account mode:
-  /// accounts/sync/status), e.g. `/api/plugins/schulware`. Served by the
+  /// accounts/sync/status), e.g. `/api/plugins/<plugin>`. Served by the
   /// catalog because the system key differs from the plugin name.
   final String? pluginBasePath;
 
@@ -27,7 +32,7 @@ class SchoolSystem {
     required this.displayName,
     required this.loginMethod,
     this.logoUrl,
-    this.schulwareApiBaseUrl,
+    this.privateAuthStrategy,
     this.statelessBasePath,
     this.pluginBasePath,
     this.enabled = true,
@@ -43,7 +48,7 @@ class SchoolSystem {
       key: json['key'] as String,
       displayName: json['displayName'] as String,
       logoUrl: json['logoUrl'] as String?,
-      schulwareApiBaseUrl: json['schulwareApiBaseUrl'] as String?,
+      privateAuthStrategy: json['privateAuthStrategy'] as String?,
       statelessBasePath: json['statelessBasePath'] as String?,
       pluginBasePath: json['pluginBasePath'] as String?,
       loginMethod: json['loginMethod'] as String? ?? 'oauth-webview',

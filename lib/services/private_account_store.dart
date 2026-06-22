@@ -7,7 +7,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 /// account. Provider-agnostic: [loginMethod] (from the backend catalog) drives
 /// how the connection authenticates and where its data is fetched.
 class PrivateAccount {
-  /// The catalog system key this connection belongs to (e.g. `schulnetz`).
+  /// The catalog system key this connection belongs to.
   final String systemKey;
 
   /// Backend-provided discriminator: `oauth-webview` or `credentials`.
