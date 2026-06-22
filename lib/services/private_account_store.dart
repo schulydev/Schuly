@@ -46,8 +46,6 @@ class PrivateAccount {
     this.password,
   });
 
-  bool get isOauth => loginMethod == 'oauth-webview';
-
   Map<String, dynamic> toJson() => {
         'systemKey': systemKey,
         'loginMethod': loginMethod,
