@@ -1,17 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 
+import '../../../config/oidc_config.dart';
 import '../../../domain/school_system.dart';
 import '../../../services/school_systems_service.dart';
 import '../../odaorg/connect_odaorg_screen.dart';
 import '../../schulnetz/connect_account_screen.dart';
-
-/// Local logo assets keyed by school-system key. Backend-advertised systems we
-/// don't yet bundle an asset for fall back to a generic icon.
-const _systemAssets = <String, String>{
-  'schulnetz': 'assets/schoolsystems/schulnetz.webp',
-  'odaorg': 'assets/schoolsystems/odaorg.webp',
-};
 
 /// Full add-school flow: fetch the backend's school-system catalog, show the
 /// picker, then run the chosen system's connect screen. Returns the new account
@@ -120,7 +114,9 @@ class _SystemCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.theme.colors;
     final disabled = onTap == null;
-    final asset = _systemAssets[system.key];
+    final logoUrl = OidcConfig.resolveUrl(system.logoUrl);
+    final fallbackIcon =
+        Icon(Icons.school, size: 48, color: colors.mutedForeground);
     return Opacity(
       opacity: disabled ? 0.5 : 1.0,
       child: SizedBox(
@@ -134,10 +130,13 @@ class _SystemCard extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  if (asset != null)
-                    Image.asset(asset, width: 48, height: 48)
+                  if (logoUrl != null)
+                    Image.network(logoUrl,
+                        width: 48,
+                        height: 48,
+                        errorBuilder: (_, _, _) => fallbackIcon)
                   else
-                    Icon(Icons.school, size: 48, color: colors.mutedForeground),
+                    fallbackIcon,
                   const SizedBox(height: 10),
                   Text(
                     system.displayName,

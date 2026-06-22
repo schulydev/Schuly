@@ -2,8 +2,10 @@ import 'package:flutter/foundation.dart';
 import 'package:schuly_api/schuly_api.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../domain/school_system.dart';
 import '../domain/schulware_account.dart';
 import 'api_client.dart';
+import 'school_systems_service.dart';
 
 /// App-wide source of truth for "which connected school is the user currently
 /// looking at". Backed by `GET /api/schools/my-schools`. Listens-friendly via
@@ -49,7 +51,8 @@ class ActiveAccountService extends ChangeNotifier {
           : data.map((dto) {
               final info = pluginBySchoolId[dto.id];
               return MySchool.fromDto(dto,
-                  provider: info?.provider ?? 'schulnetz',
+                  provider: info?.provider ?? '',
+                  pluginBasePath: info?.pluginBasePath,
                   pluginAccountId: info?.accountId);
             }).toList(growable: false);
 
@@ -74,13 +77,16 @@ class ActiveAccountService extends ChangeNotifier {
     }
   }
 
-  /// Maps schoolId → (provider, plugin account id) by cross-referencing each
-  /// plugin's accounts (which expose `schoolUserId` + `id`) against the user's
-  /// SchoolUsers. Best-effort: returns an empty map on any failure so the
-  /// account list still loads.
-  Future<Map<String, ({String provider, String accountId})>> _detectPluginAccounts() async {
+  /// Maps schoolId → (provider, plugin account id, plugin base path) by
+  /// cross-referencing each catalog system's plugin accounts (which expose
+  /// `schoolUserId` + `id`) against the user's SchoolUsers. The set of plugins
+  /// and their routes comes entirely from the backend catalog — no provider is
+  /// hardcoded. Best-effort: returns an empty map on any failure.
+  Future<Map<String, ({String provider, String accountId, String? pluginBasePath})>>
+      _detectPluginAccounts() async {
     try {
       final api = ApiClient.instance.api;
+      final dio = ApiClient.instance.dio;
       final me = await api.getAuthApi().apiAuthMeGet();
       final appUserId = me.data?.id;
       if (appUserId == null) return const {};
@@ -92,22 +98,31 @@ class ActiveAccountService extends ChangeNotifier {
           if (u.id != null && u.schoolId != null) u.id!: u.schoolId!,
       };
 
-      final out = <String, ({String provider, String accountId})>{};
-      void mapAccounts(List<dynamic> accounts, String provider) {
-        for (final a in accounts.cast<Map<String, dynamic>>()) {
-          final suId = a['schoolUserId'] as String?;
-          final accId = a['id'] as String?;
-          final schoolId = suId == null ? null : schoolIdByUser[suId];
-          if (schoolId != null && accId != null) {
-            out[schoolId] = (provider: provider, accountId: accId);
-          }
-        }
+      List<SchoolSystem> systems;
+      try {
+        systems = await SchoolSystemsService.fetch();
+      } catch (_) {
+        systems = const [];
       }
 
-      final oda = await api.getAccountsApi().apiPluginsOdaorgAccountsGet();
-      mapAccounts((oda.data as List<dynamic>?) ?? const [], 'odaorg');
-      final schul = await api.getAccountsApi().apiPluginsSchulwareAccountsGet();
-      mapAccounts((schul.data as List<dynamic>?) ?? const [], 'schulnetz');
+      final out =
+          <String, ({String provider, String accountId, String? pluginBasePath})>{};
+      for (final sys in systems) {
+        final base = sys.pluginBasePath;
+        if (base == null || base.isEmpty) continue;
+        try {
+          final res = await dio.get<List<dynamic>>('$base/accounts');
+          for (final a in (res.data ?? const []).cast<Map<String, dynamic>>()) {
+            final suId = a['schoolUserId'] as String?;
+            final accId = a['id'] as String?;
+            final schoolId = suId == null ? null : schoolIdByUser[suId];
+            if (schoolId != null && accId != null) {
+              out[schoolId] =
+                  (provider: sys.key, accountId: accId, pluginBasePath: base);
+            }
+          }
+        } catch (_) {/* skip this plugin */}
+      }
       return out;
     } catch (_) {
       return const {};
@@ -122,17 +137,13 @@ class ActiveAccountService extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Disconnects a connected school via its plugin's DELETE endpoint, then
-  /// reloads the account list (which reselects an active school).
+  /// Disconnects a connected school via its plugin's DELETE endpoint (built from
+  /// the catalog's plugin base path), then reloads the account list.
   Future<void> removeSchool(MySchool school) async {
     final accountId = school.pluginAccountId;
-    if (accountId == null) return;
-    final accounts = ApiClient.instance.api.getAccountsApi();
-    if (school.provider == 'odaorg') {
-      await accounts.apiPluginsOdaorgAccountsAccountIdDelete(accountId: accountId);
-    } else {
-      await accounts.apiPluginsSchulwareAccountsAccountIdDelete(accountId: accountId);
-    }
+    final base = school.pluginBasePath;
+    if (accountId == null || base == null || base.isEmpty) return;
+    await ApiClient.instance.dio.delete<dynamic>('$base/accounts/$accountId');
     // If we removed the active school, drop the selection so refresh picks a new one.
     if (_activeId == school.id) {
       _activeId = null;
