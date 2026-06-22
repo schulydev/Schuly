@@ -2,24 +2,6 @@
 // (`/api/plugins/schulware/stateless/*`), used by private mode. Field names
 // mirror the plugin's flat DTOs (camelCase JSON).
 
-class PrivateAuthorizeUrl {
-  final String? authorizationUrl;
-  final String? codeVerifier;
-  const PrivateAuthorizeUrl(this.authorizationUrl, this.codeVerifier);
-
-  factory PrivateAuthorizeUrl.fromJson(Map<String, dynamic> j) =>
-      PrivateAuthorizeUrl(j['authorizationUrl'] as String?, j['codeVerifier'] as String?);
-}
-
-class PrivateTokens {
-  final String? accessToken;
-  final String? refreshToken;
-  const PrivateTokens(this.accessToken, this.refreshToken);
-
-  factory PrivateTokens.fromJson(Map<String, dynamic> j) =>
-      PrivateTokens(j['accessToken'] as String?, j['refreshToken'] as String?);
-}
-
 class PrivateRefreshResult {
   final bool success;
   final String? message;

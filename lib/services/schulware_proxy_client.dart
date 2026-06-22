@@ -21,34 +21,37 @@ class SchulwareProxyClient {
 
   // --- Auth ---
 
-  /// Starts OAuth: returns the Schulnetz authorize URL + PKCE verifier.
-  Future<PrivateAuthorizeUrl> authorizeUrl(
-      String basePath, String schulnetzBaseUrl) async {
-    final res = await _dio.get<Map<String, dynamic>>(
-      '$basePath/authorize-url',
-      queryParameters: {'schulnetzBaseUrl': schulnetzBaseUrl},
-    );
-    return PrivateAuthorizeUrl.fromJson(res.data ?? const {});
-  }
-
-  /// Exchanges the OAuth code for tokens.
-  Future<PrivateTokens> exchangeCode({
+  /// Headless credential login (private mode): POST email + password (+ TOTP) to
+  /// the stateless `/login` and get back tokens + the rotated context_state. The
+  /// browserless replacement for authorizeUrl + exchangeCode.
+  Future<PrivateRefreshResult> login({
     required String basePath,
-    required String code,
-    required String codeVerifier,
-    String? state,
     required String schulnetzBaseUrl,
+    required String email,
+    required String password,
+    String? totpSecret,
   }) async {
     final res = await _dio.post<Map<String, dynamic>>(
-      '$basePath/oauth/callback',
+      '$basePath/login',
       data: {
-        'code': code,
-        'codeVerifier': codeVerifier,
-        'state': state,
         'schulnetzBaseUrl': schulnetzBaseUrl,
+        'email': email,
+        'password': password,
+        'totpSecret': totpSecret,
       },
     );
-    return PrivateTokens.fromJson(res.data ?? const {});
+    final m = res.data ?? const {};
+    final rotated = m['contextState'];
+    return PrivateRefreshResult(
+      success: m['success'] as bool? ?? false,
+      message: m['message'] as String?,
+      accessToken: m['accessToken'] as String?,
+      refreshToken: m['refreshToken'] as String?,
+      webSessionId: m['webSessionId'] as String?,
+      webSessionUserId: m['webSessionUserId'] as String?,
+      webSessionTransId: m['webSessionTransId'] as String?,
+      contextState: rotated == null ? null : jsonEncode(rotated),
+    );
   }
 
   /// Headless credential login (private mode): POST email + password (+ TOTP) to
