@@ -12,7 +12,7 @@ Name | Type | Description | Notes
 **displayName** | **String** |  | 
 **loginMethod** | **String** |  | 
 **logoUrl** | **String** |  | [optional] 
-**schulwareApiBaseUrl** | **String** |  | [optional] 
+**privateAuthStrategy** | **String** |  | [optional] 
 **statelessBasePath** | **String** |  | [optional] 
 **pluginBasePath** | **String** |  | [optional] 
 **enabled** | **bool** |  | [optional] [default to true]

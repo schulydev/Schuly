@@ -189,7 +189,7 @@ Authentication schemes defined for the API:
 
 - **Type**: OAuth
 - **Flow**: accessCode
-- **Authorization URL**: https://dev.example.com/authorize
+- **Authorization URL**: https://example.com/authorize
 - **Scopes**: 
  - **openid**: OpenID Connect
  - **profile**: User profile

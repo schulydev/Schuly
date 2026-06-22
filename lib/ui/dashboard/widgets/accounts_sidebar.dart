@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 
-import '../../../domain/schulware_account.dart';
+import '../../../domain/my_school.dart';
 import '../../../services/active_account_service.dart';
 import '../../../services/app_mode_service.dart';
 import '../../settings/settings_screen.dart';
@@ -63,7 +63,7 @@ class AccountsSidebar extends StatelessWidget {
     final before = svc.schools.map((s) => s.id).toSet();
     final connected = await runAddSchoolFlow(context, parentNavigator);
     if (connected == null) return;
-    // The connect flow returns a Schulware account id, not a school id; find
+    // The connect flow returns a plugin account id, not a school id; find
     // the school that newly appeared in my-schools and make it active.
     await svc.refresh();
     final added = svc.schools.where((s) => !before.contains(s.id));

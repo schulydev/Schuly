@@ -143,12 +143,3 @@ lib/src/model/user_class_dto.dart
 lib/src/model/user_state.dart
 lib/src/serializers.dart
 pubspec.yaml
-test/create_school_system_command_test.dart
-test/dev_auth_api_test.dart
-test/dev_token_request_test.dart
-test/dev_token_response_test.dart
-test/school_system_dto_test.dart
-test/school_system_login_field_dto_test.dart
-test/school_systems_api_test.dart
-test/unified_login_request_test.dart
-test/update_school_system_command_test.dart

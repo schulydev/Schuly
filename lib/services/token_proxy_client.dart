@@ -6,12 +6,14 @@ import '../config/oidc_config.dart';
 import '../domain/private_data.dart';
 import 'private_account_store.dart';
 
-/// Client for the backend's stateless Schulware proxy used in private mode.
-/// All endpoints are anonymous: the caller supplies its own credentials
-/// (token + context_state) per request; nothing is stored server-side.
-class SchulwareProxyClient {
-  SchulwareProxyClient._();
-  static final SchulwareProxyClient instance = SchulwareProxyClient._();
+/// Client for the backend's stateless **token-strategy** proxy used in private
+/// mode. A headless login mints a bearer token (+ refreshable session); data is
+/// then fetched with that token. All endpoints are anonymous: the caller
+/// supplies its own credentials (token + context_state) per request; nothing is
+/// stored server-side. The system's stateless route comes from the catalog.
+class TokenProxyClient {
+  TokenProxyClient._();
+  static final TokenProxyClient instance = TokenProxyClient._();
 
   final Dio _dio = Dio(BaseOptions(
     baseUrl: OidcConfig.backendBaseUrl,
@@ -22,11 +24,10 @@ class SchulwareProxyClient {
   // --- Auth ---
 
   /// Headless credential login (private mode): POST email + password (+ TOTP) to
-  /// the stateless `/login` and get back tokens + the rotated context_state. The
-  /// browserless replacement for authorizeUrl + exchangeCode.
+  /// the stateless `/login` and get back tokens + the rotated context_state.
   Future<PrivateRefreshResult> login({
     required String basePath,
-    required String schulnetzBaseUrl,
+    required String baseUrl,
     required String email,
     required String password,
     String? totpSecret,
@@ -34,40 +35,7 @@ class SchulwareProxyClient {
     final res = await _dio.post<Map<String, dynamic>>(
       '$basePath/login',
       data: {
-        'schulnetzBaseUrl': schulnetzBaseUrl,
-        'email': email,
-        'password': password,
-        'totpSecret': totpSecret,
-      },
-    );
-    final m = res.data ?? const {};
-    final rotated = m['contextState'];
-    return PrivateRefreshResult(
-      success: m['success'] as bool? ?? false,
-      message: m['message'] as String?,
-      accessToken: m['accessToken'] as String?,
-      refreshToken: m['refreshToken'] as String?,
-      webSessionId: m['webSessionId'] as String?,
-      webSessionUserId: m['webSessionUserId'] as String?,
-      webSessionTransId: m['webSessionTransId'] as String?,
-      contextState: rotated == null ? null : jsonEncode(rotated),
-    );
-  }
-
-  /// Headless credential login (private mode): POST email + password (+ TOTP) to
-  /// the stateless `/login` and get back tokens + the rotated context_state. The
-  /// browserless replacement for authorizeUrl + exchangeCode.
-  Future<PrivateRefreshResult> login({
-    required String basePath,
-    required String schulnetzBaseUrl,
-    required String email,
-    required String password,
-    String? totpSecret,
-  }) async {
-    final res = await _dio.post<Map<String, dynamic>>(
-      '$basePath/login',
-      data: {
-        'schulnetzBaseUrl': schulnetzBaseUrl,
+        'baseUrl': baseUrl,
         'email': email,
         'password': password,
         'totpSecret': totpSecret,
@@ -90,14 +58,14 @@ class SchulwareProxyClient {
   /// Passwordless refresh from a stored context_state (JSON string).
   Future<PrivateRefreshResult> refresh({
     required String basePath,
-    required String schulnetzBaseUrl,
+    required String baseUrl,
     required String userAgent,
     required String contextState,
   }) async {
     final res = await _dio.post<Map<String, dynamic>>(
       '$basePath/refresh',
       data: {
-        'schulnetzBaseUrl': schulnetzBaseUrl,
+        'baseUrl': baseUrl,
         'userAgent': userAgent,
         // Send the opaque blob as a JSON object, not a string.
         'contextState': jsonDecode(contextState),
@@ -143,8 +111,8 @@ class SchulwareProxyClient {
   /// Fetches everything the private dashboard needs. If the access token has
   /// expired (a 401 from any call), does one passwordless refresh from the
   /// stored `context_state`, retries, and reports the rotated account back via
-  /// [SchulwarePrivateData.refreshedAccount] so the caller can persist it.
-  Future<SchulwarePrivateData> fetchAll(PrivateAccount account) async {
+  /// [TokenPrivateData.refreshedAccount] so the caller can persist it.
+  Future<TokenPrivateData> fetchAll(PrivateAccount account) async {
     try {
       return await _fetchAll(account, null);
     } on DioException catch (e) {
@@ -155,14 +123,14 @@ class SchulwareProxyClient {
     }
   }
 
-  Future<SchulwarePrivateData> _fetchAll(
+  Future<TokenPrivateData> _fetchAll(
       PrivateAccount a, PrivateAccount? refreshed) async {
     final info = await userInfo(a);
     final g = await grades(a);
     final e = await exams(a);
     final ab = await absences(a);
     final ag = await agenda(a);
-    return SchulwarePrivateData(
+    return TokenPrivateData(
       userInfo: info,
       grades: g,
       exams: e,
@@ -180,7 +148,7 @@ class SchulwareProxyClient {
     if (a.contextState == null) return null;
     final r = await refresh(
       basePath: a.statelessBasePath,
-      schulnetzBaseUrl: a.baseUrl,
+      baseUrl: a.baseUrl,
       userAgent: a.userAgent ?? '',
       contextState: a.contextState!,
     );
@@ -211,21 +179,21 @@ class SchulwareProxyClient {
   }
 
   Map<String, String> _headers(PrivateAccount a) => {
-        'X-Schulware-Token': a.accessToken ?? '',
-        'X-Schulnetz-Base-Url': a.baseUrl,
+        'X-Plugin-Token': a.accessToken ?? '',
+        'X-Provider-Base-Url': a.baseUrl,
       };
 }
 
 /// Everything the private dashboard pulls in one pass. [refreshedAccount] is
 /// non-null when the token was refreshed mid-fetch and should be persisted.
-class SchulwarePrivateData {
+class TokenPrivateData {
   final PrivateUserInfo? userInfo;
   final List<PrivateGrade> grades;
   final List<PrivateExam> exams;
   final List<PrivateAbsence> absences;
   final List<PrivateAgendaEvent> agenda;
   final PrivateAccount? refreshedAccount;
-  const SchulwarePrivateData({
+  const TokenPrivateData({
     required this.userInfo,
     required this.grades,
     required this.exams,

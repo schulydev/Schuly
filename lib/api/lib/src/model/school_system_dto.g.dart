@@ -16,7 +16,7 @@ class _$SchoolSystemDto extends SchoolSystemDto {
   @override
   final String? logoUrl;
   @override
-  final String? schulwareApiBaseUrl;
+  final String? privateAuthStrategy;
   @override
   final String? statelessBasePath;
   @override
@@ -42,7 +42,7 @@ class _$SchoolSystemDto extends SchoolSystemDto {
     required this.key,
     required this.displayName,
     this.logoUrl,
-    this.schulwareApiBaseUrl,
+    this.privateAuthStrategy,
     this.statelessBasePath,
     this.pluginBasePath,
     required this.loginMethod,
@@ -67,7 +67,7 @@ class _$SchoolSystemDto extends SchoolSystemDto {
         key == other.key &&
         displayName == other.displayName &&
         logoUrl == other.logoUrl &&
-        schulwareApiBaseUrl == other.schulwareApiBaseUrl &&
+        privateAuthStrategy == other.privateAuthStrategy &&
         statelessBasePath == other.statelessBasePath &&
         pluginBasePath == other.pluginBasePath &&
         loginMethod == other.loginMethod &&
@@ -85,7 +85,7 @@ class _$SchoolSystemDto extends SchoolSystemDto {
     _$hash = $jc(_$hash, key.hashCode);
     _$hash = $jc(_$hash, displayName.hashCode);
     _$hash = $jc(_$hash, logoUrl.hashCode);
-    _$hash = $jc(_$hash, schulwareApiBaseUrl.hashCode);
+    _$hash = $jc(_$hash, privateAuthStrategy.hashCode);
     _$hash = $jc(_$hash, statelessBasePath.hashCode);
     _$hash = $jc(_$hash, pluginBasePath.hashCode);
     _$hash = $jc(_$hash, loginMethod.hashCode);
@@ -105,7 +105,7 @@ class _$SchoolSystemDto extends SchoolSystemDto {
           ..add('key', key)
           ..add('displayName', displayName)
           ..add('logoUrl', logoUrl)
-          ..add('schulwareApiBaseUrl', schulwareApiBaseUrl)
+          ..add('privateAuthStrategy', privateAuthStrategy)
           ..add('statelessBasePath', statelessBasePath)
           ..add('pluginBasePath', pluginBasePath)
           ..add('loginMethod', loginMethod)
@@ -138,10 +138,10 @@ class SchoolSystemDtoBuilder
   String? get logoUrl => _$this._logoUrl;
   set logoUrl(String? logoUrl) => _$this._logoUrl = logoUrl;
 
-  String? _schulwareApiBaseUrl;
-  String? get schulwareApiBaseUrl => _$this._schulwareApiBaseUrl;
-  set schulwareApiBaseUrl(String? schulwareApiBaseUrl) =>
-      _$this._schulwareApiBaseUrl = schulwareApiBaseUrl;
+  String? _privateAuthStrategy;
+  String? get privateAuthStrategy => _$this._privateAuthStrategy;
+  set privateAuthStrategy(String? privateAuthStrategy) =>
+      _$this._privateAuthStrategy = privateAuthStrategy;
 
   String? _statelessBasePath;
   String? get statelessBasePath => _$this._statelessBasePath;
@@ -190,7 +190,7 @@ class SchoolSystemDtoBuilder
       _key = $v.key;
       _displayName = $v.displayName;
       _logoUrl = $v.logoUrl;
-      _schulwareApiBaseUrl = $v.schulwareApiBaseUrl;
+      _privateAuthStrategy = $v.privateAuthStrategy;
       _statelessBasePath = $v.statelessBasePath;
       _pluginBasePath = $v.pluginBasePath;
       _loginMethod = $v.loginMethod;
@@ -235,7 +235,7 @@ class SchoolSystemDtoBuilder
               'displayName',
             ),
             logoUrl: logoUrl,
-            schulwareApiBaseUrl: schulwareApiBaseUrl,
+            privateAuthStrategy: privateAuthStrategy,
             statelessBasePath: statelessBasePath,
             pluginBasePath: pluginBasePath,
             loginMethod: BuiltValueNullFieldError.checkNotNull(

@@ -65,8 +65,8 @@ class _AccountPageState extends State<AccountPage> {
     } catch (_) {/* non-critical */}
   }
 
-  /// The version shown is the active provider's plugin version (Schulware /
-  /// OdaOrg), read off its `…/status` endpoint — not the backend app version.
+  /// The version shown is the active provider's plugin version, read off its
+  /// `…/status` endpoint — not the backend app version.
   Future<void> _loadVersion() async {
     try {
       final active = ActiveAccountService.instance.active;
@@ -81,7 +81,7 @@ class _AccountPageState extends State<AccountPage> {
 
   /// Triggers an actual provider re-fetch for the active account, then reloads
   /// the local data. Unlike pull-to-refresh (which only re-reads the backend),
-  /// this pulls fresh data from Schulnetz / OdaOrg.
+  /// this pulls fresh data from the upstream provider.
   Future<void> _syncNow() async {
     final active = ActiveAccountService.instance.active;
     final accountId = active?.pluginAccountId;

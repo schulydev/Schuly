@@ -4,13 +4,13 @@ import '../config/oidc_config.dart';
 import '../domain/private_data.dart';
 import 'private_account_store.dart';
 
-/// Bundle returned by the stateless OdAOrg proxy in one scrape pass.
-class OdaorgData {
+/// Bundle returned by the stateless scrape proxy in one pass.
+class ScrapeData {
   final PrivateUserInfo? userInfo;
   final List<PrivateGrade> grades;
   final List<PrivateExam> exams;
   final List<PrivateAgendaEvent> agenda;
-  const OdaorgData({
+  const ScrapeData({
     this.userInfo,
     this.grades = const [],
     this.exams = const [],
@@ -18,12 +18,13 @@ class OdaorgData {
   });
 }
 
-/// Client for the backend's stateless OdAOrg proxy used in private mode.
-/// One anonymous call scrapes with the caller's credentials and returns the
-/// data; nothing is stored server-side.
-class OdaorgProxyClient {
-  OdaorgProxyClient._();
-  static final OdaorgProxyClient instance = OdaorgProxyClient._();
+/// Client for the backend's stateless **scrape-strategy** proxy used in private
+/// mode. One anonymous call scrapes with the caller's credentials and returns
+/// the data; nothing is stored server-side. The system's stateless route comes
+/// from the catalog.
+class ScrapeProxyClient {
+  ScrapeProxyClient._();
+  static final ScrapeProxyClient instance = ScrapeProxyClient._();
 
   final Dio _dio = Dio(BaseOptions(
     baseUrl: OidcConfig.backendBaseUrl,
@@ -31,7 +32,7 @@ class OdaorgProxyClient {
     receiveTimeout: const Duration(seconds: 90),
   ));
 
-  Future<OdaorgData> data(PrivateAccount account) async {
+  Future<ScrapeData> data(PrivateAccount account) async {
     final res = await _dio.post<Map<String, dynamic>>(
       '${account.statelessBasePath}/data',
       data: {
@@ -41,7 +42,7 @@ class OdaorgProxyClient {
       },
     );
     final m = res.data ?? const {};
-    return OdaorgData(
+    return ScrapeData(
       userInfo: m['userInfo'] == null
           ? null
           : PrivateUserInfo.fromJson(m['userInfo'] as Map<String, dynamic>),
