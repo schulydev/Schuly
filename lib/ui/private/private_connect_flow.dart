@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../services/school_systems_service.dart';
 import '../dashboard/widgets/add_school_modal.dart';
 import 'private_connect_screen.dart';
 
@@ -8,8 +7,8 @@ import 'private_connect_screen.dart';
 /// the generic connect screen for the chosen system (driven entirely by the
 /// catalog descriptor). Returns true if a connection was stored on-device.
 Future<bool> runPrivateConnectFlow(BuildContext context) async {
-  final systems = await SchoolSystemsService.fetch();
-  if (!context.mounted) return false;
+  final systems = await fetchSystemsOrShowError(context);
+  if (systems == null || !context.mounted) return false;
 
   final key = await showAddSchoolModal(context, systems);
   if (key == null || !context.mounted) return false;
