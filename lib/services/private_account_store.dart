@@ -67,10 +67,7 @@ class PrivateAccount {
         loginMethod: json['loginMethod'] as String? ?? 'oauth-webview',
         baseUrl: json['baseUrl'] as String? ?? '',
         displayName: json['displayName'] as String? ?? 'School',
-        statelessBasePath: json['statelessBasePath'] as String? ??
-            ((json['loginMethod'] as String? ?? 'oauth-webview') == 'credentials'
-                ? '/api/plugins/odaorg/stateless'
-                : '/api/plugins/schulware/stateless'),
+        statelessBasePath: json['statelessBasePath'] as String? ?? '',
         accessToken: json['accessToken'] as String?,
         refreshToken: json['refreshToken'] as String?,
         contextState: json['contextState'] as String?,

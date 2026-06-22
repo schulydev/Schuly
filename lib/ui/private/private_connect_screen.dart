@@ -59,10 +59,16 @@ class _PrivateConnectScreenState extends State<PrivateConnectScreen> {
           : _nameCtrl.text.trim();
       final baseUrl = _form.value('baseUrl');
 
+      final basePath = _system.statelessBasePath;
+      if (basePath == null || basePath.isEmpty) {
+        setState(() => _error = 'This system is not configured for private mode');
+        return;
+      }
+
       if (_system.loginMethod == 'oauth-webview') {
-        await _connectOauth(baseUrl, name);
+        await _connectOauth(baseUrl, name, basePath);
       } else {
-        await _connectCredentials(baseUrl, name);
+        await _connectCredentials(baseUrl, name, basePath);
       }
     } on DioException catch (e) {
       setState(() => _error =
@@ -74,8 +80,7 @@ class _PrivateConnectScreenState extends State<PrivateConnectScreen> {
     }
   }
 
-  Future<void> _connectOauth(String baseUrl, String name) async {
-    final basePath = _system.resolvedStatelessBasePath;
+  Future<void> _connectOauth(String baseUrl, String name, String basePath) async {
     final proxy = SchulwareProxyClient.instance;
     final auth = await proxy.authorizeUrl(basePath, baseUrl);
     if (auth.authorizationUrl == null || auth.codeVerifier == null) {
@@ -120,13 +125,14 @@ class _PrivateConnectScreenState extends State<PrivateConnectScreen> {
     if (mounted) Navigator.of(context).pop(true);
   }
 
-  Future<void> _connectCredentials(String baseUrl, String name) async {
+  Future<void> _connectCredentials(
+      String baseUrl, String name, String basePath) async {
     final account = PrivateAccount(
       systemKey: _system.key,
       loginMethod: _system.loginMethod,
       baseUrl: baseUrl,
       displayName: name,
-      statelessBasePath: _system.resolvedStatelessBasePath,
+      statelessBasePath: basePath,
       username: _form.value('username'),
       password: _form.value('password'),
     );
