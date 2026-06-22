@@ -1,4 +1,4 @@
-# schuly_api.model.CreateTeacherCommand
+# schuly_api.model.DevTokenRequest
 
 ## Load the model package
 ```dart
@@ -8,12 +8,10 @@ import 'package:schuly_api/api.dart';
 ## Properties
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**schoolId** | **String** |  | 
-**firstName** | **String** |  | 
-**lastName** | **String** |  | 
-**code** | **String** |  | 
-**email** | **String** |  | 
-**applicationUserId** | **String** |  | [optional] 
+**role** | **String** |  | [optional] [default to 'Administrator']
+**sub** | **String** |  | [optional] [default to 'dev-admin']
+**name** | **String** |  | [optional] [default to 'Dev Admin']
+**email** | **String** |  | [optional] 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
 
