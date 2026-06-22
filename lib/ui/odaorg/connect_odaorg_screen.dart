@@ -1,7 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
-import 'package:schuly_api/schuly_api.dart';
 
 import '../../domain/school_system.dart';
 import '../../services/api_client.dart';
@@ -9,8 +8,9 @@ import '../widgets/dynamic_login_form.dart';
 
 /// Connects an OdaOrg account. Unlike Schulnetz (OAuth/WebView), OdaOrg uses
 /// plain username/password credentials posted to the backend, which then runs
-/// the initial sync. Pops with the new account id (String) on success. The
-/// login inputs are rendered from [system]'s backend-described `loginFields`.
+/// the initial sync. Pops with the new account id (String) on success. Login
+/// inputs and the plugin route both come from [system]'s catalog entry — no
+/// provider is hardcoded.
 class ConnectOdaOrgScreen extends StatefulWidget {
   final SchoolSystem system;
   const ConnectOdaOrgScreen({required this.system, super.key});
@@ -24,8 +24,6 @@ class _ConnectOdaOrgScreenState extends State<ConnectOdaOrgScreen> {
   late final TextEditingController _nameCtrl;
   bool _busy = false;
   String? _error;
-
-  SchulyApi get _api => ApiClient.instance.api;
 
   @override
   void initState() {
@@ -41,18 +39,15 @@ class _ConnectOdaOrgScreenState extends State<ConnectOdaOrgScreen> {
     super.dispose();
   }
 
-  T _expectJson<T>(Response<void> response) {
-    final data = response.data as Object?;
-    if (data is! T) {
-      throw StateError('Expected ${T.toString()}, got ${data.runtimeType}: $data');
-    }
-    return data;
-  }
-
   Future<void> _connect() async {
     final missing = _form.validateRequired();
     if (missing != null) {
       setState(() => _error = missing);
+      return;
+    }
+    final base = widget.system.pluginBasePath;
+    if (base == null || base.isEmpty) {
+      setState(() => _error = 'This system is not configured for account mode');
       return;
     }
     setState(() {
@@ -60,18 +55,20 @@ class _ConnectOdaOrgScreenState extends State<ConnectOdaOrgScreen> {
       _error = null;
     });
     try {
-      final accountsApi = _api.getAccountsApi();
-      final create = await accountsApi.apiPluginsOdaorgAccountsPost(
-        connectOdaOrgRequest: ConnectOdaOrgRequest((b) => b
-          ..username = _form.value('username')
-          ..password = _form.value('password')
-          ..baseUrl = _form.value('baseUrl')
-          ..displayName = _nameCtrl.text.trim()),
+      final dio = ApiClient.instance.dio;
+      final create = await dio.post<Map<String, dynamic>>(
+        '$base/accounts',
+        data: {
+          'username': _form.value('username'),
+          'password': _form.value('password'),
+          'baseUrl': _form.value('baseUrl'),
+          'displayName': _nameCtrl.text.trim(),
+        },
       );
-      final accountId = _expectJson<Map<String, dynamic>>(create)['id'] as String;
+      final accountId = create.data!['id'] as String;
 
       // Kick off the initial sync so data lands before we return.
-      await _api.getSyncApi().apiPluginsOdaorgAccountsAccountIdSyncPost(accountId: accountId);
+      await dio.post<dynamic>('$base/accounts/$accountId/sync');
 
       if (mounted) Navigator.of(context).pop(accountId);
     } on DioException catch (e) {

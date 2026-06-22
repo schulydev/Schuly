@@ -63,7 +63,7 @@ class PrivateAccount {
       };
 
   factory PrivateAccount.fromJson(Map<String, dynamic> json) => PrivateAccount(
-        systemKey: json['systemKey'] as String? ?? 'schulnetz',
+        systemKey: json['systemKey'] as String? ?? '',
         loginMethod: json['loginMethod'] as String? ?? 'oauth-webview',
         baseUrl: json['baseUrl'] as String? ?? '',
         displayName: json['displayName'] as String? ?? 'School',

@@ -57,14 +57,11 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
   Future<void> _refresh() async {
     final active = ActiveAccountService.instance.active;
     final accountId = active?.pluginAccountId;
-    if (accountId != null) {
+    final base = active?.pluginBasePath;
+    if (accountId != null && base != null && base.isNotEmpty) {
       try {
-        final sync = ApiClient.instance.api.getSyncApi();
-        if (active!.provider == 'odaorg') {
-          await sync.apiPluginsOdaorgAccountsAccountIdSyncPost(accountId: accountId);
-        } else {
-          await sync.apiPluginsSchulwareAccountsAccountIdSyncPost(accountId: accountId);
-        }
+        await ApiClient.instance.dio
+            .post<dynamic>('$base/accounts/$accountId/sync');
       } on DioException catch (e) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
