@@ -29,14 +29,6 @@ class SchoolSystem {
     this.loginFields = const [],
   });
 
-  /// The stateless base path, falling back to the conventional plugin route by
-  /// login method for catalogs that predate the `statelessBasePath` field.
-  String get resolvedStatelessBasePath =>
-      statelessBasePath ??
-      (loginMethod == 'credentials'
-          ? '/api/plugins/odaorg/stateless'
-          : '/api/plugins/schulware/stateless');
-
   factory SchoolSystem.fromJson(Map<String, dynamic> json) {
     final fields = (json['loginFields'] as List<dynamic>? ?? [])
         .map((e) => SchoolSystemLoginField.fromJson(e as Map<String, dynamic>))
