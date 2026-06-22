@@ -11,6 +11,11 @@ class SchoolSystem {
   /// e.g. `/api/plugins/schulware/stateless`. Served by the catalog.
   final String? statelessBasePath;
 
+  /// Base path of this system's plugin endpoints (account mode:
+  /// accounts/sync/status), e.g. `/api/plugins/schulware`. Served by the
+  /// catalog because the system key differs from the plugin name.
+  final String? pluginBasePath;
+
   /// How the app drives the login: `oauth-webview` or `credentials`.
   final String loginMethod;
   final bool enabled;
@@ -24,6 +29,7 @@ class SchoolSystem {
     this.logoUrl,
     this.schulwareApiBaseUrl,
     this.statelessBasePath,
+    this.pluginBasePath,
     this.enabled = true,
     this.sortOrder = 0,
     this.loginFields = const [],
@@ -39,6 +45,7 @@ class SchoolSystem {
       logoUrl: json['logoUrl'] as String?,
       schulwareApiBaseUrl: json['schulwareApiBaseUrl'] as String?,
       statelessBasePath: json['statelessBasePath'] as String?,
+      pluginBasePath: json['pluginBasePath'] as String?,
       loginMethod: json['loginMethod'] as String? ?? 'oauth-webview',
       enabled: json['enabled'] as bool? ?? true,
       sortOrder: json['sortOrder'] as int? ?? 0,

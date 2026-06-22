@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
-import 'package:schuly_api/schuly_api.dart';
+
 import '../../domain/school_system.dart';
 import '../../services/api_client.dart';
 import '../widgets/dynamic_login_form.dart';
@@ -10,8 +10,9 @@ import 'schulnetz_oauth_screen.dart';
 /// Connects a Schulnetz school account on the backend.
 ///
 /// Pushed as its own route. Pops with the new account id (`String`) on success
-/// or `null` if the user cancels / a failure occurred. The login inputs are
-/// rendered from [system]'s backend-described `loginFields`.
+/// or `null` if the user cancels / a failure occurred. Login inputs and the
+/// plugin route both come from [system]'s catalog entry — no provider is
+/// hardcoded.
 class ConnectAccountScreen extends StatefulWidget {
   final SchoolSystem system;
   const ConnectAccountScreen({required this.system, super.key});
@@ -25,8 +26,6 @@ class _ConnectAccountScreenState extends State<ConnectAccountScreen> {
   late final TextEditingController _nameCtrl;
   bool _busy = false;
   String? _error;
-
-  SchulyApi get _api => ApiClient.instance.api;
 
   @override
   void initState() {
@@ -42,18 +41,15 @@ class _ConnectAccountScreenState extends State<ConnectAccountScreen> {
     super.dispose();
   }
 
-  T _expectJson<T>(Response<void> response) {
-    final data = response.data as Object?;
-    if (data is! T) {
-      throw StateError('Expected ${T.toString()}, got ${data.runtimeType}: $data');
-    }
-    return data;
-  }
-
   Future<void> _create() async {
     final missing = _form.validateRequired();
     if (missing != null) {
       setState(() => _error = missing);
+      return;
+    }
+    final base = widget.system.pluginBasePath;
+    if (base == null || base.isEmpty) {
+      setState(() => _error = 'This system is not configured for account mode');
       return;
     }
     setState(() {
@@ -61,16 +57,13 @@ class _ConnectAccountScreenState extends State<ConnectAccountScreen> {
       _error = null;
     });
     try {
+      final dio = ApiClient.instance.dio;
       final url = _form.value('baseUrl');
-      final accountsApi = _api.getAccountsApi();
-      final oauthApi = _api.getOAuthApi();
       String? accountId;
 
       // 1. Reuse an existing row if the user is reconnecting the same school.
-      final list = await accountsApi.apiPluginsSchulwareAccountsGet();
-      final accounts =
-          _expectJson<List<dynamic>>(list).cast<Map<String, dynamic>>();
-      for (final a in accounts) {
+      final list = await dio.get<List<dynamic>>('$base/accounts');
+      for (final a in (list.data ?? const []).cast<Map<String, dynamic>>()) {
         if (a['schulnetzBaseUrl'] == url) {
           accountId = a['id'] as String;
           break;
@@ -79,22 +72,21 @@ class _ConnectAccountScreenState extends State<ConnectAccountScreen> {
 
       // 2. Otherwise create a fresh row.
       if (accountId == null) {
-        final create = await accountsApi.apiPluginsSchulwareAccountsPost(
-          connectAccountRequest: ConnectAccountRequest((b) => b
-            ..schulnetzBaseUrl = url
-            ..displayName = _nameCtrl.text.trim()),
+        final create = await dio.post<Map<String, dynamic>>(
+          '$base/accounts',
+          data: {
+            'schulnetzBaseUrl': url,
+            'displayName': _nameCtrl.text.trim(),
+          },
         );
-        accountId = _expectJson<Map<String, dynamic>>(create)['id'] as String;
+        accountId = create.data!['id'] as String;
       }
 
       // 3. Backend hands back the Schulnetz authorize URL + PKCE verifier.
-      final urlRes =
-          await oauthApi.apiPluginsSchulwareAccountsAccountIdAuthOauthUrlGet(
-        accountId: accountId,
-      );
-      final urlData = _expectJson<Map<String, dynamic>>(urlRes);
-      final authorizationUrl = urlData['authorizationUrl'] as String;
-      final codeVerifier = urlData['codeVerifier'] as String;
+      final urlRes = await dio.get<Map<String, dynamic>>(
+          '$base/accounts/$accountId/auth/oauth/url');
+      final authorizationUrl = urlRes.data!['authorizationUrl'] as String;
+      final codeVerifier = urlRes.data!['codeVerifier'] as String;
 
       // 4. Drive Schulnetz's OAuth in a WebView and capture the SSO chain.
       if (!mounted) return;
@@ -113,18 +105,18 @@ class _ConnectAccountScreenState extends State<ConnectAccountScreen> {
 
       // 5. Hand the captured code + storage_state back so the backend can
       //    finish token exchange and replay the SSO chain on refresh.
-      await oauthApi
-          .apiPluginsSchulwareAccountsAccountIdAuthOauthCallbackPost(
-        accountId: accountId,
-        oAuthCallbackRequest: OAuthCallbackRequest((b) => b
-          ..code = result.code
-          ..codeVerifier = codeVerifier
-          ..state = result.state
-          ..contextState = result.contextState
-          ..userAgent = result.userAgent
-          ..webSessionId = result.webSessionId
-          ..webSessionUserId = result.webSessionUserId
-          ..webSessionTransId = result.webSessionTransId),
+      await dio.post<dynamic>(
+        '$base/accounts/$accountId/auth/oauth/callback',
+        data: {
+          'code': result.code,
+          'codeVerifier': codeVerifier,
+          'state': result.state,
+          'contextState': result.contextState,
+          'userAgent': result.userAgent,
+          'webSessionId': result.webSessionId,
+          'webSessionUserId': result.webSessionUserId,
+          'webSessionTransId': result.webSessionTransId,
+        },
       );
 
       if (mounted) Navigator.of(context).pop(accountId);

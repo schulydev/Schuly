@@ -138,8 +138,7 @@ class AccountsSidebar extends StatelessWidget {
                           children: [
                             for (final s in svc.schools)
                               FTile(
-                                prefix: _SchoolAvatar(
-                                    logoUrl: s.logoUrl, fallbackAsset: s.logoAsset),
+                                prefix: _SchoolAvatar(logoUrl: s.logoUrl),
                                 title: Text(s.name),
                                 subtitle: (s.fullName?.isNotEmpty ?? false)
                                     ? Text(s.fullName!)
@@ -206,19 +205,19 @@ class AccountsSidebar extends StatelessWidget {
   }
 }
 
-/// Rounded-square avatar for a school account, à la Teams' org tiles. Shows
-/// the provider's logo on a muted surface. Today every account is Schulnetz;
-/// once other providers exist this should pick the asset by provider.
+/// Rounded-square avatar for a school account, à la Teams' org tiles. Shows the
+/// school's backend-supplied logo on a muted surface, falling back to a generic
+/// icon — no per-provider asset is bundled in the app.
 class _SchoolAvatar extends StatelessWidget {
   static const double size = 40;
   final String? logoUrl;
-  final String fallbackAsset;
-  const _SchoolAvatar({required this.logoUrl, required this.fallbackAsset});
+  const _SchoolAvatar({required this.logoUrl});
 
   @override
   Widget build(BuildContext context) {
     final colors = context.theme.colors;
-    final fallback = Image.asset(fallbackAsset, fit: BoxFit.contain);
+    final fallback =
+        Icon(Icons.school, size: 22, color: colors.mutedForeground);
     return Container(
       width: size,
       height: size,
