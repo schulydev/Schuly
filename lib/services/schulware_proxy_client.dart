@@ -51,6 +51,39 @@ class SchulwareProxyClient {
     return PrivateTokens.fromJson(res.data ?? const {});
   }
 
+  /// Headless credential login (private mode): POST email + password (+ TOTP) to
+  /// the stateless `/login` and get back tokens + the rotated context_state. The
+  /// browserless replacement for authorizeUrl + exchangeCode.
+  Future<PrivateRefreshResult> login({
+    required String basePath,
+    required String schulnetzBaseUrl,
+    required String email,
+    required String password,
+    String? totpSecret,
+  }) async {
+    final res = await _dio.post<Map<String, dynamic>>(
+      '$basePath/login',
+      data: {
+        'schulnetzBaseUrl': schulnetzBaseUrl,
+        'email': email,
+        'password': password,
+        'totpSecret': totpSecret,
+      },
+    );
+    final m = res.data ?? const {};
+    final rotated = m['contextState'];
+    return PrivateRefreshResult(
+      success: m['success'] as bool? ?? false,
+      message: m['message'] as String?,
+      accessToken: m['accessToken'] as String?,
+      refreshToken: m['refreshToken'] as String?,
+      webSessionId: m['webSessionId'] as String?,
+      webSessionUserId: m['webSessionUserId'] as String?,
+      webSessionTransId: m['webSessionTransId'] as String?,
+      contextState: rotated == null ? null : jsonEncode(rotated),
+    );
+  }
+
   /// Passwordless refresh from a stored context_state (JSON string).
   Future<PrivateRefreshResult> refresh({
     required String basePath,
@@ -139,11 +172,13 @@ class SchulwareProxyClient {
   /// Runs a passwordless refresh and returns an account carrying the new token
   /// and rotated context_state, or null if it isn't possible / failed.
   Future<PrivateAccount?> _refreshAccount(PrivateAccount a) async {
-    if (a.contextState == null || a.userAgent == null) return null;
+    // Credential logins (ms-entrance) have no captured user-agent — it manages
+    // its own — so only context_state is required to replay.
+    if (a.contextState == null) return null;
     final r = await refresh(
       basePath: a.statelessBasePath,
       schulnetzBaseUrl: a.baseUrl,
-      userAgent: a.userAgent!,
+      userAgent: a.userAgent ?? '',
       contextState: a.contextState!,
     );
     if (!r.success || r.accessToken == null) return null;

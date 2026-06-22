@@ -6,13 +6,14 @@ import '../../domain/school_system.dart';
 import '../../services/odaorg_proxy_client.dart';
 import '../../services/private_account_store.dart';
 import '../../services/schulware_proxy_client.dart';
-import '../schulnetz/schulnetz_oauth_screen.dart';
 import '../widgets/dynamic_login_form.dart';
 
 /// Generic private-mode connect screen. Renders the chosen [system]'s
-/// backend-described `loginFields` and drives the connection by its
-/// backend-provided `loginMethod` — no provider is hardcoded. Stores the
-/// resulting credentials on-device only. Pops `true` on success.
+/// backend-described `loginFields` and connects headlessly — no WebView. The
+/// integration shape comes from the catalog: systems with a `schulwareApiBaseUrl`
+/// (Schulnetz) log in via SchulwareAPI's stateless credential `/login` (mints a
+/// token + context_state); the rest (OdAOrg) replay username/password per fetch.
+/// Everything is stored on-device only. Pops `true` on success.
 class PrivateConnectScreen extends StatefulWidget {
   final SchoolSystem system;
   const PrivateConnectScreen({required this.system, super.key});
@@ -65,10 +66,12 @@ class _PrivateConnectScreenState extends State<PrivateConnectScreen> {
         return;
       }
 
-      if (_system.loginMethod == 'oauth-webview') {
-        await _connectOauth(baseUrl, name, basePath);
+      // SchulwareAPI-backed systems (Schulnetz) mint a token via headless
+      // credential login; the rest replay credentials on each fetch (OdAOrg).
+      if (_system.schulwareApiBaseUrl != null) {
+        await _connectSchulware(baseUrl, name, basePath);
       } else {
-        await _connectCredentials(baseUrl, name, basePath);
+        await _connectOdaorg(baseUrl, name, basePath);
       }
     } on DioException catch (e) {
       setState(() => _error =
@@ -80,35 +83,18 @@ class _PrivateConnectScreenState extends State<PrivateConnectScreen> {
     }
   }
 
-  Future<void> _connectOauth(String baseUrl, String name, String basePath) async {
-    final proxy = SchulwareProxyClient.instance;
-    final auth = await proxy.authorizeUrl(basePath, baseUrl);
-    if (auth.authorizationUrl == null || auth.codeVerifier == null) {
-      setState(() => _error = 'Failed to start login');
-      return;
-    }
-    if (!mounted) return;
-    final result = await Navigator.of(context).push<SchulnetzOAuthResult>(
-      MaterialPageRoute(
-        builder: (_) => SchulnetzOAuthScreen(
-          authorizationUrl: auth.authorizationUrl!,
-          schulnetzBaseUrl: baseUrl,
-        ),
-      ),
-    );
-    if (result == null) {
-      setState(() => _error = 'Login cancelled');
-      return;
-    }
-    final tokens = await proxy.exchangeCode(
+  Future<void> _connectSchulware(
+      String baseUrl, String name, String basePath) async {
+    final totp = _form.value('totp');
+    final res = await SchulwareProxyClient.instance.login(
       basePath: basePath,
-      code: result.code,
-      codeVerifier: auth.codeVerifier!,
-      state: result.state,
       schulnetzBaseUrl: baseUrl,
+      email: _form.value('email'),
+      password: _form.value('password'),
+      totpSecret: totp.isEmpty ? null : totp,
     );
-    if (tokens.accessToken == null) {
-      setState(() => _error = 'Token exchange failed');
+    if (!res.success || res.accessToken == null) {
+      setState(() => _error = res.message ?? 'Login failed');
       return;
     }
     await PrivateAccountStore.instance.save(PrivateAccount(
@@ -117,15 +103,14 @@ class _PrivateConnectScreenState extends State<PrivateConnectScreen> {
       baseUrl: baseUrl,
       displayName: name,
       statelessBasePath: basePath,
-      accessToken: tokens.accessToken,
-      refreshToken: tokens.refreshToken,
-      contextState: result.contextState,
-      userAgent: result.userAgent,
+      accessToken: res.accessToken,
+      refreshToken: res.refreshToken,
+      contextState: res.contextState,
     ));
     if (mounted) Navigator.of(context).pop(true);
   }
 
-  Future<void> _connectCredentials(
+  Future<void> _connectOdaorg(
       String baseUrl, String name, String basePath) async {
     final account = PrivateAccount(
       systemKey: _system.key,

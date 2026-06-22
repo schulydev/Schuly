@@ -166,9 +166,10 @@ class SchoolDataService extends ChangeNotifier {
     _error = null;
     notifyListeners();
     try {
-      if (account.isOauth) {
-        // OAuth systems (Schulnetz): batched mobile endpoints with a
-        // passwordless token refresh on expiry.
+      if (account.accessToken != null) {
+        // Token-based systems (Schulnetz): batched mobile endpoints with a
+        // passwordless token refresh on expiry. A stored access token is the
+        // marker — credential logins mint one; credential-replay (OdAOrg) doesn't.
         final d = await SchulwareProxyClient.instance.fetchAll(account);
         if (d.refreshedAccount != null) {
           await PrivateAccountStore.instance.save(d.refreshedAccount!);
