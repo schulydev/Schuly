@@ -69,24 +69,20 @@ Class | Method | HTTP request | Description
 [*AbsencesApi*](doc/AbsencesApi.md) | [**apiAbsencesPost**](doc/AbsencesApi.md#apiabsencespost) | **POST** /api/Absences | 
 [*AbsencesApi*](doc/AbsencesApi.md) | [**apiAbsencesPut**](doc/AbsencesApi.md#apiabsencesput) | **PUT** /api/Absences | 
 [*AbsencesApi*](doc/AbsencesApi.md) | [**apiAbsencesSearchGet**](doc/AbsencesApi.md#apiabsencessearchget) | **GET** /api/Absences/search | 
-[*AccountsApi*](doc/AccountsApi.md) | [**apiPluginsOdaorgAccountsAccountIdDelete**](doc/AccountsApi.md#apipluginsodaorgaccountsaccountiddelete) | **DELETE** /api/plugins/odaorg/accounts/{accountId} | 
-[*AccountsApi*](doc/AccountsApi.md) | [**apiPluginsOdaorgAccountsGet**](doc/AccountsApi.md#apipluginsodaorgaccountsget) | **GET** /api/plugins/odaorg/accounts | 
-[*AccountsApi*](doc/AccountsApi.md) | [**apiPluginsOdaorgAccountsPost**](doc/AccountsApi.md#apipluginsodaorgaccountspost) | **POST** /api/plugins/odaorg/accounts | 
-[*AccountsApi*](doc/AccountsApi.md) | [**apiPluginsSchulwareAccountsAccountIdDelete**](doc/AccountsApi.md#apipluginsschulwareaccountsaccountiddelete) | **DELETE** /api/plugins/schulware/accounts/{accountId} | 
-[*AccountsApi*](doc/AccountsApi.md) | [**apiPluginsSchulwareAccountsGet**](doc/AccountsApi.md#apipluginsschulwareaccountsget) | **GET** /api/plugins/schulware/accounts | 
-[*AccountsApi*](doc/AccountsApi.md) | [**apiPluginsSchulwareAccountsPost**](doc/AccountsApi.md#apipluginsschulwareaccountspost) | **POST** /api/plugins/schulware/accounts | 
 [*AgendasApi*](doc/AgendasApi.md) | [**apiAgendasGet**](doc/AgendasApi.md#apiagendasget) | **GET** /api/Agendas | 
 [*AgendasApi*](doc/AgendasApi.md) | [**apiAgendasIdDelete**](doc/AgendasApi.md#apiagendasiddelete) | **DELETE** /api/Agendas/{id} | 
 [*AgendasApi*](doc/AgendasApi.md) | [**apiAgendasPost**](doc/AgendasApi.md#apiagendaspost) | **POST** /api/Agendas | 
 [*AgendasApi*](doc/AgendasApi.md) | [**apiAgendasPut**](doc/AgendasApi.md#apiagendasput) | **PUT** /api/Agendas | 
 [*AgendasApi*](doc/AgendasApi.md) | [**apiAgendasSearchGet**](doc/AgendasApi.md#apiagendassearchget) | **GET** /api/Agendas/search | 
 [*AppApi*](doc/AppApi.md) | [**apiAppGet**](doc/AppApi.md#apiappget) | **GET** /api/App | 
+[*AppApi*](doc/AppApi.md) | [**apiAppSchoolSystemsGet**](doc/AppApi.md#apiappschoolsystemsget) | **GET** /api/App/school-systems | 
 [*AppApi*](doc/AppApi.md) | [**testEndpointWithAuth**](doc/AppApi.md#testendpointwithauth) | **GET** /api/App/test | 
 [*ApplicationUsersApi*](doc/ApplicationUsersApi.md) | [**apiApplicationUsersGet**](doc/ApplicationUsersApi.md#apiapplicationusersget) | **GET** /api/ApplicationUsers | 
 [*ApplicationUsersApi*](doc/ApplicationUsersApi.md) | [**apiApplicationUsersIdDelete**](doc/ApplicationUsersApi.md#apiapplicationusersiddelete) | **DELETE** /api/ApplicationUsers/{id} | 
 [*ApplicationUsersApi*](doc/ApplicationUsersApi.md) | [**apiApplicationUsersIdGet**](doc/ApplicationUsersApi.md#apiapplicationusersidget) | **GET** /api/ApplicationUsers/{id} | 
 [*ApplicationUsersApi*](doc/ApplicationUsersApi.md) | [**apiApplicationUsersPost**](doc/ApplicationUsersApi.md#apiapplicationuserspost) | **POST** /api/ApplicationUsers | 
 [*ApplicationUsersApi*](doc/ApplicationUsersApi.md) | [**apiApplicationUsersPut**](doc/ApplicationUsersApi.md#apiapplicationusersput) | **PUT** /api/ApplicationUsers | 
+[*AuthApi*](doc/AuthApi.md) | [**apiAuthLoginPost**](doc/AuthApi.md#apiauthloginpost) | **POST** /api/Auth/login | 
 [*AuthApi*](doc/AuthApi.md) | [**apiAuthMeGet**](doc/AuthApi.md#apiauthmeget) | **GET** /api/Auth/me | 
 [*AuthApi*](doc/AuthApi.md) | [**apiAuthSyncGet**](doc/AuthApi.md#apiauthsyncget) | **GET** /api/Auth/sync | 
 [*AvatarsApi*](doc/AvatarsApi.md) | [**apiAvatarsSchoolUserIdGet**](doc/AvatarsApi.md#apiavatarsschooluseridget) | **GET** /api/avatars/{schoolUserId} | 
@@ -96,16 +92,20 @@ Class | Method | HTTP request | Description
 [*ClassApi*](doc/ClassApi.md) | [**apiClassPost**](doc/ClassApi.md#apiclasspost) | **POST** /api/Class | 
 [*ClassApi*](doc/ClassApi.md) | [**apiClassPut**](doc/ClassApi.md#apiclassput) | **PUT** /api/Class | 
 [*ClassApi*](doc/ClassApi.md) | [**apiClassSearchGet**](doc/ClassApi.md#apiclasssearchget) | **GET** /api/Class/search | 
+[*DevAuthApi*](doc/DevAuthApi.md) | [**apiDevTokenPost**](doc/DevAuthApi.md#apidevtokenpost) | **POST** /api/dev/token | 
 [*ExamsApi*](doc/ExamsApi.md) | [**apiExamsGet**](doc/ExamsApi.md#apiexamsget) | **GET** /api/Exams | 
 [*ExamsApi*](doc/ExamsApi.md) | [**apiExamsGradePost**](doc/ExamsApi.md#apiexamsgradepost) | **POST** /api/Exams/grade | 
 [*ExamsApi*](doc/ExamsApi.md) | [**apiExamsIdDelete**](doc/ExamsApi.md#apiexamsiddelete) | **DELETE** /api/Exams/{id} | 
 [*ExamsApi*](doc/ExamsApi.md) | [**apiExamsPost**](doc/ExamsApi.md#apiexamspost) | **POST** /api/Exams | 
 [*ExamsApi*](doc/ExamsApi.md) | [**apiExamsPut**](doc/ExamsApi.md#apiexamsput) | **PUT** /api/Exams | 
 [*ExamsApi*](doc/ExamsApi.md) | [**apiExamsSearchGet**](doc/ExamsApi.md#apiexamssearchget) | **GET** /api/Exams/search | 
-[*OAuthApi*](doc/OAuthApi.md) | [**apiPluginsSchulwareAccountsAccountIdAuthOauthCallbackPost**](doc/OAuthApi.md#apipluginsschulwareaccountsaccountidauthoauthcallbackpost) | **POST** /api/plugins/schulware/accounts/{accountId}/auth/oauth/callback | 
-[*OAuthApi*](doc/OAuthApi.md) | [**apiPluginsSchulwareAccountsAccountIdAuthOauthUrlGet**](doc/OAuthApi.md#apipluginsschulwareaccountsaccountidauthoauthurlget) | **GET** /api/plugins/schulware/accounts/{accountId}/auth/oauth/url | 
 [*PluginsApi*](doc/PluginsApi.md) | [**apiPluginsGet**](doc/PluginsApi.md#apipluginsget) | **GET** /api/Plugins | 
 [*PluginsApi*](doc/PluginsApi.md) | [**apiPluginsSchedulerGet**](doc/PluginsApi.md#apipluginsschedulerget) | **GET** /api/Plugins/scheduler | 
+[*SchoolSystemsApi*](doc/SchoolSystemsApi.md) | [**apiSchoolSystemsGet**](doc/SchoolSystemsApi.md#apischoolsystemsget) | **GET** /api/SchoolSystems | 
+[*SchoolSystemsApi*](doc/SchoolSystemsApi.md) | [**apiSchoolSystemsIdDelete**](doc/SchoolSystemsApi.md#apischoolsystemsiddelete) | **DELETE** /api/SchoolSystems/{id} | 
+[*SchoolSystemsApi*](doc/SchoolSystemsApi.md) | [**apiSchoolSystemsIdGet**](doc/SchoolSystemsApi.md#apischoolsystemsidget) | **GET** /api/SchoolSystems/{id} | 
+[*SchoolSystemsApi*](doc/SchoolSystemsApi.md) | [**apiSchoolSystemsPost**](doc/SchoolSystemsApi.md#apischoolsystemspost) | **POST** /api/SchoolSystems | 
+[*SchoolSystemsApi*](doc/SchoolSystemsApi.md) | [**apiSchoolSystemsPut**](doc/SchoolSystemsApi.md#apischoolsystemsput) | **PUT** /api/SchoolSystems | 
 [*SchoolUsersApi*](doc/SchoolUsersApi.md) | [**apiSchoolUsersGet**](doc/SchoolUsersApi.md#apischoolusersget) | **GET** /api/SchoolUsers | 
 [*SchoolUsersApi*](doc/SchoolUsersApi.md) | [**apiSchoolUsersIdDelete**](doc/SchoolUsersApi.md#apischoolusersiddelete) | **DELETE** /api/SchoolUsers/{id} | 
 [*SchoolUsersApi*](doc/SchoolUsersApi.md) | [**apiSchoolUsersIdGet**](doc/SchoolUsersApi.md#apischoolusersidget) | **GET** /api/SchoolUsers/{id} | 
@@ -118,15 +118,9 @@ Class | Method | HTTP request | Description
 [*SchoolsApi*](doc/SchoolsApi.md) | [**apiSchoolsPost**](doc/SchoolsApi.md#apischoolspost) | **POST** /api/Schools | 
 [*SchoolsApi*](doc/SchoolsApi.md) | [**apiSchoolsPut**](doc/SchoolsApi.md#apischoolsput) | **PUT** /api/Schools | 
 [*SemesterReportsApi*](doc/SemesterReportsApi.md) | [**apiSemesterReportsGet**](doc/SemesterReportsApi.md#apisemesterreportsget) | **GET** /api/SemesterReports | 
-[*StatusApi*](doc/StatusApi.md) | [**apiPluginsOdaorgStatusGet**](doc/StatusApi.md#apipluginsodaorgstatusget) | **GET** /api/plugins/odaorg/status | 
-[*StatusApi*](doc/StatusApi.md) | [**apiPluginsSchulwareStatusGet**](doc/StatusApi.md#apipluginsschulwarestatusget) | **GET** /api/plugins/schulware/status | 
 [*StudentDocumentsApi*](doc/StudentDocumentsApi.md) | [**apiDocumentsDocumentIdGet**](doc/StudentDocumentsApi.md#apidocumentsdocumentidget) | **GET** /api/documents/{documentId} | 
 [*StudentDocumentsApi*](doc/StudentDocumentsApi.md) | [**apiDocumentsGet**](doc/StudentDocumentsApi.md#apidocumentsget) | **GET** /api/documents | 
 [*StudentDocumentsApi*](doc/StudentDocumentsApi.md) | [**apiStudentsSchoolUserIdDocumentsPost**](doc/StudentDocumentsApi.md#apistudentsschooluseriddocumentspost) | **POST** /api/students/{schoolUserId}/documents | 
-[*SyncApi*](doc/SyncApi.md) | [**apiPluginsOdaorgAccountsAccountIdSyncGet**](doc/SyncApi.md#apipluginsodaorgaccountsaccountidsyncget) | **GET** /api/plugins/odaorg/accounts/{accountId}/sync | 
-[*SyncApi*](doc/SyncApi.md) | [**apiPluginsOdaorgAccountsAccountIdSyncPost**](doc/SyncApi.md#apipluginsodaorgaccountsaccountidsyncpost) | **POST** /api/plugins/odaorg/accounts/{accountId}/sync | 
-[*SyncApi*](doc/SyncApi.md) | [**apiPluginsSchulwareAccountsAccountIdSyncGet**](doc/SyncApi.md#apipluginsschulwareaccountsaccountidsyncget) | **GET** /api/plugins/schulware/accounts/{accountId}/sync | 
-[*SyncApi*](doc/SyncApi.md) | [**apiPluginsSchulwareAccountsAccountIdSyncPost**](doc/SyncApi.md#apipluginsschulwareaccountsaccountidsyncpost) | **POST** /api/plugins/schulware/accounts/{accountId}/sync | 
 [*TeachersApi*](doc/TeachersApi.md) | [**apiTeachersGet**](doc/TeachersApi.md#apiteachersget) | **GET** /api/Teachers | 
 [*TeachersApi*](doc/TeachersApi.md) | [**apiTeachersIdDelete**](doc/TeachersApi.md#apiteachersiddelete) | **DELETE** /api/Teachers/{id} | 
 [*TeachersApi*](doc/TeachersApi.md) | [**apiTeachersIdGet**](doc/TeachersApi.md#apiteachersidget) | **GET** /api/Teachers/{id} | 
@@ -144,39 +138,43 @@ Class | Method | HTTP request | Description
  - [AppDto](doc/AppDto.md)
  - [ApplicationUserDto](doc/ApplicationUserDto.md)
  - [ClassDto](doc/ClassDto.md)
- - [ConnectAccountRequest](doc/ConnectAccountRequest.md)
- - [ConnectOdaOrgRequest](doc/ConnectOdaOrgRequest.md)
  - [CreateAbsenceCommand](doc/CreateAbsenceCommand.md)
  - [CreateAgendaEntryCommand](doc/CreateAgendaEntryCommand.md)
  - [CreateApplicationUserCommand](doc/CreateApplicationUserCommand.md)
  - [CreateClassCommand](doc/CreateClassCommand.md)
  - [CreateExamCommand](doc/CreateExamCommand.md)
  - [CreateSchoolCommand](doc/CreateSchoolCommand.md)
+ - [CreateSchoolSystemCommand](doc/CreateSchoolSystemCommand.md)
  - [CreateSchoolUserCommand](doc/CreateSchoolUserCommand.md)
  - [CreateTeacherCommand](doc/CreateTeacherCommand.md)
+ - [DevTokenRequest](doc/DevTokenRequest.md)
+ - [DevTokenResponse](doc/DevTokenResponse.md)
  - [EnrolStudentCommand](doc/EnrolStudentCommand.md)
  - [ExamDto](doc/ExamDto.md)
  - [ExamType](doc/ExamType.md)
  - [GradeDto](doc/GradeDto.md)
  - [MySchoolDto](doc/MySchoolDto.md)
- - [OAuthCallbackRequest](doc/OAuthCallbackRequest.md)
  - [PluginDto](doc/PluginDto.md)
  - [PluginTaskStatus](doc/PluginTaskStatus.md)
  - [ProblemDetails](doc/ProblemDetails.md)
  - [Roles](doc/Roles.md)
  - [SchoolDto](doc/SchoolDto.md)
+ - [SchoolSystemDto](doc/SchoolSystemDto.md)
+ - [SchoolSystemLoginFieldDto](doc/SchoolSystemLoginFieldDto.md)
  - [SchoolUserDto](doc/SchoolUserDto.md)
  - [SchoolUserSummaryDto](doc/SchoolUserSummaryDto.md)
  - [SemesterReportDto](doc/SemesterReportDto.md)
  - [SemesterSubjectGradeDto](doc/SemesterSubjectGradeDto.md)
  - [StudentDocumentDto](doc/StudentDocumentDto.md)
  - [TeacherDto](doc/TeacherDto.md)
+ - [UnifiedLoginRequest](doc/UnifiedLoginRequest.md)
  - [UpdateAbsenceCommand](doc/UpdateAbsenceCommand.md)
  - [UpdateAgendaEntryCommand](doc/UpdateAgendaEntryCommand.md)
  - [UpdateApplicationUserCommand](doc/UpdateApplicationUserCommand.md)
  - [UpdateClassCommand](doc/UpdateClassCommand.md)
  - [UpdateExamCommand](doc/UpdateExamCommand.md)
  - [UpdateSchoolCommand](doc/UpdateSchoolCommand.md)
+ - [UpdateSchoolSystemCommand](doc/UpdateSchoolSystemCommand.md)
  - [UpdateSchoolUserCommand](doc/UpdateSchoolUserCommand.md)
  - [UpdateTeacherCommand](doc/UpdateTeacherCommand.md)
  - [UserClassDto](doc/UserClassDto.md)
@@ -191,7 +189,7 @@ Authentication schemes defined for the API:
 
 - **Type**: OAuth
 - **Flow**: accessCode
-- **Authorization URL**: https://auth.gaggao.com/authorize
+- **Authorization URL**: https://dev.example.com/authorize
 - **Scopes**: 
  - **openid**: OpenID Connect
  - **profile**: User profile
