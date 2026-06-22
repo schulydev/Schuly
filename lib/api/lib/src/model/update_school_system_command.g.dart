@@ -18,7 +18,7 @@ class _$UpdateSchoolSystemCommand extends UpdateSchoolSystemCommand {
   @override
   final String? logoUrl;
   @override
-  final String? schulwareApiBaseUrl;
+  final String? privateAuthStrategy;
   @override
   final String? statelessBasePath;
   @override
@@ -40,7 +40,7 @@ class _$UpdateSchoolSystemCommand extends UpdateSchoolSystemCommand {
     required this.displayName,
     required this.loginMethod,
     this.logoUrl,
-    this.schulwareApiBaseUrl,
+    this.privateAuthStrategy,
     this.statelessBasePath,
     this.pluginBasePath,
     this.enabled,
@@ -65,7 +65,7 @@ class _$UpdateSchoolSystemCommand extends UpdateSchoolSystemCommand {
         displayName == other.displayName &&
         loginMethod == other.loginMethod &&
         logoUrl == other.logoUrl &&
-        schulwareApiBaseUrl == other.schulwareApiBaseUrl &&
+        privateAuthStrategy == other.privateAuthStrategy &&
         statelessBasePath == other.statelessBasePath &&
         pluginBasePath == other.pluginBasePath &&
         enabled == other.enabled &&
@@ -81,7 +81,7 @@ class _$UpdateSchoolSystemCommand extends UpdateSchoolSystemCommand {
     _$hash = $jc(_$hash, displayName.hashCode);
     _$hash = $jc(_$hash, loginMethod.hashCode);
     _$hash = $jc(_$hash, logoUrl.hashCode);
-    _$hash = $jc(_$hash, schulwareApiBaseUrl.hashCode);
+    _$hash = $jc(_$hash, privateAuthStrategy.hashCode);
     _$hash = $jc(_$hash, statelessBasePath.hashCode);
     _$hash = $jc(_$hash, pluginBasePath.hashCode);
     _$hash = $jc(_$hash, enabled.hashCode);
@@ -99,7 +99,7 @@ class _$UpdateSchoolSystemCommand extends UpdateSchoolSystemCommand {
           ..add('displayName', displayName)
           ..add('loginMethod', loginMethod)
           ..add('logoUrl', logoUrl)
-          ..add('schulwareApiBaseUrl', schulwareApiBaseUrl)
+          ..add('privateAuthStrategy', privateAuthStrategy)
           ..add('statelessBasePath', statelessBasePath)
           ..add('pluginBasePath', pluginBasePath)
           ..add('enabled', enabled)
@@ -134,10 +134,10 @@ class UpdateSchoolSystemCommandBuilder
   String? get logoUrl => _$this._logoUrl;
   set logoUrl(String? logoUrl) => _$this._logoUrl = logoUrl;
 
-  String? _schulwareApiBaseUrl;
-  String? get schulwareApiBaseUrl => _$this._schulwareApiBaseUrl;
-  set schulwareApiBaseUrl(String? schulwareApiBaseUrl) =>
-      _$this._schulwareApiBaseUrl = schulwareApiBaseUrl;
+  String? _privateAuthStrategy;
+  String? get privateAuthStrategy => _$this._privateAuthStrategy;
+  set privateAuthStrategy(String? privateAuthStrategy) =>
+      _$this._privateAuthStrategy = privateAuthStrategy;
 
   String? _statelessBasePath;
   String? get statelessBasePath => _$this._statelessBasePath;
@@ -175,7 +175,7 @@ class UpdateSchoolSystemCommandBuilder
       _displayName = $v.displayName;
       _loginMethod = $v.loginMethod;
       _logoUrl = $v.logoUrl;
-      _schulwareApiBaseUrl = $v.schulwareApiBaseUrl;
+      _privateAuthStrategy = $v.privateAuthStrategy;
       _statelessBasePath = $v.statelessBasePath;
       _pluginBasePath = $v.pluginBasePath;
       _enabled = $v.enabled;
@@ -226,7 +226,7 @@ class UpdateSchoolSystemCommandBuilder
               'loginMethod',
             ),
             logoUrl: logoUrl,
-            schulwareApiBaseUrl: schulwareApiBaseUrl,
+            privateAuthStrategy: privateAuthStrategy,
             statelessBasePath: statelessBasePath,
             pluginBasePath: pluginBasePath,
             enabled: enabled,

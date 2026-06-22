@@ -38,7 +38,7 @@ class _GradesViewState extends State<_GradesView> {
     final year = key ~/ 10, half = key % 10;
     final a = (year % 100).toString().padLeft(2, '0');
     final b = ((year + 1) % 100).toString().padLeft(2, '0');
-    return '$half. $a/$b'; // mirrors Schulnetz, e.g. "2. 25/26"
+    return '$half. $a/$b'; // e.g. "2. 25/26"
   }
 
   @override

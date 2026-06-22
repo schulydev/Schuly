@@ -36,7 +36,7 @@ class HomePage extends StatelessWidget {
     final myGrades = svc.myGradesByExam;
     final examName = {for (final e in svc.exams) e.id: e.name};
     // Only real grades on the latest-grades card (drop ungraded 0 placeholders).
-    // Latest 4 grades (Schulnetz returns them oldest-first, so newest = reversed).
+    // Latest 4 grades (providers return them oldest-first, so newest = reversed).
     final recentGrades = myGrades.entries
         .where((e) => isGraded(e.value.score))
         .toList()

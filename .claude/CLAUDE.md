@@ -11,12 +11,12 @@ The app runs in one of two modes, chosen at the gate (`AppModeService`):
 - **Private / secure mode** — **no Schuly login, no OIDC**. Credentials live only in
   the device keystore (`PrivateAccountStore`); data is fetched live from the backend's
   **anonymous** stateless proxy endpoints with **clean `Dio`** clients
-  (`SchulwareProxyClient`, `OdaorgProxyClient`) and never persisted server-side.
+  (`TokenProxyClient`, `ScrapeProxyClient`) and never persisted server-side.
 
 Both modes render the system picker + login forms from the backend catalog
 (`GET /api/app/school-systems`) — systems, login fields, and stateless endpoint
 paths are **never hardcoded** in the client. The private connect flow is one generic
-screen driven by `loginMethod` (`oauth-webview` / `credentials`).
+screen that branches on the catalog `privateAuthStrategy` (`token` / `scrape`).
 
 See `docs/architecture-modes.md` for the full diagram.
 

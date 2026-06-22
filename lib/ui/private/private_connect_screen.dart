@@ -3,16 +3,16 @@ import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 
 import '../../domain/school_system.dart';
-import '../../services/odaorg_proxy_client.dart';
 import '../../services/private_account_store.dart';
-import '../../services/schulware_proxy_client.dart';
+import '../../services/scrape_proxy_client.dart';
+import '../../services/token_proxy_client.dart';
 import '../widgets/dynamic_login_form.dart';
 
 /// Generic private-mode connect screen. Renders the chosen [system]'s
 /// backend-described `loginFields` and connects headlessly — no WebView. The
-/// integration shape comes from the catalog: systems with a `schulwareApiBaseUrl`
-/// (Schulnetz) log in via SchulwareAPI's stateless credential `/login` (mints a
-/// token + context_state); the rest (OdAOrg) replay username/password per fetch.
+/// integration shape comes from the catalog `privateAuthStrategy`: `token`
+/// systems log in via the stateless credential `/login` (mints a token +
+/// context_state); `scrape` systems replay username/password per fetch.
 /// Everything is stored on-device only. Pops `true` on success.
 class PrivateConnectScreen extends StatefulWidget {
   final SchoolSystem system;
@@ -66,12 +66,12 @@ class _PrivateConnectScreenState extends State<PrivateConnectScreen> {
         return;
       }
 
-      // SchulwareAPI-backed systems (Schulnetz) mint a token via headless
-      // credential login; the rest replay credentials on each fetch (OdAOrg).
-      if (_system.schulwareApiBaseUrl != null) {
-        await _connectSchulware(baseUrl, name, basePath);
+      // `token` systems mint a token via headless credential login; `scrape`
+      // systems replay credentials on each fetch.
+      if (_system.privateAuthStrategy == 'token') {
+        await _connectToken(baseUrl, name, basePath);
       } else {
-        await _connectOdaorg(baseUrl, name, basePath);
+        await _connectScrape(baseUrl, name, basePath);
       }
     } on DioException catch (e) {
       setState(() => _error =
@@ -83,12 +83,12 @@ class _PrivateConnectScreenState extends State<PrivateConnectScreen> {
     }
   }
 
-  Future<void> _connectSchulware(
+  Future<void> _connectToken(
       String baseUrl, String name, String basePath) async {
     final totp = _form.value('totp');
-    final res = await SchulwareProxyClient.instance.login(
+    final res = await TokenProxyClient.instance.login(
       basePath: basePath,
-      schulnetzBaseUrl: baseUrl,
+      baseUrl: baseUrl,
       email: _form.value('email'),
       password: _form.value('password'),
       totpSecret: totp.isEmpty ? null : totp,
@@ -110,7 +110,7 @@ class _PrivateConnectScreenState extends State<PrivateConnectScreen> {
     if (mounted) Navigator.of(context).pop(true);
   }
 
-  Future<void> _connectOdaorg(
+  Future<void> _connectScrape(
       String baseUrl, String name, String basePath) async {
     final account = PrivateAccount(
       systemKey: _system.key,
@@ -122,7 +122,7 @@ class _PrivateConnectScreenState extends State<PrivateConnectScreen> {
       password: _form.value('password'),
     );
     // Validate the credentials with one fetch before persisting.
-    await OdaorgProxyClient.instance.data(account);
+    await ScrapeProxyClient.instance.data(account);
     await PrivateAccountStore.instance.save(account);
     if (mounted) Navigator.of(context).pop(true);
   }

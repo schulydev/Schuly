@@ -27,8 +27,8 @@ void main() {
       // TODO
     });
 
-    // String schulwareApiBaseUrl
-    test('to test the property `schulwareApiBaseUrl`', () async {
+    // String privateAuthStrategy
+    test('to test the property `privateAuthStrategy`', () async {
       // TODO
     });
 

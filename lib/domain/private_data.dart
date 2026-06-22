@@ -1,6 +1,6 @@
-// Typed responses from the backend's stateless Schulware proxy
-// (`/api/plugins/schulware/stateless/*`), used by private mode. Field names
-// mirror the plugin's flat DTOs (camelCase JSON).
+// Typed responses from the backend's stateless plugin proxies
+// (`/api/plugins/<plugin>/stateless/*`), used by private mode. Field names
+// mirror the plugins' flat DTOs (camelCase JSON).
 
 class PrivateRefreshResult {
   final bool success;

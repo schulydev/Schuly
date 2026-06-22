@@ -18,7 +18,7 @@ part 'update_school_system_command.g.dart';
 /// * [displayName] 
 /// * [loginMethod] 
 /// * [logoUrl] 
-/// * [schulwareApiBaseUrl] 
+/// * [privateAuthStrategy] 
 /// * [statelessBasePath] 
 /// * [pluginBasePath] 
 /// * [enabled] 
@@ -41,8 +41,8 @@ abstract class UpdateSchoolSystemCommand implements Built<UpdateSchoolSystemComm
   @BuiltValueField(wireName: r'logoUrl')
   String? get logoUrl;
 
-  @BuiltValueField(wireName: r'schulwareApiBaseUrl')
-  String? get schulwareApiBaseUrl;
+  @BuiltValueField(wireName: r'privateAuthStrategy')
+  String? get privateAuthStrategy;
 
   @BuiltValueField(wireName: r'statelessBasePath')
   String? get statelessBasePath;
@@ -111,10 +111,10 @@ class _$UpdateSchoolSystemCommandSerializer implements PrimitiveSerializer<Updat
         specifiedType: const FullType.nullable(String),
       );
     }
-    if (object.schulwareApiBaseUrl != null) {
-      yield r'schulwareApiBaseUrl';
+    if (object.privateAuthStrategy != null) {
+      yield r'privateAuthStrategy';
       yield serializers.serialize(
-        object.schulwareApiBaseUrl,
+        object.privateAuthStrategy,
         specifiedType: const FullType.nullable(String),
       );
     }
@@ -212,13 +212,13 @@ class _$UpdateSchoolSystemCommandSerializer implements PrimitiveSerializer<Updat
           if (valueDes == null) continue;
           result.logoUrl = valueDes;
           break;
-        case r'schulwareApiBaseUrl':
+        case r'privateAuthStrategy':
           final valueDes = serializers.deserialize(
             value,
             specifiedType: const FullType.nullable(String),
           ) as String?;
           if (valueDes == null) continue;
-          result.schulwareApiBaseUrl = valueDes;
+          result.privateAuthStrategy = valueDes;
           break;
         case r'statelessBasePath':
           final valueDes = serializers.deserialize(

@@ -11,9 +11,9 @@ import '../../services/active_account_service.dart';
 import '../../services/api_client.dart';
 import '../../services/school_data_service.dart';
 
-/// Documents screen — mirrors the Schulnetz "Persönliches Dossier": files are
+/// Documents screen — mirrors a typical school "personal dossier": files are
 /// grouped into folders by their category (report cards / Zeugnisse get their
-/// own folder, pinned first). Pull down to fetch fresh files from Schulnetz;
+/// own folder, pinned first). Pull down to fetch fresh files from the provider;
 /// tapping a file downloads and opens it.
 class DocumentsScreen extends StatefulWidget {
   const DocumentsScreen({super.key});
@@ -52,7 +52,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
   }
 
   /// Pull-to-refresh: trigger a real provider re-fetch (pulls fresh documents
-  /// from Schulnetz), then reload the local cache. Falls back to a plain cache
+  /// from the provider), then reload the local cache. Falls back to a plain cache
   /// reload if there's no connected provider account.
   Future<void> _refresh() async {
     final active = ActiveAccountService.instance.active;
