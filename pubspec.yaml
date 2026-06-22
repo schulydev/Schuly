@@ -47,7 +47,6 @@ dependencies:
   shared_preferences: ^2.3.2
   flutter_secure_storage: ^9.2.2
   app_links: ^6.3.2
-  flutter_inappwebview: ^6.1.5
   forui: ^0.17.0
   forui_assets: ^0.17.1
   path_provider: ^2.1.2

@@ -21,36 +21,6 @@ class SchulwareProxyClient {
 
   // --- Auth ---
 
-  /// Starts OAuth: returns the Schulnetz authorize URL + PKCE verifier.
-  Future<PrivateAuthorizeUrl> authorizeUrl(
-      String basePath, String schulnetzBaseUrl) async {
-    final res = await _dio.get<Map<String, dynamic>>(
-      '$basePath/authorize-url',
-      queryParameters: {'schulnetzBaseUrl': schulnetzBaseUrl},
-    );
-    return PrivateAuthorizeUrl.fromJson(res.data ?? const {});
-  }
-
-  /// Exchanges the OAuth code for tokens.
-  Future<PrivateTokens> exchangeCode({
-    required String basePath,
-    required String code,
-    required String codeVerifier,
-    String? state,
-    required String schulnetzBaseUrl,
-  }) async {
-    final res = await _dio.post<Map<String, dynamic>>(
-      '$basePath/oauth/callback',
-      data: {
-        'code': code,
-        'codeVerifier': codeVerifier,
-        'state': state,
-        'schulnetzBaseUrl': schulnetzBaseUrl,
-      },
-    );
-    return PrivateTokens.fromJson(res.data ?? const {});
-  }
-
   /// Headless credential login (private mode): POST email + password (+ TOTP) to
   /// the stateless `/login` and get back tokens + the rotated context_state. The
   /// browserless replacement for authorizeUrl + exchangeCode.
