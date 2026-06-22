@@ -22,8 +22,8 @@ Future<String?> runAddSchoolFlow(
   BuildContext context,
   NavigatorState navigator,
 ) async {
-  final systems = await SchoolSystemsService.fetch();
-  if (!context.mounted) return null;
+  final systems = await fetchSystemsOrShowError(context);
+  if (systems == null || !context.mounted) return null;
 
   final systemKey = await showAddSchoolModal(context, systems);
   if (systemKey == null) return null;
@@ -37,6 +37,45 @@ Future<String?> runAddSchoolFlow(
   };
   return navigator.push<String>(MaterialPageRoute(builder: (_) => screen));
 }
+
+/// Fetches the catalog, showing an error dialog and returning null on failure
+/// (or when the backend advertises no systems). The app keeps no offline
+/// fallback — the backend is the sole source of truth.
+Future<List<SchoolSystem>?> fetchSystemsOrShowError(BuildContext context) async {
+  List<SchoolSystem> systems;
+  try {
+    systems = await SchoolSystemsService.fetch();
+  } catch (_) {
+    if (context.mounted) {
+      await _showCatalogError(
+          context, "Couldn't reach the server. Check your connection and try again.");
+    }
+    return null;
+  }
+  if (systems.isEmpty) {
+    if (context.mounted) {
+      await _showCatalogError(context, 'No school systems are available yet.');
+    }
+    return null;
+  }
+  return systems;
+}
+
+Future<void> _showCatalogError(BuildContext context, String message) =>
+    showFDialog<void>(
+      context: context,
+      builder: (ctx, style, animation) => FDialog(
+        animation: animation,
+        title: const Text('School systems unavailable'),
+        body: Text(message),
+        actions: [
+          FButton(
+            onPress: () => Navigator.of(ctx).pop(),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
 
 /// Shows the school-system picker for [systems]. Resolves to the chosen
 /// [SchoolSystem.key] or `null` if the user dismissed.
