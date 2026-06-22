@@ -6,30 +6,33 @@ import '../../domain/school_system.dart';
 import '../../services/api_client.dart';
 import '../widgets/dynamic_login_form.dart';
 
-/// Connects an OdaOrg account. Unlike Schulnetz (OAuth/WebView), OdaOrg uses
-/// plain username/password credentials posted to the backend, which then runs
-/// the initial sync. Pops with the new account id (String) on success. Login
-/// inputs and the plugin route both come from [system]'s catalog entry — no
-/// provider is hardcoded.
-class ConnectOdaOrgScreen extends StatefulWidget {
+/// Generic account-mode connect via the CRM's **unified** login endpoint
+/// (`POST /api/auth/login`). Renders the chosen system's catalog `loginFields`
+/// and forwards them as `{ systemKey, fields, displayName }`; the dumb CRM routes
+/// to the owning plugin (`IPluginLogin`) which authenticates the provider. No
+/// provider logic and no WebView here — works for any `credentials` system.
+/// Pops the new account id (`String`) on success.
+class UnifiedConnectScreen extends StatefulWidget {
   final SchoolSystem system;
-  const ConnectOdaOrgScreen({required this.system, super.key});
+  const UnifiedConnectScreen({required this.system, super.key});
 
   @override
-  State<ConnectOdaOrgScreen> createState() => _ConnectOdaOrgScreenState();
+  State<UnifiedConnectScreen> createState() => _UnifiedConnectScreenState();
 }
 
-class _ConnectOdaOrgScreenState extends State<ConnectOdaOrgScreen> {
+class _UnifiedConnectScreenState extends State<UnifiedConnectScreen> {
   late final DynamicLoginFormController _form;
   late final TextEditingController _nameCtrl;
   bool _busy = false;
   String? _error;
 
+  SchoolSystem get _system => widget.system;
+
   @override
   void initState() {
     super.initState();
-    _form = DynamicLoginFormController(widget.system.loginFields);
-    _nameCtrl = TextEditingController(text: widget.system.displayName);
+    _form = DynamicLoginFormController(_system.loginFields);
+    _nameCtrl = TextEditingController(text: _system.displayName);
   }
 
   @override
@@ -45,38 +48,30 @@ class _ConnectOdaOrgScreenState extends State<ConnectOdaOrgScreen> {
       setState(() => _error = missing);
       return;
     }
-    final base = widget.system.pluginBasePath;
-    if (base == null || base.isEmpty) {
-      setState(() => _error = 'This system is not configured for account mode');
-      return;
-    }
     setState(() {
       _busy = true;
       _error = null;
     });
     try {
-      final dio = ApiClient.instance.dio;
-      final create = await dio.post<Map<String, dynamic>>(
-        '$base/accounts',
+      final fields = {
+        for (final f in _system.loginFields) f.key: _form.value(f.key),
+      };
+      final name = _nameCtrl.text.trim();
+      final res = await ApiClient.instance.dio.post<Map<String, dynamic>>(
+        '/api/auth/login',
         data: {
-          'username': _form.value('username'),
-          'password': _form.value('password'),
-          'baseUrl': _form.value('baseUrl'),
-          'displayName': _nameCtrl.text.trim(),
+          'systemKey': _system.key,
+          'fields': fields,
+          'displayName': name.isEmpty ? _system.displayName : name,
         },
       );
-      final accountId = create.data!['id'] as String;
-
-      // Kick off the initial sync so data lands before we return.
-      await dio.post<dynamic>('$base/accounts/$accountId/sync');
-
+      final accountId = res.data?['accountId']?.toString();
       if (mounted) Navigator.of(context).pop(accountId);
     } on DioException catch (e) {
-      final status = e.response?.statusCode;
-      final body = e.response?.data;
-      setState(() => _error = 'HTTP ${status ?? '?'}: $body');
+      setState(() => _error =
+          'HTTP ${e.response?.statusCode ?? '?'}: ${e.response?.data}');
     } catch (e) {
-      setState(() => _error = e.toString());
+      setState(() => _error = '$e');
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -87,7 +82,7 @@ class _ConnectOdaOrgScreenState extends State<ConnectOdaOrgScreen> {
     final colors = context.theme.colors;
     return FScaffold(
       header: FHeader.nested(
-        title: Text('Add ${widget.system.displayName} Account'),
+        title: Text('Add ${_system.displayName} Account'),
         prefixes: [FHeaderAction.back(onPress: () => Navigator.of(context).pop())],
       ),
       child: Column(

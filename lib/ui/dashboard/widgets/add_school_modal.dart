@@ -4,7 +4,7 @@ import 'package:forui/forui.dart';
 import '../../../config/oidc_config.dart';
 import '../../../domain/school_system.dart';
 import '../../../services/school_systems_service.dart';
-import '../../odaorg/connect_odaorg_screen.dart';
+import '../../account/unified_connect_screen.dart';
 import '../../schulnetz/connect_account_screen.dart';
 
 /// Full add-school flow: fetch the backend's school-system catalog, show the
@@ -23,10 +23,12 @@ Future<String?> runAddSchoolFlow(
   if (systemKey == null) return null;
 
   final system = systems.firstWhere((s) => s.key == systemKey);
-  // Branch on how the system logs in: credentials (OdAOrg) uses a
-  // username/password screen, everything else uses the OAuth (WebView) flow.
+  // Branch on how the system logs in: `credentials` systems go through the
+  // CRM's unified /api/auth/login (headless, no WebView — the backend routes to
+  // the owning plugin). `oauth-webview` systems still use the WebView flow until
+  // their catalog entry is migrated to credentials.
   final Widget screen = switch (system.loginMethod) {
-    'credentials' => ConnectOdaOrgScreen(system: system),
+    'credentials' => UnifiedConnectScreen(system: system),
     _ => ConnectAccountScreen(system: system),
   };
   return navigator.push<String>(MaterialPageRoute(builder: (_) => screen));

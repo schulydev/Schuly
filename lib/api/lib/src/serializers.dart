@@ -22,39 +22,43 @@ import 'package:schuly_api/src/model/agenda_entry_type.dart';
 import 'package:schuly_api/src/model/app_dto.dart';
 import 'package:schuly_api/src/model/application_user_dto.dart';
 import 'package:schuly_api/src/model/class_dto.dart';
-import 'package:schuly_api/src/model/connect_account_request.dart';
-import 'package:schuly_api/src/model/connect_oda_org_request.dart';
 import 'package:schuly_api/src/model/create_absence_command.dart';
 import 'package:schuly_api/src/model/create_agenda_entry_command.dart';
 import 'package:schuly_api/src/model/create_application_user_command.dart';
 import 'package:schuly_api/src/model/create_class_command.dart';
 import 'package:schuly_api/src/model/create_exam_command.dart';
 import 'package:schuly_api/src/model/create_school_command.dart';
+import 'package:schuly_api/src/model/create_school_system_command.dart';
 import 'package:schuly_api/src/model/create_school_user_command.dart';
 import 'package:schuly_api/src/model/create_teacher_command.dart';
+import 'package:schuly_api/src/model/dev_token_request.dart';
+import 'package:schuly_api/src/model/dev_token_response.dart';
 import 'package:schuly_api/src/model/enrol_student_command.dart';
 import 'package:schuly_api/src/model/exam_dto.dart';
 import 'package:schuly_api/src/model/exam_type.dart';
 import 'package:schuly_api/src/model/grade_dto.dart';
 import 'package:schuly_api/src/model/my_school_dto.dart';
-import 'package:schuly_api/src/model/o_auth_callback_request.dart';
 import 'package:schuly_api/src/model/plugin_dto.dart';
 import 'package:schuly_api/src/model/plugin_task_status.dart';
 import 'package:schuly_api/src/model/problem_details.dart';
 import 'package:schuly_api/src/model/roles.dart';
 import 'package:schuly_api/src/model/school_dto.dart';
+import 'package:schuly_api/src/model/school_system_dto.dart';
+import 'package:schuly_api/src/model/school_system_login_field_dto.dart';
 import 'package:schuly_api/src/model/school_user_dto.dart';
 import 'package:schuly_api/src/model/school_user_summary_dto.dart';
 import 'package:schuly_api/src/model/semester_report_dto.dart';
 import 'package:schuly_api/src/model/semester_subject_grade_dto.dart';
 import 'package:schuly_api/src/model/student_document_dto.dart';
 import 'package:schuly_api/src/model/teacher_dto.dart';
+import 'package:schuly_api/src/model/unified_login_request.dart';
 import 'package:schuly_api/src/model/update_absence_command.dart';
 import 'package:schuly_api/src/model/update_agenda_entry_command.dart';
 import 'package:schuly_api/src/model/update_application_user_command.dart';
 import 'package:schuly_api/src/model/update_class_command.dart';
 import 'package:schuly_api/src/model/update_exam_command.dart';
 import 'package:schuly_api/src/model/update_school_command.dart';
+import 'package:schuly_api/src/model/update_school_system_command.dart';
 import 'package:schuly_api/src/model/update_school_user_command.dart';
 import 'package:schuly_api/src/model/update_teacher_command.dart';
 import 'package:schuly_api/src/model/user_class_dto.dart';
@@ -71,39 +75,43 @@ part 'serializers.g.dart';
   AppDto,
   ApplicationUserDto,
   ClassDto,
-  ConnectAccountRequest,
-  ConnectOdaOrgRequest,
   CreateAbsenceCommand,
   CreateAgendaEntryCommand,
   CreateApplicationUserCommand,
   CreateClassCommand,
   CreateExamCommand,
   CreateSchoolCommand,
+  CreateSchoolSystemCommand,
   CreateSchoolUserCommand,
   CreateTeacherCommand,
+  DevTokenRequest,
+  DevTokenResponse,
   EnrolStudentCommand,
   ExamDto,
   ExamType,
   GradeDto,
   MySchoolDto,
-  OAuthCallbackRequest,
   PluginDto,
   PluginTaskStatus,
   ProblemDetails,
   Roles,
   SchoolDto,
+  SchoolSystemDto,
+  SchoolSystemLoginFieldDto,
   SchoolUserDto,
   SchoolUserSummaryDto,
   SemesterReportDto,
   SemesterSubjectGradeDto,
   StudentDocumentDto,
   TeacherDto,
+  UnifiedLoginRequest,
   UpdateAbsenceCommand,
   UpdateAgendaEntryCommand,
   UpdateApplicationUserCommand,
   UpdateClassCommand,
   UpdateExamCommand,
   UpdateSchoolCommand,
+  UpdateSchoolSystemCommand,
   UpdateSchoolUserCommand,
   UpdateTeacherCommand,
   UserClassDto,
@@ -161,6 +169,10 @@ Serializers serializers = (_$serializers.toBuilder()
       ..addBuilderFactory(
         const FullType(BuiltList, [FullType(AgendaEntryDto)]),
         () => ListBuilder<AgendaEntryDto>(),
+      )
+      ..addBuilderFactory(
+        const FullType(BuiltList, [FullType(SchoolSystemDto)]),
+        () => ListBuilder<SchoolSystemDto>(),
       )
       ..add(const OneOfSerializer())
       ..add(const AnyOfSerializer())
