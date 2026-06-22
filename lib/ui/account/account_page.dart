@@ -50,12 +50,11 @@ class _AccountPageState extends State<AccountPage> {
     try {
       final active = ActiveAccountService.instance.active;
       final accountId = active?.pluginAccountId;
-      if (accountId == null) return;
-      final sync = ApiClient.instance.api.getSyncApi();
-      final res = active!.provider == 'odaorg'
-          ? await sync.apiPluginsOdaorgAccountsAccountIdSyncGet(accountId: accountId)
-          : await sync.apiPluginsSchulwareAccountsAccountIdSyncGet(accountId: accountId);
-      final data = res.data as Map<String, dynamic>?;
+      final base = active?.pluginBasePath;
+      if (accountId == null || base == null || base.isEmpty) return;
+      final res = await ApiClient.instance.dio
+          .get<Map<String, dynamic>>('$base/accounts/$accountId/sync');
+      final data = res.data;
       if (!mounted || data == null) return;
       setState(() {
         final last = data['lastSync'];
@@ -71,11 +70,11 @@ class _AccountPageState extends State<AccountPage> {
   Future<void> _loadVersion() async {
     try {
       final active = ActiveAccountService.instance.active;
-      final status = ApiClient.instance.api.getStatusApi();
-      final res = active?.provider == 'odaorg'
-          ? await status.apiPluginsOdaorgStatusGet()
-          : await status.apiPluginsSchulwareStatusGet();
-      final data = res.data as Map<String, dynamic>?;
+      final base = active?.pluginBasePath;
+      if (base == null || base.isEmpty) return;
+      final res =
+          await ApiClient.instance.dio.get<Map<String, dynamic>>('$base/status');
+      final data = res.data;
       if (mounted) setState(() => _version = data?['version']?.toString());
     } catch (_) {/* non-critical */}
   }
@@ -86,7 +85,8 @@ class _AccountPageState extends State<AccountPage> {
   Future<void> _syncNow() async {
     final active = ActiveAccountService.instance.active;
     final accountId = active?.pluginAccountId;
-    if (accountId == null) {
+    final base = active?.pluginBasePath;
+    if (accountId == null || base == null || base.isEmpty) {
       setState(() => _syncMsg = 'No connected account to sync');
       return;
     }
@@ -95,12 +95,7 @@ class _AccountPageState extends State<AccountPage> {
       _syncMsg = null;
     });
     try {
-      final sync = ApiClient.instance.api.getSyncApi();
-      if (active!.provider == 'odaorg') {
-        await sync.apiPluginsOdaorgAccountsAccountIdSyncPost(accountId: accountId);
-      } else {
-        await sync.apiPluginsSchulwareAccountsAccountIdSyncPost(accountId: accountId);
-      }
+      await ApiClient.instance.dio.post<dynamic>('$base/accounts/$accountId/sync');
       await SchoolDataService.instance.refresh();
       await _loadSyncStatus();
       if (mounted) setState(() => _syncMsg = 'Synced just now');
