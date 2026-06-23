@@ -1,19 +1,35 @@
+import 'dart:convert';
+
+import 'package:http/http.dart' as http;
+
+/// Resolved OIDC settings for the active backend. Everything except the backend
+/// base URL is discovered at runtime — the backend's `/api/app` provides the
+/// authority, client id, scope and redirect uri, and the provider's OIDC
+/// discovery document provides the authorize/token endpoints. Nothing
+/// provider-specific (Keycloak vs Pocket ID vs …) is hardcoded.
+class OidcSettings {
+  final String authority;
+  final String clientId;
+  final String scope;
+  final String redirectUri;
+  final String authorizationEndpoint;
+  final String tokenEndpoint;
+
+  const OidcSettings({
+    required this.authority,
+    required this.clientId,
+    required this.scope,
+    required this.redirectUri,
+    required this.authorizationEndpoint,
+    required this.tokenEndpoint,
+  });
+
+  /// Deep-link scheme the provider redirects back to (e.g. `schulytest`),
+  /// derived from [redirectUri] so the app never hardcodes it.
+  String get callbackScheme => Uri.parse(redirectUri).scheme;
+}
+
 class OidcConfig {
-  static const authority = 'https://auth.gaggao.com';
-  static const clientId = 'fe2e0db0-69e3-48e3-845c-561f7a36d280';
-  // `offline_access` is required for Pocket ID to issue a refresh token —
-  // without it the silent token refresh has nothing to work with and the user
-  // gets bounced to re-login the moment the access token expires.
-  static const scope = 'openid profile email groups picture offline_access';
-
-  // Custom scheme deep link. Pocket ID redirects here after login; Android
-  // routes it back to the app via the schulytest:// intent filter, so the
-  // user lands in the real Chrome (full passkey support) and returns to the
-  // app on success. Scheme intentionally does NOT mirror the package id so
-  // dev and prod flavors can coexist.
-  static const redirectUri = 'schulytest://callback';
-  static const callbackScheme = 'schulytest';
-
   // Backend base URL. Override per build — never hardcode a machine IP here:
   //   flutter build apk --dart-define=BACKEND_BASE_URL=http://<dev-box-lan-ip>:5033
   // Defaults to localhost: use `adb reverse tcp:5033 tcp:5033` over USB, or
@@ -23,8 +39,48 @@ class OidcConfig {
     defaultValue: 'http://localhost:5033',
   );
 
-  static const tokenEndpoint = '$authority/api/oidc/token';
-  static const authorizationEndpoint = '$authority/authorize';
+  static OidcSettings? _settings;
+  static Future<OidcSettings>? _loading;
+
+  /// Loads (once) and caches the OIDC settings from the backend. Safe to call
+  /// from multiple places concurrently — the in-flight load is shared, and a
+  /// failed load is not cached so the next call retries.
+  static Future<OidcSettings> settings() {
+    final cached = _settings;
+    if (cached != null) return Future<OidcSettings>.value(cached);
+    return _loading ??= _load().then((s) {
+      _settings = s;
+      _loading = null;
+      return s;
+    }, onError: (Object e) {
+      _loading = null;
+      throw e;
+    });
+  }
+
+  static Future<OidcSettings> _load() async {
+    final app = await _getJson('$backendBaseUrl/api/app');
+    final authority =
+        (app['authority'] as String).replaceAll(RegExp(r'/+$'), '');
+    final disco = await _getJson('$authority/.well-known/openid-configuration');
+    return OidcSettings(
+      authority: authority,
+      clientId: app['clientId'] as String,
+      scope: (app['scope'] as String?) ??
+          'openid profile email groups picture offline_access',
+      redirectUri: (app['redirectUri'] as String?) ?? 'schulytest://callback',
+      authorizationEndpoint: disco['authorization_endpoint'] as String,
+      tokenEndpoint: disco['token_endpoint'] as String,
+    );
+  }
+
+  static Future<Map<String, dynamic>> _getJson(String url) async {
+    final r = await http.get(Uri.parse(url));
+    if (r.statusCode != 200) {
+      throw Exception('GET $url failed (${r.statusCode})');
+    }
+    return jsonDecode(r.body) as Map<String, dynamic>;
+  }
 
   /// Resolves a backend-supplied URL: absolute (http…) is used as-is, a
   /// root-relative path (/api/avatars/…) is prefixed with [backendBaseUrl],
