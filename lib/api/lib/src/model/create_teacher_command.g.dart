@@ -17,6 +17,8 @@ class _$CreateTeacherCommand extends CreateTeacherCommand {
   final String code;
   @override
   final String? email;
+  @override
+  final String? applicationUserId;
 
   factory _$CreateTeacherCommand([
     void Function(CreateTeacherCommandBuilder)? updates,
@@ -28,6 +30,7 @@ class _$CreateTeacherCommand extends CreateTeacherCommand {
     required this.lastName,
     required this.code,
     this.email,
+    this.applicationUserId,
   }) : super._();
   @override
   CreateTeacherCommand rebuild(
@@ -46,7 +49,8 @@ class _$CreateTeacherCommand extends CreateTeacherCommand {
         firstName == other.firstName &&
         lastName == other.lastName &&
         code == other.code &&
-        email == other.email;
+        email == other.email &&
+        applicationUserId == other.applicationUserId;
   }
 
   @override
@@ -57,6 +61,7 @@ class _$CreateTeacherCommand extends CreateTeacherCommand {
     _$hash = $jc(_$hash, lastName.hashCode);
     _$hash = $jc(_$hash, code.hashCode);
     _$hash = $jc(_$hash, email.hashCode);
+    _$hash = $jc(_$hash, applicationUserId.hashCode);
     _$hash = $jf(_$hash);
     return _$hash;
   }
@@ -68,7 +73,8 @@ class _$CreateTeacherCommand extends CreateTeacherCommand {
           ..add('firstName', firstName)
           ..add('lastName', lastName)
           ..add('code', code)
-          ..add('email', email))
+          ..add('email', email)
+          ..add('applicationUserId', applicationUserId))
         .toString();
   }
 }
@@ -97,6 +103,11 @@ class CreateTeacherCommandBuilder
   String? get email => _$this._email;
   set email(String? email) => _$this._email = email;
 
+  String? _applicationUserId;
+  String? get applicationUserId => _$this._applicationUserId;
+  set applicationUserId(String? applicationUserId) =>
+      _$this._applicationUserId = applicationUserId;
+
   CreateTeacherCommandBuilder() {
     CreateTeacherCommand._defaults(this);
   }
@@ -109,6 +120,7 @@ class CreateTeacherCommandBuilder
       _lastName = $v.lastName;
       _code = $v.code;
       _email = $v.email;
+      _applicationUserId = $v.applicationUserId;
       _$v = null;
     }
     return this;
@@ -152,6 +164,7 @@ class CreateTeacherCommandBuilder
             'code',
           ),
           email: email,
+          applicationUserId: applicationUserId,
         );
     replace(_$result);
     return _$result;
