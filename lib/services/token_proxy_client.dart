@@ -5,6 +5,7 @@ import 'package:dio/dio.dart';
 import '../config/oidc_config.dart';
 import '../domain/private_data.dart';
 import 'private_account_store.dart';
+import 'totp_service.dart';
 
 /// Client for the backend's stateless **token-strategy** proxy used in private
 /// mode. A headless login mints a bearer token (+ refreshable session); data is
@@ -140,31 +141,64 @@ class TokenProxyClient {
     );
   }
 
-  /// Runs a passwordless refresh and returns an account carrying the new token
-  /// and rotated context_state, or null if it isn't possible / failed.
+  /// Re-establishes a token, returning an account carrying the new token and
+  /// rotated context_state, or null if it isn't possible / failed. Tries the
+  /// cheap passwordless refresh first; if that's unavailable or rejected, falls
+  /// back to a full credential re-login from the vaulted email/password/seed —
+  /// Schuly regenerates the OTP itself, so the user is never prompted.
   Future<PrivateAccount?> _refreshAccount(PrivateAccount a) async {
     // Credential logins (ms-entrance) have no captured user-agent — it manages
     // its own — so only context_state is required to replay.
-    if (a.contextState == null) return null;
-    final r = await refresh(
+    if (a.contextState != null) {
+      final r = await refresh(
+        basePath: a.statelessBasePath,
+        baseUrl: a.baseUrl,
+        userAgent: a.userAgent ?? '',
+        contextState: a.contextState!,
+      );
+      if (r.success && r.accessToken != null) return _applied(a, r);
+    }
+    return _credentialRelogin(a);
+  }
+
+  /// Silent re-login from the stored credentials + TOTP seed. Returns null when
+  /// the seed/credentials weren't stored (e.g. an older connection) or login
+  /// failed, leaving the caller to surface a reconnect prompt.
+  Future<PrivateAccount?> _credentialRelogin(PrivateAccount a) async {
+    final email = a.username;
+    final password = a.password;
+    if (email == null || email.isEmpty || password == null || password.isEmpty) {
+      return null;
+    }
+    final r = await login(
       basePath: a.statelessBasePath,
       baseUrl: a.baseUrl,
-      userAgent: a.userAgent ?? '',
-      contextState: a.contextState!,
+      email: email,
+      password: password,
+      // The backend computes the code from the seed; send only the base32.
+      totpSecret: TotpService.secretOf(a.totpSecret),
     );
     if (!r.success || r.accessToken == null) return null;
-    return PrivateAccount(
-      systemKey: a.systemKey,
-      loginMethod: a.loginMethod,
-      baseUrl: a.baseUrl,
-      displayName: a.displayName,
-      statelessBasePath: a.statelessBasePath,
-      accessToken: r.accessToken,
-      refreshToken: r.refreshToken ?? a.refreshToken,
-      contextState: r.contextState ?? a.contextState,
-      userAgent: a.userAgent,
-    );
+    return _applied(a, r);
   }
+
+  /// Builds the rotated account from a refresh/login result, carrying the
+  /// vaulted credentials + seed forward so the next refresh can fall back too.
+  PrivateAccount _applied(PrivateAccount a, PrivateRefreshResult r) =>
+      PrivateAccount(
+        systemKey: a.systemKey,
+        loginMethod: a.loginMethod,
+        baseUrl: a.baseUrl,
+        displayName: a.displayName,
+        statelessBasePath: a.statelessBasePath,
+        accessToken: r.accessToken,
+        refreshToken: r.refreshToken ?? a.refreshToken,
+        contextState: r.contextState ?? a.contextState,
+        userAgent: a.userAgent,
+        username: a.username,
+        password: a.password,
+        totpSecret: a.totpSecret,
+      );
 
   Future<List<T>> _list<T>(
     String path,
