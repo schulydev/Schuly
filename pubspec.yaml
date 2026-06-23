@@ -51,6 +51,10 @@ dependencies:
   forui_assets: ^0.17.1
   path_provider: ^2.1.2
   open_filex: ^4.5.0
+  # On-device TOTP: generate the second factor from a vaulted seed.
+  otp: ^3.1.4
+  # QR scanning to capture the TOTP seed.
+  mobile_scanner: ^5.2.3
 
 dev_dependencies:
   flutter_test:
