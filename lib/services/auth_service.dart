@@ -73,14 +73,15 @@ class AuthService {
   /// 4. Await the first incoming [OidcConfig.redirectUri] deep link.
   /// 5. Exchange the auth code for tokens.
   static Future<AuthTokens> signIn() async {
+    final cfg = await OidcConfig.settings();
     final (verifier, challenge) = _generatePkce();
     final state = DateTime.now().microsecondsSinceEpoch.toString();
-    final authorizeUrl = Uri.parse(OidcConfig.authorizationEndpoint).replace(
+    final authorizeUrl = Uri.parse(cfg.authorizationEndpoint).replace(
       queryParameters: {
         'response_type': 'code',
-        'client_id': OidcConfig.clientId,
-        'redirect_uri': OidcConfig.redirectUri,
-        'scope': OidcConfig.scope,
+        'client_id': cfg.clientId,
+        'redirect_uri': cfg.redirectUri,
+        'scope': cfg.scope,
         'state': state,
         'code_challenge': challenge,
         'code_challenge_method': 'S256',
@@ -90,7 +91,7 @@ class AuthService {
     final completer = Completer<Uri>();
     late final StreamSubscription<Uri> sub;
     sub = _appLinks.uriLinkStream.listen((uri) {
-      if (uri.scheme == OidcConfig.callbackScheme && !completer.isCompleted) {
+      if (uri.scheme == cfg.callbackScheme && !completer.isCompleted) {
         completer.complete(uri);
       }
     });
@@ -130,14 +131,15 @@ class AuthService {
     required String code,
     required String codeVerifier,
   }) async {
+    final cfg = await OidcConfig.settings();
     final response = await http.post(
-      Uri.parse(OidcConfig.tokenEndpoint),
+      Uri.parse(cfg.tokenEndpoint),
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: {
         'grant_type': 'authorization_code',
         'code': code,
-        'client_id': OidcConfig.clientId,
-        'redirect_uri': OidcConfig.redirectUri,
+        'client_id': cfg.clientId,
+        'redirect_uri': cfg.redirectUri,
         'code_verifier': codeVerifier,
       },
     );
@@ -184,13 +186,14 @@ class AuthService {
     final refreshToken = await getRefreshToken();
     if (refreshToken == null) return null;
     try {
+      final cfg = await OidcConfig.settings();
       final response = await http.post(
-        Uri.parse(OidcConfig.tokenEndpoint),
+        Uri.parse(cfg.tokenEndpoint),
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
         body: {
           'grant_type': 'refresh_token',
           'refresh_token': refreshToken,
-          'client_id': OidcConfig.clientId,
+          'client_id': cfg.clientId,
         },
       );
       if (response.statusCode != 200) return null;
