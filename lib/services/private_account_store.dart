@@ -32,6 +32,11 @@ class PrivateAccount {
   final String? username;
   final String? password;
 
+  /// TOTP seed (normalized base32). Lets Schuly regenerate the second factor
+  /// on-device — for silent re-login and the in-app authenticator. Stored only
+  /// in the device keystore, like every other field here.
+  final String? totpSecret;
+
   const PrivateAccount({
     required this.systemKey,
     required this.loginMethod,
@@ -44,6 +49,7 @@ class PrivateAccount {
     this.userAgent,
     this.username,
     this.password,
+    this.totpSecret,
   });
 
   Map<String, dynamic> toJson() => {
@@ -58,6 +64,7 @@ class PrivateAccount {
         'userAgent': userAgent,
         'username': username,
         'password': password,
+        'totpSecret': totpSecret,
       };
 
   factory PrivateAccount.fromJson(Map<String, dynamic> json) => PrivateAccount(
@@ -72,6 +79,7 @@ class PrivateAccount {
         userAgent: json['userAgent'] as String?,
         username: json['username'] as String?,
         password: json['password'] as String?,
+        totpSecret: json['totpSecret'] as String?,
       );
 }
 

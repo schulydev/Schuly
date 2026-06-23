@@ -34,14 +34,17 @@ flowchart TB
     SP["ScrapeProxyClient<br/>clean Dio"]
     Stateless[("Backend stateless proxy<br/>/api/plugins/*/stateless/*<br/>[AllowAnonymous] — stores nothing")]
     Keystore[("On-device keystore only")]
+    Auth["Authenticator screen<br/>on-device TOTP from vaulted seed"]
     Catalog --> AnonCat
     Catalog --> Connect
     Connect -->|"token"| TP
     Connect -->|"scrape"| SP
     TP --> Stateless
     SP --> Stateless
-    TP -.->|"token + context saved"| Keystore
+    TP -.->|"token + context + email/password/TOTP seed saved"| Keystore
     SP -.->|"creds saved"| Keystore
+    Keystore -.->|"seed"| Auth
+    Keystore -.->|"silent re-login on expiry"| TP
   end
 
   subgraph SOURCES["School systems (operator-provided)"]

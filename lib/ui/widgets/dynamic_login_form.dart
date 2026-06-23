@@ -46,7 +46,23 @@ class DynamicLoginFormController {
 /// backend, not the app, decides what the login form shows.
 class DynamicLoginForm extends StatelessWidget {
   final DynamicLoginFormController controller;
-  const DynamicLoginForm({required this.controller, super.key});
+
+  /// Invoked when the user taps "Scan QR code" on a TOTP field. Receives the
+  /// field key; the caller scans and writes the result back into the
+  /// controller. When null, no scan affordance is shown.
+  final Future<void> Function(String fieldKey)? onScanField;
+
+  const DynamicLoginForm({
+    required this.controller,
+    this.onScanField,
+    super.key,
+  });
+
+  /// A field that carries a TOTP seed — obscured and offered a QR scanner.
+  /// Detected by an explicit `totp` type or the conventional `totp` key, so the
+  /// backend catalog can opt in without the app hardcoding a provider.
+  static bool _isTotp(SchoolSystemLoginField f) =>
+      f.type == 'totp' || f.key.toLowerCase() == 'totp';
 
   @override
   Widget build(BuildContext context) {
@@ -56,17 +72,64 @@ class DynamicLoginForm extends StatelessWidget {
       spacing: 16,
       children: [
         for (final field in controller.fields)
-          FTextField(
-            control: FTextFieldControl.managed(
+          if (_isTotp(field))
+            _TotpField(
               controller: controller.controllerFor(field.key),
+              field: field,
+              onScan: onScanField == null
+                  ? null
+                  : () => onScanField!(field.key),
+            )
+          else
+            FTextField(
+              control: FTextFieldControl.managed(
+                controller: controller.controllerFor(field.key),
+              ),
+              label: Text(field.label),
+              hint: field.placeholder,
+              obscureText: field.type == 'password',
+              keyboardType: field.type == 'url'
+                  ? TextInputType.url
+                  : TextInputType.text,
+              autocorrect: false,
             ),
-            label: Text(field.label),
-            hint: field.placeholder,
-            obscureText: field.type == 'password',
-            keyboardType: field.type == 'url'
-                ? TextInputType.url
-                : TextInputType.text,
-            autocorrect: false,
+      ],
+    );
+  }
+}
+
+/// A TOTP seed input: obscured text plus an optional "Scan QR code" button.
+class _TotpField extends StatelessWidget {
+  final TextEditingController controller;
+  final SchoolSystemLoginField field;
+  final VoidCallback? onScan;
+
+  const _TotpField({
+    required this.controller,
+    required this.field,
+    this.onScan,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      mainAxisSize: MainAxisSize.min,
+      spacing: 8,
+      children: [
+        FTextField(
+          control: FTextFieldControl.managed(controller: controller),
+          label: Text(field.label),
+          hint: field.placeholder ?? 'Secret or otpauth:// URI',
+          obscureText: true,
+          autocorrect: false,
+        ),
+        if (onScan != null)
+          FButton(
+            style: FButtonStyle.outline(),
+            prefix: const Icon(FIcons.scanQrCode),
+            onPress: onScan,
+            child: const Text('Scan QR code'),
           ),
       ],
     );
