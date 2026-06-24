@@ -33,12 +33,16 @@ class _GradesViewState extends State<_GradesView> {
     return (d.year - 1) * 10 + 2;
   }
 
-  static String _semesterLabel(int key) {
+  // A "period" is either a semester (half 1/2) or a whole school year (half 0,
+  // i.e. year*10). Year periods cover both halves.
+  static bool _isYear(int key) => key != 0 && key % 10 == 0;
+
+  static String _periodLabel(int key) {
     if (key == 0) return 'Undated';
     final year = key ~/ 10, half = key % 10;
     final a = (year % 100).toString().padLeft(2, '0');
     final b = ((year + 1) % 100).toString().padLeft(2, '0');
-    return '$half. $a/$b'; // e.g. "2. 25/26"
+    return half == 0 ? '$a/$b' : '$half. $a/$b'; // "25/26" vs "2. 25/26"
   }
 
   @override
@@ -55,20 +59,38 @@ class _GradesViewState extends State<_GradesView> {
       return _RefreshableEmpty(onRefresh: svc.refresh, text: 'No grades yet');
     }
 
-    final semesters = {for (final e in graded) _semesterKey(e.date)}.toList()
-      ..sort((a, b) => b.compareTo(a)); // newest first
-    final selected = (_selectedKey != null && semesters.contains(_selectedKey))
+    // Build the period dropdown: each school year (newest first) with a whole-year
+    // option above its semesters (only when the year actually has two halves).
+    final semKeys = {for (final e in graded) _semesterKey(e.date)};
+    final yearsDesc = {for (final k in semKeys) k ~/ 10}.toList()
+      ..sort((a, b) => b.compareTo(a));
+    final periods = <int>[];
+    for (final y in yearsDesc) {
+      if (y == 0) {
+        periods.add(0); // undated
+        continue;
+      }
+      final halves = [for (final h in [2, 1]) if (semKeys.contains(y * 10 + h)) y * 10 + h];
+      if (halves.length > 1) periods.add(y * 10); // whole-year option
+      periods.addAll(halves);
+    }
+    // Default to the newest single semester (most focused, current grades).
+    final newestSemester = semKeys.where((k) => !_isYear(k)).fold(0, (m, k) => k > m ? k : m);
+    final selected = (_selectedKey != null && periods.contains(_selectedKey))
         ? _selectedKey!
-        : semesters.first;
+        : (periods.contains(newestSemester) ? newestSemester : periods.first);
 
-    // Group the selected semester's exams by class, each sorted by date.
+    bool inSelection(int examKey) =>
+        _isYear(selected) ? examKey ~/ 10 == selected ~/ 10 : examKey == selected;
+
+    // Group the selected period's exams by class, each sorted by date.
     final classNames = <String?, String?>{
       for (final c in (svc.me?.classes ?? const <UserClassDto>[])) c.classId: c.className,
       ...svc.classNameById,
     };
     final byClass = <String, List<ExamDto>>{};
     for (final e in graded) {
-      if (_semesterKey(e.date) != selected) continue;
+      if (!inSelection(_semesterKey(e.date))) continue;
       byClass.putIfAbsent(e.classId ?? '—', () => []).add(e);
     }
     for (final list in byClass.values) {
@@ -77,7 +99,7 @@ class _GradesViewState extends State<_GradesView> {
 
     return Column(
       children: [
-        if (semesters.length > 1)
+        if (periods.length > 1)
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
             child: Align(
@@ -89,7 +111,7 @@ class _GradesViewState extends State<_GradesView> {
                     value: selected,
                     onChange: (k) => setState(() => _selectedKey = k ?? selected),
                   ),
-                  items: {for (final k in semesters) _semesterLabel(k): k},
+                  items: {for (final k in periods) _periodLabel(k): k},
                 ),
               ),
             ),
