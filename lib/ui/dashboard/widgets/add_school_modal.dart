@@ -140,14 +140,15 @@ class _SystemCard extends StatelessWidget {
                 children: [
                   logo,
                   const SizedBox(height: 8),
-                  Text(
-                    system.displayName,
-                    textAlign: TextAlign.center,
-                    maxLines: 1,
-                    softWrap: false,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                        fontWeight: FontWeight.w600, fontSize: 12),
+                  FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text(
+                      system.displayName,
+                      maxLines: 1,
+                      softWrap: false,
+                      style: const TextStyle(
+                          fontWeight: FontWeight.w600, fontSize: 13),
+                    ),
                   ),
                   if (disabled)
                     Text(
