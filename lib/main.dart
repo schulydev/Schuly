@@ -4,6 +4,7 @@ import 'package:forui/forui.dart';
 import 'l10n/app_localizations.dart';
 import 'services/app_mode_service.dart';
 import 'services/theme_service.dart';
+import 'services/toast_service.dart';
 import 'ui/core/ui/root_screen.dart';
 
 Future<void> main() async {
@@ -22,6 +23,7 @@ class SchulyApp extends StatelessWidget {
       animation: ThemeService.instance,
       builder: (context, _) {
         return MaterialApp(
+          navigatorKey: ToastService.navigatorKey,
           onGenerateTitle: (context) => AppLocalizations.of(context)!.appTitle,
           localizationsDelegates: const [
             ...AppLocalizations.localizationsDelegates,
