@@ -34,15 +34,27 @@ class HomePage extends StatelessWidget {
       ..sort((a, b) => a.date.compareTo(b.date));
 
     final myGrades = svc.myGradesByExam;
+    final examById = {for (final e in svc.exams) e.id: e};
     final examName = {for (final e in svc.exams) e.id: e.name};
-    // Only real grades on the latest-grades card (drop ungraded 0 placeholders).
-    // Latest 4 grades (providers return them oldest-first, so newest = reversed).
+    // Subject per exam, so two same-named exams (e.g. "Semesterprüfung" in Maths
+    // and Physics) are distinguishable on the card.
+    final classNameById = <String?, String?>{
+      for (final c in (svc.me?.classes ?? const <UserClassDto>[])) c.classId: c.className,
+      ...svc.classNameById,
+    };
+    // Only real grades on the latest-grades card (drop ungraded 0 placeholders),
+    // newest first by the exam date — across semesters a graded exam can be from
+    // an earlier school year, so date order (not list order) is what's "latest".
     final recentGrades = myGrades.entries
         .where((e) => isGraded(e.value.score))
         .toList()
-        .reversed
-        .take(4)
-        .toList();
+      ..sort((a, b) {
+        final da = examById[a.key]?.date, db = examById[b.key]?.date;
+        if (da == null) return db == null ? 0 : 1;
+        if (db == null) return -1;
+        return db.compareTo(da);
+      });
+    final latestGrades = recentGrades.take(4).toList();
 
     final recentAbsences = svc.absences.toList()
       ..sort((a, b) => b.from.compareTo(a.from));
@@ -97,9 +109,12 @@ class HomePage extends StatelessWidget {
           title: 'Latest grades',
           emptyText: 'No grades yet',
           tiles: [
-            for (final entry in recentGrades)
+            for (final entry in latestGrades)
               FTile(
                 title: Text(examName[entry.key] ?? 'Exam'),
+                subtitle: (classNameById[examById[entry.key]?.classId]?.isNotEmpty ?? false)
+                    ? Text(classNameById[examById[entry.key]?.classId]!)
+                    : null,
                 suffix: GradePill(entry.value.score),
               ),
           ],
