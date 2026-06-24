@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 
+import '../config/backend_config.dart';
 import '../config/oidc_config.dart';
 import '../domain/private_data.dart';
 import 'private_account_store.dart';
@@ -21,6 +22,9 @@ class TokenProxyClient {
     connectTimeout: const Duration(seconds: 10),
     receiveTimeout: const Duration(seconds: 60),
   ));
+
+  /// Re-point at the current [BackendConfig.url] after a runtime server change.
+  void applyBaseUrl() => _dio.options.baseUrl = BackendConfig.url;
 
   // --- Auth ---
 
