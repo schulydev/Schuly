@@ -59,13 +59,13 @@ class _RootScreenState extends State<RootScreen> {
     if (mounted) setState(() => _ready = token != null);
   }
 
-  Future<void> _signIn() async {
+  Future<void> _signIn({bool register = false}) async {
     setState(() {
       _busy = true;
       _error = null;
     });
     try {
-      await AuthService.signIn();
+      await AuthService.signIn(register: register);
       await _refresh();
     } catch (e) {
       setState(() => _error = '$e');
@@ -86,7 +86,8 @@ class _RootScreenState extends State<RootScreen> {
     await OnboardingService.markSeen();
     if (mounted) setState(() => _onboarded = true);
     await AppModeService.instance.setMode(AppMode.account);
-    await _signIn();
+    // New users coming through onboarding start on the registration screen.
+    await _signIn(register: true);
   }
 
   Future<void> _onboardWithPrivate() async {

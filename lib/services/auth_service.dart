@@ -72,7 +72,11 @@ class AuthService {
   /// 3. Open the URL in Chrome (external, supports passkeys).
   /// 4. Await the first incoming [OidcConfig.redirectUri] deep link.
   /// 5. Exchange the auth code for tokens.
-  static Future<AuthTokens> signIn() async {
+  /// Runs the OIDC PKCE flow. When [register] is true the authorize request
+  /// carries `prompt=create` (the OIDC registration hint), so providers that
+  /// support it - e.g. Keycloak - open the registration screen first; others
+  /// ignore it and fall back to login.
+  static Future<AuthTokens> signIn({bool register = false}) async {
     final cfg = await OidcConfig.settings();
     final (verifier, challenge) = _generatePkce();
     final state = DateTime.now().microsecondsSinceEpoch.toString();
@@ -85,6 +89,7 @@ class AuthService {
         'state': state,
         'code_challenge': challenge,
         'code_challenge_method': 'S256',
+        if (register) 'prompt': 'create',
       },
     );
 
