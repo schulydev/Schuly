@@ -47,5 +47,28 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<!-- OIDC (account mode) returns to the app via the backend's custom
+	     redirect scheme (schulytest://callback). Registering it here lets iOS
+	     route the login callback back into the app; without it the external
+	     browser fails with "cannot open the URL". The scheme matches the
+	     backend's redirectUri / OidcConfig fallback. -->
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>app.schuly.oidc</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>schulytest</string>
+			</array>
+		</dict>
+	</array>
+	<!-- App only uses standard, exempt encryption (HTTPS + TOTP/HMAC), so no
+	     export-compliance documentation is required. Declaring this lets
+	     TestFlight/App Store builds skip the manual compliance prompt. -->
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 </dict>
 </plist>
