@@ -7,7 +7,7 @@ Minimal Flutter app. UI built with [Forui](https://forui.dev) (`FTheme` + `F*` w
 - Never work on `main`. Create an issue (labeled) → branch `feature/<issue#>_PascalCase`
   or `fix/<issue#>_PascalCase` → PR (labeled) with `Closes #<issue>` → squash-merge +
   delete branch.
-- Use **bun** as the package manager / task runner — never npm, npx, or node directly.
+- Use **bun** as the package manager / task runner - never npm, npx, or node directly.
 - Use CLI tooling whenever one exists (`gh issue create`, `gh pr create`, generators, etc.).
 - No AI / Claude attribution in commits or PRs. Ever.
 - No test plans in PRs. PR body is **Summary** + `Closes #<issue>` only.
@@ -18,15 +18,15 @@ Minimal Flutter app. UI built with [Forui](https://forui.dev) (`FTheme` + `F*` w
 
 The app runs in one of two modes, chosen at the gate (`AppModeService`):
 
-- **Account mode** — OIDC login (Pocket ID) via `ApiClient`; data lives server-side
+- **Account mode** - OIDC login (Pocket ID) via `ApiClient`; data lives server-side
   and the backend syncs it. The normal flow.
-- **Private / secure mode** — **no Schuly login, no OIDC**. Credentials live only in
+- **Private / secure mode** - **no Schuly login, no OIDC**. Credentials live only in
   the device keystore (`PrivateAccountStore`); data is fetched live from the backend's
   **anonymous** stateless proxy endpoints with **clean `Dio`** clients
   (`TokenProxyClient`, `ScrapeProxyClient`) and never persisted server-side.
 
 Both modes render the system picker + login forms from the backend catalog
-(`GET /api/app/school-systems`) — systems, login fields, and stateless endpoint
+(`GET /api/app/school-systems`) - systems, login fields, and stateless endpoint
 paths are **never hardcoded** in the client. The private connect flow is one generic
 screen that branches on the catalog `privateAuthStrategy` (`token` / `scrape`).
 
@@ -35,7 +35,7 @@ See `docs/architecture-modes.md` for the full diagram.
 ## Tasks (preferred)
 
 All common workflows are wrapped as `package.json` scripts so they're invoked the
-same way from any shell. Uses bun as the task runner — it doesn't pull in a Node
+same way from any shell. Uses bun as the task runner - it doesn't pull in a Node
 toolchain, just dispatches.
 
 ```sh
@@ -66,9 +66,9 @@ OpenAPI spec. `apigen` chains three steps in `package.json`:
 2. `apigen:patch` rewrites `lib/api/pubspec.yaml`'s SDK constraint (the generator resets
    it to `>=2.18.0 <4.0.0`, which breaks the build because of a part-file language-version
    mismatch). Implemented as a `bun -e` one-liner so it runs identically on any shell.
-3. `apigen:build` — `dart pub get` + `dart run build_runner build` inside `lib/api/`
+3. `apigen:build` - `dart pub get` + `dart run build_runner build` inside `lib/api/`
 
-`openapi.json` is gitignored — always regenerate from the running backend.
+`openapi.json` is gitignored - always regenerate from the running backend.
 
 `lib/api/**` is excluded from `flutter analyze` (see `analysis_options.yaml`).
 
