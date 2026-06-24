@@ -8,6 +8,7 @@ import '../../config/oidc_config.dart';
 import '../../services/active_account_service.dart';
 import '../../services/api_client.dart';
 import '../../services/school_data_service.dart';
+import '../../services/toast_service.dart';
 import '../classes/class_detail_screen.dart';
 import '../documents/documents_page.dart';
 
@@ -99,10 +100,13 @@ class _AccountPageState extends State<AccountPage> {
       await SchoolDataService.instance.refresh();
       await _loadSyncStatus();
       if (mounted) setState(() => _syncMsg = 'Synced just now');
+      ToastService.success('Synced', 'Fetched fresh data from the provider.');
     } on DioException catch (e) {
+      // The HTTP error itself is toasted centrally by the Dio interceptor.
       if (mounted) setState(() => _syncMsg = 'Sync failed (${e.response?.statusCode ?? 'network'})');
     } catch (e) {
       if (mounted) setState(() => _syncMsg = 'Sync failed');
+      ToastService.error('Sync failed', e);
     } finally {
       if (mounted) setState(() => _syncing = false);
     }
