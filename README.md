@@ -3,7 +3,7 @@
   <img src="https://raw.githubusercontent.com/schulydev/Schuly/main/assets/app_icon.png" width="160" alt="Schuly Logo">
 </p>
 <p align="center">
-  <strong>The better Schulnetz app — Flutter mobile client</strong>
+  <strong>The better Schulnetz app - Flutter mobile client</strong>
 </p>
 <p align="center">
   <a href="https://github.com/schulydev/Schuly/stargazers"><img src="https://img.shields.io/github/stars/schulydev/Schuly?style=flat&color=3da8ff" alt="GitHub stars"/></a>
@@ -28,7 +28,7 @@ A modern Flutter mobile app providing a superior alternative to the official Sch
 
 ## Run / build
 
-Common workflows are wrapped as [bun](https://bun.sh) scripts (bun is only the task runner — it doesn't pull in a Node toolchain), so they run the same way from any shell:
+Common workflows are wrapped as [bun](https://bun.sh) scripts (bun is only the task runner - it doesn't pull in a Node toolchain), so they run the same way from any shell:
 
 ```sh
 bun run dev               # flutter run, dev flavor
@@ -47,7 +47,7 @@ Flavors: `dev` (`com.schuly.app.dev`, "Schuly DEV") and `prod` (`com.schuly.app`
 
 ## Connecting to a local backend (dev)
 
-The backend URL is compiled in via `--dart-define=BACKEND_BASE_URL` and defaults to `http://localhost:5033` — no machine IP is ever committed.
+The backend URL is compiled in via `--dart-define=BACKEND_BASE_URL` and defaults to `http://localhost:5033` - no machine IP is ever committed.
 
 ```sh
 # USB device → run the backend on the host, tunnel, build + install:
@@ -67,7 +67,7 @@ The Dart client at `lib/api/` is generated from [SchulyBackend](https://github.c
 bun run apigen             # against http://localhost:5033 (live backend)
 ```
 
-`openapi.json` is never committed — always regenerate from a running backend. See `CLAUDE.md` for details.
+`openapi.json` is never committed - always regenerate from a running backend. See `CLAUDE.md` for details.
 
 ## App icons
 
