@@ -1,7 +1,7 @@
 # Build & release
 
 Producing installable artifacts for the Schuly app. All commands are `package.json`
-scripts run via bun — see [Development setup](development.md) for prerequisites and a
+scripts run via bun - see [Development setup](development.md) for prerequisites and a
 flavor overview.
 
 ## Release APKs
@@ -70,5 +70,5 @@ bun run icons   # dart run flutter_launcher_icons
 
 ## Related
 
-- [Development setup](development.md) — SDK versions, running the app.
-- [API client](../api-client.md) — regenerating the generated client before a build.
+- [Development setup](development.md) - SDK versions, running the app.
+- [API client](../api-client.md) - regenerating the generated client before a build.

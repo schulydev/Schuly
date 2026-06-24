@@ -1,6 +1,6 @@
 # Contributing
 
-The contribution workflow is **enforced** — follow it exactly.
+The contribution workflow is **enforced** - follow it exactly.
 
 ## Hard rules
 

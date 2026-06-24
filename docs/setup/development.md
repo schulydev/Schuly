@@ -8,8 +8,8 @@ Local environment setup for working on the Schuly Flutter app.
 | --- | --- | --- |
 | Flutter SDK | `3.44.x` | Pinned in CI (`subosito/flutter-action`). Bundles the matching Dart SDK. |
 | Dart SDK | `^3.10.0` | Comes with Flutter `3.44.x`; also the `environment.sdk` constraint in `pubspec.yaml`. |
-| bun | `latest` | Used purely as a task runner for the `package.json` scripts. It does **not** pull in a Node toolchain — it only dispatches commands. |
-| Android SDK / Xcode | — | Standard Flutter mobile toolchain for building/running on Android or iOS. |
+| bun | `latest` | Used purely as a task runner for the `package.json` scripts. It does **not** pull in a Node toolchain - it only dispatches commands. |
+| Android SDK / Xcode | - | Standard Flutter mobile toolchain for building/running on Android or iOS. |
 
 Verify the Flutter toolchain with:
 
@@ -38,7 +38,7 @@ bun run clean
 ```
 
 This runs `flutter clean && flutter pub get`. The app depends on the local generated
-API package at `lib/api/` (referenced via `path:` in `pubspec.yaml`) — see
+API package at `lib/api/` (referenced via `path:` in `pubspec.yaml`) - see
 [API client](../api-client.md) if you need to regenerate it.
 
 ## Running the app
@@ -76,5 +76,5 @@ The generated client at `lib/api/**` is excluded from `flutter analyze` (see
 
 ## Related
 
-- [Build & release](build-and-release.md) — release APKs, iOS, adb install, icons.
-- [Contributing](../contributing.md) — branch/PR workflow.
+- [Build & release](build-and-release.md) - release APKs, iOS, adb install, icons.
+- [Contributing](../contributing.md) - branch/PR workflow.
