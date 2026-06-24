@@ -11,7 +11,7 @@ import '../../services/active_account_service.dart';
 import '../../services/api_client.dart';
 import '../../services/school_data_service.dart';
 
-/// Documents screen — mirrors a typical school "personal dossier": files are
+/// Documents screen - mirrors a typical school "personal dossier": files are
 /// grouped into folders by their category (report cards / Zeugnisse get their
 /// own folder, pinned first). Pull down to fetch fresh files from the provider;
 /// tapping a file downloads and opens it.
@@ -122,7 +122,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
               Padding(
                 padding: const EdgeInsets.only(top: 48),
                 child: Center(
-                  child: Text('No documents yet — pull down to refresh.',
+                  child: Text('No documents yet - pull down to refresh.',
                       textAlign: TextAlign.center,
                       style: TextStyle(color: colors.mutedForeground)),
                 ),

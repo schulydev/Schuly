@@ -80,7 +80,7 @@ class ActiveAccountService extends ChangeNotifier {
   /// Maps schoolId → (provider, plugin account id, plugin base path) by
   /// cross-referencing each catalog system's plugin accounts (which expose
   /// `schoolUserId` + `id`) against the user's SchoolUsers. The set of plugins
-  /// and their routes comes entirely from the backend catalog — no provider is
+  /// and their routes comes entirely from the backend catalog - no provider is
   /// hardcoded. Best-effort: returns an empty map on any failure.
   Future<Map<String, ({String provider, String accountId, String? pluginBasePath})>>
       _detectPluginAccounts() async {

@@ -18,7 +18,7 @@ import 'add_school_modal.dart';
 /// connect screen on the *parent* navigator (so it survives sheet dismissal),
 /// and on success refreshes the accounts list and selects the new account.
 class AccountsSidebar extends StatelessWidget {
-  /// Parent navigator — needed for pushing the connect screen, since this
+  /// Parent navigator - needed for pushing the connect screen, since this
   /// widget is mounted inside a modal sheet route.
   final NavigatorState parentNavigator;
   final VoidCallback? onSignOut;
@@ -93,7 +93,7 @@ class AccountsSidebar extends StatelessWidget {
           final isPrivate = AppModeService.instance.isPrivate;
 
           // showFSheet strips MediaQuery.padding, so SafeArea is a no-op here.
-          // viewPadding survives, so pad the content with it manually — keeps
+          // viewPadding survives, so pad the content with it manually - keeps
           // the background full-bleed while clearing the status bar / nav bar.
           final viewPadding = MediaQuery.viewPaddingOf(context);
           return Padding(
@@ -128,7 +128,7 @@ class AccountsSidebar extends StatelessWidget {
                           child: Padding(
                             padding: const EdgeInsets.all(24),
                             child: Text(
-                              'Private mode — your data stays on this device.',
+                              'Private mode - your data stays on this device.',
                               textAlign: TextAlign.center,
                               style: typography.sm
                                   .copyWith(color: colors.mutedForeground),
@@ -234,7 +234,7 @@ class AccountsSidebar extends StatelessWidget {
 
 /// Rounded-square avatar for a school account, à la Teams' org tiles. Shows the
 /// school's backend-supplied logo on a muted surface, falling back to a generic
-/// icon — no per-provider asset is bundled in the app.
+/// icon - no per-provider asset is bundled in the app.
 class _SchoolAvatar extends StatelessWidget {
   static const double size = 40;
   final String? logoUrl;

@@ -2,7 +2,7 @@ import 'package:flutter/widgets.dart';
 import 'package:forui/forui.dart';
 
 /// App-wide toasts. [navigatorKey] is attached to the root `MaterialApp`, and the
-/// root `FToaster` wraps the navigator — so its context can surface a toast from
+/// root `FToaster` wraps the navigator - so its context can surface a toast from
 /// anywhere, including services that have no `BuildContext`. Use this for errors
 /// and notices the user would otherwise never see (silent fetch/sync failures).
 ///

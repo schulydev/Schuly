@@ -58,7 +58,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   Future<void> _bootstrap() async {
-    // Private mode: no Pocket ID / school switcher — just load proxied data.
+    // Private mode: no Pocket ID / school switcher - just load proxied data.
     if (AppModeService.instance.isPrivate) {
       final account = await PrivateAccountStore.instance.load();
       if (mounted) {

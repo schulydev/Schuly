@@ -6,7 +6,7 @@ import '../../services/totp_service.dart';
 
 /// Scans an authenticator QR code and returns the raw payload (an
 /// `otpauth://` URI, or a bare secret) to the caller. Only codes that parse as
-/// a usable TOTP are accepted — other QR codes are ignored so the camera keeps
+/// a usable TOTP are accepted - other QR codes are ignored so the camera keeps
 /// scanning. Pops with the scanned string, or null if cancelled.
 ///
 /// The [MobileScanner] manages its own camera controller lifecycle.

@@ -5,7 +5,7 @@ import 'package:forui/forui.dart';
 /// followed by the Account-vs-Private mode choice. Forui has no carousel
 /// widget, so the swipe is a plain [PageView]; everything else is Forui.
 ///
-/// The two mode buttons on the last page are the only exits — both should mark
+/// The two mode buttons on the last page are the only exits - both should mark
 /// onboarding as seen and start the matching gate flow (sign-in / connect).
 class OnboardingScreen extends StatefulWidget {
   final Future<void> Function() onChooseAccount;

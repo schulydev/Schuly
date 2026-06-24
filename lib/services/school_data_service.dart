@@ -168,7 +168,7 @@ class SchoolDataService extends ChangeNotifier {
     try {
       if (account.accessToken != null) {
         // Token-strategy systems: batched endpoints with a passwordless token
-        // refresh on expiry. A stored access token is the marker — token logins
+        // refresh on expiry. A stored access token is the marker - token logins
         // mint one; scrape (credential-replay) systems don't.
         final d = await TokenProxyClient.instance.fetchAll(account);
         if (d.refreshedAccount != null) {

@@ -3,7 +3,7 @@ import 'package:otp/otp.dart';
 /// A parsed TOTP descriptor. Built from either a bare base32 secret or a full
 /// `otpauth://totp/...` URI (as encoded in an authenticator QR code).
 class TotpConfig {
-  /// Normalized base32 secret — no spaces/dashes, upper-case.
+  /// Normalized base32 secret - no spaces/dashes, upper-case.
   final String secret;
   final int digits;
   final int period; // seconds
@@ -56,7 +56,7 @@ class TotpConfig {
     return secret.isEmpty ? null : TotpConfig(secret: secret);
   }
 
-  /// Strips spaces/dashes and upper-cases — accepts the way authenticators
+  /// Strips spaces/dashes and upper-cases - accepts the way authenticators
   /// display seeds (grouped, lower-case) as well as the raw form.
   static String normalizeSecret(String s) =>
       s.replaceAll(RegExp(r'[\s-]'), '').toUpperCase();

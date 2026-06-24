@@ -9,7 +9,7 @@ import '../../account/unified_connect_screen.dart';
 /// Full add-school flow: fetch the backend's school-system catalog, show the
 /// picker, then run the chosen system's connect screen. Returns the new account
 /// id, or null if the user cancelled at any step. [navigator] is the navigator
-/// the connect screen is pushed onto — pass the dashboard's, not a sheet/dialog
+/// the connect screen is pushed onto - pass the dashboard's, not a sheet/dialog
 /// navigator that may be torn down mid-flow.
 Future<String?> runAddSchoolFlow(
   BuildContext context,
@@ -31,7 +31,7 @@ Future<String?> runAddSchoolFlow(
 
 /// Fetches the catalog, showing an error dialog and returning null on failure
 /// (or when the backend advertises no systems). The app keeps no offline
-/// fallback — the backend is the sole source of truth.
+/// fallback - the backend is the sole source of truth.
 Future<List<SchoolSystem>?> fetchSystemsOrShowError(BuildContext context) async {
   List<SchoolSystem> systems;
   try {

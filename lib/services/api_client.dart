@@ -40,7 +40,7 @@ class ApiClient {
                 options.extra['_retried'] = true;
                 options.headers['Authorization'] = 'Bearer $newToken';
                 try {
-                  // Silent on success — a refreshed-and-retried request is normal.
+                  // Silent on success - a refreshed-and-retried request is normal.
                   return handler.resolve(await _dio.fetch(options));
                 } on DioException catch (retryError) {
                   _toastHttpError(retryError);
@@ -67,7 +67,7 @@ class ApiClient {
   late final SchulyApi api;
 
   /// The configured Dio (auth + refresh interceptor, backend base URL) for
-  /// requests the typed client doesn't cover well — e.g. binary downloads.
+  /// requests the typed client doesn't cover well - e.g. binary downloads.
   Dio get dio => _dio;
 
   /// In-flight refresh, shared so concurrent 401s trigger a single token
@@ -80,7 +80,7 @@ class ApiClient {
   }
 }
 
-/// Toasts an HTTP / network failure so API errors aren't silent — the status
+/// Toasts an HTTP / network failure so API errors aren't silent - the status
 /// code (or "network") plus the method and path that failed.
 void _toastHttpError(DioException e) {
   final code = e.response?.statusCode;

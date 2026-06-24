@@ -138,7 +138,7 @@ class _RootScreenState extends State<RootScreen> {
           children: [
             if (isPrivate) ...[
               const Text(
-                'Private mode — no account, nothing stored on a server.',
+                'Private mode - no account, nothing stored on a server.',
                 textAlign: TextAlign.center,
               ),
               FButton(

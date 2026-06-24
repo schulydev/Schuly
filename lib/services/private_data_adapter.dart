@@ -75,7 +75,7 @@ class PrivateDataAdapter {
       e.map(agendaEntry).toList(growable: false);
 
   /// Derives the student's classes from the distinct subjects across their
-  /// grades and exams, attaching each subject's exams — mirroring how the
+  /// grades and exams, attaching each subject's exams - mirroring how the
   /// account-mode backend sync creates a Class per course. (The token-strategy
   /// endpoints have no standalone classes source, so this is the private-mode analogue.)
   static List<ClassDto> classes(
