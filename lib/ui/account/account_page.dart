@@ -12,7 +12,7 @@ import '../../services/toast_service.dart';
 import '../classes/class_detail_screen.dart';
 import '../documents/documents_page.dart';
 
-/// Account tab — profile details, enrolled classes, app info, and the account
+/// Account tab - profile details, enrolled classes, app info, and the account
 /// switcher + sign out.
 class AccountPage extends StatefulWidget {
   final String? pictureUrl;
@@ -67,7 +67,7 @@ class _AccountPageState extends State<AccountPage> {
   }
 
   /// The version shown is the active provider's plugin version, read off its
-  /// `…/status` endpoint — not the backend app version.
+  /// `…/status` endpoint - not the backend app version.
   Future<void> _loadVersion() async {
     try {
       final active = ActiveAccountService.instance.active;
@@ -119,9 +119,9 @@ class _AccountPageState extends State<AccountPage> {
     final me = SchoolDataService.instance.me;
     final classes = me?.classes ?? const <UserClassDto>[];
 
-    String fmtDate(Date? d) => d == null ? '—' : '${d.day}.${d.month}.${d.year}';
+    String fmtDate(Date? d) => d == null ? '-' : '${d.day}.${d.month}.${d.year}';
     final fullName = me == null
-        ? (widget.userName ?? '—')
+        ? (widget.userName ?? '-')
         : '${me.firstName} ${me.lastName}'.trim();
     final initial = fullName.isNotEmpty ? fullName.characters.first.toUpperCase() : '?';
     final fallback = Text(initial,
@@ -259,7 +259,7 @@ class _AccountPageState extends State<AccountPage> {
           child: FTile(
             prefix: const Icon(FIcons.info),
             title: const Text('Version'),
-            suffix: Text(_version ?? '—', style: TextStyle(color: colors.mutedForeground)),
+            suffix: Text(_version ?? '-', style: TextStyle(color: colors.mutedForeground)),
           ),
         ),
         const SizedBox(height: 4),
@@ -314,7 +314,7 @@ class _InfoTile extends StatelessWidget {
         child: FTile(
           prefix: Icon(icon),
           title: Text(label),
-          details: Text((value?.isNotEmpty ?? false) ? value! : '—'),
+          details: Text((value?.isNotEmpty ?? false) ? value! : '-'),
         ),
       );
 }

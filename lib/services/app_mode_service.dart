@@ -2,8 +2,8 @@ import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// How the app runs:
-/// - [account] — full mode: Pocket ID sign-in + the Schuly backend account.
-/// - [private] — no account; data is proxied statelessly and kept only on-device.
+/// - [account] - full mode: Pocket ID sign-in + the Schuly backend account.
+/// - [private] - no account; data is proxied statelessly and kept only on-device.
 enum AppMode { account, private }
 
 /// Holds the selected [AppMode], persisted locally. Mirrors [ThemeService]:

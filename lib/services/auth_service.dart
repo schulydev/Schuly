@@ -180,7 +180,7 @@ class AuthService {
 
   /// Exchanges the stored refresh token for a fresh access token and persists
   /// the result. Returns the new access token, or null if there's no refresh
-  /// token or the exchange failed — in which case the caller should treat the
+  /// token or the exchange failed - in which case the caller should treat the
   /// session as expired.
   static Future<String?> refreshAccessToken() async {
     final refreshToken = await getRefreshToken();
@@ -215,7 +215,7 @@ class AuthService {
 
   /// Decodes the persisted OIDC ID token's payload. Returns its claims
   /// (`name`, `email`, `picture`, …) or null if there's no token / it's
-  /// malformed. Pure local decode — no signature verification, which is fine
+  /// malformed. Pure local decode - no signature verification, which is fine
   /// since the token was already validated at exchange time.
   static Future<Map<String, dynamic>?> getIdTokenClaims() async {
     await _ensureMigrated();

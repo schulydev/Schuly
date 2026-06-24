@@ -5,7 +5,7 @@ import '../domain/school_system.dart';
 
 /// Fetches the backend-served catalog of school systems (anonymous endpoint).
 /// The backend is the **sole** source of truth for which systems exist and how
-/// to log in — the app hardcodes nothing and renders the picker + login forms
+/// to log in - the app hardcodes nothing and renders the picker + login forms
 /// entirely from this list.
 ///
 /// Uses a clean [Dio] with no OIDC interceptor: private (secure) mode relies on

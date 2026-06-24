@@ -11,7 +11,7 @@ Color gradeColor(BuildContext context, num grade) {
 }
 
 /// A score is only a real grade when it's on the 1–6 scale. 0/null means the
-/// exam exists but isn't graded yet — excluded from averages and shown as "—".
+/// exam exists but isn't graded yet - excluded from averages and shown as "-".
 bool isGraded(num? score) => score != null && score > 0;
 
 String formatGrade(num grade) {
@@ -21,7 +21,7 @@ String formatGrade(num grade) {
       : (s.endsWith('0') ? grade.toStringAsFixed(1) : s);
 }
 
-/// Coloured grade chip. Ungraded (≤0) scores render as a muted "—".
+/// Coloured grade chip. Ungraded (≤0) scores render as a muted "-".
 class GradePill extends StatelessWidget {
   final num? score;
   const GradePill(this.score, {super.key});
@@ -36,7 +36,7 @@ class GradePill extends StatelessWidget {
           color: colors.muted,
           borderRadius: BorderRadius.circular(8),
         ),
-        child: Text('—', style: TextStyle(color: colors.mutedForeground, fontWeight: FontWeight.w700)),
+        child: Text('-', style: TextStyle(color: colors.mutedForeground, fontWeight: FontWeight.w700)),
       );
     }
     final c = gradeColor(context, score!);

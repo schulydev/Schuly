@@ -91,7 +91,7 @@ class _GradesViewState extends State<_GradesView> {
     final byClass = <String, List<ExamDto>>{};
     for (final e in graded) {
       if (!inSelection(_semesterKey(e.date))) continue;
-      byClass.putIfAbsent(e.classId ?? '—', () => []).add(e);
+      byClass.putIfAbsent(e.classId ?? '-', () => []).add(e);
     }
     for (final list in byClass.values) {
       list.sort((a, b) => (a.date?.compareTo(b.date ?? a.date!) ?? 0));
@@ -226,7 +226,7 @@ class _ExamDetailSheet extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(label, style: typography.sm.copyWith(color: colors.mutedForeground)),
-              Text(isGraded(value) ? formatGrade(v) : '—',
+              Text(isGraded(value) ? formatGrade(v) : '-',
                   style: typography.sm.copyWith(fontWeight: FontWeight.w700, color: c)),
             ],
           ),

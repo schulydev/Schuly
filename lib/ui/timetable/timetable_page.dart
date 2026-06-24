@@ -31,7 +31,7 @@ class _TimetablePageState extends State<TimetablePage> {
   }
 
   /// Once agenda data is available (it loads after this page mounts), anchor
-  /// the calendar on the nearest day with entries — unless the user already
+  /// the calendar on the nearest day with entries - unless the user already
   /// picked a day.
   void _autoAnchor() {
     if (_userPicked || _selected != null) return;

@@ -144,11 +144,11 @@ class TokenProxyClient {
   /// Re-establishes a token, returning an account carrying the new token and
   /// rotated context_state, or null if it isn't possible / failed. Tries the
   /// cheap passwordless refresh first; if that's unavailable or rejected, falls
-  /// back to a full credential re-login from the vaulted email/password/seed —
+  /// back to a full credential re-login from the vaulted email/password/seed -
   /// Schuly regenerates the OTP itself, so the user is never prompted.
   Future<PrivateAccount?> _refreshAccount(PrivateAccount a) async {
-    // Credential logins (ms-entrance) have no captured user-agent — it manages
-    // its own — so only context_state is required to replay.
+    // Credential logins (ms-entrance) have no captured user-agent - it manages
+    // its own - so only context_state is required to replay.
     if (a.contextState != null) {
       final r = await refresh(
         basePath: a.statelessBasePath,

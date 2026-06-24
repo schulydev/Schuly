@@ -9,7 +9,7 @@ import '../../services/totp_service.dart';
 
 /// In-app authenticator for the connected private-mode school. Schuly acts as
 /// the TOTP client: it generates the current code from the vaulted seed and
-/// refreshes it every second, with a countdown and tap-to-copy — so the code is
+/// refreshes it every second, with a countdown and tap-to-copy - so the code is
 /// available for use elsewhere, not just for Schuly's own re-login.
 class AuthenticatorScreen extends StatefulWidget {
   const AuthenticatorScreen({super.key});

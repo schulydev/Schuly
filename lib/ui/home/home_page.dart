@@ -27,7 +27,7 @@ class HomePage extends StatelessWidget {
     final upcoming = svc.agenda.where((a) => !isHoliday(a) && dayOf(a.date).isAfter(today)).toList()
       ..sort((a, b) => a.date.compareTo(b.date));
 
-    // Current or upcoming holidays (those whose end—or start—hasn't passed).
+    // Current or upcoming holidays (those whose end-or start-hasn't passed).
     final holidays = svc.agenda
         .where((a) => isHoliday(a) && !dayOf(a.endDate ?? a.date).isBefore(today))
         .toList()
@@ -43,7 +43,7 @@ class HomePage extends StatelessWidget {
       ...svc.classNameById,
     };
     // Only real grades on the latest-grades card (drop ungraded 0 placeholders),
-    // newest first by the exam date — across semesters a graded exam can be from
+    // newest first by the exam date - across semesters a graded exam can be from
     // an earlier school year, so date order (not list order) is what's "latest".
     final recentGrades = myGrades.entries
         .where((e) => isGraded(e.value.score))
@@ -168,7 +168,7 @@ class HomePage extends StatelessWidget {
   }
 }
 
-/// A plain section: a header label followed by spaced tiles — matching the
+/// A plain section: a header label followed by spaced tiles - matching the
 /// Grades page (no enclosing card; the tiles carry their own borders).
 class _Section extends StatelessWidget {
   final String title;

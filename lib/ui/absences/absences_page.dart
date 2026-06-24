@@ -6,7 +6,7 @@ import 'package:schuly_api/schuly_api.dart';
 import '../../services/api_client.dart';
 import '../../services/school_data_service.dart';
 
-/// Absences tab — lists the user's absences/delays and lets them report,
+/// Absences tab - lists the user's absences/delays and lets them report,
 /// edit, and delete (the one writable area).
 class AbsencesPage extends StatelessWidget {
   const AbsencesPage({super.key});
@@ -204,8 +204,8 @@ class _AbsenceFormState extends State<_AbsenceForm> {
     final colors = context.theme.colors;
     String d(DateTime x) => '${x.day}.${x.month}.${x.year}';
     // showFSheet strips MediaQuery.padding (so SafeArea is a no-op); viewPadding
-    // survives. Clear whichever is taller — the keyboard (viewInsets) or the
-    // Android gesture/nav bar (viewPadding) — so the Save button is never hidden.
+    // survives. Clear whichever is taller - the keyboard (viewInsets) or the
+    // Android gesture/nav bar (viewPadding) - so the Save button is never hidden.
     final keyboard = MediaQuery.viewInsetsOf(context).bottom;
     final navBar = MediaQuery.viewPaddingOf(context).bottom;
     return Container(

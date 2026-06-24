@@ -11,7 +11,7 @@ import '../widgets/dynamic_login_form.dart';
 import 'totp_scan_screen.dart';
 
 /// Generic private-mode connect screen. Renders the chosen [system]'s
-/// backend-described `loginFields` and connects headlessly — no WebView. The
+/// backend-described `loginFields` and connects headlessly - no WebView. The
 /// integration shape comes from the catalog `privateAuthStrategy`: `token`
 /// systems log in via the stateless credential `/login` (mints a token +
 /// context_state); `scrape` systems replay username/password per fetch.
@@ -162,7 +162,7 @@ class _PrivateConnectScreenState extends State<PrivateConnectScreen> {
         spacing: 16,
         children: [
           const Text(
-            'Private mode keeps everything on this device — no account, '
+            'Private mode keeps everything on this device - no account, '
             'nothing stored on a server.',
           ),
           DynamicLoginForm(controller: _form, onScanField: _scanTotp),

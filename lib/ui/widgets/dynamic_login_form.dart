@@ -58,7 +58,7 @@ class DynamicLoginForm extends StatelessWidget {
     super.key,
   });
 
-  /// A field that carries a TOTP seed — obscured and offered a QR scanner.
+  /// A field that carries a TOTP seed - obscured and offered a QR scanner.
   /// Detected by an explicit `totp` type or the conventional `totp` key, so the
   /// backend catalog can opt in without the app hardcoding a provider.
   static bool _isTotp(SchoolSystemLoginField f) =>

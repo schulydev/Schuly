@@ -10,7 +10,7 @@ import '../widgets/dynamic_login_form.dart';
 /// (`POST /api/auth/login`). Renders the chosen system's catalog `loginFields`
 /// and forwards them as `{ systemKey, fields, displayName }`; the dumb CRM routes
 /// to the owning plugin (`IPluginLogin`) which authenticates the provider. No
-/// provider logic and no WebView here — works for any `credentials` system.
+/// provider logic and no WebView here - works for any `credentials` system.
 /// Pops the new account id (`String`) on success.
 class UnifiedConnectScreen extends StatefulWidget {
   final SchoolSystem system;

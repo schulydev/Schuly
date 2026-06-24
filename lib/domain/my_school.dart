@@ -4,8 +4,8 @@ import '../config/oidc_config.dart';
 
 /// A school the signed-in user belongs to, from `GET /api/schools/my-schools`.
 /// Carries the school name plus the user's identity (full name + email) at
-/// that school — what the account switcher displays. [provider] is the catalog
-/// system key, and [pluginBasePath] its plugin route — both discovered from the
+/// that school - what the account switcher displays. [provider] is the catalog
+/// system key, and [pluginBasePath] its plugin route - both discovered from the
 /// backend catalog, never hardcoded.
 class MySchool {
   final String id;

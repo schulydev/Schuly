@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 /// Resolved OIDC settings for the active backend. Everything except the backend
-/// base URL is discovered at runtime — the backend's `/api/app` provides the
+/// base URL is discovered at runtime - the backend's `/api/app` provides the
 /// authority, client id, scope and redirect uri, and the provider's OIDC
 /// discovery document provides the authorize/token endpoints. Nothing
 /// provider-specific (Keycloak vs Pocket ID vs …) is hardcoded.
@@ -30,7 +30,7 @@ class OidcSettings {
 }
 
 class OidcConfig {
-  // Backend base URL. Override per build — never hardcode a machine IP here:
+  // Backend base URL. Override per build - never hardcode a machine IP here:
   //   flutter build apk --dart-define=BACKEND_BASE_URL=http://<dev-box-lan-ip>:5033
   // Defaults to localhost: use `adb reverse tcp:5033 tcp:5033` over USB, or
   // `http://10.0.2.2:5033` on the emulator.
@@ -43,7 +43,7 @@ class OidcConfig {
   static Future<OidcSettings>? _loading;
 
   /// Loads (once) and caches the OIDC settings from the backend. Safe to call
-  /// from multiple places concurrently — the in-flight load is shared, and a
+  /// from multiple places concurrently - the in-flight load is shared, and a
   /// failed load is not cached so the next call retries.
   static Future<OidcSettings> settings() {
     final cached = _settings;
