@@ -89,6 +89,7 @@ flutter:
   assets:
     - assets/app_icon.png
     - assets/schuly_icon.png
+    - assets/cropped_schuly_icon.png
     - assets/schoolsystems/
 
   # An image asset can refer to one or more resolution-specific "variants", see

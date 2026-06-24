@@ -70,7 +70,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 onPageChanged: (i) => setState(() => _page = i),
                 children: [
                   const _IntroPage(
-                    asset: 'assets/schuly_icon.png',
+                    asset: 'assets/cropped_schuly_icon.png',
                     title: 'Welcome to Schuly',
                     body: 'Your grades, timetable, agenda, and absences - '
                         'your whole school portal in one app.',
@@ -156,16 +156,16 @@ class _IntroPage extends StatelessWidget {
     // mirroring the app icon; plain feature pages get a faint disc + tinted icon.
     final Widget badge = asset != null
         ? Container(
-            width: 188,
-            height: 188,
+            width: 132,
+            height: 132,
             decoration: BoxDecoration(
               color: colors.primary,
               shape: BoxShape.circle,
             ),
-            child: Padding(
-              padding: const EdgeInsets.all(34),
+            child: Center(
               child: Image.asset(
                 asset!,
+                height: 64,
                 color: colors.primaryForeground,
                 colorBlendMode: BlendMode.srcIn,
               ),
@@ -191,7 +191,7 @@ class _IntroPage extends StatelessWidget {
           Text(
             title,
             textAlign: TextAlign.center,
-            style: typography.xl3.copyWith(fontWeight: FontWeight.w700),
+            style: typography.xl3.copyWith(fontWeight: FontWeight.w700, height: 1.1),
           ),
           const SizedBox(height: 14),
           Text(
@@ -224,6 +224,7 @@ class _ServerPageState extends State<_ServerPage> {
   _Server _selected = _Server.hosted;
   final _urlCtrl = TextEditingController();
   String? _error;
+  String? _okMsg;
   bool _saving = false;
 
   @override
@@ -246,18 +247,37 @@ class _ServerPageState extends State<_ServerPage> {
         (uri.isScheme('http') || uri.isScheme('https')) &&
         uri.host.isNotEmpty;
     if (!valid) {
-      setState(() => _error =
-          'Enter a valid http(s) URL, e.g. https://schuly.example.com');
+      setState(() {
+        _error = 'Enter a valid http(s) URL, e.g. https://schuly.example.com';
+        _okMsg = null;
+      });
       return;
     }
     setState(() {
       _saving = true;
       _error = null;
+      _okMsg = null;
     });
+    // Confirm the URL is reachable and is actually a Schuly backend.
+    final version = await BackendConfig.probe(raw);
+    if (!mounted) return;
+    if (version == null) {
+      setState(() {
+        _saving = false;
+        _error = "Couldn't reach a Schuly backend at this URL. "
+            'Check the address and that the server is running.';
+      });
+      return;
+    }
     await BackendConfig.setUrl(raw);
     if (!mounted) return;
-    setState(() => _saving = false);
-    widget.onContinue();
+    setState(() {
+      _saving = false;
+      _okMsg = 'Connected - Schuly v$version';
+    });
+    // Briefly show the version, then continue to the mode choice.
+    await Future<void>.delayed(const Duration(milliseconds: 900));
+    if (mounted) widget.onContinue();
   }
 
   @override
@@ -277,7 +297,7 @@ class _ServerPageState extends State<_ServerPage> {
               Text(
                 'Which server?',
                 textAlign: TextAlign.center,
-                style: typography.xl2.copyWith(fontWeight: FontWeight.w700),
+                style: typography.xl2.copyWith(fontWeight: FontWeight.w700, height: 1.1),
               ),
               const SizedBox(height: 28),
               _ModeCard(
@@ -321,10 +341,24 @@ class _ServerPageState extends State<_ServerPage> {
                   style: typography.sm.copyWith(color: colors.error),
                 ),
               ],
+              if (_okMsg != null) ...[
+                const SizedBox(height: 8),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(FIcons.circleCheck, size: 16, color: colors.primary),
+                    const SizedBox(width: 6),
+                    Text(
+                      _okMsg!,
+                      style: typography.sm.copyWith(color: colors.primary),
+                    ),
+                  ],
+                ),
+              ],
               const SizedBox(height: 24),
               FButton(
                 onPress: (widget.busy || _saving) ? null : _continue,
-                child: Text(_saving ? 'Saving...' : 'Continue'),
+                child: Text(_saving ? 'Checking...' : 'Continue'),
               ),
             ],
           ),
@@ -374,7 +408,7 @@ class _ModeChoicePageState extends State<_ModeChoicePage> {
               Text(
                 'How do you want to use Schuly?',
                 textAlign: TextAlign.center,
-                style: typography.xl2.copyWith(fontWeight: FontWeight.w700),
+                style: typography.xl2.copyWith(fontWeight: FontWeight.w700, height: 1.1),
               ),
               const SizedBox(height: 28),
               _ModeCard(

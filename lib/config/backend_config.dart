@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// The backend the app talks to. Defaults to the hosted Schuly Cloud (baked in
@@ -30,6 +33,33 @@ class BackendConfig {
   static Future<void> load() async {
     final saved = (await SharedPreferences.getInstance()).getString(_key);
     if (saved != null && saved.isNotEmpty) _url = saved;
+  }
+
+  /// Strips a trailing slash from a URL, returning '' for null/empty.
+  static String normalise(String? value) =>
+      (value ?? '').trim().replaceAll(RegExp(r'/+$'), '');
+
+  /// Probes [baseUrl] by fetching the anonymous `GET /api/app`. A reachable
+  /// Schuly backend returns a JSON object with a `clientId`; on success this
+  /// returns its reported `version` (or `'unknown'` if the field is missing).
+  /// Returns null on any network/parse error or a non-Schuly response.
+  static Future<String?> probe(String baseUrl) async {
+    final url = normalise(baseUrl);
+    if (url.isEmpty) return null;
+    try {
+      final r = await http
+          .get(Uri.parse('$url/api/app'))
+          .timeout(const Duration(seconds: 8));
+      if (r.statusCode != 200) return null;
+      final body = jsonDecode(r.body);
+      if (body is! Map<String, dynamic> || body['clientId'] is! String) {
+        return null;
+      }
+      final version = body['version'];
+      return version is String && version.isNotEmpty ? version : 'unknown';
+    } catch (_) {
+      return null;
+    }
   }
 
   /// Normalises and persists [value] (trailing slash trimmed). A null/empty
