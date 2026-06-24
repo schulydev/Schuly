@@ -18,7 +18,7 @@ Minimal Flutter app. UI built with [Forui](https://forui.dev) (`FTheme` + `F*` w
 
 The app runs in one of two modes, chosen at the gate (`AppModeService`):
 
-- **Account mode** - OIDC login (Pocket ID) via `ApiClient`; data lives server-side
+- **Account mode** - OIDC login (Keycloak) via `ApiClient`; data lives server-side
   and the backend syncs it. The normal flow.
 - **Private / secure mode** - **no Schuly login, no OIDC**. Credentials live only in
   the device keystore (`PrivateAccountStore`); data is fetched live from the backend's
