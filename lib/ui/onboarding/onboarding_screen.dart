@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 
-/// First-run onboarding: three intro pages explaining what Schuly shows,
-/// followed by the Account-vs-Private mode choice. Forui has no carousel
-/// widget, so the swipe is a plain [PageView]; everything else is Forui.
+import '../../config/backend_config.dart';
+
+/// First-run onboarding: three intro pages explaining what Schuly shows, then a
+/// server step (hosted vs self-hosted), then the Account-vs-Private mode choice.
+/// Forui has no carousel widget, so the swipe is a plain [PageView]; everything
+/// else is Forui.
 ///
 /// The two mode buttons on the last page are the only exits - both should mark
 /// onboarding as seen and start the matching gate flow (sign-in / connect).
@@ -22,8 +25,10 @@ class OnboardingScreen extends StatefulWidget {
 }
 
 class _OnboardingScreenState extends State<OnboardingScreen> {
-  static const _pageCount = 4;
-  static const _lastPage = _pageCount - 1;
+  static const _pageCount = 5;
+  // Pages 0-2 are intro slides (with a Next button); pages 3 (server) and 4
+  // (mode) carry their own Continue button.
+  static const _introPages = 3;
 
   final _controller = PageController();
   int _page = 0;
@@ -84,6 +89,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         'averages, and browse your timetable, agenda, and '
                         'absences.',
                   ),
+                  _ServerPage(busy: _busy, onContinue: _next),
                   _ModeChoicePage(
                     busy: _busy,
                     onAccount: () => _choose(widget.onChooseAccount),
@@ -109,10 +115,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   ),
               ],
             ),
-            // The last page carries its own CTAs; earlier pages get "Next".
+            // Intro pages get a "Next"; the server and mode pages carry their
+            // own Continue button.
             Padding(
               padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
-              child: _page < _lastPage
+              child: _page < _introPages
                   ? SizedBox(
                       width: double.infinity,
                       child: FButton(onPress: _next, child: const Text('Next')),
@@ -193,6 +200,135 @@ class _IntroPage extends StatelessWidget {
             style: typography.base.copyWith(color: colors.mutedForeground),
           ),
         ],
+      ),
+    );
+  }
+}
+
+enum _Server { hosted, custom }
+
+/// The server step: the hosted Schuly Cloud (default) or a self-hosted backend
+/// URL. Persists the choice to [BackendConfig] before continuing, so both
+/// account and private mode talk to the chosen backend.
+class _ServerPage extends StatefulWidget {
+  final bool busy;
+  final VoidCallback onContinue;
+
+  const _ServerPage({required this.busy, required this.onContinue});
+
+  @override
+  State<_ServerPage> createState() => _ServerPageState();
+}
+
+class _ServerPageState extends State<_ServerPage> {
+  _Server _selected = _Server.hosted;
+  final _urlCtrl = TextEditingController();
+  String? _error;
+  bool _saving = false;
+
+  @override
+  void dispose() {
+    _urlCtrl.dispose();
+    super.dispose();
+  }
+
+  Future<void> _continue() async {
+    if (widget.busy || _saving) return;
+    if (_selected == _Server.hosted) {
+      await BackendConfig.setUrl(null);
+      widget.onContinue();
+      return;
+    }
+    final raw = _urlCtrl.text.trim();
+    final uri = Uri.tryParse(raw);
+    final valid = raw.isNotEmpty &&
+        uri != null &&
+        (uri.isScheme('http') || uri.isScheme('https')) &&
+        uri.host.isNotEmpty;
+    if (!valid) {
+      setState(() => _error =
+          'Enter a valid http(s) URL, e.g. https://schuly.example.com');
+      return;
+    }
+    setState(() {
+      _saving = true;
+      _error = null;
+    });
+    await BackendConfig.setUrl(raw);
+    if (!mounted) return;
+    setState(() => _saving = false);
+    widget.onContinue();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.theme.colors;
+    final typography = context.theme.typography;
+
+    return LayoutBuilder(
+      builder: (context, constraints) => SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+        child: ConstrainedBox(
+          constraints: BoxConstraints(minHeight: constraints.maxHeight - 32),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                'Which server?',
+                textAlign: TextAlign.center,
+                style: typography.xl2.copyWith(fontWeight: FontWeight.w700),
+              ),
+              const SizedBox(height: 28),
+              _ModeCard(
+                icon: FIcons.cloud,
+                title: 'Schuly Cloud',
+                tag: 'Recommended',
+                body: 'The official Schuly server - the right choice for '
+                    'most people.',
+                selected: _selected == _Server.hosted,
+                onTap: widget.busy
+                    ? null
+                    : () => setState(() {
+                          _selected = _Server.hosted;
+                          _error = null;
+                        }),
+              ),
+              const SizedBox(height: 14),
+              _ModeCard(
+                icon: FIcons.server,
+                title: 'Self-hosted',
+                body: 'Connect to your own Schuly backend instance.',
+                selected: _selected == _Server.custom,
+                onTap: widget.busy
+                    ? null
+                    : () => setState(() => _selected = _Server.custom),
+              ),
+              if (_selected == _Server.custom) ...[
+                const SizedBox(height: 14),
+                FTextField(
+                  control: FTextFieldControl.managed(controller: _urlCtrl),
+                  label: const Text('Backend URL'),
+                  hint: 'https://schuly.example.com',
+                  autocorrect: false,
+                ),
+              ],
+              if (_error != null) ...[
+                const SizedBox(height: 8),
+                Text(
+                  _error!,
+                  textAlign: TextAlign.center,
+                  style: typography.sm.copyWith(color: colors.error),
+                ),
+              ],
+              const SizedBox(height: 24),
+              FButton(
+                onPress: (widget.busy || _saving) ? null : _continue,
+                child: Text(_saving ? 'Saving...' : 'Continue'),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
