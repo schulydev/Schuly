@@ -40,12 +40,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         curve: Curves.easeOut,
       );
 
-  void _skipToChoice() => _controller.animateToPage(
-        _lastPage,
-        duration: const Duration(milliseconds: 350),
-        curve: Curves.easeOut,
-      );
-
   Future<void> _choose(Future<void> Function() action) async {
     if (_busy) return;
     setState(() => _busy = true);
@@ -64,22 +58,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       child: SafeArea(
         child: Column(
           children: [
-            // Skip jumps straight to the mode choice (it never bypasses it).
-            Align(
-              alignment: Alignment.centerRight,
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
-                child: AnimatedOpacity(
-                  opacity: _page < _lastPage ? 1 : 0,
-                  duration: const Duration(milliseconds: 150),
-                  child: FButton(
-                    style: FButtonStyle.ghost(),
-                    onPress: _page < _lastPage ? _skipToChoice : null,
-                    child: const Text('Skip'),
-                  ),
-                ),
-              ),
-            ),
+            const SizedBox(height: 24),
             Expanded(
               child: PageView(
                 controller: _controller,
@@ -170,14 +149,14 @@ class _IntroPage extends StatelessWidget {
     // mirroring the app icon; plain feature pages get a faint disc + tinted icon.
     final Widget badge = asset != null
         ? Container(
-            width: 132,
-            height: 132,
+            width: 188,
+            height: 188,
             decoration: BoxDecoration(
               color: colors.primary,
               shape: BoxShape.circle,
             ),
             child: Padding(
-              padding: const EdgeInsets.all(30),
+              padding: const EdgeInsets.all(34),
               child: Image.asset(
                 asset!,
                 color: colors.primaryForeground,
@@ -219,9 +198,11 @@ class _IntroPage extends StatelessWidget {
   }
 }
 
-/// The decision page: account vs private. Each card is itself the action
-/// (tappable), so there are no separate buttons. Content is centered.
-class _ModeChoicePage extends StatelessWidget {
+enum _Mode { account, private }
+
+/// The decision page: account vs private. The cards are a selectable toggle
+/// (account preselected); a Continue button below commits the choice.
+class _ModeChoicePage extends StatefulWidget {
   final bool busy;
   final VoidCallback onAccount;
   final VoidCallback onPrivate;
@@ -231,6 +212,13 @@ class _ModeChoicePage extends StatelessWidget {
     required this.onAccount,
     required this.onPrivate,
   });
+
+  @override
+  State<_ModeChoicePage> createState() => _ModeChoicePageState();
+}
+
+class _ModeChoicePageState extends State<_ModeChoicePage> {
+  _Mode _selected = _Mode.account;
 
   @override
   Widget build(BuildContext context) {
@@ -257,10 +245,12 @@ class _ModeChoicePage extends StatelessWidget {
                 icon: FIcons.cloud,
                 title: 'Schuly account',
                 tag: 'Recommended',
-                highlighted: true,
                 body: 'Notifications, web access, and sync across devices. '
                     'Secured with a passkey.',
-                onTap: busy ? null : onAccount,
+                selected: _selected == _Mode.account,
+                onTap: widget.busy
+                    ? null
+                    : () => setState(() => _selected = _Mode.account),
               ),
               const SizedBox(height: 14),
               _ModeCard(
@@ -268,9 +258,21 @@ class _ModeChoicePage extends StatelessWidget {
                 title: 'Private mode',
                 body: 'No account - everything stays on your device. '
                     'No notifications, web, or sync.',
-                onTap: busy ? null : onPrivate,
+                selected: _selected == _Mode.private,
+                onTap: widget.busy
+                    ? null
+                    : () => setState(() => _selected = _Mode.private),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 24),
+              FButton(
+                onPress: widget.busy
+                    ? null
+                    : () => _selected == _Mode.account
+                        ? widget.onAccount()
+                        : widget.onPrivate(),
+                child: Text(widget.busy ? 'Please wait...' : 'Continue'),
+              ),
+              const SizedBox(height: 12),
               Text(
                 'You can switch modes later by signing out.',
                 textAlign: TextAlign.center,
@@ -284,14 +286,14 @@ class _ModeChoicePage extends StatelessWidget {
   }
 }
 
-/// A tappable mode card with centered content; the recommended one gets a
-/// primary-coloured border.
+/// A selectable mode card: centered content with a radio indicator in the
+/// corner; the selected one gets a primary border and a tinted background.
 class _ModeCard extends StatelessWidget {
   final IconData icon;
   final String title;
   final String body;
   final String? tag;
-  final bool highlighted;
+  final bool selected;
   final VoidCallback? onTap;
 
   const _ModeCard({
@@ -299,7 +301,7 @@ class _ModeCard extends StatelessWidget {
     required this.title,
     required this.body,
     this.tag,
-    this.highlighted = false,
+    this.selected = false,
     this.onTap,
   });
 
@@ -310,7 +312,7 @@ class _ModeCard extends StatelessWidget {
     final radius = BorderRadius.circular(14);
 
     return Material(
-      color: colors.secondary,
+      color: selected ? colors.primary.withValues(alpha: 0.08) : colors.secondary,
       borderRadius: radius,
       child: InkWell(
         onTap: onTap,
@@ -320,46 +322,67 @@ class _ModeCard extends StatelessWidget {
           decoration: BoxDecoration(
             borderRadius: radius,
             border: Border.all(
-              color: highlighted ? colors.primary : colors.border,
-              width: highlighted ? 1.5 : 1,
+              color: selected ? colors.primary : colors.border,
+              width: selected ? 2 : 1,
             ),
           ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
+          child: Stack(
             children: [
-              Icon(icon, size: 30, color: colors.primary),
-              const SizedBox(height: 10),
-              Wrap(
-                alignment: WrapAlignment.center,
-                crossAxisAlignment: WrapCrossAlignment.center,
-                spacing: 8,
-                children: [
-                  Text(
-                    title,
-                    style: typography.base.copyWith(fontWeight: FontWeight.w700),
-                  ),
-                  if (tag != null)
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                      decoration: BoxDecoration(
-                        color: colors.primary,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Text(
-                        tag!,
-                        style: typography.xs.copyWith(
-                          color: colors.primaryForeground,
-                          fontWeight: FontWeight.w600,
+              Positioned(
+                top: 0,
+                right: 0,
+                child: selected
+                    ? Icon(FIcons.circleCheck, size: 22, color: colors.primary)
+                    : Container(
+                        width: 20,
+                        height: 20,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(color: colors.border, width: 2),
                         ),
                       ),
-                    ),
-                ],
               ),
-              const SizedBox(height: 6),
-              Text(
-                body,
-                textAlign: TextAlign.center,
-                style: typography.sm.copyWith(color: colors.mutedForeground),
+              SizedBox(
+                width: double.infinity,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(icon, size: 30, color: colors.primary),
+                    const SizedBox(height: 10),
+                    Wrap(
+                      alignment: WrapAlignment.center,
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      spacing: 8,
+                      children: [
+                        Text(
+                          title,
+                          style: typography.base.copyWith(fontWeight: FontWeight.w700),
+                        ),
+                        if (tag != null)
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: colors.primary,
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Text(
+                              tag!,
+                              style: typography.xs.copyWith(
+                                color: colors.primaryForeground,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      body,
+                      textAlign: TextAlign.center,
+                      style: typography.sm.copyWith(color: colors.mutedForeground),
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
