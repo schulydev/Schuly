@@ -5,8 +5,10 @@ import '../../../l10n/app_localizations.dart';
 import '../../../services/active_account_service.dart';
 import '../../../services/app_mode_service.dart';
 import '../../../services/auth_service.dart';
+import '../../../services/onboarding_service.dart';
 import '../../../services/private_account_store.dart';
 import '../../dashboard/dashboard_screen.dart';
+import '../../onboarding/onboarding_screen.dart';
 import '../../private/private_connect_flow.dart';
 
 /// Tier-1 gate. In **account** mode the user signs in with Pocket ID; in
@@ -21,6 +23,7 @@ class RootScreen extends StatefulWidget {
 
 class _RootScreenState extends State<RootScreen> {
   bool? _ready; // signed in (account) or connected (private)
+  bool _onboarded = true; // assume seen until loaded, to avoid a flash
   bool _busy = false;
   String? _error;
 
@@ -30,6 +33,9 @@ class _RootScreenState extends State<RootScreen> {
     // React to session changes (incl. a failed silent refresh) and mode switches.
     AuthService.sessionEpoch.addListener(_refresh);
     AppModeService.instance.addListener(_refresh);
+    OnboardingService.seen().then((seen) {
+      if (mounted) setState(() => _onboarded = seen);
+    });
     _refresh();
   }
 
@@ -73,6 +79,23 @@ class _RootScreenState extends State<RootScreen> {
     if (ok) await _refresh();
   }
 
+  // Onboarding mode choice: mark it seen, select the mode, then run the
+  // matching gate flow. If the user backs out of sign-in/connect they land on
+  // the normal gate (onboarding won't show again).
+  Future<void> _onboardWithAccount() async {
+    await OnboardingService.markSeen();
+    if (mounted) setState(() => _onboarded = true);
+    await AppModeService.instance.setMode(AppMode.account);
+    await _signIn();
+  }
+
+  Future<void> _onboardWithPrivate() async {
+    await OnboardingService.markSeen();
+    if (mounted) setState(() => _onboarded = true);
+    await AppModeService.instance.setMode(AppMode.private);
+    await _connectPrivate();
+  }
+
   Future<void> _signOut() async {
     if (AppModeService.instance.isPrivate) {
       await PrivateAccountStore.instance.clear();
@@ -94,6 +117,13 @@ class _RootScreenState extends State<RootScreen> {
     }
     if (ready) {
       return DashboardScreen(onSignOut: _signOut);
+    }
+    // First run: explain the app and let the user pick a mode.
+    if (!_onboarded) {
+      return OnboardingScreen(
+        onChooseAccount: _onboardWithAccount,
+        onChoosePrivate: _onboardWithPrivate,
+      );
     }
 
     final colors = context.theme.colors;
@@ -122,7 +152,7 @@ class _RootScreenState extends State<RootScreen> {
               ),
             ] else ...[
               const Text(
-                'Sign in to Pocket ID to use Schuly.',
+                'Sign in to your Schuly account to continue.',
                 textAlign: TextAlign.center,
               ),
               FButton(
