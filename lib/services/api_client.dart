@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:schuly_api/schuly_api.dart';
 
+import '../config/backend_config.dart';
 import '../config/oidc_config.dart';
 import 'auth_service.dart';
 import 'toast_service.dart';
@@ -69,6 +70,10 @@ class ApiClient {
   /// The configured Dio (auth + refresh interceptor, backend base URL) for
   /// requests the typed client doesn't cover well - e.g. binary downloads.
   Dio get dio => _dio;
+
+  /// Re-point at the current [BackendConfig.url] after it changes at runtime
+  /// (Settings -> Server), without recreating the client.
+  void applyBaseUrl() => _dio.options.baseUrl = BackendConfig.url;
 
   /// In-flight refresh, shared so concurrent 401s trigger a single token
   /// exchange instead of a stampede.

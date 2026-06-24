@@ -56,6 +56,13 @@ class OidcConfig {
     });
   }
 
+  /// Clears the cached settings so the next [settings] call re-fetches them -
+  /// used after the backend URL changes at runtime (the OIDC authority differs).
+  static void reset() {
+    _settings = null;
+    _loading = null;
+  }
+
   static Future<OidcSettings> _load() async {
     final app = await _getJson('$backendBaseUrl/api/app');
     final authority =

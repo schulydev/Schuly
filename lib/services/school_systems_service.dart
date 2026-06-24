@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 
+import '../config/backend_config.dart';
 import '../config/oidc_config.dart';
 import '../domain/school_system.dart';
 
@@ -17,6 +18,9 @@ class SchoolSystemsService {
     connectTimeout: const Duration(seconds: 10),
     receiveTimeout: const Duration(seconds: 15),
   ));
+
+  /// Re-point at the current [BackendConfig.url] after it changes at runtime.
+  static void applyBaseUrl() => _dio.options.baseUrl = BackendConfig.url;
 
   static Future<List<SchoolSystem>> fetch() async {
     final response = await _dio.get<List<dynamic>>('/api/app/school-systems');
