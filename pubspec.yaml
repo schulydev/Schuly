@@ -72,6 +72,11 @@ flutter_launcher_icons:
   android: true
   ios: true
   image_path: "assets/app_icon.png"
+  # iOS App Store icons must be fully opaque — Apple rejects any alpha channel
+  # (ITMS-90717). The source has transparent corners, so flatten them over the
+  # icon's background colour when generating the iOS set.
+  remove_alpha_ios: true
+  background_color_ios: "#2198fe"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
