@@ -3,7 +3,7 @@
 Schuly runs in one of two modes, chosen at the gate. Both read the same
 operator-provided school systems and the same backend-served catalog; the
 difference is **who authenticates** and **where the data rests**. The app is
-provider-agnostic — concrete systems are catalog data, never hardcoded.
+provider-agnostic - concrete systems are catalog data, never hardcoded.
 
 ```mermaid
 flowchart TB
@@ -13,7 +13,7 @@ flowchart TB
   Gate -->|"Account"| Login
   Gate -->|"Private (no login)"| Catalog
 
-  subgraph ACCOUNT["🔐 Account mode — Schuly login"]
+  subgraph ACCOUNT["🔐 Account mode - Schuly login"]
     direction TB
     Login["OIDC login<br/>(Pocket ID)"]
     ApiClient["ApiClient<br/>Bearer token + auto-refresh"]
@@ -25,14 +25,14 @@ flowchart TB
     Sync -->|"stores"| DB
   end
 
-  subgraph PRIVATE["🕶️ Private / secure mode — NO login, NO OIDC"]
+  subgraph PRIVATE["🕶️ Private / secure mode - NO login, NO OIDC"]
     direction TB
     Catalog["SchoolSystemsService<br/>clean Dio (no auth interceptor)"]
     AnonCat[("GET /api/app/school-systems<br/>[AllowAnonymous]")]
     Connect["Generic connect screen<br/>renders loginFields, branches on privateAuthStrategy"]
     TP["TokenProxyClient<br/>clean Dio"]
     SP["ScrapeProxyClient<br/>clean Dio"]
-    Stateless[("Backend stateless proxy<br/>/api/plugins/*/stateless/*<br/>[AllowAnonymous] — stores nothing")]
+    Stateless[("Backend stateless proxy<br/>/api/plugins/*/stateless/*<br/>[AllowAnonymous] - stores nothing")]
     Keystore[("On-device keystore only")]
     Auth["Authenticator screen<br/>on-device TOTP from vaulted seed"]
     Catalog --> AnonCat
