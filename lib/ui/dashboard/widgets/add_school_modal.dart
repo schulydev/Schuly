@@ -80,8 +80,8 @@ Future<String?> showAddSchoolModal(
       animation: animation,
       title: const Text('Choose a school system'),
       body: Wrap(
-        spacing: 12,
-        runSpacing: 12,
+        spacing: 10,
+        runSpacing: 10,
         alignment: WrapAlignment.center,
         children: [
           for (final s in systems)
@@ -128,22 +128,23 @@ class _SystemCard extends StatelessWidget {
     return Opacity(
       opacity: disabled ? 0.5 : 1.0,
       child: SizedBox(
-        width: 92,
+        width: 108,
         height: 96,
         child: FTappable(
           onPress: onTap,
           child: FCard(
             child: Padding(
-              padding: const EdgeInsets.all(8),
+              padding: const EdgeInsets.all(10),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   logo,
-                  const SizedBox(height: 6),
+                  const SizedBox(height: 8),
                   Text(
                     system.displayName,
                     textAlign: TextAlign.center,
-                    maxLines: 2,
+                    maxLines: 1,
+                    softWrap: false,
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
                         fontWeight: FontWeight.w600, fontSize: 12),
