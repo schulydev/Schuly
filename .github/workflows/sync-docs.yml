@@ -1,0 +1,78 @@
+# Syncs this repo's docs/ into the SchulyDocs site (https://docs.schuly.dev).
+# On a push to main touching docs/**, copies docs into SchulyDocs/docs/<Repo>/, opens a
+# PR against SchulyDocs and auto-merges it — which triggers the Cloudflare Pages rebuild.
+# Uses the org-level MAIN_PUSH_TOKEN secret (same as other cross-repo sync workflows).
+
+name: Sync docs to docs site
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'docs/**'
+  workflow_dispatch: {}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
+jobs:
+  sync:
+    name: Sync docs/ into SchulyDocs
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source repo
+        uses: actions/checkout@v5
+        with:
+          path: source
+
+      - name: Checkout docs site
+        uses: actions/checkout@v5
+        with:
+          repository: schulydev/SchulyDocs
+          token: ${{ secrets.MAIN_PUSH_TOKEN }}
+          path: docs-site
+
+      - name: Copy docs into section (preserve _category_.json)
+        run: |
+          set -euo pipefail
+          REPO="${GITHUB_REPOSITORY##*/}"
+          DEST="docs-site/docs/$REPO"
+          mkdir -p "$DEST"
+          # Replace previous content but keep the docs-site-owned section config.
+          find "$DEST" -mindepth 1 ! -name '_category_.json' -delete
+          cp -r source/docs/. "$DEST"/
+
+      - name: Configure git as the maintainer
+        working-directory: docs-site
+        run: |
+          git config user.name "PianoNic"
+          git config user.email "79938743+PianoNic@users.noreply.github.com"
+
+      - name: Open + merge sync PR
+        working-directory: docs-site
+        env:
+          GH_TOKEN: ${{ secrets.MAIN_PUSH_TOKEN }}
+        run: |
+          set -euo pipefail
+          if [ -z "$(git status --porcelain)" ]; then
+            echo "No doc changes to sync."
+            exit 0
+          fi
+          REPO="${GITHUB_REPOSITORY##*/}"
+          SHORT_SHA=$(echo "${{ github.sha }}" | cut -c1-7)
+          BRANCH="docs-sync/$REPO-$SHORT_SHA-${{ github.run_id }}"
+          git checkout -b "$BRANCH"
+          git add -A
+          git commit -m "Synced docs from $REPO@$SHORT_SHA"
+          git push origin "$BRANCH"
+          PR_URL=$(gh pr create \
+            --base main \
+            --head "$BRANCH" \
+            --title "Synced docs from $REPO@$SHORT_SHA" \
+            --body "Automated docs sync from ${{ github.repository }}@${{ github.sha }}." \
+            --label CI/CD)
+          gh pr merge "$PR_URL" --admin --squash --delete-branch
