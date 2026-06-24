@@ -3,13 +3,12 @@ import 'package:forui/forui.dart';
 
 import '../../config/backend_config.dart';
 
-/// First-run onboarding: three intro pages explaining what Schuly shows, then a
-/// server step (hosted vs self-hosted), then the Account-vs-Private mode choice.
-/// Forui has no carousel widget, so the swipe is a plain [PageView]; everything
-/// else is Forui.
+/// First-run onboarding: three intro slides, then a server step (hosted vs
+/// self-hosted), then the Account-vs-Private mode choice. Forui has no carousel
+/// widget, so the swipe is a plain [PageView]; everything else is Forui.
 ///
-/// The two mode buttons on the last page are the only exits - both should mark
-/// onboarding as seen and start the matching gate flow (sign-in / connect).
+/// All selection state lives here so a single bottom "Next" button drives every
+/// page: intro -> next, server -> validate + next, mode -> commit.
 class OnboardingScreen extends StatefulWidget {
   final Future<void> Function() onChooseAccount;
   final Future<void> Function() onChoosePrivate;
@@ -24,19 +23,31 @@ class OnboardingScreen extends StatefulWidget {
   State<OnboardingScreen> createState() => _OnboardingScreenState();
 }
 
+enum _Server { hosted, custom }
+
+enum _Mode { account, private }
+
 class _OnboardingScreenState extends State<OnboardingScreen> {
   static const _pageCount = 5;
-  // Pages 0-2 are intro slides (with a Next button); pages 3 (server) and 4
-  // (mode) carry their own Continue button.
-  static const _introPages = 3;
+  static const _serverPage = 3;
+  static const _modePage = 4;
 
   final _controller = PageController();
+  final _urlCtrl = TextEditingController();
   int _page = 0;
-  bool _busy = false;
+
+  _Server _server = _Server.hosted;
+  String? _serverError;
+  String? _serverOk;
+  bool _probing = false;
+
+  _Mode _mode = _Mode.account;
+  bool _busy = false; // sign-in / connect in flight
 
   @override
   void dispose() {
     _controller.dispose();
+    _urlCtrl.dispose();
     super.dispose();
   }
 
@@ -45,14 +56,78 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         curve: Curves.easeOut,
       );
 
-  Future<void> _choose(Future<void> Function() action) async {
+  /// Server step: hosted continues immediately; self-hosted is validated and
+  /// probed (parsing the backend version) before continuing.
+  Future<void> _confirmServer() async {
+    if (_probing) return;
+    if (_server == _Server.hosted) {
+      await BackendConfig.setUrl(null);
+      _next();
+      return;
+    }
+    final raw = _urlCtrl.text.trim();
+    final uri = Uri.tryParse(raw);
+    final valid = raw.isNotEmpty &&
+        uri != null &&
+        (uri.isScheme('http') || uri.isScheme('https')) &&
+        uri.host.isNotEmpty;
+    if (!valid) {
+      setState(() {
+        _serverError =
+            'Enter a valid http(s) URL, e.g. https://schuly.example.com';
+        _serverOk = null;
+      });
+      return;
+    }
+    setState(() {
+      _probing = true;
+      _serverError = null;
+      _serverOk = null;
+    });
+    final version = await BackendConfig.probe(raw);
+    if (!mounted) return;
+    if (version == null) {
+      setState(() {
+        _probing = false;
+        _serverError = "Couldn't reach a Schuly backend at this URL. "
+            'Check the address and that the server is running.';
+      });
+      return;
+    }
+    await BackendConfig.setUrl(raw);
+    if (!mounted) return;
+    setState(() {
+      _probing = false;
+      _serverOk = 'Connected - Schuly v$version';
+    });
+    // Briefly show the version, then continue to the mode choice.
+    await Future<void>.delayed(const Duration(milliseconds: 900));
+    if (mounted) _next();
+  }
+
+  Future<void> _commitMode() async {
     if (_busy) return;
     setState(() => _busy = true);
     try {
-      await action();
+      await (_mode == _Mode.account
+          ? widget.onChooseAccount()
+          : widget.onChoosePrivate());
     } finally {
       if (mounted) setState(() => _busy = false);
     }
+  }
+
+  String get _buttonLabel {
+    if (_page == _serverPage && _probing) return 'Checking...';
+    if (_page == _modePage && _busy) return 'Please wait...';
+    return 'Next';
+  }
+
+  VoidCallback? get _buttonAction {
+    if (_probing || _busy) return null;
+    if (_page == _serverPage) return _confirmServer;
+    if (_page == _modePage) return _commitMode;
+    return _next;
   }
 
   @override
@@ -89,11 +164,19 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         'averages, and browse your timetable, agenda, and '
                         'absences.',
                   ),
-                  _ServerPage(busy: _busy, onContinue: _next),
+                  _ServerPage(
+                    selected: _server,
+                    urlController: _urlCtrl,
+                    error: _serverError,
+                    okMessage: _serverOk,
+                    onSelect: (s) => setState(() {
+                      _server = s;
+                      _serverError = null;
+                    }),
+                  ),
                   _ModeChoicePage(
-                    busy: _busy,
-                    onAccount: () => _choose(widget.onChooseAccount),
-                    onPrivate: () => _choose(widget.onChoosePrivate),
+                    selected: _mode,
+                    onSelect: (m) => setState(() => _mode = m),
                   ),
                 ],
               ),
@@ -115,16 +198,16 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   ),
               ],
             ),
-            // Intro pages get a "Next"; the server and mode pages carry their
-            // own Continue button.
+            // One bottom button drives every page.
             Padding(
               padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
-              child: _page < _introPages
-                  ? SizedBox(
-                      width: double.infinity,
-                      child: FButton(onPress: _next, child: const Text('Next')),
-                    )
-                  : const SizedBox(height: 8),
+              child: SizedBox(
+                width: double.infinity,
+                child: FButton(
+                  onPress: _buttonAction,
+                  child: Text(_buttonLabel),
+                ),
+              ),
             ),
           ],
         ),
@@ -133,7 +216,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 }
 
-/// A single intro slide: a large icon, a title, and a short blurb.
+/// A single intro slide: a large badge, a title, and a short blurb.
 class _IntroPage extends StatelessWidget {
   final IconData? icon;
   final String? asset;
@@ -205,80 +288,22 @@ class _IntroPage extends StatelessWidget {
   }
 }
 
-enum _Server { hosted, custom }
+/// The server step: hosted Schuly Cloud (default) or a self-hosted backend URL.
+/// Pure UI - the parent owns the selection and the Next button validates it.
+class _ServerPage extends StatelessWidget {
+  final _Server selected;
+  final TextEditingController urlController;
+  final String? error;
+  final String? okMessage;
+  final ValueChanged<_Server> onSelect;
 
-/// The server step: the hosted Schuly Cloud (default) or a self-hosted backend
-/// URL. Persists the choice to [BackendConfig] before continuing, so both
-/// account and private mode talk to the chosen backend.
-class _ServerPage extends StatefulWidget {
-  final bool busy;
-  final VoidCallback onContinue;
-
-  const _ServerPage({required this.busy, required this.onContinue});
-
-  @override
-  State<_ServerPage> createState() => _ServerPageState();
-}
-
-class _ServerPageState extends State<_ServerPage> {
-  _Server _selected = _Server.hosted;
-  final _urlCtrl = TextEditingController();
-  String? _error;
-  String? _okMsg;
-  bool _saving = false;
-
-  @override
-  void dispose() {
-    _urlCtrl.dispose();
-    super.dispose();
-  }
-
-  Future<void> _continue() async {
-    if (widget.busy || _saving) return;
-    if (_selected == _Server.hosted) {
-      await BackendConfig.setUrl(null);
-      widget.onContinue();
-      return;
-    }
-    final raw = _urlCtrl.text.trim();
-    final uri = Uri.tryParse(raw);
-    final valid = raw.isNotEmpty &&
-        uri != null &&
-        (uri.isScheme('http') || uri.isScheme('https')) &&
-        uri.host.isNotEmpty;
-    if (!valid) {
-      setState(() {
-        _error = 'Enter a valid http(s) URL, e.g. https://schuly.example.com';
-        _okMsg = null;
-      });
-      return;
-    }
-    setState(() {
-      _saving = true;
-      _error = null;
-      _okMsg = null;
-    });
-    // Confirm the URL is reachable and is actually a Schuly backend.
-    final version = await BackendConfig.probe(raw);
-    if (!mounted) return;
-    if (version == null) {
-      setState(() {
-        _saving = false;
-        _error = "Couldn't reach a Schuly backend at this URL. "
-            'Check the address and that the server is running.';
-      });
-      return;
-    }
-    await BackendConfig.setUrl(raw);
-    if (!mounted) return;
-    setState(() {
-      _saving = false;
-      _okMsg = 'Connected - Schuly v$version';
-    });
-    // Briefly show the version, then continue to the mode choice.
-    await Future<void>.delayed(const Duration(milliseconds: 900));
-    if (mounted) widget.onContinue();
-  }
+  const _ServerPage({
+    required this.selected,
+    required this.urlController,
+    required this.error,
+    required this.okMessage,
+    required this.onSelect,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -297,7 +322,8 @@ class _ServerPageState extends State<_ServerPage> {
               Text(
                 'Which server?',
                 textAlign: TextAlign.center,
-                style: typography.xl2.copyWith(fontWeight: FontWeight.w700, height: 1.1),
+                style: typography.xl2
+                    .copyWith(fontWeight: FontWeight.w700, height: 1.1),
               ),
               const SizedBox(height: 28),
               _ModeCard(
@@ -306,60 +332,48 @@ class _ServerPageState extends State<_ServerPage> {
                 tag: 'Recommended',
                 body: 'The official Schuly server - the right choice for '
                     'most people.',
-                selected: _selected == _Server.hosted,
-                onTap: widget.busy
-                    ? null
-                    : () => setState(() {
-                          _selected = _Server.hosted;
-                          _error = null;
-                        }),
+                selected: selected == _Server.hosted,
+                onTap: () => onSelect(_Server.hosted),
               ),
               const SizedBox(height: 14),
               _ModeCard(
                 icon: FIcons.server,
                 title: 'Self-hosted',
                 body: 'Connect to your own Schuly backend instance.',
-                selected: _selected == _Server.custom,
-                onTap: widget.busy
-                    ? null
-                    : () => setState(() => _selected = _Server.custom),
+                selected: selected == _Server.custom,
+                onTap: () => onSelect(_Server.custom),
               ),
-              if (_selected == _Server.custom) ...[
+              if (selected == _Server.custom) ...[
                 const SizedBox(height: 14),
                 FTextField(
-                  control: FTextFieldControl.managed(controller: _urlCtrl),
+                  control: FTextFieldControl.managed(controller: urlController),
                   label: const Text('Backend URL'),
                   hint: 'https://schuly.example.com',
                   autocorrect: false,
                 ),
               ],
-              if (_error != null) ...[
-                const SizedBox(height: 8),
+              if (error != null) ...[
+                const SizedBox(height: 12),
                 Text(
-                  _error!,
+                  error!,
                   textAlign: TextAlign.center,
                   style: typography.sm.copyWith(color: colors.error),
                 ),
               ],
-              if (_okMsg != null) ...[
-                const SizedBox(height: 8),
+              if (okMessage != null) ...[
+                const SizedBox(height: 12),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Icon(FIcons.circleCheck, size: 16, color: colors.primary),
                     const SizedBox(width: 6),
                     Text(
-                      _okMsg!,
+                      okMessage!,
                       style: typography.sm.copyWith(color: colors.primary),
                     ),
                   ],
                 ),
               ],
-              const SizedBox(height: 24),
-              FButton(
-                onPress: (widget.busy || _saving) ? null : _continue,
-                child: Text(_saving ? 'Checking...' : 'Continue'),
-              ),
             ],
           ),
         ),
@@ -368,34 +382,19 @@ class _ServerPageState extends State<_ServerPage> {
   }
 }
 
-enum _Mode { account, private }
+/// The decision page: account vs private, as a selectable toggle. Pure UI - the
+/// parent owns the selection and the Next button commits it.
+class _ModeChoicePage extends StatelessWidget {
+  final _Mode selected;
+  final ValueChanged<_Mode> onSelect;
 
-/// The decision page: account vs private. The cards are a selectable toggle
-/// (account preselected); a Continue button below commits the choice.
-class _ModeChoicePage extends StatefulWidget {
-  final bool busy;
-  final VoidCallback onAccount;
-  final VoidCallback onPrivate;
-
-  const _ModeChoicePage({
-    required this.busy,
-    required this.onAccount,
-    required this.onPrivate,
-  });
-
-  @override
-  State<_ModeChoicePage> createState() => _ModeChoicePageState();
-}
-
-class _ModeChoicePageState extends State<_ModeChoicePage> {
-  _Mode _selected = _Mode.account;
+  const _ModeChoicePage({required this.selected, required this.onSelect});
 
   @override
   Widget build(BuildContext context) {
     final colors = context.theme.colors;
     final typography = context.theme.typography;
 
-    // Centre the content vertically, but stay scrollable on short screens.
     return LayoutBuilder(
       builder: (context, constraints) => SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
@@ -408,7 +407,8 @@ class _ModeChoicePageState extends State<_ModeChoicePage> {
               Text(
                 'How do you want to use Schuly?',
                 textAlign: TextAlign.center,
-                style: typography.xl2.copyWith(fontWeight: FontWeight.w700, height: 1.1),
+                style: typography.xl2
+                    .copyWith(fontWeight: FontWeight.w700, height: 1.1),
               ),
               const SizedBox(height: 28),
               _ModeCard(
@@ -417,10 +417,8 @@ class _ModeChoicePageState extends State<_ModeChoicePage> {
                 tag: 'Recommended',
                 body: 'Notifications, web access, and sync across devices. '
                     'Secured with a passkey.',
-                selected: _selected == _Mode.account,
-                onTap: widget.busy
-                    ? null
-                    : () => setState(() => _selected = _Mode.account),
+                selected: selected == _Mode.account,
+                onTap: () => onSelect(_Mode.account),
               ),
               const SizedBox(height: 14),
               _ModeCard(
@@ -428,21 +426,10 @@ class _ModeChoicePageState extends State<_ModeChoicePage> {
                 title: 'Private mode',
                 body: 'No account - everything stays on your device. '
                     'No notifications, web, or sync.',
-                selected: _selected == _Mode.private,
-                onTap: widget.busy
-                    ? null
-                    : () => setState(() => _selected = _Mode.private),
+                selected: selected == _Mode.private,
+                onTap: () => onSelect(_Mode.private),
               ),
-              const SizedBox(height: 24),
-              FButton(
-                onPress: widget.busy
-                    ? null
-                    : () => _selected == _Mode.account
-                        ? widget.onAccount()
-                        : widget.onPrivate(),
-                child: Text(widget.busy ? 'Please wait...' : 'Continue'),
-              ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 16),
               Text(
                 'You can switch modes later by signing out.',
                 textAlign: TextAlign.center,
@@ -456,8 +443,8 @@ class _ModeChoicePageState extends State<_ModeChoicePage> {
   }
 }
 
-/// A selectable mode card: centered content with a radio indicator in the
-/// corner; the selected one gets a primary border and a tinted background.
+/// A selectable card: centered content with a radio indicator in the corner;
+/// the selected one gets a primary border and a tinted background.
 class _ModeCard extends StatelessWidget {
   final IconData icon;
   final String title;
