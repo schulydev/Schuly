@@ -45,6 +45,20 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   bool _busy = false; // sign-in / connect in flight
 
   @override
+  void initState() {
+    super.initState();
+    // Editing the URL invalidates a prior probe, so re-lock until re-verified.
+    _urlCtrl.addListener(() {
+      if (_serverOk != null || _serverError != null) {
+        setState(() {
+          _serverOk = null;
+          _serverError = null;
+        });
+      }
+    });
+  }
+
+  @override
   void dispose() {
     _controller.dispose();
     _urlCtrl.dispose();
@@ -130,6 +144,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     return _next;
   }
 
+  // Block swiping past the server page until a self-hosted URL is verified;
+  // the Next button still advances (it probes first).
+  bool get _serverLocked =>
+      _page == _serverPage && _server == _Server.custom && _serverOk == null;
+
   @override
   Widget build(BuildContext context) {
     final colors = context.theme.colors;
@@ -142,6 +161,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             Expanded(
               child: PageView(
                 controller: _controller,
+                physics: _serverLocked
+                    ? const NeverScrollableScrollPhysics()
+                    : null,
                 onPageChanged: (i) => setState(() => _page = i),
                 children: [
                   const _IntroPage(
@@ -172,6 +194,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     onSelect: (s) => setState(() {
                       _server = s;
                       _serverError = null;
+                      _serverOk = null;
                     }),
                   ),
                   _ModeChoicePage(
