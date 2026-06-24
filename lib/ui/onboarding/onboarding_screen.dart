@@ -86,7 +86,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 onPageChanged: (i) => setState(() => _page = i),
                 children: [
                   const _IntroPage(
-                    icon: FIcons.graduationCap,
+                    asset: 'assets/schuly_icon.png',
                     title: 'Welcome to Schuly',
                     body: 'Your grades, timetable, agenda, and absences - '
                         'your whole school portal in one app.',
@@ -149,23 +149,43 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
 /// A single intro slide: a large icon, a title, and a short blurb.
 class _IntroPage extends StatelessWidget {
-  final IconData icon;
+  final IconData? icon;
+  final String? asset;
   final String title;
   final String body;
 
-  const _IntroPage({required this.icon, required this.title, required this.body});
+  const _IntroPage({
+    this.icon,
+    this.asset,
+    required this.title,
+    required this.body,
+  }) : assert(icon != null || asset != null, 'provide an icon or an asset');
 
   @override
   Widget build(BuildContext context) {
     final colors = context.theme.colors;
     final typography = context.theme.typography;
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 32),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
+    // Brand-mark pages (asset) get a solid primary disc with the white logo,
+    // mirroring the app icon; plain feature pages get a faint disc + tinted icon.
+    final Widget badge = asset != null
+        ? Container(
+            width: 132,
+            height: 132,
+            decoration: BoxDecoration(
+              color: colors.primary,
+              shape: BoxShape.circle,
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(30),
+              child: Image.asset(
+                asset!,
+                color: colors.primaryForeground,
+                colorBlendMode: BlendMode.srcIn,
+              ),
+            ),
+          )
+        : Container(
             width: 132,
             height: 132,
             decoration: BoxDecoration(
@@ -173,7 +193,14 @@ class _IntroPage extends StatelessWidget {
               shape: BoxShape.circle,
             ),
             child: Icon(icon, size: 60, color: colors.primary),
-          ),
+          );
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 32),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          badge,
           const SizedBox(height: 36),
           Text(
             title,
