@@ -113,38 +113,46 @@ class _SystemCard extends StatelessWidget {
     final disabled = onTap == null;
     final logoUrl = OidcConfig.resolveUrl(system.logoUrl);
     final fallbackIcon =
-        Icon(Icons.school, size: 48, color: colors.mutedForeground);
+        Icon(Icons.school, size: 36, color: colors.mutedForeground);
+    // Prefer the bundled per-system logo (assets/schoolsystems/<key>.webp);
+    // fall back to a catalog logoUrl, then a generic icon.
+    final logo = Image.asset(
+      'assets/schoolsystems/${system.key}.webp',
+      width: 36,
+      height: 36,
+      errorBuilder: (_, _, _) => logoUrl != null
+          ? Image.network(logoUrl,
+              width: 36, height: 36, errorBuilder: (_, _, _) => fallbackIcon)
+          : fallbackIcon,
+    );
     return Opacity(
       opacity: disabled ? 0.5 : 1.0,
       child: SizedBox(
-        width: 120,
-        height: 120,
+        width: 92,
+        height: 96,
         child: FTappable(
           onPress: onTap,
           child: FCard(
             child: Padding(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.all(8),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  if (logoUrl != null)
-                    Image.network(logoUrl,
-                        width: 48,
-                        height: 48,
-                        errorBuilder: (_, _, _) => fallbackIcon)
-                  else
-                    fallbackIcon,
-                  const SizedBox(height: 10),
+                  logo,
+                  const SizedBox(height: 6),
                   Text(
                     system.displayName,
                     textAlign: TextAlign.center,
-                    style: const TextStyle(fontWeight: FontWeight.w600),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                        fontWeight: FontWeight.w600, fontSize: 12),
                   ),
                   if (disabled)
                     Text(
                       'Coming soon',
                       style: TextStyle(
-                        fontSize: 11,
+                        fontSize: 10,
                         color: colors.mutedForeground,
                       ),
                     ),
