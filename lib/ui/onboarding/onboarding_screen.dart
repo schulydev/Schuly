@@ -88,7 +88,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   const _IntroPage(
                     icon: FIcons.graduationCap,
                     title: 'Welcome to Schuly',
-                    body: 'Your grades, timetable, agenda, and absences — '
+                    body: 'Your grades, timetable, agenda, and absences - '
                         'your whole school portal in one app.',
                   ),
                   const _IntroPage(
@@ -192,7 +192,8 @@ class _IntroPage extends StatelessWidget {
   }
 }
 
-/// The decision page: account vs private, with the trade-offs and the two CTAs.
+/// The decision page: account vs private. Each card is itself the action
+/// (tappable), so there are no separate buttons. Content is centered.
 class _ModeChoicePage extends StatelessWidget {
   final bool busy;
   final VoidCallback onAccount;
@@ -209,124 +210,133 @@ class _ModeChoicePage extends StatelessWidget {
     final colors = context.theme.colors;
     final typography = context.theme.typography;
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(24, 8, 24, 8),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Text(
-            'How do you want to use Schuly?',
-            textAlign: TextAlign.center,
-            style: typography.xl2.copyWith(fontWeight: FontWeight.w700),
+    // Centre the content vertically, but stay scrollable on short screens.
+    return LayoutBuilder(
+      builder: (context, constraints) => SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+        child: ConstrainedBox(
+          constraints: BoxConstraints(minHeight: constraints.maxHeight - 32),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                'How do you want to use Schuly?',
+                textAlign: TextAlign.center,
+                style: typography.xl2.copyWith(fontWeight: FontWeight.w700),
+              ),
+              const SizedBox(height: 28),
+              _ModeCard(
+                icon: FIcons.cloud,
+                title: 'Schuly account',
+                tag: 'Recommended',
+                highlighted: true,
+                body: 'Notifications, web access, and sync across devices. '
+                    'Secured with a passkey.',
+                onTap: busy ? null : onAccount,
+              ),
+              const SizedBox(height: 14),
+              _ModeCard(
+                icon: FIcons.shieldCheck,
+                title: 'Private mode',
+                body: 'No account - everything stays on your device. '
+                    'No notifications, web, or sync.',
+                onTap: busy ? null : onPrivate,
+              ),
+              const SizedBox(height: 20),
+              Text(
+                'You can switch modes later by signing out.',
+                textAlign: TextAlign.center,
+                style: typography.xs.copyWith(color: colors.mutedForeground),
+              ),
+            ],
           ),
-          const SizedBox(height: 20),
-          _ModeCard(
-            icon: FIcons.cloud,
-            title: 'Schuly account',
-            tag: 'Recommended',
-            body: 'Notifications, web access, and sync across devices. '
-                'Secured with a passkey.',
-          ),
-          const SizedBox(height: 12),
-          _ModeCard(
-            icon: FIcons.shieldCheck,
-            title: 'Private mode',
-            body: 'No account — everything stays on your device. '
-                'No notifications, web, or sync.',
-          ),
-          const SizedBox(height: 24),
-          FButton(
-            onPress: busy ? null : onAccount,
-            child: Text(busy ? 'Please wait…' : 'Continue with a Schuly account'),
-          ),
-          const SizedBox(height: 10),
-          FButton(
-            style: FButtonStyle.outline(),
-            onPress: busy ? null : onPrivate,
-            child: const Text('Use without an account'),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'You can switch modes later by signing out.',
-            textAlign: TextAlign.center,
-            style: typography.xs.copyWith(color: colors.mutedForeground),
-          ),
-        ],
+        ),
       ),
     );
   }
 }
 
+/// A tappable mode card with centered content; the recommended one gets a
+/// primary-coloured border.
 class _ModeCard extends StatelessWidget {
   final IconData icon;
   final String title;
   final String body;
   final String? tag;
+  final bool highlighted;
+  final VoidCallback? onTap;
 
   const _ModeCard({
     required this.icon,
     required this.title,
     required this.body,
     this.tag,
+    this.highlighted = false,
+    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     final colors = context.theme.colors;
     final typography = context.theme.typography;
+    final radius = BorderRadius.circular(14);
 
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: colors.secondary,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: colors.border),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(icon, size: 28, color: colors.primary),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Flexible(
-                      child: Text(
-                        title,
-                        style: typography.base.copyWith(fontWeight: FontWeight.w700),
-                      ),
-                    ),
-                    if (tag != null) ...[
-                      const SizedBox(width: 8),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                        decoration: BoxDecoration(
-                          color: colors.primary,
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Text(
-                          tag!,
-                          style: typography.xs.copyWith(
-                            color: colors.primaryForeground,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ],
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  body,
-                  style: typography.sm.copyWith(color: colors.mutedForeground),
-                ),
-              ],
+    return Material(
+      color: colors.secondary,
+      borderRadius: radius,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: radius,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+          decoration: BoxDecoration(
+            borderRadius: radius,
+            border: Border.all(
+              color: highlighted ? colors.primary : colors.border,
+              width: highlighted ? 1.5 : 1,
             ),
           ),
-        ],
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, size: 30, color: colors.primary),
+              const SizedBox(height: 10),
+              Wrap(
+                alignment: WrapAlignment.center,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                spacing: 8,
+                children: [
+                  Text(
+                    title,
+                    style: typography.base.copyWith(fontWeight: FontWeight.w700),
+                  ),
+                  if (tag != null)
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: colors.primary,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Text(
+                        tag!,
+                        style: typography.xs.copyWith(
+                          color: colors.primaryForeground,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+              const SizedBox(height: 6),
+              Text(
+                body,
+                textAlign: TextAlign.center,
+                style: typography.sm.copyWith(color: colors.mutedForeground),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
