@@ -76,6 +76,7 @@ jobs:
           flutter build apk --release --flavor prod \
             --build-name="${{ github.ref_name }}" \
             --build-number="${{ github.run_number }}" \
+            --dart-define=BACKEND_BASE_URL="${{ vars.BACKEND_BASE_URL || 'https://api.schuly.dev' }}" \
             --dart-define=SENTRY_DSN="$SENTRY_DSN" \
             --dart-define=SENTRY_RELEASE="${{ github.ref_name }}" \
             --dart-define=SENTRY_ENVIRONMENT="production"
@@ -88,6 +89,7 @@ jobs:
           flutter build appbundle --release --flavor prod \
             --build-name="${{ github.ref_name }}" \
             --build-number="${{ github.run_number }}" \
+            --dart-define=BACKEND_BASE_URL="${{ vars.BACKEND_BASE_URL || 'https://api.schuly.dev' }}" \
             --dart-define=SENTRY_DSN="$SENTRY_DSN" \
             --dart-define=SENTRY_RELEASE="${{ github.ref_name }}" \
             --dart-define=SENTRY_ENVIRONMENT="production"
@@ -134,6 +136,7 @@ jobs:
           flutter build ios --release --no-codesign \
             --build-name="${{ github.ref_name }}" \
             --build-number="${{ github.run_number }}" \
+            --dart-define=BACKEND_BASE_URL="${{ vars.BACKEND_BASE_URL || 'https://api.schuly.dev' }}" \
             --dart-define=SENTRY_DSN="$SENTRY_DSN" \
             --dart-define=SENTRY_RELEASE="${{ github.ref_name }}" \
             --dart-define=SENTRY_ENVIRONMENT="production"

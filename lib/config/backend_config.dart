@@ -39,6 +39,20 @@ class BackendConfig {
   static String normalise(String? value) =>
       (value ?? '').trim().replaceAll(RegExp(r'/+$'), '');
 
+  /// True if [value] uses plaintext `http://` to a non-loopback host, so
+  /// credentials and tokens would travel in the clear. Used to warn before a
+  /// self-hoster saves an insecure custom backend.
+  static bool isInsecure(String? value) {
+    final uri = Uri.tryParse(normalise(value));
+    if (uri == null || uri.scheme != 'http') return false;
+    final h = uri.host.toLowerCase();
+    return h.isNotEmpty &&
+        h != 'localhost' &&
+        h != '127.0.0.1' &&
+        h != '::1' &&
+        !h.endsWith('.localhost');
+  }
+
   /// Probes [baseUrl] by fetching the anonymous `GET /api/app`. A reachable
   /// Schuly backend returns a JSON object with a `clientId`; on success this
   /// returns its reported `version` (or `'unknown'` if the field is missing).

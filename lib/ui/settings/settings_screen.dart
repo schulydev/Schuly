@@ -116,6 +116,13 @@ class _ServerDialogState extends State<_ServerDialog> {
   bool _busy = false;
 
   @override
+  void initState() {
+    super.initState();
+    // Live-update the insecure-URL warning as the user types.
+    _urlCtrl.addListener(() => setState(() {}));
+  }
+
+  @override
   void dispose() {
     _urlCtrl.dispose();
     super.dispose();
@@ -230,6 +237,13 @@ class _ServerDialogState extends State<_ServerDialog> {
               hint: 'https://schuly.example.com',
               autocorrect: false,
             ),
+            if (BackendConfig.isInsecure(_urlCtrl.text)) ...[
+              const SizedBox(height: 6),
+              Text(
+                'Plaintext http:// - your login would be sent unencrypted. Use https:// unless this is a trusted local network.',
+                style: typography.xs.copyWith(color: colors.error),
+              ),
+            ],
           ],
           if (_error != null) ...[
             const SizedBox(height: 8),
