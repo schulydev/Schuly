@@ -14,6 +14,10 @@ Minimal Flutter app. UI built with [Forui](https://forui.dev) (`FTheme` + `F*` w
 - Commit subject: short imperative.
 - PR labels: `bug`, `enhancement`, `feature`, `refactor`, `CI/CD`, `dependencies`, `documentation`.
 
+## Code formatting
+
+**Declaration signatures go on one line** - don't wrap a function / method / constructor parameter list across multiple lines, however long it gets. This applies to *declarations*, not call sites: leave call sites (widget trees, fluent / builder chains), collection literals, and multi-line conditionals (`if` / `for` / `while`) wrapped as they are.
+
 ## App modes (account vs private)
 
 The app runs in one of two modes, chosen at the gate (`AppModeService`):
