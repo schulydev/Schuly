@@ -37,6 +37,7 @@ import 'package:schuly_api/src/model/enrol_student_command.dart';
 import 'package:schuly_api/src/model/exam_dto.dart';
 import 'package:schuly_api/src/model/exam_type.dart';
 import 'package:schuly_api/src/model/grade_dto.dart';
+import 'package:schuly_api/src/model/install_plugin_request.dart';
 import 'package:schuly_api/src/model/my_school_dto.dart';
 import 'package:schuly_api/src/model/plugin_dto.dart';
 import 'package:schuly_api/src/model/plugin_task_status.dart';
@@ -90,6 +91,7 @@ part 'serializers.g.dart';
   ExamDto,
   ExamType,
   GradeDto,
+  InstallPluginRequest,
   MySchoolDto,
   PluginDto,
   PluginTaskStatus,

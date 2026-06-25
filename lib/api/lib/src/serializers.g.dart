@@ -31,6 +31,7 @@ Serializers _$serializers =
           ..add(ExamDto.serializer)
           ..add(ExamType.serializer)
           ..add(GradeDto.serializer)
+          ..add(InstallPluginRequest.serializer)
           ..add(MySchoolDto.serializer)
           ..add(PluginDto.serializer)
           ..add(PluginTaskStatus.serializer)

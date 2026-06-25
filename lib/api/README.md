@@ -76,7 +76,6 @@ Class | Method | HTTP request | Description
 [*AgendasApi*](doc/AgendasApi.md) | [**apiAgendasSearchGet**](doc/AgendasApi.md#apiagendassearchget) | **GET** /api/Agendas/search | 
 [*AppApi*](doc/AppApi.md) | [**apiAppGet**](doc/AppApi.md#apiappget) | **GET** /api/App | 
 [*AppApi*](doc/AppApi.md) | [**apiAppSchoolSystemsGet**](doc/AppApi.md#apiappschoolsystemsget) | **GET** /api/App/school-systems | 
-[*AppApi*](doc/AppApi.md) | [**testEndpointWithAuth**](doc/AppApi.md#testendpointwithauth) | **GET** /api/App/test | 
 [*ApplicationUsersApi*](doc/ApplicationUsersApi.md) | [**apiApplicationUsersGet**](doc/ApplicationUsersApi.md#apiapplicationusersget) | **GET** /api/ApplicationUsers | 
 [*ApplicationUsersApi*](doc/ApplicationUsersApi.md) | [**apiApplicationUsersIdDelete**](doc/ApplicationUsersApi.md#apiapplicationusersiddelete) | **DELETE** /api/ApplicationUsers/{id} | 
 [*ApplicationUsersApi*](doc/ApplicationUsersApi.md) | [**apiApplicationUsersIdGet**](doc/ApplicationUsersApi.md#apiapplicationusersidget) | **GET** /api/ApplicationUsers/{id} | 
@@ -100,6 +99,10 @@ Class | Method | HTTP request | Description
 [*ExamsApi*](doc/ExamsApi.md) | [**apiExamsPut**](doc/ExamsApi.md#apiexamsput) | **PUT** /api/Exams | 
 [*ExamsApi*](doc/ExamsApi.md) | [**apiExamsSearchGet**](doc/ExamsApi.md#apiexamssearchget) | **GET** /api/Exams/search | 
 [*PluginsApi*](doc/PluginsApi.md) | [**apiPluginsGet**](doc/PluginsApi.md#apipluginsget) | **GET** /api/Plugins | 
+[*PluginsApi*](doc/PluginsApi.md) | [**apiPluginsInstallPost**](doc/PluginsApi.md#apipluginsinstallpost) | **POST** /api/Plugins/install | 
+[*PluginsApi*](doc/PluginsApi.md) | [**apiPluginsNameDelete**](doc/PluginsApi.md#apipluginsnamedelete) | **DELETE** /api/Plugins/{name} | 
+[*PluginsApi*](doc/PluginsApi.md) | [**apiPluginsNameUpdatePost**](doc/PluginsApi.md#apipluginsnameupdatepost) | **POST** /api/Plugins/{name}/update | 
+[*PluginsApi*](doc/PluginsApi.md) | [**apiPluginsRegistryGet**](doc/PluginsApi.md#apipluginsregistryget) | **GET** /api/Plugins/registry | 
 [*PluginsApi*](doc/PluginsApi.md) | [**apiPluginsSchedulerGet**](doc/PluginsApi.md#apipluginsschedulerget) | **GET** /api/Plugins/scheduler | 
 [*SchoolSystemsApi*](doc/SchoolSystemsApi.md) | [**apiSchoolSystemsGet**](doc/SchoolSystemsApi.md#apischoolsystemsget) | **GET** /api/SchoolSystems | 
 [*SchoolSystemsApi*](doc/SchoolSystemsApi.md) | [**apiSchoolSystemsIdDelete**](doc/SchoolSystemsApi.md#apischoolsystemsiddelete) | **DELETE** /api/SchoolSystems/{id} | 
@@ -153,6 +156,7 @@ Class | Method | HTTP request | Description
  - [ExamDto](doc/ExamDto.md)
  - [ExamType](doc/ExamType.md)
  - [GradeDto](doc/GradeDto.md)
+ - [InstallPluginRequest](doc/InstallPluginRequest.md)
  - [MySchoolDto](doc/MySchoolDto.md)
  - [PluginDto](doc/PluginDto.md)
  - [PluginTaskStatus](doc/PluginTaskStatus.md)
@@ -189,7 +193,7 @@ Authentication schemes defined for the API:
 
 - **Type**: OAuth
 - **Flow**: accessCode
-- **Authorization URL**: https://example.com/authorize
+- **Authorization URL**: http://localhost:8080/realms/polyglot/authorize
 - **Scopes**: 
  - **openid**: OpenID Connect
  - **profile**: User profile
