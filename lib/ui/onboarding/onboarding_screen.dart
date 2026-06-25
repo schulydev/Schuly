@@ -374,6 +374,14 @@ class _ServerPage extends StatelessWidget {
                   hint: 'https://schuly.example.com',
                   autocorrect: false,
                 ),
+                if (BackendConfig.isInsecure(urlController.text)) ...[
+                  const SizedBox(height: 8),
+                  Text(
+                    'Plaintext http:// - your login would be sent unencrypted. Use https:// unless this is a trusted local network.',
+                    textAlign: TextAlign.center,
+                    style: typography.xs.copyWith(color: colors.error),
+                  ),
+                ],
               ],
               if (error != null) ...[
                 const SizedBox(height: 12),
