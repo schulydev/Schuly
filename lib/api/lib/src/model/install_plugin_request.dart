@@ -6,46 +6,42 @@
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
-part 'create_class_command.g.dart';
+part 'install_plugin_request.g.dart';
 
-/// CreateClassCommand
+/// InstallPluginRequest
 ///
 /// Properties:
 /// * [name] 
-/// * [description] 
-/// * [schoolId] 
+/// * [version] 
 @BuiltValue()
-abstract class CreateClassCommand implements Built<CreateClassCommand, CreateClassCommandBuilder> {
+abstract class InstallPluginRequest implements Built<InstallPluginRequest, InstallPluginRequestBuilder> {
   @BuiltValueField(wireName: r'name')
   String get name;
 
-  @BuiltValueField(wireName: r'description')
-  String? get description;
+  @BuiltValueField(wireName: r'version')
+  String? get version;
 
-  @BuiltValueField(wireName: r'schoolId')
-  String get schoolId;
+  InstallPluginRequest._();
 
-  CreateClassCommand._();
-
-  factory CreateClassCommand([void updates(CreateClassCommandBuilder b)]) = _$CreateClassCommand;
+  factory InstallPluginRequest([void updates(InstallPluginRequestBuilder b)]) = _$InstallPluginRequest;
 
   @BuiltValueHook(initializeBuilder: true)
-  static void _defaults(CreateClassCommandBuilder b) => b;
+  static void _defaults(InstallPluginRequestBuilder b) => b;
 
   @BuiltValueSerializer(custom: true)
-  static Serializer<CreateClassCommand> get serializer => _$CreateClassCommandSerializer();
+  static Serializer<InstallPluginRequest> get serializer => _$InstallPluginRequestSerializer();
 }
 
-class _$CreateClassCommandSerializer implements PrimitiveSerializer<CreateClassCommand> {
+class _$InstallPluginRequestSerializer implements PrimitiveSerializer<InstallPluginRequest> {
   @override
-  final Iterable<Type> types = const [CreateClassCommand, _$CreateClassCommand];
+  final Iterable<Type> types = const [InstallPluginRequest, _$InstallPluginRequest];
 
   @override
-  final String wireName = r'CreateClassCommand';
+  final String wireName = r'InstallPluginRequest';
 
   Iterable<Object?> _serializeProperties(
     Serializers serializers,
-    CreateClassCommand object, {
+    InstallPluginRequest object, {
     FullType specifiedType = FullType.unspecified,
   }) sync* {
     yield r'name';
@@ -53,22 +49,17 @@ class _$CreateClassCommandSerializer implements PrimitiveSerializer<CreateClassC
       object.name,
       specifiedType: const FullType(String),
     );
-    yield r'description';
-    yield object.description == null ? null : serializers.serialize(
-      object.description,
+    yield r'version';
+    yield object.version == null ? null : serializers.serialize(
+      object.version,
       specifiedType: const FullType.nullable(String),
-    );
-    yield r'schoolId';
-    yield serializers.serialize(
-      object.schoolId,
-      specifiedType: const FullType(String),
     );
   }
 
   @override
   Object serialize(
     Serializers serializers,
-    CreateClassCommand object, {
+    InstallPluginRequest object, {
     FullType specifiedType = FullType.unspecified,
   }) {
     return _serializeProperties(serializers, object, specifiedType: specifiedType).toList();
@@ -79,7 +70,7 @@ class _$CreateClassCommandSerializer implements PrimitiveSerializer<CreateClassC
     Object serialized, {
     FullType specifiedType = FullType.unspecified,
     required List<Object?> serializedList,
-    required CreateClassCommandBuilder result,
+    required InstallPluginRequestBuilder result,
     required List<Object?> unhandled,
   }) {
     for (var i = 0; i < serializedList.length; i += 2) {
@@ -93,20 +84,13 @@ class _$CreateClassCommandSerializer implements PrimitiveSerializer<CreateClassC
           ) as String;
           result.name = valueDes;
           break;
-        case r'description':
+        case r'version':
           final valueDes = serializers.deserialize(
             value,
             specifiedType: const FullType.nullable(String),
           ) as String?;
           if (valueDes == null) continue;
-          result.description = valueDes;
-          break;
-        case r'schoolId':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(String),
-          ) as String;
-          result.schoolId = valueDes;
+          result.version = valueDes;
           break;
         default:
           unhandled.add(key);
@@ -117,12 +101,12 @@ class _$CreateClassCommandSerializer implements PrimitiveSerializer<CreateClassC
   }
 
   @override
-  CreateClassCommand deserialize(
+  InstallPluginRequest deserialize(
     Serializers serializers,
     Object serialized, {
     FullType specifiedType = FullType.unspecified,
   }) {
-    final result = CreateClassCommandBuilder();
+    final result = InstallPluginRequestBuilder();
     final serializedList = (serialized as Iterable<Object?>).toList();
     final unhandled = <Object?>[];
     _deserializeProperties(

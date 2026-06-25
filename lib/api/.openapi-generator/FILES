@@ -33,6 +33,7 @@ doc/ExamDto.md
 doc/ExamType.md
 doc/ExamsApi.md
 doc/GradeDto.md
+doc/InstallPluginRequest.md
 doc/MySchoolDto.md
 doc/PluginDto.md
 doc/PluginTaskStatus.md
@@ -115,6 +116,7 @@ lib/src/model/enrol_student_command.dart
 lib/src/model/exam_dto.dart
 lib/src/model/exam_type.dart
 lib/src/model/grade_dto.dart
+lib/src/model/install_plugin_request.dart
 lib/src/model/my_school_dto.dart
 lib/src/model/plugin_dto.dart
 lib/src/model/plugin_task_status.dart
@@ -143,3 +145,4 @@ lib/src/model/user_class_dto.dart
 lib/src/model/user_state.dart
 lib/src/serializers.dart
 pubspec.yaml
+test/install_plugin_request_test.dart

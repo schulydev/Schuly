@@ -50,6 +50,7 @@ export 'package:schuly_api/src/model/enrol_student_command.dart';
 export 'package:schuly_api/src/model/exam_dto.dart';
 export 'package:schuly_api/src/model/exam_type.dart';
 export 'package:schuly_api/src/model/grade_dto.dart';
+export 'package:schuly_api/src/model/install_plugin_request.dart';
 export 'package:schuly_api/src/model/my_school_dto.dart';
 export 'package:schuly_api/src/model/plugin_dto.dart';
 export 'package:schuly_api/src/model/plugin_task_status.dart';

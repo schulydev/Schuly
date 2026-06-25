@@ -11,12 +11,18 @@ class _$CreateClassCommand extends CreateClassCommand {
   final String name;
   @override
   final String? description;
+  @override
+  final String schoolId;
 
   factory _$CreateClassCommand([
     void Function(CreateClassCommandBuilder)? updates,
   ]) => (CreateClassCommandBuilder()..update(updates))._build();
 
-  _$CreateClassCommand._({required this.name, this.description}) : super._();
+  _$CreateClassCommand._({
+    required this.name,
+    this.description,
+    required this.schoolId,
+  }) : super._();
   @override
   CreateClassCommand rebuild(
     void Function(CreateClassCommandBuilder) updates,
@@ -31,7 +37,8 @@ class _$CreateClassCommand extends CreateClassCommand {
     if (identical(other, this)) return true;
     return other is CreateClassCommand &&
         name == other.name &&
-        description == other.description;
+        description == other.description &&
+        schoolId == other.schoolId;
   }
 
   @override
@@ -39,6 +46,7 @@ class _$CreateClassCommand extends CreateClassCommand {
     var _$hash = 0;
     _$hash = $jc(_$hash, name.hashCode);
     _$hash = $jc(_$hash, description.hashCode);
+    _$hash = $jc(_$hash, schoolId.hashCode);
     _$hash = $jf(_$hash);
     return _$hash;
   }
@@ -47,7 +55,8 @@ class _$CreateClassCommand extends CreateClassCommand {
   String toString() {
     return (newBuiltValueToStringHelper(r'CreateClassCommand')
           ..add('name', name)
-          ..add('description', description))
+          ..add('description', description)
+          ..add('schoolId', schoolId))
         .toString();
   }
 }
@@ -64,6 +73,10 @@ class CreateClassCommandBuilder
   String? get description => _$this._description;
   set description(String? description) => _$this._description = description;
 
+  String? _schoolId;
+  String? get schoolId => _$this._schoolId;
+  set schoolId(String? schoolId) => _$this._schoolId = schoolId;
+
   CreateClassCommandBuilder() {
     CreateClassCommand._defaults(this);
   }
@@ -73,6 +86,7 @@ class CreateClassCommandBuilder
     if ($v != null) {
       _name = $v.name;
       _description = $v.description;
+      _schoolId = $v.schoolId;
       _$v = null;
     }
     return this;
@@ -101,6 +115,11 @@ class CreateClassCommandBuilder
             'name',
           ),
           description: description,
+          schoolId: BuiltValueNullFieldError.checkNotNull(
+            schoolId,
+            r'CreateClassCommand',
+            'schoolId',
+          ),
         );
     replace(_$result);
     return _$result;
