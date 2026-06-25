@@ -46,18 +46,7 @@ class TokenProxyClient {
         'totpSecret': totpSecret,
       },
     );
-    final m = res.data ?? const {};
-    final rotated = m['contextState'];
-    return PrivateRefreshResult(
-      success: m['success'] as bool? ?? false,
-      message: m['message'] as String?,
-      accessToken: m['accessToken'] as String?,
-      refreshToken: m['refreshToken'] as String?,
-      webSessionId: m['webSessionId'] as String?,
-      webSessionUserId: m['webSessionUserId'] as String?,
-      webSessionTransId: m['webSessionTransId'] as String?,
-      contextState: rotated == null ? null : jsonEncode(rotated),
-    );
+    return _parse(res.data ?? const {});
   }
 
   /// Passwordless refresh from a stored context_state (JSON string).
@@ -76,7 +65,12 @@ class TokenProxyClient {
         'contextState': jsonDecode(contextState),
       },
     );
-    final m = res.data ?? const {};
+    return _parse(res.data ?? const {});
+  }
+
+  /// Builds the result from a stateless login/refresh response. The opaque
+  /// rotated context_state is re-encoded to a JSON string for storage.
+  PrivateRefreshResult _parse(Map<String, dynamic> m) {
     final rotated = m['contextState'];
     return PrivateRefreshResult(
       success: m['success'] as bool? ?? false,
@@ -86,7 +80,6 @@ class TokenProxyClient {
       webSessionId: m['webSessionId'] as String?,
       webSessionUserId: m['webSessionUserId'] as String?,
       webSessionTransId: m['webSessionTransId'] as String?,
-      // Re-encode the rotated context_state object back to a string for storage.
       contextState: rotated == null ? null : jsonEncode(rotated),
     );
   }
