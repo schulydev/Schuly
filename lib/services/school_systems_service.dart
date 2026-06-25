@@ -1,8 +1,7 @@
 import 'package:dio/dio.dart';
 
-import '../config/backend_config.dart';
-import '../config/oidc_config.dart';
 import '../domain/school_system.dart';
+import 'backend_dio.dart';
 
 /// Fetches the backend-served catalog of school systems (anonymous endpoint).
 /// The backend is the **sole** source of truth for which systems exist and how
@@ -13,14 +12,10 @@ import '../domain/school_system.dart';
 /// this catalog and must never touch the authenticated Schuly stack. Throws if
 /// the catalog can't be reached; callers surface that to the user.
 class SchoolSystemsService {
-  static final Dio _dio = Dio(BaseOptions(
-    baseUrl: OidcConfig.backendBaseUrl,
+  static final Dio _dio = backendDio(
     connectTimeout: const Duration(seconds: 10),
     receiveTimeout: const Duration(seconds: 15),
-  ));
-
-  /// Re-point at the current [BackendConfig.url] after it changes at runtime.
-  static void applyBaseUrl() => _dio.options.baseUrl = BackendConfig.url;
+  );
 
   static Future<List<SchoolSystem>> fetch() async {
     final response = await _dio.get<List<dynamic>>('/api/app/school-systems');

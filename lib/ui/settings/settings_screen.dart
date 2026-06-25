@@ -5,14 +5,10 @@ import 'package:forui/forui.dart';
 import '../../config/backend_config.dart';
 import '../../config/oidc_config.dart';
 import '../../services/active_account_service.dart';
-import '../../services/api_client.dart';
 import '../../services/auth_service.dart';
 import '../../services/private_account_store.dart';
 import '../../services/school_data_service.dart';
-import '../../services/school_systems_service.dart';
-import '../../services/scrape_proxy_client.dart';
 import '../../services/theme_service.dart';
-import '../../services/token_proxy_client.dart';
 
 /// App settings: appearance, the backend server, and open-source licenses.
 class SettingsScreen extends StatefulWidget {
@@ -163,10 +159,8 @@ class _ServerDialogState extends State<_ServerDialog> {
     }
 
     await BackendConfig.setUrl(url);
-    ApiClient.instance.applyBaseUrl();
-    SchoolSystemsService.applyBaseUrl();
-    TokenProxyClient.instance.applyBaseUrl();
-    ScrapeProxyClient.instance.applyBaseUrl();
+    // The HTTP clients re-point themselves at BackendConfig.url per request; just
+    // reset the cached OIDC settings so the new backend's authority is re-fetched.
     OidcConfig.reset();
     // Drop the now wrong-backend session + cached data.
     await AuthService.signOut();
