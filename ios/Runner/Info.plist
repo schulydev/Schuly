@@ -48,10 +48,10 @@
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<!-- OIDC (account mode) returns to the app via the backend's custom
-	     redirect scheme (schulytest://callback). Registering it here lets iOS
-	     route the login callback back into the app; without it the external
-	     browser fails with "cannot open the URL". The scheme matches the
-	     backend's redirectUri / OidcConfig fallback. -->
+	     redirect scheme (schulytest://callback), driven by flutter_appauth over
+	     ASWebAuthenticationSession. Registering it here lets iOS route the login
+	     callback back into the app. The scheme matches the backend's redirectUri
+	     / OidcConfig fallback. -->
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>

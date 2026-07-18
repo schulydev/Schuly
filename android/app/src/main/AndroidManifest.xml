@@ -29,15 +29,10 @@
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
-            <!-- OIDC callback deep link: Pocket ID redirects to
-                 schulytest://callback?code=... after login; Android routes
-                 it back to this activity, app_links surfaces it. -->
-            <intent-filter android:autoVerify="false">
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="schulytest" />
-            </intent-filter>
+            <!-- The OIDC callback (schulytest://callback) is handled by
+                 flutter_appauth's own RedirectUriReceiverActivity, registered via
+                 the appAuthRedirectScheme manifestPlaceholder in build.gradle.kts.
+                 No manual intent-filter is needed here. -->
         </activity>
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->

@@ -16,6 +16,7 @@ class OidcSettings {
   final String redirectUri;
   final String authorizationEndpoint;
   final String tokenEndpoint;
+  final String? endSessionEndpoint;
 
   const OidcSettings({
     required this.authority,
@@ -24,7 +25,11 @@ class OidcSettings {
     required this.redirectUri,
     required this.authorizationEndpoint,
     required this.tokenEndpoint,
+    this.endSessionEndpoint,
   });
+
+  /// The OIDC scopes as a list, split from the space-delimited [scope] string.
+  List<String> get scopes => scope.split(' ').where((s) => s.isNotEmpty).toList();
 
   /// Deep-link scheme the provider redirects back to (e.g. `schulytest`),
   /// derived from [redirectUri] so the app never hardcodes it.
@@ -76,6 +81,7 @@ class OidcConfig {
       redirectUri: (app['redirectUri'] as String?) ?? 'schulytest://callback',
       authorizationEndpoint: disco['authorization_endpoint'] as String,
       tokenEndpoint: disco['token_endpoint'] as String,
+      endSessionEndpoint: disco['end_session_endpoint'] as String?,
     );
   }
 

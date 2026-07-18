@@ -34,6 +34,9 @@ android {
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+        // OIDC redirect scheme for flutter_appauth's RedirectUriReceiverActivity.
+        // Must match the backend's redirect URI scheme (schulytest://callback).
+        manifestPlaceholders["appAuthRedirectScheme"] = "schulytest"
     }
 
     flavorDimensions += "environment"
