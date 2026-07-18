@@ -1,39 +1,44 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:math';
 import 'package:flutter/foundation.dart';
-import 'package:app_links/app_links.dart';
-import 'package:crypto/crypto.dart';
+import 'package:flutter_appauth/flutter_appauth.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:url_launcher/url_launcher.dart';
 import '../config/oidc_config.dart';
 
 class AuthTokens {
   final String accessToken;
   final String? idToken;
   final String? refreshToken;
-  final int? expiresIn;
+  final DateTime? accessTokenExpiry;
 
-  AuthTokens({
-    required this.accessToken,
-    this.idToken,
-    this.refreshToken,
-    this.expiresIn,
-  });
+  AuthTokens({required this.accessToken, this.idToken, this.refreshToken, this.accessTokenExpiry});
 }
 
+/// OIDC Authorization Code + PKCE login backed by [FlutterAppAuth], which drives
+/// the flow through ASWebAuthenticationSession (iOS) / Chrome Custom Tabs
+/// (Android) - the system browser, never a WebView, and never an in-app
+/// credential form. The client is public (no secret); PKCE (S256) replaces it.
 class AuthService {
-  static const _kAccessTokenKey = 'auth.access_token';
-  static const _kIdTokenKey = 'auth.id_token';
+  // Only the refresh token and id token are persisted. The access token is kept
+  // in memory (per OAuth mobile best practice) and re-minted from the refresh
+  // token on cold start.
   static const _kRefreshTokenKey = 'auth.refresh_token';
+  static const _kIdTokenKey = 'auth.id_token';
+  // Legacy key from the old hand-rolled flow that persisted the access token.
+  static const _kLegacyAccessTokenKey = 'auth.access_token';
 
-  /// OIDC tokens live in the platform keystore (Android EncryptedSharedPrefs /
-  /// iOS Keychain), not plaintext SharedPreferences.
+  static const _appAuth = FlutterAppAuth();
+
+  /// Refresh/id tokens live in the platform keystore (Android
+  /// EncryptedSharedPrefs / iOS Keychain), not plaintext SharedPreferences.
   static const _storage = FlutterSecureStorage(
     aOptions: AndroidOptions(encryptedSharedPreferences: true),
   );
+
+  /// The current access token, held in memory only, with its expiry.
+  static String? _accessToken;
+  static DateTime? _accessTokenExpiry;
 
   /// One-shot migration of tokens written by older builds into SharedPreferences.
   /// Memoised so it runs at most once per process.
@@ -41,141 +46,77 @@ class AuthService {
   static Future<void> _ensureMigrated() => _migration ??= _migrate();
 
   static Future<void> _migrate() async {
+    // Drop any access token an old build persisted - it's memory-only now.
+    await _storage.delete(key: _kLegacyAccessTokenKey);
+
     // Already in secure storage → nothing to carry over.
-    if (await _storage.containsKey(key: _kAccessTokenKey)) return;
+    if (await _storage.containsKey(key: _kRefreshTokenKey)) return;
 
     final prefs = await SharedPreferences.getInstance();
-    final access = prefs.getString(_kAccessTokenKey);
-    if (access == null) return; // fresh install or already migrated + signed out
+    final refresh = prefs.getString(_kRefreshTokenKey);
+    if (refresh == null) return; // fresh install or already migrated + signed out
 
     final idToken = prefs.getString(_kIdTokenKey);
-    final refresh = prefs.getString(_kRefreshTokenKey);
-    await _storage.write(key: _kAccessTokenKey, value: access);
+    await _storage.write(key: _kRefreshTokenKey, value: refresh);
     if (idToken != null) await _storage.write(key: _kIdTokenKey, value: idToken);
-    if (refresh != null) await _storage.write(key: _kRefreshTokenKey, value: refresh);
 
-    await prefs.remove(_kAccessTokenKey);
+    await prefs.remove(_kLegacyAccessTokenKey);
     await prefs.remove(_kIdTokenKey);
     await prefs.remove(_kRefreshTokenKey);
   }
-
-  static final AppLinks _appLinks = AppLinks();
 
   /// Bumped whenever the session changes (sign-out / expiry). The auth gate
   /// listens to re-evaluate whether to show the sign-in screen.
   static final ValueNotifier<int> sessionEpoch = ValueNotifier<int>(0);
 
-  /// Full OIDC PKCE flow via the external browser:
-  /// 1. Build authorize URL + PKCE pair.
-  /// 2. Subscribe to deep links *before* launching the browser so we cannot
-  ///    miss the callback if the user returns instantly.
-  /// 3. Open the URL in Chrome (external, supports passkeys).
-  /// 4. Await the first incoming [OidcConfig.redirectUri] deep link.
-  /// 5. Exchange the auth code for tokens.
-  /// Runs the OIDC PKCE flow. When [register] is true the authorize request
-  /// carries `prompt=create` (the OIDC registration hint), so providers that
-  /// support it - e.g. Keycloak - open the registration screen first; others
-  /// ignore it and fall back to login.
+  static AuthorizationServiceConfiguration _serviceConfig(OidcSettings cfg) => AuthorizationServiceConfiguration(authorizationEndpoint: cfg.authorizationEndpoint, tokenEndpoint: cfg.tokenEndpoint, endSessionEndpoint: cfg.endSessionEndpoint);
+
+  /// Runs the OIDC Authorization Code + PKCE flow in the system browser and
+  /// exchanges the code for tokens. flutter_appauth applies PKCE (S256)
+  /// automatically. When [register] is true the authorize request carries
+  /// `prompt=create` (the OIDC registration hint) so Keycloak opens the
+  /// registration screen first.
   static Future<AuthTokens> signIn({bool register = false}) async {
     final cfg = await OidcConfig.settings();
-    final (verifier, challenge) = _generatePkce();
-    final state = DateTime.now().microsecondsSinceEpoch.toString();
-    final authorizeUrl = Uri.parse(cfg.authorizationEndpoint).replace(
-      queryParameters: {
-        'response_type': 'code',
-        'client_id': cfg.clientId,
-        'redirect_uri': cfg.redirectUri,
-        'scope': cfg.scope,
-        'state': state,
-        'code_challenge': challenge,
-        'code_challenge_method': 'S256',
-        if (register) 'prompt': 'create',
-      },
+    final result = await _appAuth.authorizeAndExchangeCode(
+      AuthorizationTokenRequest(
+        cfg.clientId,
+        cfg.redirectUri,
+        serviceConfiguration: _serviceConfig(cfg),
+        scopes: cfg.scopes,
+        promptValues: register ? const ['create'] : null,
+      ),
     );
-
-    final completer = Completer<Uri>();
-    late final StreamSubscription<Uri> sub;
-    sub = _appLinks.uriLinkStream.listen((uri) {
-      if (uri.scheme == cfg.callbackScheme && !completer.isCompleted) {
-        completer.complete(uri);
-      }
-    });
-
-    try {
-      final launched = await launchUrl(authorizeUrl, mode: LaunchMode.externalApplication);
-      if (!launched) throw Exception('Could not launch browser');
-
-      final callback = await completer.future.timeout(
-        const Duration(minutes: 5),
-        onTimeout: () => throw Exception('Login timed out'),
-      );
-
-      final error = callback.queryParameters['error'];
-      if (error != null) throw Exception('OIDC error: $error');
-      final code = callback.queryParameters['code'];
-      final returnedState = callback.queryParameters['state'];
-      if (code == null) throw Exception('Callback missing code');
-      if (returnedState != state) throw Exception('State mismatch');
-
-      return await _exchangeCode(code: code, codeVerifier: verifier);
-    } finally {
-      await sub.cancel();
-    }
+    return _persist(result);
   }
 
-  static (String, String) _generatePkce() {
-    final rand = Random.secure();
-    final bytes = List<int>.generate(32, (_) => rand.nextInt(256));
-    final verifier = base64UrlEncode(bytes).replaceAll('=', '');
-    final challenge = base64UrlEncode(sha256.convert(utf8.encode(verifier)).bytes)
-        .replaceAll('=', '');
-    return (verifier, challenge);
-  }
-
-  static Future<AuthTokens> _exchangeCode({
-    required String code,
-    required String codeVerifier,
-  }) async {
-    final cfg = await OidcConfig.settings();
-    final response = await http.post(
-      Uri.parse(cfg.tokenEndpoint),
-      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-      body: {
-        'grant_type': 'authorization_code',
-        'code': code,
-        'client_id': cfg.clientId,
-        'redirect_uri': cfg.redirectUri,
-        'code_verifier': codeVerifier,
-      },
-    );
-    if (response.statusCode != 200) {
-      throw Exception('Token exchange failed (${response.statusCode}): ${response.body}');
-    }
-    final data = jsonDecode(response.body) as Map<String, dynamic>;
-    final tokens = AuthTokens(
-      accessToken: data['access_token'] as String,
-      idToken: data['id_token'] as String?,
-      refreshToken: data['refresh_token'] as String?,
-      expiresIn: data['expires_in'] as int?,
-    );
-    await _persist(tokens);
-    return tokens;
-  }
-
-  static Future<void> _persist(AuthTokens tokens) async {
+  static Future<AuthTokens> _persist(TokenResponse r) async {
     await _ensureMigrated();
-    await _storage.write(key: _kAccessTokenKey, value: tokens.accessToken);
-    if (tokens.idToken != null) {
-      await _storage.write(key: _kIdTokenKey, value: tokens.idToken!);
-    }
+    final tokens = AuthTokens(accessToken: r.accessToken!, idToken: r.idToken, refreshToken: r.refreshToken, accessTokenExpiry: r.accessTokenExpirationDateTime);
+    _accessToken = tokens.accessToken;
+    _accessTokenExpiry = tokens.accessTokenExpiry;
+    // Keycloak rotates refresh tokens by default; persist the new one every time
+    // or the next refresh fails. Fall back to the existing one if omitted.
     if (tokens.refreshToken != null) {
       await _storage.write(key: _kRefreshTokenKey, value: tokens.refreshToken!);
     }
+    if (tokens.idToken != null) {
+      await _storage.write(key: _kIdTokenKey, value: tokens.idToken!);
+    }
+    return tokens;
   }
 
+  /// Returns a usable access token: the in-memory one if still valid, otherwise
+  /// a freshly refreshed one. Null when there's no session (no refresh token or
+  /// the refresh failed) - the caller should treat that as signed-out.
   static Future<String?> getAccessToken() async {
-    await _ensureMigrated();
-    return _storage.read(key: _kAccessTokenKey);
+    final token = _accessToken;
+    final expiry = _accessTokenExpiry;
+    // Treat tokens within 30s of expiry as stale to avoid using one mid-flight.
+    if (token != null && expiry != null && expiry.isAfter(DateTime.now().add(const Duration(seconds: 30)))) {
+      return token;
+    }
+    return refreshAccessToken();
   }
 
   static Future<String?> getRefreshToken() async {
@@ -183,35 +124,31 @@ class AuthService {
     return _storage.read(key: _kRefreshTokenKey);
   }
 
+  /// In-flight refresh, shared so concurrent callers trigger a single token
+  /// exchange instead of a stampede.
+  static Future<String?>? _refreshing;
+
   /// Exchanges the stored refresh token for a fresh access token and persists
-  /// the result. Returns the new access token, or null if there's no refresh
-  /// token or the exchange failed - in which case the caller should treat the
-  /// session as expired.
-  static Future<String?> refreshAccessToken() async {
+  /// the rotated result. Returns the new access token, or null if there's no
+  /// refresh token or the exchange failed - in which case the caller should
+  /// treat the session as expired.
+  static Future<String?> refreshAccessToken() => _refreshing ??= _refresh().whenComplete(() => _refreshing = null);
+
+  static Future<String?> _refresh() async {
     final refreshToken = await getRefreshToken();
     if (refreshToken == null) return null;
     try {
       final cfg = await OidcConfig.settings();
-      final response = await http.post(
-        Uri.parse(cfg.tokenEndpoint),
-        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-        body: {
-          'grant_type': 'refresh_token',
-          'refresh_token': refreshToken,
-          'client_id': cfg.clientId,
-        },
+      final result = await _appAuth.token(
+        TokenRequest(
+          cfg.clientId,
+          cfg.redirectUri,
+          serviceConfiguration: _serviceConfig(cfg),
+          refreshToken: refreshToken,
+          scopes: cfg.scopes,
+        ),
       );
-      if (response.statusCode != 200) return null;
-      final data = jsonDecode(response.body) as Map<String, dynamic>;
-      final tokens = AuthTokens(
-        accessToken: data['access_token'] as String,
-        idToken: data['id_token'] as String?,
-        // Pocket ID rotates refresh tokens; fall back to the old one if the
-        // response omits a new one.
-        refreshToken: (data['refresh_token'] as String?) ?? refreshToken,
-        expiresIn: data['expires_in'] as int?,
-      );
-      await _persist(tokens);
+      final tokens = await _persist(result);
       return tokens.accessToken;
     } catch (_) {
       return null;
@@ -236,13 +173,34 @@ class AuthService {
     }
   }
 
+  /// Full logout: end the Keycloak SSO session at the `end_session_endpoint`
+  /// (deleting local tokens alone leaves the browser session alive, so the next
+  /// login would silently succeed), then wipe local state. The end-session call
+  /// is best-effort - local state is cleared regardless.
   static Future<void> signOut() async {
-    await _storage.delete(key: _kAccessTokenKey);
-    await _storage.delete(key: _kIdTokenKey);
+    final idToken = await _storage.read(key: _kIdTokenKey);
+    try {
+      final cfg = await OidcConfig.settings();
+      if (cfg.endSessionEndpoint != null) {
+        await _appAuth.endSession(
+          EndSessionRequest(
+            idTokenHint: idToken,
+            postLogoutRedirectUrl: cfg.redirectUri,
+            serviceConfiguration: _serviceConfig(cfg),
+          ),
+        );
+      }
+    } catch (_) {
+      // Ignore - the user still gets signed out locally below.
+    }
+    _accessToken = null;
+    _accessTokenExpiry = null;
     await _storage.delete(key: _kRefreshTokenKey);
+    await _storage.delete(key: _kIdTokenKey);
+    await _storage.delete(key: _kLegacyAccessTokenKey);
     // Clear any tokens an older build may have left in SharedPreferences too.
     final prefs = await SharedPreferences.getInstance();
-    await prefs.remove(_kAccessTokenKey);
+    await prefs.remove(_kLegacyAccessTokenKey);
     await prefs.remove(_kIdTokenKey);
     await prefs.remove(_kRefreshTokenKey);
     sessionEpoch.value++;
