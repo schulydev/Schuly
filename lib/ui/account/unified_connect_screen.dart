@@ -85,22 +85,24 @@ class _UnifiedConnectScreenState extends State<UnifiedConnectScreen> {
         title: Text('Add ${_system.displayName} Account'),
         prefixes: [FHeaderAction.back(onPress: () => Navigator.of(context).pop())],
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        spacing: 16,
-        children: [
-          DynamicLoginForm(controller: _form),
-          FTextField(
-            control: FTextFieldControl.managed(controller: _nameCtrl),
-            label: const Text('Display Name'),
-          ),
-          FButton(
-            onPress: _busy ? null : _connect,
-            child: Text(_busy ? 'Connecting…' : 'Connect'),
-          ),
-          if (_error != null)
-            SelectableText(_error!, style: TextStyle(color: colors.destructive)),
-        ],
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          spacing: 16,
+          children: [
+            DynamicLoginForm(controller: _form),
+            FTextField(
+              control: FTextFieldControl.managed(controller: _nameCtrl),
+              label: const Text('Display Name'),
+            ),
+            FButton(
+              onPress: _busy ? null : _connect,
+              child: Text(_busy ? 'Connecting…' : 'Connect'),
+            ),
+            if (_error != null)
+              SelectableText(_error!, style: TextStyle(color: colors.destructive)),
+          ],
+        ),
       ),
     );
   }
