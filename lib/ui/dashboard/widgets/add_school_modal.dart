@@ -129,7 +129,6 @@ class _SystemCard extends StatelessWidget {
       opacity: disabled ? 0.5 : 1.0,
       child: SizedBox(
         width: 108,
-        height: 96,
         child: FTappable(
           onPress: onTap,
           child: FCard(
