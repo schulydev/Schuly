@@ -34,6 +34,11 @@ class OidcSettings {
   /// Deep-link scheme the provider redirects back to (e.g. `schulytest`),
   /// derived from [redirectUri] so the app never hardcodes it.
   String get callbackScheme => Uri.parse(redirectUri).scheme;
+
+  /// Whether the OIDC endpoints use plaintext `http://` (a self-hosted / local
+  /// backend). flutter_appauth rejects http unless told to allow it, so this
+  /// gates `allowInsecureConnections`; https providers stay strict.
+  bool get allowInsecureConnections => Uri.parse(authorizationEndpoint).scheme == 'http' || Uri.parse(tokenEndpoint).scheme == 'http';
 }
 
 class OidcConfig {
