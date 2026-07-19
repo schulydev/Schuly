@@ -108,7 +108,7 @@ class _TotpFieldPickerState extends State<TotpFieldPicker> {
     final colors = context.theme.colors;
     final selected = _selected;
     final subtitle = selected == null
-        ? 'Not set — tap to choose'
+        ? 'Tap to choose'
         : [selected.title, if (selected.subtitle != null) selected.subtitle].join(' · ');
     return FTile(
       prefix: const Icon(FIcons.shieldCheck),
