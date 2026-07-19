@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart' show showLicensePage, ThemeMode;
 import 'package:flutter/widgets.dart';
 import 'package:forui/forui.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../config/backend_config.dart';
 import '../../config/oidc_config.dart';
 import '../../services/active_account_service.dart';
+import '../../services/app_mode_service.dart';
 import '../../services/auth_service.dart';
 import '../../services/private_account_store.dart';
 import '../../services/school_data_service.dart';
@@ -33,6 +35,23 @@ class _SettingsScreenState extends State<SettingsScreen> {
       child: ListView(
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
         children: [
+          // Only account mode has a Schuly (Keycloak) identity to manage; private
+          // mode keeps everything on-device with no account.
+          if (!AppModeService.instance.isPrivate) ...[
+            FTileGroup(
+              label: const Text('Account'),
+              children: [
+                FTile(
+                  prefix: const Icon(FIcons.circleUser),
+                  title: const Text('Manage account'),
+                  subtitle: const Text('Profile, password & security'),
+                  suffix: const Icon(FIcons.externalLink),
+                  onPress: _openAccountConsole,
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+          ],
           AnimatedBuilder(
             animation: ThemeService.instance,
             builder: (context, _) => FSelectTileGroup<ThemeMode>(
@@ -83,6 +102,25 @@ class _SettingsScreenState extends State<SettingsScreen> {
         ],
       ),
     );
+  }
+
+  /// Opens the identity provider's account console (Keycloak's `/account`) in the
+  /// external browser, where the user manages their profile, password and
+  /// sign-in security. The authority is discovered at runtime, never hardcoded.
+  Future<void> _openAccountConsole() async {
+    Uri? url;
+    try {
+      final cfg = await OidcConfig.settings();
+      url = Uri.parse('${cfg.authority}/account');
+    } catch (_) {
+      url = null;
+    }
+    if (!mounted) return;
+    if (url == null || !await launchUrl(url, mode: LaunchMode.externalApplication)) {
+      if (mounted) {
+        showFToast(context: context, title: const Text("Couldn't open the account page"));
+      }
+    }
   }
 
   Future<void> _openServerDialog() async {
