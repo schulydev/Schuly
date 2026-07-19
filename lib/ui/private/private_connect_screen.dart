@@ -8,7 +8,6 @@ import '../../services/scrape_proxy_client.dart';
 import '../../services/token_proxy_client.dart';
 import '../../services/totp_service.dart';
 import '../widgets/dynamic_login_form.dart';
-import 'totp_scan_screen.dart';
 
 /// Generic private-mode connect screen. Renders the chosen [system]'s
 /// backend-described `loginFields` and connects headlessly - no WebView. The
@@ -121,17 +120,6 @@ class _PrivateConnectScreenState extends State<PrivateConnectScreen> {
     if (mounted) Navigator.of(context).pop(true);
   }
 
-  /// Opens the QR scanner and writes the scanned `otpauth://` URI / secret back
-  /// into the TOTP field.
-  Future<void> _scanTotp(String fieldKey) async {
-    final scanned = await Navigator.of(context).push<String>(
-      MaterialPageRoute(builder: (_) => const TotpScanScreen()),
-    );
-    if (scanned != null && scanned.isNotEmpty) {
-      _form.controllerFor(fieldKey).text = scanned;
-    }
-  }
-
   Future<void> _connectScrape(
       String baseUrl, String name, String basePath) async {
     final account = PrivateAccount(
@@ -165,7 +153,7 @@ class _PrivateConnectScreenState extends State<PrivateConnectScreen> {
             'Private mode keeps everything on this device - no account, '
             'nothing stored on a server.',
           ),
-          DynamicLoginForm(controller: _form, onScanField: _scanTotp),
+          DynamicLoginForm(controller: _form),
           FTextField(
             control: FTextFieldControl.managed(controller: _nameCtrl),
             label: const Text('Display Name'),

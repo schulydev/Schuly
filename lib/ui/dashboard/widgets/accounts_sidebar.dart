@@ -4,8 +4,7 @@ import 'package:forui/forui.dart';
 import '../../../domain/my_school.dart';
 import '../../../services/active_account_service.dart';
 import '../../../services/app_mode_service.dart';
-import '../../../services/private_account_store.dart';
-import '../../private/authenticator_screen.dart';
+import '../../authenticator/authenticator_vault_screen.dart';
 import '../../settings/settings_screen.dart';
 import 'add_school_modal.dart';
 
@@ -174,31 +173,16 @@ class AccountsSidebar extends StatelessWidget {
                         ),
                         const SizedBox(height: 4),
                       ],
-                      if (isPrivate)
-                        FutureBuilder<PrivateAccount?>(
-                          future: PrivateAccountStore.instance.load(),
-                          builder: (context, snapshot) {
-                            final hasTotp =
-                                snapshot.data?.totpSecret?.isNotEmpty ?? false;
-                            if (!hasTotp) return const SizedBox.shrink();
-                            return Column(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: [
-                                FTile(
-                                  prefix: const Icon(FIcons.keyRound),
-                                  title: const Text('Authenticator'),
-                                  onPress: () {
-                                    Navigator.of(context).maybePop();
-                                    parentNavigator.push(MaterialPageRoute(
-                                        builder: (_) =>
-                                            const AuthenticatorScreen()));
-                                  },
-                                ),
-                                const SizedBox(height: 4),
-                              ],
-                            );
-                          },
-                        ),
+                      FTile(
+                        prefix: const Icon(FIcons.keyRound),
+                        title: const Text('Authenticator'),
+                        onPress: () {
+                          Navigator.of(context).maybePop();
+                          parentNavigator.push(MaterialPageRoute(
+                              builder: (_) => const AuthenticatorVaultScreen()));
+                        },
+                      ),
+                      const SizedBox(height: 4),
                       FTile(
                         prefix: const Icon(FIcons.settings),
                         title: const Text('Settings'),
