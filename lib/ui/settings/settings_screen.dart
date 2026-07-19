@@ -48,6 +48,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   suffix: const Icon(FIcons.externalLink),
                   onPress: _openAccountConsole,
                 ),
+                FTile(
+                  prefix: const Icon(FIcons.image),
+                  title: const Text('Profile picture'),
+                  subtitle: const Text('Upload or change your picture'),
+                  suffix: const Icon(FIcons.externalLink),
+                  onPress: _openProfilePicture,
+                ),
               ],
             ),
             const SizedBox(height: 20),
@@ -119,6 +126,25 @@ class _SettingsScreenState extends State<SettingsScreen> {
     if (url == null || !await launchUrl(url, mode: LaunchMode.externalApplication)) {
       if (mounted) {
         showFToast(context: context, title: const Text("Couldn't open the account page"));
+      }
+    }
+  }
+
+  /// Opens the Keycloak-served profile-picture upload page (`${authority}/avatar/ui`)
+  /// in the external browser. The page authenticates the user and uploads the image
+  /// to the avatar SPI, which the OIDC `picture` claim then carries into the app.
+  Future<void> _openProfilePicture() async {
+    Uri? url;
+    try {
+      final cfg = await OidcConfig.settings();
+      url = Uri.parse('${cfg.authority}/avatar/ui');
+    } catch (_) {
+      url = null;
+    }
+    if (!mounted) return;
+    if (url == null || !await launchUrl(url, mode: LaunchMode.externalApplication)) {
+      if (mounted) {
+        showFToast(context: context, title: const Text("Couldn't open the picture page"));
       }
     }
   }
