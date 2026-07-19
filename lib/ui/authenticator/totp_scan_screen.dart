@@ -42,13 +42,24 @@ class _TotpScanScreenState extends State<TotpScanScreen> {
         ],
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        spacing: 16,
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        spacing: 24,
         children: [
-          Expanded(
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-              child: MobileScanner(onDetect: _onDetect),
+          Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 280),
+              child: AspectRatio(
+                aspectRatio: 1,
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: colors.border, width: 2),
+                  ),
+                  clipBehavior: Clip.antiAlias,
+                  child: MobileScanner(onDetect: _onDetect),
+                ),
+              ),
             ),
           ),
           Text(
