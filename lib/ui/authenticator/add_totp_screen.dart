@@ -34,13 +34,15 @@ class _AddTotpScreenState extends State<AddTotpScreen> {
   String _newId() => DateTime.now().microsecondsSinceEpoch.toString();
 
   Future<void> _scan() async {
-    final scanned = await Navigator.of(context).push<String>(
-      MaterialPageRoute(builder: (_) => const TotpScanScreen()),
-    );
+    final scanned = await Navigator.of(
+      context,
+    ).push<String>(MaterialPageRoute(builder: (_) => const TotpScanScreen()));
     if (scanned == null || scanned.isEmpty || !mounted) return;
     final entry = TotpEntry.fromPayload(_newId(), scanned);
     if (entry == null) {
-      setState(() => _error = "That QR code doesn't contain a valid TOTP secret.");
+      setState(
+        () => _error = "That QR code doesn't contain a valid TOTP secret.",
+      );
       return;
     }
     await _save(entry);
@@ -49,7 +51,9 @@ class _AddTotpScreenState extends State<AddTotpScreen> {
   Future<void> _saveManual() async {
     final secret = _secretCtrl.text.trim();
     if (TotpConfig.tryParse(secret) == null) {
-      setState(() => _error = 'Enter a valid TOTP secret (base32) or otpauth:// URI.');
+      setState(
+        () => _error = 'Enter a valid TOTP secret (base32) or otpauth:// URI.',
+      );
       return;
     }
     final entry = TotpEntry.fromPayload(
@@ -59,7 +63,9 @@ class _AddTotpScreenState extends State<AddTotpScreen> {
       account: _accountCtrl.text.trim(),
     );
     if (entry == null) {
-      setState(() => _error = 'Enter a valid TOTP secret (base32) or otpauth:// URI.');
+      setState(
+        () => _error = 'Enter a valid TOTP secret (base32) or otpauth:// URI.',
+      );
       return;
     }
     await _save(entry);
@@ -87,54 +93,74 @@ class _AddTotpScreenState extends State<AddTotpScreen> {
     return FScaffold(
       header: FHeader.nested(
         title: const Text('Add authenticator'),
-        prefixes: [FHeaderAction.back(onPress: () => Navigator.of(context).pop())],
+        prefixes: [
+          FHeaderAction.back(onPress: () => Navigator.of(context).pop()),
+        ],
       ),
-      child: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          spacing: 16,
-          children: [
-            FButton(
-              onPress: _busy ? null : _scan,
-              prefix: const Icon(FIcons.scanQrCode),
-              child: const Text('Scan QR code'),
+      child: LayoutBuilder(
+        builder: (context, constraints) => SingleChildScrollView(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(minHeight: constraints.maxHeight),
+            child: IntrinsicHeight(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                spacing: 16,
+                children: [
+                  FButton(
+                    onPress: _busy ? null : _scan,
+                    prefix: const Icon(FIcons.scanQrCode),
+                    child: const Text('Scan QR code'),
+                  ),
+                  Row(
+                    children: [
+                      const Expanded(child: FDivider()),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        child: Text(
+                          'or enter manually',
+                          style: typography.sm.copyWith(
+                            color: colors.mutedForeground,
+                          ),
+                        ),
+                      ),
+                      const Expanded(child: FDivider()),
+                    ],
+                  ),
+                  FTextField(
+                    control: FTextFieldControl.managed(controller: _issuerCtrl),
+                    label: const Text('Provider (optional)'),
+                    hint: 'e.g. Schulnetz, GitHub',
+                    autocorrect: false,
+                  ),
+                  FTextField(
+                    control: FTextFieldControl.managed(
+                      controller: _accountCtrl,
+                    ),
+                    label: const Text('Account (optional)'),
+                    hint: 'e.g. your username or email',
+                    autocorrect: false,
+                  ),
+                  FTextField(
+                    control: FTextFieldControl.managed(controller: _secretCtrl),
+                    label: const Text('Setup key'),
+                    hint: 'TOTP secret or otpauth:// URI',
+                    autocorrect: false,
+                  ),
+                  FButton(
+                    style: FButtonStyle.outline(),
+                    onPress: _busy ? null : _saveManual,
+                    child: Text(_busy ? 'Saving…' : 'Save'),
+                  ),
+                  if (_error != null)
+                    SelectableText(
+                      _error!,
+                      style: TextStyle(color: colors.destructive),
+                    ),
+                ],
+              ),
             ),
-            Row(
-              children: [
-                const Expanded(child: FDivider()),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
-                  child: Text('or enter manually', style: typography.sm.copyWith(color: colors.mutedForeground)),
-                ),
-                const Expanded(child: FDivider()),
-              ],
-            ),
-            FTextField(
-              control: FTextFieldControl.managed(controller: _issuerCtrl),
-              label: const Text('Provider (optional)'),
-              hint: 'e.g. Schulnetz, GitHub',
-              autocorrect: false,
-            ),
-            FTextField(
-              control: FTextFieldControl.managed(controller: _accountCtrl),
-              label: const Text('Account (optional)'),
-              hint: 'e.g. your username or email',
-              autocorrect: false,
-            ),
-            FTextField(
-              control: FTextFieldControl.managed(controller: _secretCtrl),
-              label: const Text('Setup key'),
-              hint: 'TOTP secret or otpauth:// URI',
-              autocorrect: false,
-            ),
-            FButton(
-              style: FButtonStyle.outline(),
-              onPress: _busy ? null : _saveManual,
-              child: Text(_busy ? 'Saving…' : 'Save'),
-            ),
-            if (_error != null)
-              SelectableText(_error!, style: TextStyle(color: colors.destructive)),
-          ],
+          ),
         ),
       ),
     );
