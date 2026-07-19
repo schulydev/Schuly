@@ -110,14 +110,12 @@ class _TotpFieldPickerState extends State<TotpFieldPicker> {
     final subtitle = selected == null
         ? 'Not set — tap to choose'
         : [selected.title, if (selected.subtitle != null) selected.subtitle].join(' · ');
-    return FCard(
-      child: FTile(
-        prefix: const Icon(FIcons.shieldCheck),
-        title: Text(widget.field.label),
-        subtitle: Text(subtitle, style: selected == null ? TextStyle(color: colors.mutedForeground) : null),
-        suffix: const Icon(FIcons.chevronRight),
-        onPress: _openMenu,
-      ),
+    return FTile(
+      prefix: const Icon(FIcons.shieldCheck),
+      title: Text(widget.field.label),
+      subtitle: Text(subtitle, style: selected == null ? TextStyle(color: colors.mutedForeground) : null),
+      suffix: const Icon(FIcons.chevronRight),
+      onPress: _openMenu,
     );
   }
 }
