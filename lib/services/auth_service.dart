@@ -85,6 +85,7 @@ class AuthService {
         serviceConfiguration: _serviceConfig(cfg),
         scopes: cfg.scopes,
         promptValues: register ? const ['create'] : null,
+        allowInsecureConnections: cfg.allowInsecureConnections,
       ),
     );
     return _persist(result);
@@ -146,6 +147,7 @@ class AuthService {
           serviceConfiguration: _serviceConfig(cfg),
           refreshToken: refreshToken,
           scopes: cfg.scopes,
+          allowInsecureConnections: cfg.allowInsecureConnections,
         ),
       );
       final tokens = await _persist(result);
@@ -187,6 +189,7 @@ class AuthService {
             idTokenHint: idToken,
             postLogoutRedirectUrl: cfg.redirectUri,
             serviceConfiguration: _serviceConfig(cfg),
+            allowInsecureConnections: cfg.allowInsecureConnections,
           ),
         );
       }
