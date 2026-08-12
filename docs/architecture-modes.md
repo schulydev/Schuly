@@ -1,9 +1,9 @@
 # App modes: Account vs Private (secure)
 
-Schuly runs in one of two modes, chosen at the gate. Both read the same
-operator-provided school systems and the same backend-served catalog; the
-difference is **who authenticates** and **where the data rests**. The app is
-provider-agnostic - concrete systems are catalog data, never hardcoded.
+Schuly runs in one of two modes, chosen at the gate. Both read the same school
+systems from the same backend catalog; the difference is **who signs the user in**
+and **where the data ends up**. No school system is hardcoded in the app - every one
+of them comes from the catalog.
 
 ```mermaid
 flowchart TB
@@ -13,7 +13,7 @@ flowchart TB
   Gate -->|"Account"| Login
   Gate -->|"Private (no login)"| Catalog
 
-  subgraph ACCOUNT["🔐 Account mode - Schuly login"]
+  subgraph ACCOUNT["Account mode - Schuly login"]
     direction TB
     Login["OIDC login<br/>(Keycloak)"]
     ApiClient["ApiClient<br/>Bearer token + auto-refresh"]
@@ -25,7 +25,7 @@ flowchart TB
     Sync -->|"stores"| DB
   end
 
-  subgraph PRIVATE["🕶️ Private / secure mode - NO login, NO OIDC"]
+  subgraph PRIVATE["Private / secure mode - NO login, NO OIDC"]
     direction TB
     Catalog["SchoolSystemsService<br/>clean Dio (no auth interceptor)"]
     AnonCat[("GET /api/app/school-systems<br/>[AllowAnonymous]")]
@@ -59,7 +59,7 @@ flowchart TB
   Stateless -->|"live, nothing stored"| ScrapeProvider
 ```
 
-|                     | 🔐 Account mode                | 🕶️ Private / secure mode                          |
+|                     | Account mode                | Private / secure mode                          |
 | ------------------- | ------------------------------ | ------------------------------------------------- |
 | Auth to Schuly      | OIDC (Keycloak) bearer        | **none**                                          |
 | HTTP client         | `ApiClient` (auth interceptor) | clean `Dio`, anonymous endpoints only             |
