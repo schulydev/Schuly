@@ -42,7 +42,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   bool _probing = false;
 
   _Mode _mode = _Mode.account;
-  bool _busy = false; // sign-in / connect in flight
+  bool _busy = false;
 
   @override
   void initState() {
