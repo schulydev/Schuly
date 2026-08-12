@@ -148,7 +148,7 @@ class _FolderTile extends StatefulWidget {
 }
 
 class _FolderTileState extends State<_FolderTile> {
-  late bool _open = widget.name == 'Report cards'; // report cards expanded by default
+  late bool _open = widget.name == 'Report cards';
 
   static String _fmtSize(int bytes) {
     if (bytes < 1024) return '$bytes B';

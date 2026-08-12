@@ -111,7 +111,7 @@ class ActiveAccountService extends ChangeNotifier {
                   (provider: sys.key, accountId: accId, pluginBasePath: base);
             }
           }
-        } catch (_) {/* skip this plugin */}
+        } catch (_) {}
       }
       return out;
     } catch (_) {

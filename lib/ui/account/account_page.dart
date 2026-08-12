@@ -58,7 +58,7 @@ class _AccountPageState extends State<AccountPage> {
         _syncStatus = data['syncStatus']?.toString();
         _syncError = data['syncError']?.toString();
       });
-    } catch (_) {/* non-critical */}
+    } catch (_) {}
   }
 
   Future<void> _loadVersion() async {
@@ -70,7 +70,7 @@ class _AccountPageState extends State<AccountPage> {
           await ApiClient.instance.dio.get<Map<String, dynamic>>('$base/status');
       final data = res.data;
       if (mounted) setState(() => _version = data?['version']?.toString());
-    } catch (_) {/* non-critical */}
+    } catch (_) {}
   }
 
   Future<void> _syncNow() async {
