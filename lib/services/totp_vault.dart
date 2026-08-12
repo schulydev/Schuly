@@ -72,7 +72,8 @@ class TotpVault {
   Future<TotpEntry> add(TotpEntry entry) async {
     final entries = await load();
     entries.removeWhere((e) => e.id == entry.id);
-    entries.add(entry);
+    // Newest first: the entry someone just added is the one they are looking for.
+    entries.insert(0, entry);
     await _saveAll(entries);
     return entry;
   }

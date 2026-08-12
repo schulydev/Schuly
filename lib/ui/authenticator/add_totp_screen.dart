@@ -3,6 +3,7 @@ import 'package:forui/forui.dart';
 
 import '../../services/totp_service.dart';
 import '../../services/totp_vault.dart';
+import 'totp_added_sheet.dart';
 import 'totp_scan_screen.dart';
 
 class AddTotpScreen extends StatefulWidget {
@@ -74,6 +75,10 @@ class _AddTotpScreenState extends State<AddTotpScreen> {
     });
     try {
       await TotpVault.instance.add(entry);
+      if (!mounted) return;
+      // Whoever issued the QR code usually wants a code back immediately, so
+      // show it before this screen goes away.
+      await showTotpAddedSheet(context, entry);
       if (mounted) Navigator.of(context).pop(entry);
     } catch (e) {
       if (mounted) setState(() => _error = '$e');
