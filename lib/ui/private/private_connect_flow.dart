@@ -3,9 +3,6 @@ import 'package:flutter/material.dart';
 import '../dashboard/widgets/add_school_modal.dart';
 import 'private_connect_screen.dart';
 
-/// Private-mode connect flow: show the backend's school-system picker, then run
-/// the generic connect screen for the chosen system (driven entirely by the
-/// catalog descriptor). Returns true if a connection was stored on-device.
 Future<bool> runPrivateConnectFlow(BuildContext context) async {
   final systems = await fetchSystemsOrShowError(context);
   if (systems == null || !context.mounted) return false;

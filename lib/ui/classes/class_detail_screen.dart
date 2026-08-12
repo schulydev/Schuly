@@ -6,8 +6,6 @@ import '../../config/oidc_config.dart';
 import '../../services/api_client.dart';
 import '../core/grade_color.dart';
 
-/// Detail for a single class: students, exams, and agenda - fetched on demand
-/// via GET /Class/search.
 class ClassDetailScreen extends StatefulWidget {
   final String classId;
   final String title;

@@ -33,7 +33,6 @@ class ToastService {
     );
   }
 
-  /// Turn an exception into a short, single-line, user-facing detail.
   static String? _clean(Object? detail) {
     if (detail == null) return null;
     var s = detail.toString().replaceAll(RegExp(r'\s+'), ' ').trim();

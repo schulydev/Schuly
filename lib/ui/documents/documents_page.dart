@@ -11,10 +11,6 @@ import '../../services/active_account_service.dart';
 import '../../services/api_client.dart';
 import '../../services/school_data_service.dart';
 
-/// Documents screen - mirrors a typical school "personal dossier": files are
-/// grouped into folders by their category (report cards / Zeugnisse get their
-/// own folder, pinned first). Pull down to fetch fresh files from the provider;
-/// tapping a file downloads and opens it.
 class DocumentsScreen extends StatefulWidget {
   const DocumentsScreen({super.key});
 
@@ -25,14 +21,12 @@ class DocumentsScreen extends StatefulWidget {
 class _DocumentsScreenState extends State<DocumentsScreen> {
   String? _downloadingId;
 
-  /// Folder label for a document; report cards land in a dedicated bucket.
   static String _folderOf(StudentDocumentDto d) {
     final cat = (d.category ?? '').trim();
     if (cat.toLowerCase().contains('zeugnis')) return 'Report cards';
     return cat.isEmpty ? 'Other' : cat;
   }
 
-  /// Documents grouped into folders, report cards first, then alphabetical.
   List<MapEntry<String, List<StudentDocumentDto>>> get _folders {
     final docs = SchoolDataService.instance.documents;
     final map = <String, List<StudentDocumentDto>>{};
@@ -51,9 +45,6 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
     return entries;
   }
 
-  /// Pull-to-refresh: trigger a real provider re-fetch (pulls fresh documents
-  /// from the provider), then reload the local cache. Falls back to a plain cache
-  /// reload if there's no connected provider account.
   Future<void> _refresh() async {
     final active = ActiveAccountService.instance.active;
     final accountId = active?.pluginAccountId;
@@ -74,8 +65,6 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
     await SchoolDataService.instance.refresh();
   }
 
-  /// Download a document's bytes through the authed Dio and open it with the
-  /// system viewer.
   Future<void> _openDocument(StudentDocumentDto doc) async {
     final id = doc.id;
     if (id == null) return;
@@ -142,7 +131,6 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
   }
 }
 
-/// An expandable folder containing its document rows.
 class _FolderTile extends StatefulWidget {
   final String name;
   final List<StudentDocumentDto> files;

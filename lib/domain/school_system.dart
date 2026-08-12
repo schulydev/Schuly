@@ -1,19 +1,10 @@
-/// A login provider the backend advertises via `GET /api/app/school-systems`.
-/// The app renders the picker (and, later, the login form) from this instead of
-/// hardcoding the available systems.
 class SchoolSystem {
   final String key;
   final String displayName;
   final String? logoUrl;
 
-  /// How private mode authenticates and fetches data for this system:
-  /// `token` (a headless login mints a bearer token + refreshable session) or
-  /// `scrape` (credentials replayed per fetch). Lets the app pick a strategy
-  /// without knowing the provider.
   final String? privateAuthStrategy;
 
-  /// Base path of this system's stateless plugin endpoints (private mode),
-  /// e.g. `/api/plugins/<plugin>/stateless`. Served by the catalog.
   final String? statelessBasePath;
 
   /// Base path of this system's plugin endpoints (account mode:
@@ -21,7 +12,6 @@ class SchoolSystem {
   /// catalog because the system key differs from the plugin name.
   final String? pluginBasePath;
 
-  /// How the app drives the login: `oauth-webview` or `credentials`.
   final String loginMethod;
   final bool enabled;
   final int sortOrder;
@@ -59,12 +49,10 @@ class SchoolSystem {
   }
 }
 
-/// One input the app renders on a system's login form.
 class SchoolSystemLoginField {
   final String key;
   final String label;
 
-  /// Input hint: `url`, `text` or `password`.
   final String type;
   final String? placeholder;
   final String? defaultValue;

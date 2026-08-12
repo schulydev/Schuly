@@ -5,7 +5,6 @@ import 'package:schuly_api/schuly_api.dart';
 import '../../services/school_data_service.dart';
 import '../core/grade_color.dart';
 
-/// Grades tab: live exam grades grouped by class.
 class GradesPage extends StatelessWidget {
   const GradesPage({super.key});
 
@@ -21,11 +20,8 @@ class _GradesView extends StatefulWidget {
 }
 
 class _GradesViewState extends State<_GradesView> {
-  // Selected semester as a sortable key (year*10 + half); null = auto-pick newest.
   int? _selectedKey;
 
-  // Swiss school year: Aug–Jan counts as the 1st semester, Feb–Jul as the 2nd.
-  // A null date → key 0 ("Undated"), so dateless grades still show somewhere.
   static int _semesterKey(Date? d) {
     if (d == null) return 0;
     if (d.month >= 8) return d.year * 10 + 1;
@@ -33,8 +29,6 @@ class _GradesViewState extends State<_GradesView> {
     return (d.year - 1) * 10 + 2;
   }
 
-  // A "period" is either a semester (half 1/2) or a whole school year (half 0,
-  // i.e. year*10). Year periods cover both halves.
   static bool _isYear(int key) => key != 0 && key % 10 == 0;
 
   static String _periodLabel(int key) {
@@ -50,7 +44,6 @@ class _GradesViewState extends State<_GradesView> {
     final svc = SchoolDataService.instance;
     final myGrades = svc.myGradesByExam;
 
-    // Exams I have a grade for, paired with their derived semester.
     final graded = [
       for (final e in svc.exams)
         if (e.id != null && myGrades.containsKey(e.id)) e,
@@ -59,8 +52,6 @@ class _GradesViewState extends State<_GradesView> {
       return _RefreshableEmpty(onRefresh: svc.refresh, text: 'No grades yet');
     }
 
-    // Build the period dropdown: each school year (newest first) with a whole-year
-    // option above its semesters (only when the year actually has two halves).
     final semKeys = {for (final e in graded) _semesterKey(e.date)};
     final yearsDesc = {for (final k in semKeys) k ~/ 10}.toList()
       ..sort((a, b) => b.compareTo(a));
@@ -74,7 +65,6 @@ class _GradesViewState extends State<_GradesView> {
       if (halves.length > 1) periods.add(y * 10); // whole-year option
       periods.addAll(halves);
     }
-    // Default to the newest single semester (most focused, current grades).
     final newestSemester = semKeys.where((k) => !_isYear(k)).fold(0, (m, k) => k > m ? k : m);
     final selected = (_selectedKey != null && periods.contains(_selectedKey))
         ? _selectedKey!
@@ -83,7 +73,6 @@ class _GradesViewState extends State<_GradesView> {
     bool inSelection(int examKey) =>
         _isYear(selected) ? examKey ~/ 10 == selected ~/ 10 : examKey == selected;
 
-    // Group the selected period's exams by class, each sorted by date.
     final classNames = <String?, String?>{
       for (final c in (svc.me?.classes ?? const <UserClassDto>[])) c.classId: c.className,
       ...svc.classNameById,

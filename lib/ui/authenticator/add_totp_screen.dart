@@ -5,9 +5,6 @@ import '../../services/totp_service.dart';
 import '../../services/totp_vault.dart';
 import 'totp_scan_screen.dart';
 
-/// Adds a TOTP authenticator entry - either by scanning an `otpauth://` QR code
-/// with the camera or by typing the setup key manually. Saves the entry to the
-/// [TotpVault] and pops the created [TotpEntry] (or null if cancelled).
 class AddTotpScreen extends StatefulWidget {
   const AddTotpScreen({super.key});
 
@@ -30,7 +27,6 @@ class _AddTotpScreenState extends State<AddTotpScreen> {
     super.dispose();
   }
 
-  /// Unique-enough id for a new entry (keystore is single-writer per device).
   String _newId() => DateTime.now().microsecondsSinceEpoch.toString();
 
   Future<void> _scan() async {

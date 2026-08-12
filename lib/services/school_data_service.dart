@@ -10,12 +10,6 @@ import 'private_data_adapter.dart';
 import 'scrape_proxy_client.dart';
 import 'token_proxy_client.dart';
 
-/// Loads and caches the per-school data the UI renders: the signed-in user's
-/// SchoolUser record (with nested grades/absences/classes), plus the school's
-/// exams and agenda. Everything is filtered to [ActiveAccountService.active].
-///
-/// The backend scopes responses to the authenticated user but doesn't filter
-/// by school, so we filter by `schoolId` client-side.
 class SchoolDataService extends ChangeNotifier {
   SchoolDataService._();
   static final SchoolDataService instance = SchoolDataService._();
@@ -42,7 +36,6 @@ class SchoolDataService extends ChangeNotifier {
   bool get loading => _loading;
   Object? get error => _error;
 
-  /// Friendly class name by class id, from the full ClassDto.
   Map<String, String> get classNameById {
     final out = <String, String>{};
     for (final c in _classes) {
@@ -53,7 +46,6 @@ class SchoolDataService extends ChangeNotifier {
 
   SchulyApi get _api => ApiClient.instance.api;
 
-  /// My grades for the active school, keyed by examId.
   Map<String, GradeDto> get myGradesByExam {
     final out = <String, GradeDto>{};
     final grades = _me?.grades;
@@ -85,7 +77,6 @@ class SchoolDataService extends ChangeNotifier {
     _error = null;
     notifyListeners();
     try {
-      // Who am I → my SchoolUser for this school (carries nested grades etc.).
       final me = await _api.getAuthApi().apiAuthMeGet();
       final appUserId = me.data?.id;
       if (appUserId != null) {
@@ -103,16 +94,12 @@ class SchoolDataService extends ChangeNotifier {
           .where((e) => e.schoolId == schoolId)
           .toList(growable: false);
 
-      // Agenda entries carry a classId but no schoolId, so scope them by the
-      // user's classes (their classes all belong to the active school).
       final myClassIds = {
         for (final c in (_me?.classes ?? const <UserClassDto>[])) c.classId,
       };
       final meId = _me?.id;
       final agenda = await _api.getAgendasApi().apiAgendasGet();
       _agenda = (agenda.data ?? BuiltList<AgendaEntryDto>())
-          // Scraped lessons + holidays are scoped to the SchoolUser (no class);
-          // class-scoped entries are matched by the user's class membership.
           .where((a) =>
               (meId != null && a.schoolUserId == meId) ||
               a.entryType == AgendaEntryType.holiday ||
@@ -152,9 +139,6 @@ class SchoolDataService extends ChangeNotifier {
     }
   }
 
-  /// Private mode: pull data from the stateless proxy with the on-device
-  /// credentials and adapt it into the same DTOs the UI renders. Nothing here
-  /// touches a Schuly account; features without a proxy source stay empty.
   Future<void> _refreshPrivate() async {
     final account = await PrivateAccountStore.instance.load();
     if (account == null) {
@@ -167,9 +151,6 @@ class SchoolDataService extends ChangeNotifier {
     notifyListeners();
     try {
       if (account.accessToken != null) {
-        // Token-strategy systems: batched endpoints with a passwordless token
-        // refresh on expiry. A stored access token is the marker - token logins
-        // mint one; scrape (credential-replay) systems don't.
         final d = await TokenProxyClient.instance.fetchAll(account);
         if (d.refreshedAccount != null) {
           await PrivateAccountStore.instance.save(d.refreshedAccount!);
@@ -180,7 +161,6 @@ class SchoolDataService extends ChangeNotifier {
         _agenda = PrivateDataAdapter.agenda(d.agenda);
         _classes = PrivateDataAdapter.classes(d.grades, d.exams);
       } else {
-        // Scrape-strategy systems: one scrape pass returns everything.
         final d = await ScrapeProxyClient.instance.data(account);
         _me = PrivateDataAdapter.schoolUser(d.userInfo, d.grades, const []);
         _exams = PrivateDataAdapter.exams(d.exams);
@@ -188,8 +168,6 @@ class SchoolDataService extends ChangeNotifier {
         _agenda = PrivateDataAdapter.agenda(d.agenda);
         _classes = PrivateDataAdapter.classes(d.grades, d.exams);
       }
-      // Reports, teachers and documents are scraper-only / not exposed by the
-      // token-strategy endpoints, so they have no stateless source in private mode.
       _reports = const [];
       _teachers = const [];
       _documents = const [];

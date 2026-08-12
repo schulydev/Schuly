@@ -3,12 +3,7 @@ import 'package:schuly_api/schuly_api.dart';
 
 import '../domain/private_data.dart';
 
-/// Adapts the stateless proxy's flat private-mode DTOs into the generated
-/// `SchulyApi` DTOs the account-mode UI already renders, so private mode reuses
-/// the same screens. Date formats and a few field choices are best-guess until
-/// validated against a real account.
 class PrivateDataAdapter {
-  /// Synthetic SchoolUser id linking the private user's grades/absences.
   static const privateSchoolUserId = 'private-self';
 
   static DateTime? _date(String? s) =>
@@ -74,10 +69,6 @@ class PrivateDataAdapter {
   static List<AgendaEntryDto> agenda(List<PrivateAgendaEvent> e) =>
       e.map(agendaEntry).toList(growable: false);
 
-  /// Derives the student's classes from the distinct subjects across their
-  /// grades and exams, attaching each subject's exams - mirroring how the
-  /// account-mode backend sync creates a Class per course. (The token-strategy
-  /// endpoints have no standalone classes source, so this is the private-mode analogue.)
   static List<ClassDto> classes(
     List<PrivateGrade> grades,
     List<PrivateExam> exams,

@@ -15,8 +15,6 @@ class BackendConfig {
 
   static const _key = 'backend.url';
 
-  /// The hosted default (Schuly Cloud). Override per build:
-  ///   flutter build apk --dart-define=BACKEND_BASE_URL=https://api.schuly.dev
   static const hostedUrl = String.fromEnvironment(
     'BACKEND_BASE_URL',
     defaultValue: 'http://localhost:5033',
@@ -24,10 +22,8 @@ class BackendConfig {
 
   static String _url = hostedUrl;
 
-  /// Current backend base URL (no trailing slash).
   static String get url => _url;
 
-  /// Whether the app is pointed at a custom (self-hosted) backend.
   static bool get isCustom => _url != hostedUrl;
 
   static Future<void> load() async {
@@ -35,13 +31,9 @@ class BackendConfig {
     if (saved != null && saved.isNotEmpty) _url = saved;
   }
 
-  /// Strips a trailing slash from a URL, returning '' for null/empty.
   static String normalise(String? value) =>
       (value ?? '').trim().replaceAll(RegExp(r'/+$'), '');
 
-  /// True if [value] uses plaintext `http://` to a non-loopback host, so
-  /// credentials and tokens would travel in the clear. Used to warn before a
-  /// self-hoster saves an insecure custom backend.
   static bool isInsecure(String? value) {
     final uri = Uri.tryParse(normalise(value));
     if (uri == null || uri.scheme != 'http') return false;
@@ -53,10 +45,6 @@ class BackendConfig {
         !h.endsWith('.localhost');
   }
 
-  /// Probes [baseUrl] by fetching the anonymous `GET /api/app`. A reachable
-  /// Schuly backend returns a JSON object with a `clientId`; on success this
-  /// returns its reported `version` (or `'unknown'` if the field is missing).
-  /// Returns null on any network/parse error or a non-Schuly response.
   static Future<String?> probe(String baseUrl) async {
     final url = normalise(baseUrl);
     if (url.isEmpty) return null;
@@ -76,9 +64,6 @@ class BackendConfig {
     }
   }
 
-  /// Normalises and persists [value] (trailing slash trimmed). A null/empty
-  /// value, or one equal to the hosted default, resets to hosted. Returns the
-  /// resolved URL.
   static Future<String> setUrl(String? value) async {
     final prefs = await SharedPreferences.getInstance();
     final v = value?.trim().replaceAll(RegExp(r'/+$'), '');

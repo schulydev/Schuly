@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-/// App-wide theme-mode preference (system / light / dark), persisted across
-/// launches. The root [MaterialApp] + Forui `FAnimatedTheme` rebuild from this.
 class ThemeService extends ChangeNotifier {
   ThemeService._();
   static final ThemeService instance = ThemeService._();

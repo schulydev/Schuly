@@ -2,39 +2,25 @@ import 'dart:convert';
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-/// On-device credentials for a private-mode (account-free) connection.
-/// Held only in the device keystore - never sent to or stored on a Schuly
-/// account. Provider-agnostic: [loginMethod] (from the backend catalog) drives
-/// how the connection authenticates and where its data is fetched.
 class PrivateAccount {
-  /// The catalog system key this connection belongs to.
   final String systemKey;
 
-  /// Backend-provided discriminator: `oauth-webview` or `credentials`.
   final String loginMethod;
   final String baseUrl;
   final String displayName;
 
-  /// Base path of the system's stateless plugin endpoints (from the catalog).
   final String statelessBasePath;
 
-  // oauth-webview:
   final String? accessToken;
   final String? refreshToken;
 
-  /// Opaque Playwright storage_state blob (JSON string) for passwordless refresh.
   final String? contextState;
 
-  /// Exact WebView user-agent captured at login (Microsoft pins cookies to UA).
   final String? userAgent;
 
-  // credentials:
   final String? username;
   final String? password;
 
-  /// TOTP seed (normalized base32). Lets Schuly regenerate the second factor
-  /// on-device - for silent re-login and the in-app authenticator. Stored only
-  /// in the device keystore, like every other field here.
   final String? totpSecret;
 
   const PrivateAccount({

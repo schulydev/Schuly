@@ -12,8 +12,6 @@ import '../../services/toast_service.dart';
 import '../classes/class_detail_screen.dart';
 import '../documents/documents_page.dart';
 
-/// Account tab - profile details, enrolled classes, app info, and the account
-/// switcher + sign out.
 class AccountPage extends StatefulWidget {
   final String? pictureUrl;
   final String? userName;
@@ -44,9 +42,6 @@ class _AccountPageState extends State<AccountPage> {
     _loadSyncStatus();
   }
 
-  /// Reads the active account's last-sync time / status / error off the plugin's
-  /// `…/sync` endpoint so the user can see when data was last refreshed and why
-  /// a sync failed.
   Future<void> _loadSyncStatus() async {
     try {
       final active = ActiveAccountService.instance.active;
@@ -66,8 +61,6 @@ class _AccountPageState extends State<AccountPage> {
     } catch (_) {/* non-critical */}
   }
 
-  /// The version shown is the active provider's plugin version, read off its
-  /// `…/status` endpoint - not the backend app version.
   Future<void> _loadVersion() async {
     try {
       final active = ActiveAccountService.instance.active;
@@ -80,9 +73,6 @@ class _AccountPageState extends State<AccountPage> {
     } catch (_) {/* non-critical */}
   }
 
-  /// Triggers an actual provider re-fetch for the active account, then reloads
-  /// the local data. Unlike pull-to-refresh (which only re-reads the backend),
-  /// this pulls fresh data from the upstream provider.
   Future<void> _syncNow() async {
     final active = ActiveAccountService.instance.active;
     final accountId = active?.pluginAccountId;
@@ -102,7 +92,6 @@ class _AccountPageState extends State<AccountPage> {
       if (mounted) setState(() => _syncMsg = 'Synced just now');
       ToastService.success('Synced', 'Fetched fresh data from the provider.');
     } on DioException catch (e) {
-      // The HTTP error itself is toasted centrally by the Dio interceptor.
       if (mounted) setState(() => _syncMsg = 'Sync failed (${e.response?.statusCode ?? 'network'})');
     } catch (e) {
       if (mounted) setState(() => _syncMsg = 'Sync failed');
@@ -126,7 +115,6 @@ class _AccountPageState extends State<AccountPage> {
     final initial = fullName.isNotEmpty ? fullName.characters.first.toUpperCase() : '?';
     final fallback = Text(initial,
         style: TextStyle(color: colors.mutedForeground, fontWeight: FontWeight.w600));
-    // Prefer the school provider's photo (may be relative), fall back to OIDC.
     final providerPfp = OidcConfig.resolveUrl(me?.profilePictureUrl);
     final avatarUrl = providerPfp ?? widget.pictureUrl;
 
@@ -140,7 +128,6 @@ class _AccountPageState extends State<AccountPage> {
       physics: const AlwaysScrollableScrollPhysics(),
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
       children: [
-        // Identity header
         Row(
           children: [
             (avatarUrl == null || avatarUrl.isEmpty)

@@ -70,8 +70,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         curve: Curves.easeOut,
       );
 
-  /// Server step: hosted continues immediately; self-hosted is validated and
-  /// probed (parsing the backend version) before continuing.
   Future<void> _confirmServer() async {
     if (_probing) return;
     if (_server == _Server.hosted) {
@@ -114,7 +112,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       _probing = false;
       _serverOk = 'Connected - Schuly v$version';
     });
-    // Briefly show the version, then continue to the mode choice.
     await Future<void>.delayed(const Duration(milliseconds: 900));
     if (mounted) _next();
   }
@@ -204,7 +201,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 ],
               ),
             ),
-            // Page indicator dots.
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -221,7 +217,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   ),
               ],
             ),
-            // One bottom button drives every page.
             Padding(
               padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
               child: SizedBox(
@@ -239,7 +234,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 }
 
-/// A single intro slide: a large badge, a title, and a short blurb.
 class _IntroPage extends StatelessWidget {
   final IconData? icon;
   final String? asset;
@@ -258,8 +252,6 @@ class _IntroPage extends StatelessWidget {
     final colors = context.theme.colors;
     final typography = context.theme.typography;
 
-    // Brand-mark pages (asset) get a solid primary disc with the white logo,
-    // mirroring the app icon; plain feature pages get a faint disc + tinted icon.
     final Widget badge = asset != null
         ? Container(
             width: 132,
@@ -311,8 +303,6 @@ class _IntroPage extends StatelessWidget {
   }
 }
 
-/// The server step: hosted Schuly Cloud (default) or a self-hosted backend URL.
-/// Pure UI - the parent owns the selection and the Next button validates it.
 class _ServerPage extends StatelessWidget {
   final _Server selected;
   final TextEditingController urlController;
@@ -413,8 +403,6 @@ class _ServerPage extends StatelessWidget {
   }
 }
 
-/// The decision page: account vs private, as a selectable toggle. Pure UI - the
-/// parent owns the selection and the Next button commits it.
 class _ModeChoicePage extends StatelessWidget {
   final _Mode selected;
   final ValueChanged<_Mode> onSelect;
@@ -474,8 +462,6 @@ class _ModeChoicePage extends StatelessWidget {
   }
 }
 
-/// A selectable card: centered content with a radio indicator in the corner;
-/// the selected one gets a primary border and a tinted background.
 class _ModeCard extends StatelessWidget {
   final IconData icon;
   final String title;

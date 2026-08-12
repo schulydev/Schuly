@@ -21,8 +21,6 @@ class TokenProxyClient {
     receiveTimeout: const Duration(seconds: 60),
   );
 
-  // --- Auth ---
-
   /// Headless credential login (private mode): POST email + password (+ TOTP) to
   /// the stateless `/login` and get back tokens + the rotated context_state.
   Future<PrivateRefreshResult> login({
@@ -44,7 +42,6 @@ class TokenProxyClient {
     return _parse(res.data ?? const {});
   }
 
-  /// Passwordless refresh from a stored context_state (JSON string).
   Future<PrivateRefreshResult> refresh({
     required String basePath,
     required String baseUrl,
@@ -79,8 +76,6 @@ class TokenProxyClient {
     );
   }
 
-  // --- Data ---
-
   Future<List<PrivateGrade>> grades(PrivateAccount a) =>
       _list('/grades', a, PrivateGrade.fromJson);
 
@@ -101,10 +96,6 @@ class TokenProxyClient {
     return res.data == null ? null : PrivateUserInfo.fromJson(res.data!);
   }
 
-  /// Fetches everything the private dashboard needs. If the access token has
-  /// expired (a 401 from any call), does one passwordless refresh from the
-  /// stored `context_state`, retries, and reports the rotated account back via
-  /// [TokenPrivateData.refreshedAccount] so the caller can persist it.
   Future<TokenPrivateData> fetchAll(PrivateAccount account) async {
     try {
       return await _fetchAll(account, null);
@@ -139,8 +130,6 @@ class TokenProxyClient {
   /// back to a full credential re-login from the vaulted email/password/seed -
   /// Schuly regenerates the OTP itself, so the user is never prompted.
   Future<PrivateAccount?> _refreshAccount(PrivateAccount a) async {
-    // Credential logins (ms-entrance) have no captured user-agent - it manages
-    // its own - so only context_state is required to replay.
     if (a.contextState != null) {
       final r = await refresh(
         basePath: a.statelessBasePath,
@@ -153,9 +142,6 @@ class TokenProxyClient {
     return _credentialRelogin(a);
   }
 
-  /// Silent re-login from the stored credentials + TOTP seed. Returns null when
-  /// the seed/credentials weren't stored (e.g. an older connection) or login
-  /// failed, leaving the caller to surface a reconnect prompt.
   Future<PrivateAccount?> _credentialRelogin(PrivateAccount a) async {
     final email = a.username;
     final password = a.password;
@@ -167,15 +153,12 @@ class TokenProxyClient {
       baseUrl: a.baseUrl,
       email: email,
       password: password,
-      // The backend computes the code from the seed; send only the base32.
       totpSecret: TotpService.secretOf(a.totpSecret),
     );
     if (!r.success || r.accessToken == null) return null;
     return _applied(a, r);
   }
 
-  /// Builds the rotated account from a refresh/login result, carrying the
-  /// vaulted credentials + seed forward so the next refresh can fall back too.
   PrivateAccount _applied(PrivateAccount a, PrivateRefreshResult r) =>
       PrivateAccount(
         systemKey: a.systemKey,
@@ -210,8 +193,6 @@ class TokenProxyClient {
       };
 }
 
-/// Everything the private dashboard pulls in one pass. [refreshedAccount] is
-/// non-null when the token was refreshed mid-fetch and should be persisted.
 class TokenPrivateData {
   final PrivateUserInfo? userInfo;
   final List<PrivateGrade> grades;

@@ -9,9 +9,6 @@ import '../../services/totp_service.dart';
 import '../../services/totp_vault.dart';
 import 'add_totp_screen.dart';
 
-/// One row's source: a parsed TOTP plus its display metadata. [id] is the vault
-/// entry id, or null for a pinned, non-deletable row (e.g. a linked school's
-/// seed surfaced from the private-mode store).
 class _Row {
   final String? id;
   final String title;
@@ -20,10 +17,6 @@ class _Row {
   const _Row({required this.id, required this.title, required this.config, this.subtitle});
 }
 
-/// In-app authenticator vault. Schuly acts as the TOTP client: it lists every
-/// saved secret, generates the current code on-device and refreshes each second,
-/// with a per-entry countdown and tap-to-copy. Add entries by scanning a QR code
-/// or typing the setup key. Provider-agnostic - any service's 2FA can live here.
 class AuthenticatorVaultScreen extends StatefulWidget {
   const AuthenticatorVaultScreen({super.key});
 
@@ -56,8 +49,6 @@ class _AuthenticatorVaultScreenState extends State<AuthenticatorVaultScreen> {
     final private = await PrivateAccountStore.instance.load();
     final rows = <_Row>[];
 
-    // Surface a linked private-mode school's seed as a pinned, non-deletable row
-    // so the old single-account authenticator keeps working through this screen.
     final privateConfig = TotpConfig.tryParse(private?.totpSecret);
     if (privateConfig != null) {
       rows.add(_Row(id: null, title: private!.displayName, subtitle: 'Linked school', config: privateConfig));
@@ -165,8 +156,6 @@ class _AuthenticatorVaultScreenState extends State<AuthenticatorVaultScreen> {
   }
 }
 
-/// A single live-updating code card: title/subtitle, the current code (tap to
-/// copy), and a countdown bar. Long-press to delete (deletable rows only).
 class _CodeCard extends StatelessWidget {
   final _Row row;
   final Future<void> Function(String? code) onCopy;
@@ -174,7 +163,6 @@ class _CodeCard extends StatelessWidget {
 
   const _CodeCard({required this.row, required this.onCopy, required this.onDelete});
 
-  /// `123456` → `123 456` for readability; leaves other lengths untouched.
   String _format(String code) {
     if (code.length != 6) return code;
     return '${code.substring(0, 3)} ${code.substring(3)}';

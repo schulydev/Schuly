@@ -7,10 +7,6 @@ import '../domain/my_school.dart';
 import 'api_client.dart';
 import 'school_systems_service.dart';
 
-/// App-wide source of truth for "which connected school is the user currently
-/// looking at". Backed by `GET /api/schools/my-schools`. Listens-friendly via
-/// [ChangeNotifier] so the avatar, the side sheet, and the dashboard rebuild
-/// from one place.
 class ActiveAccountService extends ChangeNotifier {
   ActiveAccountService._();
   static final ActiveAccountService instance = ActiveAccountService._();
@@ -56,7 +52,6 @@ class ActiveAccountService extends ChangeNotifier {
                   pluginAccountId: info?.accountId);
             }).toList(growable: false);
 
-      // Keep the persisted active id only if it still resolves to a school.
       final prefs = await SharedPreferences.getInstance();
       final persisted = prefs.getString(_activeIdKey);
       if (persisted != null && _schools.any((s) => s.id == persisted)) {
@@ -77,11 +72,6 @@ class ActiveAccountService extends ChangeNotifier {
     }
   }
 
-  /// Maps schoolId → (provider, plugin account id, plugin base path) by
-  /// cross-referencing each catalog system's plugin accounts (which expose
-  /// `schoolUserId` + `id`) against the user's SchoolUsers. The set of plugins
-  /// and their routes comes entirely from the backend catalog - no provider is
-  /// hardcoded. Best-effort: returns an empty map on any failure.
   Future<Map<String, ({String provider, String accountId, String? pluginBasePath})>>
       _detectPluginAccounts() async {
     try {
@@ -137,14 +127,11 @@ class ActiveAccountService extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Disconnects a connected school via its plugin's DELETE endpoint (built from
-  /// the catalog's plugin base path), then reloads the account list.
   Future<void> removeSchool(MySchool school) async {
     final accountId = school.pluginAccountId;
     final base = school.pluginBasePath;
     if (accountId == null || base == null || base.isEmpty) return;
     await ApiClient.instance.dio.delete<dynamic>('$base/accounts/$accountId');
-    // If we removed the active school, drop the selection so refresh picks a new one.
     if (_activeId == school.id) {
       _activeId = null;
       final prefs = await SharedPreferences.getInstance();

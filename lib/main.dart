@@ -36,16 +36,12 @@ class SchulyApp extends StatelessWidget {
           theme: FThemes.zinc.light.toApproximateMaterialTheme(),
           darkTheme: FThemes.zinc.dark.toApproximateMaterialTheme(),
           builder: (ctx, child) {
-            // Resolve the active Forui theme from the mode, following the OS
-            // brightness when set to system.
             final mode = ThemeService.instance.mode;
             final platformDark =
                 MediaQuery.platformBrightnessOf(ctx) == Brightness.dark;
             final isDark = mode == ThemeMode.dark ||
                 (mode == ThemeMode.system && platformDark);
             final theme = isDark ? FThemes.zinc.dark : FThemes.zinc.light;
-            // App-wide toaster, anchored at the top so all toasts drop down
-            // from the top edge instead of rising from the bottom.
             return FAnimatedTheme(
               data: theme,
               child: FToaster(

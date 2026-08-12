@@ -36,7 +36,6 @@ class AuthService {
     aOptions: AndroidOptions(encryptedSharedPreferences: true),
   );
 
-  /// The current access token, held in memory only, with its expiry.
   static String? _accessToken;
   static DateTime? _accessTokenExpiry;
 
@@ -46,10 +45,8 @@ class AuthService {
   static Future<void> _ensureMigrated() => _migration ??= _migrate();
 
   static Future<void> _migrate() async {
-    // Drop any access token an old build persisted - it's memory-only now.
     await _storage.delete(key: _kLegacyAccessTokenKey);
 
-    // Already in secure storage → nothing to carry over.
     if (await _storage.containsKey(key: _kRefreshTokenKey)) return;
 
     final prefs = await SharedPreferences.getInstance();
@@ -65,8 +62,6 @@ class AuthService {
     await prefs.remove(_kRefreshTokenKey);
   }
 
-  /// Bumped whenever the session changes (sign-out / expiry). The auth gate
-  /// listens to re-evaluate whether to show the sign-in screen.
   static final ValueNotifier<int> sessionEpoch = ValueNotifier<int>(0);
 
   static AuthorizationServiceConfiguration _serviceConfig(OidcSettings cfg) => AuthorizationServiceConfiguration(authorizationEndpoint: cfg.authorizationEndpoint, tokenEndpoint: cfg.tokenEndpoint, endSessionEndpoint: cfg.endSessionEndpoint);
@@ -96,8 +91,6 @@ class AuthService {
     final tokens = AuthTokens(accessToken: r.accessToken!, idToken: r.idToken, refreshToken: r.refreshToken, accessTokenExpiry: r.accessTokenExpirationDateTime);
     _accessToken = tokens.accessToken;
     _accessTokenExpiry = tokens.accessTokenExpiry;
-    // Keycloak rotates refresh tokens by default; persist the new one every time
-    // or the next refresh fails. Fall back to the existing one if omitted.
     if (tokens.refreshToken != null) {
       await _storage.write(key: _kRefreshTokenKey, value: tokens.refreshToken!);
     }
@@ -113,7 +106,6 @@ class AuthService {
   static Future<String?> getAccessToken() async {
     final token = _accessToken;
     final expiry = _accessTokenExpiry;
-    // Treat tokens within 30s of expiry as stale to avoid using one mid-flight.
     if (token != null && expiry != null && expiry.isAfter(DateTime.now().add(const Duration(seconds: 30)))) {
       return token;
     }
@@ -125,14 +117,8 @@ class AuthService {
     return _storage.read(key: _kRefreshTokenKey);
   }
 
-  /// In-flight refresh, shared so concurrent callers trigger a single token
-  /// exchange instead of a stampede.
   static Future<String?>? _refreshing;
 
-  /// Exchanges the stored refresh token for a fresh access token and persists
-  /// the rotated result. Returns the new access token, or null if there's no
-  /// refresh token or the exchange failed - in which case the caller should
-  /// treat the session as expired.
   static Future<String?> refreshAccessToken() => _refreshing ??= _refresh().whenComplete(() => _refreshing = null);
 
   static Future<String?> _refresh() async {
@@ -157,10 +143,6 @@ class AuthService {
     }
   }
 
-  /// Decodes the persisted OIDC ID token's payload. Returns its claims
-  /// (`name`, `email`, `picture`, …) or null if there's no token / it's
-  /// malformed. Pure local decode - no signature verification, which is fine
-  /// since the token was already validated at exchange time.
   static Future<Map<String, dynamic>?> getIdTokenClaims() async {
     await _ensureMigrated();
     final idToken = await _storage.read(key: _kIdTokenKey);
@@ -175,10 +157,6 @@ class AuthService {
     }
   }
 
-  /// Full logout: end the Keycloak SSO session at the `end_session_endpoint`
-  /// (deleting local tokens alone leaves the browser session alive, so the next
-  /// login would silently succeed), then wipe local state. The end-session call
-  /// is best-effort - local state is cleared regardless.
   static Future<void> signOut() async {
     final idToken = await _storage.read(key: _kIdTokenKey);
     try {
@@ -194,14 +172,12 @@ class AuthService {
         );
       }
     } catch (_) {
-      // Ignore - the user still gets signed out locally below.
     }
     _accessToken = null;
     _accessTokenExpiry = null;
     await _storage.delete(key: _kRefreshTokenKey);
     await _storage.delete(key: _kIdTokenKey);
     await _storage.delete(key: _kLegacyAccessTokenKey);
-    // Clear any tokens an older build may have left in SharedPreferences too.
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_kLegacyAccessTokenKey);
     await prefs.remove(_kIdTokenKey);
