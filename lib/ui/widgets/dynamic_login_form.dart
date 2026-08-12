@@ -45,33 +45,60 @@ class DynamicLoginForm extends StatelessWidget {
   static bool _isTotp(SchoolSystemLoginField f) =>
       f.type == 'totp' || f.key.toLowerCase() == 'totp';
 
+  /// What the platform needs to tell these boxes apart. The form is built from
+  /// the catalog, so this reads the descriptor rather than naming any school
+  /// system; without it a password manager sees a row of anonymous text boxes
+  /// and offers nothing.
+  static List<String> _autofillHints(SchoolSystemLoginField f) {
+    final key = f.key.toLowerCase();
+    if (f.type == 'password' || key.contains('password')) return const [AutofillHints.password];
+    if (f.type == 'url' || key.contains('url')) return const [AutofillHints.url];
+    if (f.type == 'email' || key.contains('email') || key.contains('mail')) {
+      return const [AutofillHints.username, AutofillHints.email];
+    }
+    if (key.contains('user') || key.contains('login')) return const [AutofillHints.username];
+    return const [];
+  }
+
+  static TextInputType _keyboard(SchoolSystemLoginField f) {
+    final key = f.key.toLowerCase();
+    if (f.type == 'url' || key.contains('url')) return TextInputType.url;
+    if (f.type == 'email' || key.contains('email') || key.contains('mail')) return TextInputType.emailAddress;
+    return TextInputType.text;
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      mainAxisSize: MainAxisSize.min,
-      spacing: 16,
-      children: [
-        for (final field in controller.fields)
-          if (_isTotp(field))
-            TotpFieldPicker(
-              controller: controller.controllerFor(field.key),
-              field: field,
-            )
-          else
-            FTextField(
-              control: FTextFieldControl.managed(
+    final fields = controller.fields;
+    // One group, so the platform treats the boxes as a single credential rather
+    // than unrelated inputs.
+    return AutofillGroup(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisSize: MainAxisSize.min,
+        spacing: 16,
+        children: [
+          for (final (index, field) in fields.indexed)
+            if (_isTotp(field))
+              TotpFieldPicker(
                 controller: controller.controllerFor(field.key),
+                field: field,
+              )
+            else
+              FTextField(
+                control: FTextFieldControl.managed(
+                  controller: controller.controllerFor(field.key),
+                ),
+                label: Text(field.label),
+                hint: field.placeholder,
+                obscureText: field.type == 'password',
+                keyboardType: _keyboard(field),
+                textInputAction: index == fields.length - 1 ? TextInputAction.done : TextInputAction.next,
+                autofillHints: _autofillHints(field),
+                autocorrect: false,
               ),
-              label: Text(field.label),
-              hint: field.placeholder,
-              obscureText: field.type == 'password',
-              keyboardType: field.type == 'url'
-                  ? TextInputType.url
-                  : TextInputType.text,
-              autocorrect: false,
-            ),
-      ],
+        ],
+      ),
     );
   }
 }
