@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:forui/forui.dart';
 
 import '../../domain/school_system.dart';
@@ -61,6 +62,9 @@ class _UnifiedConnectScreenState extends State<UnifiedConnectScreen> {
         options: ApiClient.handled(),
       );
       final accountId = res.data?['accountId']?.toString();
+      // Only once the credentials are known good, so a manager is never asked
+      // to save something that did not work.
+      TextInput.finishAutofillContext();
       if (mounted) Navigator.of(context).pop(accountId);
     } catch (e) {
       setState(() => _error = ApiError.describe(e));

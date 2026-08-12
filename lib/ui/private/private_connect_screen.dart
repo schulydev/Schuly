@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:forui/forui.dart';
 
 import '../../domain/school_system.dart';
@@ -102,6 +103,7 @@ class _PrivateConnectScreenState extends State<PrivateConnectScreen> {
       password: password,
       totpSecret: totpSecret,
     ));
+    TextInput.finishAutofillContext();
     if (mounted) Navigator.of(context).pop(true);
   }
 
@@ -118,6 +120,7 @@ class _PrivateConnectScreenState extends State<PrivateConnectScreen> {
     );
     await ScrapeProxyClient.instance.data(account);
     await PrivateAccountStore.instance.save(account);
+    TextInput.finishAutofillContext();
     if (mounted) Navigator.of(context).pop(true);
   }
 
