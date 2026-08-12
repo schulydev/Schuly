@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:forui/forui.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../services/private_account_store.dart';
 import '../../services/totp_service.dart';
@@ -72,6 +73,13 @@ class _AuthenticatorVaultScreenState extends State<AuthenticatorVaultScreen> {
       MaterialPageRoute(builder: (_) => const AddTotpScreen()),
     );
     if (added != null) await _load();
+  }
+
+  Future<void> _openGuide() async {
+    await launchUrl(
+      Uri.parse('https://docs.schuly.dev/getting-started/authenticator'),
+      mode: LaunchMode.externalApplication,
+    );
   }
 
   Future<void> _copy(String? code) async {
@@ -149,6 +157,13 @@ class _AuthenticatorVaultScreenState extends State<AuthenticatorVaultScreen> {
             ),
             const SizedBox(height: 24),
             FButton(prefix: const Icon(FIcons.plus), onPress: _add, child: const Text('Add authenticator')),
+            const SizedBox(height: 12),
+            FButton(
+              style: FButtonStyle.ghost(),
+              prefix: const Icon(FIcons.bookOpen),
+              onPress: _openGuide,
+              child: const Text('How do I set this up?'),
+            ),
           ],
         ),
       ),
