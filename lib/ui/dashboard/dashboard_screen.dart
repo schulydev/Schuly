@@ -15,8 +15,6 @@ import '../timetable/timetable_page.dart';
 import 'widgets/accounts_sidebar.dart';
 import 'widgets/add_school_modal.dart';
 
-/// Post-sign-in shell: a 5-tab bottom-navigation app. The top bar carries the
-/// profile avatar (opens the account switcher) and the active school name.
 class DashboardScreen extends StatefulWidget {
   final VoidCallback onSignOut;
   const DashboardScreen({super.key, required this.onSignOut});
@@ -50,15 +48,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
     final id = ActiveAccountService.instance.active?.id;
     if (id != _lastSchoolId) {
       _lastSchoolId = id;
-      // Drop the previous school's cached data so we don't show stale content
-      // during the switch, then load the new school.
       SchoolDataService.instance.clear();
       SchoolDataService.instance.refresh();
     }
   }
 
   Future<void> _bootstrap() async {
-    // Private mode: no Pocket ID / school switcher - just load proxied data.
     if (AppModeService.instance.isPrivate) {
       final account = await PrivateAccountStore.instance.load();
       if (mounted) {
@@ -165,7 +160,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ),
           footer: SafeArea(
             top: false,
-            // Keep the nav labels clear of the Android gesture/nav bar.
             child: FBottomNavigationBar(
               index: _index,
               onChange: (i) {
@@ -244,7 +238,6 @@ class _TopBar extends StatelessWidget {
               ],
             ),
           ),
-          // Default divider padding is vertical: 20 (huge gap); tighten it.
           FDivider(style: (s) => s.copyWith(padding: EdgeInsets.zero)),
         ],
       ),

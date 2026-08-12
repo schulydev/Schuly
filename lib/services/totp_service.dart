@@ -1,9 +1,6 @@
 import 'package:otp/otp.dart';
 
-/// A parsed TOTP descriptor. Built from either a bare base32 secret or a full
-/// `otpauth://totp/...` URI (as encoded in an authenticator QR code).
 class TotpConfig {
-  /// Normalized base32 secret - no spaces/dashes, upper-case.
   final String secret;
   final int digits;
   final int period; // seconds
@@ -20,8 +17,6 @@ class TotpConfig {
     this.account,
   });
 
-  /// Parses [raw], which may be a bare base32 secret or an `otpauth://` URI.
-  /// Returns null when no usable secret can be extracted.
   static TotpConfig? tryParse(String? raw) {
     final input = raw?.trim() ?? '';
     if (input.isEmpty) return null;
@@ -32,7 +27,6 @@ class TotpConfig {
       final secret = normalizeSecret(uri.queryParameters['secret'] ?? '');
       if (secret.isEmpty) return null;
 
-      // Label is `Issuer:Account` (issuer optional); `issuer` query param wins.
       String? issuer = uri.queryParameters['issuer'];
       String? account =
           uri.pathSegments.isNotEmpty ? uri.pathSegments.last : null;
@@ -56,8 +50,6 @@ class TotpConfig {
     return secret.isEmpty ? null : TotpConfig(secret: secret);
   }
 
-  /// Strips spaces/dashes and upper-cases - accepts the way authenticators
-  /// display seeds (grouped, lower-case) as well as the raw form.
   static String normalizeSecret(String s) =>
       s.replaceAll(RegExp(r'[\s-]'), '').toUpperCase();
 
@@ -73,7 +65,6 @@ class TotpConfig {
   }
 }
 
-/// A generated code together with how long it stays valid.
 class TotpCode {
   final String code;
   final int secondsRemaining;
@@ -84,18 +75,12 @@ class TotpCode {
     required this.period,
   });
 
-  /// 1.0 right after a rollover → 0.0 just before the next one.
   double get fraction => period <= 0 ? 0 : secondsRemaining / period;
 }
 
-/// On-device TOTP (RFC 6238). Lets Schuly act as the authenticator: it both
-/// powers the in-app code display and lets private-mode re-authenticate from a
-/// vaulted seed without the user re-typing a 6-digit code.
 class TotpService {
   TotpService._();
 
-  /// Current code for [config] at [at] (defaults to now), or null if the secret
-  /// can't be used (e.g. invalid base32).
   static TotpCode? generate(TotpConfig config, {DateTime? at}) {
     final now = at ?? DateTime.now();
     final period = config.period <= 0 ? 30 : config.period;
@@ -116,12 +101,9 @@ class TotpService {
     }
   }
 
-  /// The base32 secret extracted from a stored seed/URI (what the backend
-  /// `/login` expects), or null when none can be parsed.
   static String? secretOf(String? secretOrUri) =>
       TotpConfig.tryParse(secretOrUri)?.secret;
 
-  /// Convenience: current code string for a stored seed/URI, or null.
   static String? codeFor(String? secretOrUri, {DateTime? at}) {
     final config = TotpConfig.tryParse(secretOrUri);
     return config == null ? null : generate(config, at: at)?.code;

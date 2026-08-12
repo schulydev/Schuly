@@ -63,7 +63,6 @@ void main() {
     });
 
     test('reports the seconds left in the current 30s window', () {
-      // epoch second 59 → 59 % 30 == 29 → 1 second until rollover.
       final at = DateTime.fromMillisecondsSinceEpoch(59000);
       final result = TotpService.generate(config, at: at)!;
       expect(result.secondsRemaining, 1);

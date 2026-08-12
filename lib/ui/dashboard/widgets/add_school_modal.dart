@@ -6,11 +6,6 @@ import '../../../domain/school_system.dart';
 import '../../../services/school_systems_service.dart';
 import '../../account/unified_connect_screen.dart';
 
-/// Full add-school flow: fetch the backend's school-system catalog, show the
-/// picker, then run the chosen system's connect screen. Returns the new account
-/// id, or null if the user cancelled at any step. [navigator] is the navigator
-/// the connect screen is pushed onto - pass the dashboard's, not a sheet/dialog
-/// navigator that may be torn down mid-flow.
 Future<String?> runAddSchoolFlow(
   BuildContext context,
   NavigatorState navigator,
@@ -22,16 +17,11 @@ Future<String?> runAddSchoolFlow(
   if (systemKey == null) return null;
 
   final system = systems.firstWhere((s) => s.key == systemKey);
-  // Every system authenticates headlessly through the CRM's unified login
-  // (POST /api/auth/login → the backend routes to the owning plugin). No WebView.
   return navigator.push<String>(
     MaterialPageRoute(builder: (_) => UnifiedConnectScreen(system: system)),
   );
 }
 
-/// Fetches the catalog, showing an error dialog and returning null on failure
-/// (or when the backend advertises no systems). The app keeps no offline
-/// fallback - the backend is the sole source of truth.
 Future<List<SchoolSystem>?> fetchSystemsOrShowError(BuildContext context) async {
   List<SchoolSystem> systems;
   try {
@@ -68,8 +58,6 @@ Future<void> _showCatalogError(BuildContext context, String message) =>
       ),
     );
 
-/// Shows the school-system picker for [systems]. Resolves to the chosen
-/// [SchoolSystem.key] or `null` if the user dismissed.
 Future<String?> showAddSchoolModal(
   BuildContext context,
   List<SchoolSystem> systems,
@@ -114,8 +102,6 @@ class _SystemCard extends StatelessWidget {
     final logoUrl = OidcConfig.resolveUrl(system.logoUrl);
     final fallbackIcon =
         Icon(Icons.school, size: 36, color: colors.mutedForeground);
-    // Prefer the bundled per-system logo (assets/schoolsystems/<key>.webp);
-    // fall back to a catalog logoUrl, then a generic icon.
     final logo = Image.asset(
       'assets/schoolsystems/${system.key}.webp',
       width: 36,

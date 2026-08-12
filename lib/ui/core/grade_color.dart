@@ -1,8 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:forui/forui.dart';
 
-/// Swiss grade scale colouring: 6 best, 1 worst, 4 is the pass mark.
-/// ≥5 green, 4–<5 amber, <4 red.
 Color gradeColor(BuildContext context, num grade) {
   final colors = context.theme.colors;
   if (grade >= 5) return const Color(0xFF22C55E); // green
@@ -10,8 +8,6 @@ Color gradeColor(BuildContext context, num grade) {
   return colors.destructive;
 }
 
-/// A score is only a real grade when it's on the 1–6 scale. 0/null means the
-/// exam exists but isn't graded yet - excluded from averages and shown as "-".
 bool isGraded(num? score) => score != null && score > 0;
 
 String formatGrade(num grade) {
@@ -21,7 +17,6 @@ String formatGrade(num grade) {
       : (s.endsWith('0') ? grade.toStringAsFixed(1) : s);
 }
 
-/// Coloured grade chip. Ungraded (≤0) scores render as a muted "-".
 class GradePill extends StatelessWidget {
   final num? score;
   const GradePill(this.score, {super.key});

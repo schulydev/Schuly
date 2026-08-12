@@ -4,8 +4,6 @@ import 'package:schuly_api/schuly_api.dart';
 
 import '../../services/school_data_service.dart';
 
-/// Timetable: a horizontal day strip (FLineCalendar) and the selected day's
-/// agenda entries, colour-coded by type.
 class TimetablePage extends StatefulWidget {
   const TimetablePage({super.key});
 
@@ -30,9 +28,6 @@ class _TimetablePageState extends State<TimetablePage> {
     super.dispose();
   }
 
-  /// Once agenda data is available (it loads after this page mounts), anchor
-  /// the calendar on the nearest day with entries - unless the user already
-  /// picked a day.
   void _autoAnchor() {
     if (_userPicked || _selected != null) return;
     final now = DateTime.now();
@@ -72,8 +67,6 @@ class _TimetablePageState extends State<TimetablePage> {
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 8),
           child: FLineCalendar(
-            // Remount once when the anchor is first set, so initialScroll
-            // jumps the strip to the day with data.
             key: ValueKey(_selected != null),
             start: DateTime(now.year - 1),
             end: DateTime(now.year + 2),

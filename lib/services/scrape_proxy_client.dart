@@ -4,7 +4,6 @@ import '../domain/private_data.dart';
 import 'backend_dio.dart';
 import 'private_account_store.dart';
 
-/// Bundle returned by the stateless scrape proxy in one pass.
 class ScrapeData {
   final PrivateUserInfo? userInfo;
   final List<PrivateGrade> grades;

@@ -28,7 +28,6 @@ class OidcSettings {
     this.endSessionEndpoint,
   });
 
-  /// The OIDC scopes as a list, split from the space-delimited [scope] string.
   List<String> get scopes => scope.split(' ').where((s) => s.isNotEmpty).toList();
 
   /// Deep-link scheme the provider redirects back to (e.g. `schulytest`),
@@ -42,17 +41,11 @@ class OidcSettings {
 }
 
 class OidcConfig {
-  // Backend base URL, resolved at runtime from [BackendConfig] (hosted default
-  // or a self-hosted override chosen in onboarding). The build-time default
-  // lives in [BackendConfig.hostedUrl].
   static String get backendBaseUrl => BackendConfig.url;
 
   static OidcSettings? _settings;
   static Future<OidcSettings>? _loading;
 
-  /// Loads (once) and caches the OIDC settings from the backend. Safe to call
-  /// from multiple places concurrently - the in-flight load is shared, and a
-  /// failed load is not cached so the next call retries.
   static Future<OidcSettings> settings() {
     final cached = _settings;
     if (cached != null) return Future<OidcSettings>.value(cached);
@@ -66,8 +59,6 @@ class OidcConfig {
     });
   }
 
-  /// Clears the cached settings so the next [settings] call re-fetches them -
-  /// used after the backend URL changes at runtime (the OIDC authority differs).
   static void reset() {
     _settings = null;
     _loading = null;
@@ -98,9 +89,6 @@ class OidcConfig {
     return jsonDecode(r.body) as Map<String, dynamic>;
   }
 
-  /// Resolves a backend-supplied URL: absolute (http…) is used as-is, a
-  /// root-relative path (/api/avatars/…) is prefixed with [backendBaseUrl],
-  /// null/empty returns null. Signed capability URLs need no auth header.
   static String? resolveUrl(String? url) {
     if (url == null || url.isEmpty) return null;
     if (url.startsWith('http')) return url;

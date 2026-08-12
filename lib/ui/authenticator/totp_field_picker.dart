@@ -5,12 +5,6 @@ import '../../domain/school_system.dart';
 import '../../services/totp_vault.dart';
 import 'add_totp_screen.dart';
 
-/// Login-form control for a `totp` field. Instead of typing a raw secret, the
-/// user picks a saved authenticator from the [TotpVault] or adds a new one
-/// (scanning a QR or entering a key) - the same vault the in-app authenticator
-/// uses. The chosen entry's normalized base32 secret is written into
-/// [controller] so the connect flow submits it unchanged. Provider-agnostic:
-/// rendered for any system that advertises a `totp` field.
 class TotpFieldPicker extends StatefulWidget {
   final TextEditingController controller;
   final SchoolSystemLoginField field;
@@ -36,8 +30,6 @@ class _TotpFieldPickerState extends State<TotpFieldPicker> {
     if (!mounted) return;
     setState(() {
       _entries = entries;
-      // Re-resolve the current selection against the (possibly changed) vault by
-      // matching the secret already in the controller.
       final current = widget.controller.text.trim();
       _selected = current.isEmpty ? null : entries.where((e) => e.secret == current).firstOrNull;
     });
@@ -122,7 +114,6 @@ class _TotpFieldPickerState extends State<TotpFieldPicker> {
 
 enum _PickerKind { none, select, add }
 
-/// Result of the picker menu - which action the user chose.
 class _PickerAction {
   final _PickerKind kind;
   final TotpEntry? entry;

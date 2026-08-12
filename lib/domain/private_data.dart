@@ -1,6 +1,3 @@
-// Typed responses from the backend's stateless plugin proxies
-// (`/api/plugins/<plugin>/stateless/*`), used by private mode. Field names
-// mirror the plugins' flat DTOs (camelCase JSON).
 
 class PrivateRefreshResult {
   final bool success;
@@ -11,7 +8,6 @@ class PrivateRefreshResult {
   final String? webSessionUserId;
   final String? webSessionTransId;
 
-  /// Rotated context_state as a JSON string (re-encoded from the returned object).
   final String? contextState;
 
   const PrivateRefreshResult({

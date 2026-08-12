@@ -11,9 +11,6 @@ import '../../dashboard/dashboard_screen.dart';
 import '../../onboarding/onboarding_screen.dart';
 import '../../private/private_connect_flow.dart';
 
-/// Tier-1 gate. In **account** mode the user signs in with Pocket ID; in
-/// **private** mode they connect a school directly (no account) and the creds
-/// live only on-device. Once past the gate, [DashboardScreen] owns the rest.
 class RootScreen extends StatefulWidget {
   const RootScreen({super.key});
 
@@ -30,7 +27,6 @@ class _RootScreenState extends State<RootScreen> {
   @override
   void initState() {
     super.initState();
-    // React to session changes (incl. a failed silent refresh) and mode switches.
     AuthService.sessionEpoch.addListener(_refresh);
     AppModeService.instance.addListener(_refresh);
     OnboardingService.seen().then((seen) {
@@ -79,14 +75,10 @@ class _RootScreenState extends State<RootScreen> {
     if (ok) await _refresh();
   }
 
-  // Onboarding mode choice: mark it seen, select the mode, then run the
-  // matching gate flow. If the user backs out of sign-in/connect they land on
-  // the normal gate (onboarding won't show again).
   Future<void> _onboardWithAccount() async {
     await OnboardingService.markSeen();
     if (mounted) setState(() => _onboarded = true);
     await AppModeService.instance.setMode(AppMode.account);
-    // New users coming through onboarding start on the registration screen.
     await _signIn(register: true);
   }
 
@@ -119,7 +111,6 @@ class _RootScreenState extends State<RootScreen> {
     if (ready) {
       return DashboardScreen(onSignOut: _signOut);
     }
-    // First run: explain the app and let the user pick a mode.
     if (!_onboarded) {
       return OnboardingScreen(
         onChooseAccount: _onboardWithAccount,

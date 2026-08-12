@@ -9,12 +9,6 @@ import '../../services/token_proxy_client.dart';
 import '../../services/totp_service.dart';
 import '../widgets/dynamic_login_form.dart';
 
-/// Generic private-mode connect screen. Renders the chosen [system]'s
-/// backend-described `loginFields` and connects headlessly - no WebView. The
-/// integration shape comes from the catalog `privateAuthStrategy`: `token`
-/// systems log in via the stateless credential `/login` (mints a token +
-/// context_state); `scrape` systems replay username/password per fetch.
-/// Everything is stored on-device only. Pops `true` on success.
 class PrivateConnectScreen extends StatefulWidget {
   final SchoolSystem system;
   const PrivateConnectScreen({required this.system, super.key});
@@ -67,8 +61,6 @@ class _PrivateConnectScreenState extends State<PrivateConnectScreen> {
         return;
       }
 
-      // `token` systems mint a token via headless credential login; `scrape`
-      // systems replay credentials on each fetch.
       if (_system.privateAuthStrategy == 'token') {
         await _connectToken(baseUrl, name, basePath);
       } else {
@@ -88,8 +80,6 @@ class _PrivateConnectScreenState extends State<PrivateConnectScreen> {
       String baseUrl, String name, String basePath) async {
     final email = _form.value('email');
     final password = _form.value('password');
-    // Accept a typed base32 secret or a scanned otpauth:// URI; normalize to the
-    // base32 the backend expects, and stash it for on-device generation.
     final totpSecret = TotpService.secretOf(_form.value('totp'));
     final res = await TokenProxyClient.instance.login(
       basePath: basePath,
@@ -102,8 +92,6 @@ class _PrivateConnectScreenState extends State<PrivateConnectScreen> {
       setState(() => _error = res.message ?? 'Login failed');
       return;
     }
-    // Persist credentials + seed alongside the token so Schuly can silently
-    // re-login and act as the authenticator. Kept in the device keystore only.
     await PrivateAccountStore.instance.save(PrivateAccount(
       systemKey: _system.key,
       loginMethod: _system.loginMethod,
@@ -131,7 +119,6 @@ class _PrivateConnectScreenState extends State<PrivateConnectScreen> {
       username: _form.value('username'),
       password: _form.value('password'),
     );
-    // Validate the credentials with one fetch before persisting.
     await ScrapeProxyClient.instance.data(account);
     await PrivateAccountStore.instance.save(account);
     if (mounted) Navigator.of(context).pop(true);

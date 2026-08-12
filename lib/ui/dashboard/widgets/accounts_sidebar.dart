@@ -8,17 +8,7 @@ import '../../authenticator/authenticator_vault_screen.dart';
 import '../../settings/settings_screen.dart';
 import 'add_school_modal.dart';
 
-/// Teams-style left-edge account switcher. Top shows the signed-in identity
-/// (profile picture + name + email), followed by the list of connected school
-/// accounts with a checkmark on the active one, then "Add school account" and
-/// "Sign out".
-///
-/// The sheet owns the add-account flow: it shows the system picker, pushes the
-/// connect screen on the *parent* navigator (so it survives sheet dismissal),
-/// and on success refreshes the accounts list and selects the new account.
 class AccountsSidebar extends StatelessWidget {
-  /// Parent navigator - needed for pushing the connect screen, since this
-  /// widget is mounted inside a modal sheet route.
   final NavigatorState parentNavigator;
   final VoidCallback? onSignOut;
   final String? userName;
@@ -64,8 +54,6 @@ class AccountsSidebar extends StatelessWidget {
     final before = svc.schools.map((s) => s.id).toSet();
     final connected = await runAddSchoolFlow(context, parentNavigator);
     if (connected == null) return;
-    // The connect flow returns a plugin account id, not a school id; find
-    // the school that newly appeared in my-schools and make it active.
     await svc.refresh();
     final added = svc.schools.where((s) => !before.contains(s.id));
     if (added.isNotEmpty) await svc.setActive(added.first.id);
@@ -78,8 +66,6 @@ class AccountsSidebar extends StatelessWidget {
     final typography = context.theme.typography;
 
     return DecoratedBox(
-      // Opaque surface + trailing border so the dashboard doesn't bleed
-      // through the sheet. showFSheet does not supply a background itself.
       decoration: BoxDecoration(
         color: colors.background,
         border: Border(right: BorderSide(color: colors.border)),
@@ -91,9 +77,6 @@ class AccountsSidebar extends StatelessWidget {
           final active = svc.active;
           final isPrivate = AppModeService.instance.isPrivate;
 
-          // showFSheet strips MediaQuery.padding, so SafeArea is a no-op here.
-          // viewPadding survives, so pad the content with it manually - keeps
-          // the background full-bleed while clearing the status bar / nav bar.
           final viewPadding = MediaQuery.viewPaddingOf(context);
           return Padding(
             padding: EdgeInsets.only(
@@ -216,9 +199,6 @@ class AccountsSidebar extends StatelessWidget {
   }
 }
 
-/// Rounded-square avatar for a school account, à la Teams' org tiles. Shows the
-/// school's backend-supplied logo on a muted surface, falling back to a generic
-/// icon - no per-provider asset is bundled in the app.
 class _SchoolAvatar extends StatelessWidget {
   static const double size = 40;
   final String? logoUrl;
@@ -295,7 +275,6 @@ class _IdentityHeader extends StatelessWidget {
   }
 }
 
-/// Convenience wrapper that opens the sidebar as a left-side modal sheet.
 Future<void> openAccountsSidebar(
   BuildContext context, {
   VoidCallback? onSignOut,
