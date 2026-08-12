@@ -1,4 +1,4 @@
-# API client (`lib/api/`)
+# API client
 
 The Dart API client at `lib/api/` is **generated**, not hand-written. It is produced
 by [openapi-generator](https://openapi-generator.tech) (`dart-dio` generator) from

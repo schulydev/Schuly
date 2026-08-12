@@ -1,4 +1,4 @@
-# App modes: Account vs Private (secure)
+# App modes
 
 Schuly runs in one of two modes, chosen at the gate. Both read the same school
 systems from the same backend catalog; the difference is **who signs the user in**
