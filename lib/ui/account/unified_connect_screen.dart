@@ -1,9 +1,9 @@
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 
 import '../../domain/school_system.dart';
 import '../../services/api_client.dart';
+import '../../services/api_error.dart';
 import '../widgets/dynamic_login_form.dart';
 
 class UnifiedConnectScreen extends StatefulWidget {
@@ -58,14 +58,12 @@ class _UnifiedConnectScreenState extends State<UnifiedConnectScreen> {
           'fields': fields,
           'displayName': name.isEmpty ? _system.displayName : name,
         },
+        options: ApiClient.handled(),
       );
       final accountId = res.data?['accountId']?.toString();
       if (mounted) Navigator.of(context).pop(accountId);
-    } on DioException catch (e) {
-      setState(() => _error =
-          'HTTP ${e.response?.statusCode ?? '?'}: ${e.response?.data}');
     } catch (e) {
-      setState(() => _error = '$e');
+      setState(() => _error = ApiError.describe(e));
     } finally {
       if (mounted) setState(() => _busy = false);
     }

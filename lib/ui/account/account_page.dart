@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 import 'package:schuly_api/schuly_api.dart';
@@ -7,6 +6,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../config/oidc_config.dart';
 import '../../services/active_account_service.dart';
 import '../../services/api_client.dart';
+import '../../services/api_error.dart';
 import '../../services/school_data_service.dart';
 import '../../services/toast_service.dart';
 import '../classes/class_detail_screen.dart';
@@ -86,15 +86,18 @@ class _AccountPageState extends State<AccountPage> {
       _syncMsg = null;
     });
     try {
-      await ApiClient.instance.dio.post<dynamic>('$base/accounts/$accountId/sync');
+      await ApiClient.instance.dio.post<dynamic>(
+        '$base/accounts/$accountId/sync',
+        options: ApiClient.handled(),
+      );
       await SchoolDataService.instance.refresh();
       await _loadSyncStatus();
       if (mounted) setState(() => _syncMsg = 'Synced just now');
       ToastService.success('Synced', 'Fetched fresh data from the provider.');
-    } on DioException catch (e) {
-      if (mounted) setState(() => _syncMsg = 'Sync failed (${e.response?.statusCode ?? 'network'})');
     } catch (e) {
-      if (mounted) setState(() => _syncMsg = 'Sync failed');
+      // One path for every failure: the reason on the row, and a toast because
+      // the user may have scrolled away from it.
+      if (mounted) setState(() => _syncMsg = ApiError.describe(e));
       ToastService.error('Sync failed', e);
     } finally {
       if (mounted) setState(() => _syncing = false);
