@@ -48,7 +48,8 @@ class _TotpAddedSheetState extends State<_TotpAddedSheet> {
     super.dispose();
   }
 
-  String _format(String code) => code.length == 6 ? '${code.substring(0, 3)} ${code.substring(3)}' : code;
+  String _format(String code) =>
+      code.length == 6 ? '${code.substring(0, 3)} ${code.substring(3)}' : code;
 
   @override
   Widget build(BuildContext context) {
@@ -58,53 +59,77 @@ class _TotpAddedSheetState extends State<_TotpAddedSheet> {
     final remaining = code?.secondsRemaining ?? 0;
     final expiring = remaining <= 5;
 
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 20, 20, 32),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        spacing: 16,
-        children: [
-          Text(widget.entry.title, style: typography.lg.copyWith(fontWeight: FontWeight.w700)),
-          if ((widget.entry.subtitle ?? '').isNotEmpty)
-            Text(widget.entry.subtitle!, style: typography.sm.copyWith(color: colors.mutedForeground)),
-          Text(
-            'Enter this code where you scanned the QR code to confirm the new device.',
-            style: typography.sm.copyWith(color: colors.mutedForeground),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
+    // The sheet has to paint its own surface, otherwise the screen underneath
+    // shows straight through it.
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: colors.background,
+        border: Border(top: BorderSide(color: colors.border)),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(20, 20, 20, 32),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          spacing: 16,
+          children: [
+            Text(
+              widget.entry.title,
+              style: typography.lg.copyWith(fontWeight: FontWeight.w700),
+            ),
+            if ((widget.entry.subtitle ?? '').isNotEmpty)
               Text(
-                code == null ? '------' : _format(code.code),
-                style: typography.xl2.copyWith(
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: 2,
-                  fontFeatures: const [FontFeature.tabularFigures()],
+                widget.entry.subtitle!,
+                style: typography.sm.copyWith(color: colors.mutedForeground),
+              ),
+            Text(
+              'Enter this code where you scanned the QR code to confirm the new device.',
+              style: typography.sm.copyWith(color: colors.mutedForeground),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  code == null ? '------' : _format(code.code),
+                  style: typography.xl2.copyWith(
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 2,
+                    fontFeatures: const [FontFeature.tabularFigures()],
+                  ),
                 ),
-              ),
-              Text(
-                '${remaining}s',
-                style: typography.sm.copyWith(color: expiring ? colors.destructive : colors.mutedForeground),
-              ),
-            ],
-          ),
-          FButton(
-            prefix: const Icon(FIcons.copy),
-            onPress: code == null
-                ? null
-                : () async {
-                    await Clipboard.setData(ClipboardData(text: code.code));
-                    if (context.mounted) showFToast(context: context, title: const Text('Code copied'));
-                  },
-            child: const Text('Copy code'),
-          ),
-          FButton(
-            style: FButtonStyle.outline(),
-            onPress: () => Navigator.of(context).pop(),
-            child: const Text('Done'),
-          ),
-        ],
+                Text(
+                  '${remaining}s',
+                  style: typography.sm.copyWith(
+                    color: expiring
+                        ? colors.destructive
+                        : colors.mutedForeground,
+                  ),
+                ),
+              ],
+            ),
+            FButton(
+              prefix: const Icon(FIcons.copy),
+              onPress: code == null
+                  ? null
+                  : () async {
+                      await Clipboard.setData(ClipboardData(text: code.code));
+                      if (context.mounted) {
+                        showFToast(
+                          context: context,
+                          title: const Text('Code copied'),
+                        );
+                      }
+                    },
+              child: const Text('Copy code'),
+            ),
+            FButton(
+              style: FButtonStyle.outline(),
+              onPress: () => Navigator.of(context).pop(),
+              child: const Text('Done'),
+            ),
+          ],
+        ),
       ),
     );
   }
