@@ -39,10 +39,8 @@ jobs:
             exit 0
           fi
 
-          # Update application.properties
           sed -i "s|<version>$FILE_VERSION</version>|<version>$TAG_VERSION</version>|" application.properties
 
-          # Update pubspec.yaml — preserve build number after '+'
           PUBSPEC_VERSION=$(grep -oP '^version:\s*\K[^\s]+' pubspec.yaml)
           PUBSPEC_BUILD="${PUBSPEC_VERSION#*+}"
           NEW_PUBSPEC="$TAG_VERSION"
