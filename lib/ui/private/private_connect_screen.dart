@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 
@@ -6,6 +5,7 @@ import '../../domain/school_system.dart';
 import '../../services/private_account_store.dart';
 import '../../services/scrape_proxy_client.dart';
 import '../../services/token_proxy_client.dart';
+import '../../services/api_error.dart';
 import '../../services/totp_service.dart';
 import '../widgets/dynamic_login_form.dart';
 
@@ -66,11 +66,8 @@ class _PrivateConnectScreenState extends State<PrivateConnectScreen> {
       } else {
         await _connectScrape(baseUrl, name, basePath);
       }
-    } on DioException catch (e) {
-      setState(() => _error =
-          'HTTP ${e.response?.statusCode ?? '?'}: ${e.response?.data}');
     } catch (e) {
-      setState(() => _error = '$e');
+      setState(() => _error = ApiError.describe(e));
     } finally {
       if (mounted) setState(() => _busy = false);
     }

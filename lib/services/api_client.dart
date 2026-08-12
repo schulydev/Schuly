@@ -50,6 +50,16 @@ class ApiClient {
   }
 
   static final ApiClient instance = ApiClient._();
+
+  /// Mark a request whose failure the caller renders itself, so the global
+  /// interceptor stays quiet instead of adding a second, vaguer message:
+  /// `Options(extra: {ApiClient.handlesErrors: true})`.
+  static const handlesErrors = '_handlesErrors';
+
+  /// Convenience for the above.
+  static Options handled([Options? options]) =>
+      (options ?? Options()).copyWith(extra: {...?options?.extra, handlesErrors: true});
+
   late final Dio _dio;
   late final SchulyApi api;
 
@@ -64,10 +74,13 @@ class ApiClient {
 }
 
 void _toastHttpError(DioException e) {
+  // The caller is showing this failure itself, with the server's own wording.
+  // Toasting "Request failed (400)" on top of that adds a second, vaguer copy.
+  if (e.requestOptions.extra[ApiClient.handlesErrors] == true) return;
+
   final code = e.response?.statusCode;
-  final r = e.requestOptions;
   if (code != null) {
-    ToastService.error('Request failed ($code)', '${r.method} ${r.uri.path}');
+    ToastService.error('Request failed ($code)', e);
   } else {
     ToastService.error('Network error', "Couldn't reach the server.");
   }
