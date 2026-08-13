@@ -11,6 +11,11 @@ class PrivateDataAdapter {
 
   static DateTime _dateOr(String? s, DateTime fallback) => _date(s) ?? fallback;
 
+  static Date? _dateOnly(String? s) {
+    final d = _date(s);
+    return d == null ? null : Date(d.year, d.month, d.day);
+  }
+
   static GradeDto grade(PrivateGrade g) => GradeDto((b) => b
     ..id = g.id
     ..score = g.score
@@ -56,6 +61,8 @@ class PrivateDataAdapter {
         ..firstName = info?.firstName ?? ''
         ..lastName = info?.lastName ?? ''
         ..email = info?.email ?? ''
+        ..birthday = _dateOnly(info?.birthday)
+        ..entryDate = _dateOnly(info?.entryDate)
         ..role = Roles.student
         ..grades = ListBuilder<GradeDto>(grades.map(grade))
         ..absences = ListBuilder<AbsenceDto>(absences.map(absence)));

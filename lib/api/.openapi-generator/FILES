@@ -145,4 +145,3 @@ lib/src/model/user_class_dto.dart
 lib/src/model/user_state.dart
 lib/src/serializers.dart
 pubspec.yaml
-test/install_plugin_request_test.dart

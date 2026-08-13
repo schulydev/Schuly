@@ -83,10 +83,10 @@ abstract class SchoolUserDto implements Built<SchoolUserDto, SchoolUserDtoBuilde
   String? get zip;
 
   @BuiltValueField(wireName: r'birthday')
-  Date get birthday;
+  Date? get birthday;
 
   @BuiltValueField(wireName: r'entryDate')
-  Date get entryDate;
+  Date? get entryDate;
 
   @BuiltValueField(wireName: r'leaveDate')
   Date? get leaveDate;
@@ -222,16 +222,20 @@ class _$SchoolUserDtoSerializer implements PrimitiveSerializer<SchoolUserDto> {
         specifiedType: const FullType.nullable(String),
       );
     }
-    yield r'birthday';
-    yield serializers.serialize(
-      object.birthday,
-      specifiedType: const FullType(Date),
-    );
-    yield r'entryDate';
-    yield serializers.serialize(
-      object.entryDate,
-      specifiedType: const FullType(Date),
-    );
+    if (object.birthday != null) {
+      yield r'birthday';
+      yield serializers.serialize(
+        object.birthday,
+        specifiedType: const FullType.nullable(Date),
+      );
+    }
+    if (object.entryDate != null) {
+      yield r'entryDate';
+      yield serializers.serialize(
+        object.entryDate,
+        specifiedType: const FullType.nullable(Date),
+      );
+    }
     if (object.leaveDate != null) {
       yield r'leaveDate';
       yield serializers.serialize(
@@ -410,15 +414,17 @@ class _$SchoolUserDtoSerializer implements PrimitiveSerializer<SchoolUserDto> {
         case r'birthday':
           final valueDes = serializers.deserialize(
             value,
-            specifiedType: const FullType(Date),
-          ) as Date;
+            specifiedType: const FullType.nullable(Date),
+          ) as Date?;
+          if (valueDes == null) continue;
           result.birthday = valueDes;
           break;
         case r'entryDate':
           final valueDes = serializers.deserialize(
             value,
-            specifiedType: const FullType(Date),
-          ) as Date;
+            specifiedType: const FullType.nullable(Date),
+          ) as Date?;
+          if (valueDes == null) continue;
           result.entryDate = valueDes;
           break;
         case r'leaveDate':

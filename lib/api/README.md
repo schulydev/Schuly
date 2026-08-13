@@ -193,7 +193,7 @@ Authentication schemes defined for the API:
 
 - **Type**: OAuth
 - **Flow**: accessCode
-- **Authorization URL**: http://localhost:8080/realms/polyglot/authorize
+- **Authorization URL**: https://auth.gaggao.com/authorize
 - **Scopes**: 
  - **openid**: OpenID Connect
  - **profile**: User profile
