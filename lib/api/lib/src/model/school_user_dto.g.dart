@@ -34,9 +34,9 @@ class _$SchoolUserDto extends SchoolUserDto {
   @override
   final String? zip;
   @override
-  final Date birthday;
+  final Date? birthday;
   @override
-  final Date entryDate;
+  final Date? entryDate;
   @override
   final Date? leaveDate;
   @override
@@ -71,8 +71,8 @@ class _$SchoolUserDto extends SchoolUserDto {
     this.street,
     this.city,
     this.zip,
-    required this.birthday,
-    required this.entryDate,
+    this.birthday,
+    this.entryDate,
     this.leaveDate,
     required this.role,
     this.state,
@@ -359,16 +359,8 @@ class SchoolUserDtoBuilder
             street: street,
             city: city,
             zip: zip,
-            birthday: BuiltValueNullFieldError.checkNotNull(
-              birthday,
-              r'SchoolUserDto',
-              'birthday',
-            ),
-            entryDate: BuiltValueNullFieldError.checkNotNull(
-              entryDate,
-              r'SchoolUserDto',
-              'entryDate',
-            ),
+            birthday: birthday,
+            entryDate: entryDate,
             leaveDate: leaveDate,
             role: BuiltValueNullFieldError.checkNotNull(
               role,

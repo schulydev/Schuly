@@ -21,8 +21,8 @@ Name | Type | Description | Notes
 **street** | **String** |  | [optional] 
 **city** | **String** |  | [optional] 
 **zip** | **String** |  | [optional] 
-**birthday** | [**Date**](Date.md) |  | 
-**entryDate** | [**Date**](Date.md) |  | 
+**birthday** | [**Date**](Date.md) |  | [optional] 
+**entryDate** | [**Date**](Date.md) |  | [optional] 
 **leaveDate** | [**Date**](Date.md) |  | [optional] 
 **role** | [**Roles**](Roles.md) |  | 
 **state** | [**UserState**](UserState.md) |  | [optional] 
