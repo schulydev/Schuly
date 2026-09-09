@@ -74,7 +74,7 @@ class _ClassDetailScreenState extends State<ClassDetailScreen> {
         onRefresh: _load,
         child: ListView(
           physics: const AlwaysScrollableScrollPhysics(),
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+          padding: EdgeInsets.fromLTRB(16, 8, 16, 24 + MediaQuery.viewPaddingOf(context).bottom),
           children: [
             if ((c.description?.isNotEmpty ?? false))
               Padding(

@@ -34,7 +34,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         ],
       ),
       child: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+        padding: EdgeInsets.fromLTRB(16, 8, 16, 24 + MediaQuery.viewPaddingOf(context).bottom),
         children: [
           if (!AppModeService.instance.isPrivate) ...[
             const _SectionLabel('Account'),
