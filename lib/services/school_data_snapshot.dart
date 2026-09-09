@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:built_value/serializer.dart';
+import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:schuly_api/schuly_api.dart';
 
@@ -73,7 +74,8 @@ class SchoolDataSnapshotStore {
       final raw = await file.readAsString();
       final json = jsonDecode(raw) as Map<String, dynamic>;
       return SchoolDataSnapshot.fromJson(json);
-    } catch (_) {
+    } catch (e, st) {
+      debugPrint('SchoolDataSnapshotStore.load failed for "$key": $e\n$st');
       return null;
     }
   }
@@ -84,7 +86,9 @@ class SchoolDataSnapshotStore {
       await dir.create(recursive: true);
       final file = _fileFor(dir, key);
       await file.writeAsString(jsonEncode(snapshot.toJson()));
-    } catch (_) {}
+    } catch (e, st) {
+      debugPrint('SchoolDataSnapshotStore.save failed for "$key": $e\n$st');
+    }
   }
 
   Future<void> clear() async {
