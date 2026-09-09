@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:forui/forui.dart';
 import 'break_card.dart';
 import 'day_schedule.dart';
@@ -38,7 +38,7 @@ class TimelineRow extends StatelessWidget {
               ),
             ),
           ),
-          Container(width: 1, color: colors.border),
+          FDivider(axis: Axis.vertical, style: (s) => s.copyWith(color: colors.border, padding: EdgeInsets.zero)),
           const SizedBox(width: 12),
           Expanded(
             child: Container(
