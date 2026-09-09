@@ -9,5 +9,61 @@
   "tabGrades": "Grades",
   "tabAbsences": "Absences",
   "tabAccount": "Account",
-  "signIn": "Sign in"
+  "signIn": "Sign in",
+  "privacySectionLabel": "Privacy",
+  "@privacySectionLabel": {
+    "description": "Settings section label for data export / account deletion"
+  },
+  "exportDataTitle": "Export my data",
+  "@exportDataTitle": {
+    "description": "Settings tile title to download an account data export"
+  },
+  "exportDataSubtitle": "Download a copy as JSON",
+  "@exportDataSubtitle": {
+    "description": "Settings tile subtitle for the data export action"
+  },
+  "exportDataFailed": "Export failed",
+  "@exportDataFailed": {
+    "description": "Toast title when the data export request fails"
+  },
+  "deleteAccountTitle": "Delete account",
+  "@deleteAccountTitle": {
+    "description": "Settings tile title to delete the account"
+  },
+  "deleteAccountSubtitle": "Permanently delete your account and data",
+  "@deleteAccountSubtitle": {
+    "description": "Settings tile subtitle for the account deletion action"
+  },
+  "deleteAccountFailed": "Delete failed",
+  "@deleteAccountFailed": {
+    "description": "Toast title when the account deletion request fails"
+  },
+  "deleteAccountDialogTitle": "Delete account?",
+  "@deleteAccountDialogTitle": {
+    "description": "Title of the account deletion confirmation dialog"
+  },
+  "deleteAccountDialogBody": "This permanently deletes your account and all data on the server. This can't be undone.",
+  "@deleteAccountDialogBody": {
+    "description": "Body text of the account deletion confirmation dialog"
+  },
+  "deleteAccountConfirmLabel": "Type DELETE to confirm",
+  "@deleteAccountConfirmLabel": {
+    "description": "Label for the text field that must contain DELETE to enable the destructive button"
+  },
+  "deleteAccountCancel": "Cancel",
+  "@deleteAccountCancel": {
+    "description": "Cancel button in the account deletion dialog"
+  },
+  "deleteAccountConfirm": "Delete account",
+  "@deleteAccountConfirm": {
+    "description": "Destructive confirm button in the account deletion dialog"
+  },
+  "privacyPrivateModeTitle": "Nothing stored on our servers",
+  "@privacyPrivateModeTitle": {
+    "description": "Explanatory tile title shown in private mode instead of export/delete"
+  },
+  "privacyPrivateModeSubtitle": "Private mode keeps your data on this device only. Use Sign out to disconnect and remove it.",
+  "@privacyPrivateModeSubtitle": {
+    "description": "Explanatory tile subtitle shown in private mode, pointing at the disconnect (sign out) action"
+  }
 }

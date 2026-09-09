@@ -7,9 +7,24 @@ import '../../../services/app_mode_service.dart';
 import '../../../services/auth_service.dart';
 import '../../../services/onboarding_service.dart';
 import '../../../services/private_account_store.dart';
+import '../../../services/school_data_service.dart';
 import '../../dashboard/dashboard_screen.dart';
 import '../../onboarding/onboarding_screen.dart';
 import '../../private/private_connect_flow.dart';
+
+/// Full sign-out: clears tokens, the active school, cached school data, and
+/// any on-disk private-mode credentials, then drops the app back to account
+/// mode. Shared by the sign-out action and account deletion.
+Future<void> signOutAndClear() async {
+  if (AppModeService.instance.isPrivate) {
+    await PrivateAccountStore.instance.clear();
+    await AppModeService.instance.setMode(AppMode.account);
+  } else {
+    await AuthService.signOut();
+    await ActiveAccountService.instance.clear();
+  }
+  SchoolDataService.instance.clear();
+}
 
 class RootScreen extends StatefulWidget {
   const RootScreen({super.key});
@@ -90,13 +105,7 @@ class _RootScreenState extends State<RootScreen> {
   }
 
   Future<void> _signOut() async {
-    if (AppModeService.instance.isPrivate) {
-      await PrivateAccountStore.instance.clear();
-      await AppModeService.instance.setMode(AppMode.account);
-    } else {
-      await AuthService.signOut();
-      await ActiveAccountService.instance.clear();
-    }
+    await signOutAndClear();
     await _refresh();
   }
 

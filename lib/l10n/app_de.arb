@@ -6,5 +6,19 @@
   "tabGrades": "Noten",
   "tabAbsences": "Absenzen",
   "tabAccount": "Konto",
-  "signIn": "Anmelden"
+  "signIn": "Anmelden",
+  "privacySectionLabel": "Datenschutz",
+  "exportDataTitle": "Meine Daten exportieren",
+  "exportDataSubtitle": "Als JSON-Datei herunterladen",
+  "exportDataFailed": "Export fehlgeschlagen",
+  "deleteAccountTitle": "Konto löschen",
+  "deleteAccountSubtitle": "Konto und Daten dauerhaft löschen",
+  "deleteAccountFailed": "Löschen fehlgeschlagen",
+  "deleteAccountDialogTitle": "Konto löschen?",
+  "deleteAccountDialogBody": "Dies löscht dein Konto und alle Daten auf dem Server dauerhaft. Dies kann nicht rückgängig gemacht werden.",
+  "deleteAccountConfirmLabel": "Gib DELETE ein, um zu bestätigen",
+  "deleteAccountCancel": "Abbrechen",
+  "deleteAccountConfirm": "Konto löschen",
+  "privacyPrivateModeTitle": "Nichts wird auf unseren Servern gespeichert",
+  "privacyPrivateModeSubtitle": "Der private Modus speichert deine Daten nur auf diesem Gerät. Verwende „Abmelden“, um die Verbindung zu trennen und die Daten zu entfernen."
 }
