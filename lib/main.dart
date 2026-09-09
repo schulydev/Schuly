@@ -4,6 +4,7 @@ import 'package:forui/forui.dart';
 import 'config/backend_config.dart';
 import 'l10n/app_localizations.dart';
 import 'services/app_mode_service.dart';
+import 'services/school_data_service.dart';
 import 'services/theme_service.dart';
 import 'services/toast_service.dart';
 import 'ui/core/ui/root_screen.dart';
@@ -13,6 +14,7 @@ Future<void> main() async {
   await BackendConfig.load();
   await AppModeService.instance.load();
   await ThemeService.instance.load();
+  await SchoolDataService.instance.loadCached();
   runApp(const SchulyApp());
 }
 
@@ -33,7 +35,9 @@ class SchulyApp extends StatelessWidget {
           ],
           supportedLocales: AppLocalizations.supportedLocales,
           themeMode: ThemeService.instance.mode,
+          // ignore: experimental_member_use
           theme: FThemes.zinc.light.toApproximateMaterialTheme(),
+          // ignore: experimental_member_use
           darkTheme: FThemes.zinc.dark.toApproximateMaterialTheme(),
           builder: (ctx, child) {
             final mode = ThemeService.instance.mode;

@@ -5,6 +5,8 @@ import 'auth_service.dart';
 import 'backend_dio.dart';
 import 'toast_service.dart';
 
+const _retried = '_retried';
+
 class ApiClient {
   ApiClient._() {
     _dio = backendDio(
@@ -25,24 +27,34 @@ class ApiClient {
           },
           onError: (e, handler) async {
             final options = e.requestOptions;
-            if (e.response?.statusCode == 401 && options.extra['_retried'] != true) {
-              final newToken = await _refresh();
-              if (newToken != null) {
-                options.extra['_retried'] = true;
-                options.headers['Authorization'] = 'Bearer $newToken';
-                try {
-                  return handler.resolve(await _dio.fetch(options));
-                } on DioException catch (retryError) {
-                  _toastHttpError(retryError);
-                  return handler.next(retryError);
-                }
-              }
-              ToastService.error('Session expired', 'Please sign in again.');
-              await AuthService.signOut();
+            if (e.response?.statusCode != 401) {
+              _toastHttpError(e);
               return handler.next(e);
             }
-            _toastHttpError(e);
-            handler.next(e);
+            // A 401 on the retry means the freshly minted access token was still
+            // refused - the session itself is gone, not just the old token.
+            if (options.extra[_retried] == true) {
+              await _endExpiredSession();
+              return handler.next(e);
+            }
+            final refresh = await _refresh();
+            final newToken = refresh.accessToken;
+            if (newToken != null) {
+              options.extra[_retried] = true;
+              options.headers['Authorization'] = 'Bearer $newToken';
+              try {
+                return handler.resolve(await _dio.fetch(options));
+              } on DioException catch (retryError) {
+                // The nested interceptor pass already reported this failure.
+                return handler.next(retryError);
+              }
+            }
+            if (refresh.failure == AuthFailure.transport) {
+              _toastNetworkError(e);
+              return handler.next(e);
+            }
+            await _endExpiredSession();
+            return handler.next(e);
           },
         ),
       ],
@@ -65,11 +77,21 @@ class ApiClient {
 
   Dio get dio => _dio;
 
-  Future<String?>? _refreshing;
+  Future<AuthRefresh>? _refreshing;
 
-  Future<String?> _refresh() {
+  Future<AuthRefresh> _refresh() {
     return _refreshing ??=
         AuthService.refreshAccessToken().whenComplete(() => _refreshing = null);
+  }
+}
+
+/// The session is over. Sign out locally - the browser logout page would be a
+/// jarring detour out of the app for something the user didn't ask for - and let
+/// RootScreen react to `sessionEpoch`. Only the call that actually ended the
+/// session toasts, so N concurrent 401s produce one message.
+Future<void> _endExpiredSession() async {
+  if (await AuthService.signOut(endSession: false)) {
+    ToastService.error('Session expired', 'Please sign in again.');
   }
 }
 
@@ -84,4 +106,9 @@ void _toastHttpError(DioException e) {
   } else {
     ToastService.error('Network error', "Couldn't reach the server.");
   }
+}
+
+void _toastNetworkError(DioException e) {
+  if (e.requestOptions.extra[ApiClient.handlesErrors] == true) return;
+  ToastService.error('Network error', "Couldn't reach the server. Please try again.");
 }

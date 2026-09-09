@@ -35,7 +35,7 @@ android {
         versionCode = flutter.versionCode
         versionName = flutter.versionName
         // OIDC redirect scheme for flutter_appauth's RedirectUriReceiverActivity.
-        // Must match the backend's redirect URI scheme (schulytest://callback).
+        // Must match OidcConfig.redirectScheme (lib/config/oidc_config.dart).
         manifestPlaceholders["appAuthRedirectScheme"] = "schulytest"
     }
 
