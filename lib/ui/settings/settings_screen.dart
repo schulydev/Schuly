@@ -9,6 +9,7 @@ import '../../services/active_account_service.dart';
 import '../../services/app_mode_service.dart';
 import '../../services/auth_service.dart';
 import '../../services/private_account_store.dart';
+import '../../services/profile_refresh_requests.dart';
 import '../../services/school_data_service.dart';
 import '../../services/theme_service.dart';
 import 'notification_settings_section.dart';
@@ -145,7 +146,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
       if (mounted) {
         showFToast(context: context, title: const Text("Couldn't open the picture page"));
       }
+      return;
     }
+    ProfileRefreshRequests.request();
   }
 
   Future<void> _openServerDialog() async {
