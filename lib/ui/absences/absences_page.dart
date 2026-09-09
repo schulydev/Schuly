@@ -173,8 +173,10 @@ class _AbsenceFormState extends State<_AbsenceForm> {
       }
       if (mounted) Navigator.of(context).pop(true);
     } on DioException catch (e) {
+      if (!mounted) return;
       setState(() => _error = 'HTTP ${e.response?.statusCode}: ${e.response?.data}');
     } catch (e) {
+      if (!mounted) return;
       setState(() => _error = e.toString());
     } finally {
       if (mounted) setState(() => _busy = false);
@@ -189,6 +191,7 @@ class _AbsenceFormState extends State<_AbsenceForm> {
       await ApiClient.instance.api.getAbsencesApi().apiAbsencesIdDelete(id: existing!.id!);
       if (mounted) Navigator.of(context).pop(true);
     } on DioException catch (e) {
+      if (!mounted) return;
       setState(() {
         _busy = false;
         _error = 'HTTP ${e.response?.statusCode}: ${e.response?.data}';
