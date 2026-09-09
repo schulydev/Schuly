@@ -4,6 +4,10 @@ import 'package:schuly_api/schuly_api.dart';
 
 import '../../services/school_data_service.dart';
 import '../core/grade_color.dart';
+import '../core/ui/now_ticker.dart';
+import '../timetable/break_card.dart';
+import '../timetable/day_schedule.dart';
+import '../timetable/lesson_tile.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -14,21 +18,28 @@ class HomePage extends StatelessWidget {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
 
-    bool sameDay(DateTime d) => d.year == today.year && d.month == today.month && d.day == today.day;
-    DateTime dayOf(DateTime d) => DateTime(d.year, d.month, d.day);
+    bool sameDay(DateTime d) {
+      final local = d.toLocal();
+      return local.year == today.year && local.month == today.month && local.day == today.day;
+    }
+
+    DateTime dayOf(DateTime d) {
+      final local = d.toLocal();
+      return DateTime(local.year, local.month, local.day);
+    }
 
     bool isHoliday(AgendaEntryDto a) => a.entryType == AgendaEntryType.holiday;
 
     final todayEntries = svc.agenda.where((a) => !isHoliday(a) && sameDay(a.date)).toList()
-      ..sort((a, b) => a.date.compareTo(b.date));
+      ..sort((a, b) => a.date.toLocal().compareTo(b.date.toLocal()));
 
     final upcoming = svc.agenda.where((a) => !isHoliday(a) && dayOf(a.date).isAfter(today)).toList()
-      ..sort((a, b) => a.date.compareTo(b.date));
+      ..sort((a, b) => a.date.toLocal().compareTo(b.date.toLocal()));
 
     final holidays = svc.agenda
         .where((a) => isHoliday(a) && !dayOf(a.endDate ?? a.date).isBefore(today))
         .toList()
-      ..sort((a, b) => a.date.compareTo(b.date));
+      ..sort((a, b) => a.date.toLocal().compareTo(b.date.toLocal()));
 
     final myGrades = svc.myGradesByExam;
     final examById = {for (final e in svc.exams) e.id: e};
@@ -61,11 +72,24 @@ class HomePage extends StatelessWidget {
           title: 'Today',
           emptyText: 'Nothing scheduled today',
           tiles: [
-            for (final l in todayEntries)
-              FTile(
-                prefix: const Icon(FIcons.calendarDays),
-                title: Text(l.title.isNotEmpty == true ? l.title : 'Entry'),
-                subtitle: Text([_time(l.date), l.place].whereType<String>().where((s) => s.isNotEmpty).join(' · ')),
+            if (todayEntries.isNotEmpty)
+              NowTicker(
+                builder: (context, now) {
+                  final items = buildDaySchedule(todayEntries);
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      for (final item in items)
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 8),
+                          child: switch (item) {
+                            LessonItem lesson => LessonTile(item: lesson, now: now),
+                            BreakItem brk => BreakCard(item: brk, now: now),
+                          },
+                        ),
+                    ],
+                  );
+                },
               ),
           ],
         ),
