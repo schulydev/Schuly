@@ -11,6 +11,7 @@ import '../../services/auth_service.dart';
 import '../../services/private_account_store.dart';
 import '../../services/school_data_service.dart';
 import '../../services/theme_service.dart';
+import 'privacy_settings_section.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -97,6 +98,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
           ),
           const SizedBox(height: 12),
+          const PrivacySettingsSection(),
           const _SectionLabel('About'),
           FTile(
             prefix: const Icon(FIcons.fileText),
