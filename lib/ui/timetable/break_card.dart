@@ -25,7 +25,7 @@ class BreakCard extends StatelessWidget {
         color: current ? colors.primary.withValues(alpha: 0.12) : Colors.transparent,
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
-          color: current ? colors.primary.withValues(alpha: 0.5) : colors.border.withValues(alpha: 0.4),
+          color: current ? colors.primary.withValues(alpha: 0.5) : colors.border,
         ),
       ),
       child: Row(

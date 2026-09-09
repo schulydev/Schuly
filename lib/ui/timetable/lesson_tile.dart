@@ -18,17 +18,16 @@ class LessonTile extends StatelessWidget {
     final t = AppLocalizations.of(context)!;
     final style = entryStyle(context, item.entry.entryType);
     final current = item.isCurrentAt(now);
-    final borderColor = current ? style.color : style.color.withValues(alpha: 0.4);
+    final borderColor = current ? colors.primary : colors.border;
 
     final place = item.entry.place;
     final description = item.entry.description;
 
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       decoration: BoxDecoration(
-        color: colors.secondary,
         borderRadius: BorderRadius.circular(8),
-        border: Border(left: BorderSide(color: borderColor, width: 4)),
+        border: Border.all(color: borderColor, width: current ? 1.5 : 1),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,

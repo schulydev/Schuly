@@ -76,18 +76,17 @@ class _LessonContent extends StatelessWidget {
     final t = AppLocalizations.of(context)!;
     final style = entryStyle(context, lesson.entry.entryType);
     final current = lesson.isCurrentAt(now);
-    final borderColor = current ? style.color : style.color.withValues(alpha: 0.4);
+    final borderColor = current ? colors.primary : colors.border;
 
     final subtitle = [lesson.entry.place, lesson.entry.description]
         .where((s) => s != null && s.isNotEmpty)
         .join(' - ');
 
     return Container(
-      padding: const EdgeInsets.all(10),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       decoration: BoxDecoration(
-        color: colors.secondary,
-        borderRadius: BorderRadius.circular(6),
-        border: Border(left: BorderSide(color: borderColor, width: 3)),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: borderColor, width: current ? 1.5 : 1),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

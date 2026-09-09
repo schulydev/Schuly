@@ -33,9 +33,6 @@ class HomePage extends StatelessWidget {
     final todayEntries = svc.agenda.where((a) => !isHoliday(a) && sameDay(a.date)).toList()
       ..sort((a, b) => a.date.toLocal().compareTo(b.date.toLocal()));
 
-    final upcoming = svc.agenda.where((a) => !isHoliday(a) && dayOf(a.date).isAfter(today)).toList()
-      ..sort((a, b) => a.date.toLocal().compareTo(b.date.toLocal()));
-
     final holidays = svc.agenda
         .where((a) => isHoliday(a) && !dayOf(a.endDate ?? a.date).isBefore(today))
         .toList()
@@ -95,19 +92,6 @@ class HomePage extends StatelessWidget {
         ),
         const SizedBox(height: 16),
         _Section(
-          title: 'Upcoming',
-          emptyText: 'Nothing upcoming',
-          tiles: [
-            for (final t in upcoming.take(5))
-              FTile(
-                prefix: const Icon(FIcons.calendarDays),
-                title: Text(t.title.isNotEmpty == true ? t.title : 'Entry'),
-                subtitle: Text('${_dateLabel(t.date)} · ${_time(t.date)}'),
-              ),
-          ],
-        ),
-        const SizedBox(height: 16),
-        _Section(
           title: 'Next holiday',
           emptyText: 'No upcoming holidays',
           tiles: [
@@ -151,12 +135,6 @@ class HomePage extends StatelessWidget {
       ],
       ),
     );
-  }
-
-  static String _time(DateTime d) {
-    final h = d.hour.toString().padLeft(2, '0');
-    final m = d.minute.toString().padLeft(2, '0');
-    return '$h:$m';
   }
 
   static String _dateLabel(DateTime d) {
