@@ -34,6 +34,10 @@ class OidcSettings {
   /// derived from [redirectUri] so the app never hardcodes it.
   String get callbackScheme => Uri.parse(redirectUri).scheme;
 
+  /// Whether the browser can actually return here - the provider's redirect
+  /// scheme has to be the one registered by the platform projects.
+  bool get schemeIsRegistered => callbackScheme == OidcConfig.redirectScheme;
+
   /// Whether the OIDC endpoints use plaintext `http://` (a self-hosted / local
   /// backend). flutter_appauth rejects http unless told to allow it, so this
   /// gates `allowInsecureConnections`; https providers stay strict.
@@ -41,6 +45,13 @@ class OidcSettings {
 }
 
 class OidcConfig {
+  /// The deep-link scheme compiled into the platform projects - Android's
+  /// `appAuthRedirectScheme` manifest placeholder and iOS's `CFBundleURLSchemes`.
+  /// A self-hosted backend must hand out a `redirectUri` on this scheme
+  /// (`schulytest://callback`); anything else cannot return to the app, so
+  /// `AuthService.signIn` rejects it rather than hanging on the browser.
+  static const redirectScheme = 'schulytest';
+
   static String get backendBaseUrl => BackendConfig.url;
 
   static OidcSettings? _settings;
@@ -74,7 +85,7 @@ class OidcConfig {
       clientId: app['clientId'] as String,
       scope: (app['scope'] as String?) ??
           'openid profile email groups picture offline_access',
-      redirectUri: (app['redirectUri'] as String?) ?? 'schulytest://callback',
+      redirectUri: (app['redirectUri'] as String?) ?? '$redirectScheme://callback',
       authorizationEndpoint: disco['authorization_endpoint'] as String,
       tokenEndpoint: disco['token_endpoint'] as String,
       endSessionEndpoint: disco['end_session_endpoint'] as String?,

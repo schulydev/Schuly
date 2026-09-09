@@ -7,7 +7,7 @@ class PrivateDataAdapter {
   static const privateSchoolUserId = 'private-self';
 
   static DateTime? _date(String? s) =>
-      (s == null || s.isEmpty) ? null : DateTime.tryParse(s);
+      (s == null || s.isEmpty) ? null : DateTime.tryParse(s)?.toLocal();
 
   static DateTime _dateOr(String? s, DateTime fallback) => _date(s) ?? fallback;
 

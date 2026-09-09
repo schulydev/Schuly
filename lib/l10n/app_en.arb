@@ -9,5 +9,54 @@
   "tabGrades": "Grades",
   "tabAbsences": "Absences",
   "tabAccount": "Account",
-  "signIn": "Sign in"
+  "signIn": "Sign in",
+  "lessonFrom": "from",
+  "@lessonFrom": {
+    "description": "Label preceding a lesson's start time"
+  },
+  "lessonUntil": "until",
+  "@lessonUntil": {
+    "description": "Label preceding a lesson's end time"
+  },
+  "breakDuration": "Break ({minutes} min)",
+  "@breakDuration": {
+    "description": "Label for a short break with its duration in minutes",
+    "placeholders": {
+      "minutes": {"type": "int"}
+    }
+  },
+  "lunchBreakDuration": "Lunch break ({minutes} min)",
+  "@lunchBreakDuration": {
+    "description": "Label for a lunch break with its duration in minutes",
+    "placeholders": {
+      "minutes": {"type": "int"}
+    }
+  },
+  "minutesLeft": "{minutes} min left",
+  "@minutesLeft": {
+    "description": "Remaining time for the current lesson or break",
+    "placeholders": {
+      "minutes": {"type": "int"}
+    }
+  },
+  "nothingScheduled": "Nothing scheduled",
+  "@nothingScheduled": {
+    "description": "Empty state when a selected day has no agenda entries"
+  },
+  "entryTypeLesson": "Lesson",
+  "@entryTypeLesson": {
+    "description": "Agenda entry type label for a regular lesson"
+  },
+  "entryTypeTest": "Test",
+  "@entryTypeTest": {
+    "description": "Agenda entry type label for a test"
+  },
+  "entryTypeEvent": "Event",
+  "@entryTypeEvent": {
+    "description": "Agenda entry type label for an event"
+  },
+  "entryTypeHoliday": "Holiday",
+  "@entryTypeHoliday": {
+    "description": "Agenda entry type label for a holiday"
+  }
 }

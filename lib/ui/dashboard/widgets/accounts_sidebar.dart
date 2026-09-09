@@ -4,6 +4,8 @@ import 'package:forui/forui.dart';
 import '../../../domain/my_school.dart';
 import '../../../services/active_account_service.dart';
 import '../../../services/app_mode_service.dart';
+import '../../../services/school_data_service.dart';
+import '../../../services/toast_service.dart';
 import '../../authenticator/authenticator_vault_screen.dart';
 import '../../settings/settings_screen.dart';
 import 'add_school_modal.dart';
@@ -46,7 +48,10 @@ class AccountsSidebar extends StatelessWidget {
     if (confirmed != true) return;
     try {
       await ActiveAccountService.instance.removeSchool(school);
-    } catch (_) {/* keep the sheet open; list reflects whatever succeeded */}
+      await SchoolDataService.instance.clearCache();
+    } catch (e) {
+      ToastService.error('Disconnect failed', e);
+    }
   }
 
   Future<void> _add(BuildContext context) async {

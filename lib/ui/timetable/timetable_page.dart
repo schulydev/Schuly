@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
-import 'package:schuly_api/schuly_api.dart';
 
+import '../../l10n/app_localizations.dart';
 import '../../services/school_data_service.dart';
+import '../core/ui/now_ticker.dart';
+import 'day_schedule.dart';
+import 'timeline_row.dart';
 
 class TimetablePage extends StatefulWidget {
   const TimetablePage({super.key});
@@ -38,7 +41,7 @@ class _TimetablePageState extends State<TimetablePage> {
 
   static DateTime? _nearestEntryDay(List<dynamic> agenda, DateTime today) {
     final days = <DateTime>{
-      for (final a in agenda) DateTime(a.date.year, a.date.month, a.date.day),
+      for (final a in agenda) _localDay(a.date),
     }.toList()
       ..sort();
     if (days.isEmpty) return null;
@@ -48,18 +51,26 @@ class _TimetablePageState extends State<TimetablePage> {
     return days.last; // everything is in the past → most recent
   }
 
+  static DateTime _localDay(DateTime d) {
+    final local = d.toLocal();
+    return DateTime(local.year, local.month, local.day);
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = context.theme.colors;
+    final t = AppLocalizations.of(context)!;
     final svc = SchoolDataService.instance;
     final now = DateTime.now();
     final selected = _selected ?? DateTime(now.year, now.month, now.day);
 
-    bool sameDay(DateTime d) =>
-        d.year == selected.year && d.month == selected.month && d.day == selected.day;
+    bool sameDay(DateTime d) {
+      final local = d.toLocal();
+      return local.year == selected.year && local.month == selected.month && local.day == selected.day;
+    }
 
     final entries = svc.agenda.where((a) => sameDay(a.date)).toList()
-      ..sort((a, b) => a.date.compareTo(b.date));
+      ..sort((a, b) => a.date.toLocal().compareTo(b.date.toLocal()));
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -95,81 +106,28 @@ class _TimetablePageState extends State<TimetablePage> {
                       SizedBox(
                         height: 320,
                         child: Center(
-                          child: Text('Nothing scheduled',
+                          child: Text(t.nothingScheduled,
                               style: TextStyle(color: colors.mutedForeground)),
                         ),
                       ),
                     ],
                   )
-                : ListView(
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
-                    children: [
-                      for (final e in entries)
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 8),
-                          child: _EntryTile(entry: e),
-                        ),
-                    ],
+                : NowTicker(
+                    builder: (context, now) {
+                      final items = buildDaySchedule(entries);
+                      return ListView(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+                        children: [
+                          for (var i = 0; i < items.length; i++)
+                            TimelineRow(item: items[i], now: now, isLast: i == items.length - 1),
+                        ],
+                      );
+                    },
                   ),
           ),
         ),
       ],
     );
   }
-}
-
-class _EntryTile extends StatelessWidget {
-  final AgendaEntryDto entry;
-  const _EntryTile({required this.entry});
-
-  @override
-  Widget build(BuildContext context) {
-    final (label, color, icon) = _typeMeta(context, entry.entryType);
-    final time = _timeRange(entry.date);
-    return FTile(
-      prefix: Icon(icon, color: color),
-      title: Text(entry.title.isNotEmpty == true ? entry.title : label),
-      subtitle: Text([time, entry.place].whereType<String>().where((s) => s.isNotEmpty).join(' · ')),
-      suffix: _TypeBadge(label: label, color: color),
-    );
-  }
-
-  static String _timeRange(DateTime d) {
-    final h = d.hour.toString().padLeft(2, '0');
-    final m = d.minute.toString().padLeft(2, '0');
-    return '$h:$m';
-  }
-
-  static (String, Color, IconData) _typeMeta(BuildContext context, AgendaEntryType? t) {
-    final colors = context.theme.colors;
-    switch (t) {
-      case AgendaEntryType.test:
-        return ('Test', const Color(0xFFEF4444), FIcons.clipboardList);
-      case AgendaEntryType.event:
-        return ('Event', const Color(0xFF22C55E), FIcons.calendarHeart);
-      case AgendaEntryType.holiday:
-        return ('Holiday', const Color(0xFFF59E0B), FIcons.treePalm);
-      case AgendaEntryType.lesson:
-      default:
-        return ('Lesson', colors.primary, FIcons.bookOpen);
-    }
-  }
-}
-
-class _TypeBadge extends StatelessWidget {
-  final String label;
-  final Color color;
-  const _TypeBadge({required this.label, required this.color});
-
-  @override
-  Widget build(BuildContext context) => Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-        decoration: BoxDecoration(
-          color: color.withValues(alpha: 0.16),
-          borderRadius: BorderRadius.circular(6),
-        ),
-        child: Text(label,
-            style: TextStyle(color: color, fontWeight: FontWeight.w600, fontSize: 12)),
-      );
 }

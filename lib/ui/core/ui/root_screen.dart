@@ -7,6 +7,7 @@ import '../../../services/app_mode_service.dart';
 import '../../../services/auth_service.dart';
 import '../../../services/onboarding_service.dart';
 import '../../../services/private_account_store.dart';
+import '../../../services/school_data_service.dart';
 import '../../dashboard/dashboard_screen.dart';
 import '../../onboarding/onboarding_screen.dart';
 import '../../private/private_connect_flow.dart';
@@ -45,14 +46,20 @@ class _RootScreenState extends State<RootScreen> {
   Future<void> _refresh() async {
     if (AppModeService.instance.isPrivate) {
       final account = await PrivateAccountStore.instance.load();
+      if (account == null) SchoolDataService.instance.clear();
       if (mounted) setState(() => _ready = account != null);
       return;
     }
     final token = await AuthService.getAccessToken();
-    if (token == null) {
+    // A refresh that failed on the network still leaves a usable session - the
+    // dashboard shows its own offline state. Only a session that is really gone
+    // drops the active school and goes back to the sign-in screen.
+    final signedIn = token != null || await AuthService.hasSession();
+    if (!signedIn) {
       await ActiveAccountService.instance.clear();
+      SchoolDataService.instance.clear();
     }
-    if (mounted) setState(() => _ready = token != null);
+    if (mounted) setState(() => _ready = signedIn);
   }
 
   Future<void> _signIn({bool register = false}) async {
@@ -64,6 +71,7 @@ class _RootScreenState extends State<RootScreen> {
       await AuthService.signIn(register: register);
       await _refresh();
     } catch (e) {
+      if (!mounted) return;
       setState(() => _error = '$e');
     } finally {
       if (mounted) setState(() => _busy = false);
@@ -97,6 +105,8 @@ class _RootScreenState extends State<RootScreen> {
       await AuthService.signOut();
       await ActiveAccountService.instance.clear();
     }
+    SchoolDataService.instance.clear();
+    await SchoolDataService.instance.clearCache();
     await _refresh();
   }
 

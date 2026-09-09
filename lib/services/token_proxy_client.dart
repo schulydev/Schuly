@@ -98,17 +98,18 @@ class TokenProxyClient {
 
   Future<TokenPrivateData> fetchAll(PrivateAccount account) async {
     try {
-      return await _fetchAll(account, null);
+      return await _fetchAll(account);
     } on DioException catch (e) {
       if (e.response?.statusCode != 401) rethrow;
       final refreshed = await _refreshAccount(account);
       if (refreshed == null) rethrow;
-      return await _fetchAll(refreshed, refreshed);
+      // Persist the rotated context_state before fetching, so a failing fetch cannot drop it.
+      await PrivateAccountStore.instance.save(refreshed);
+      return await _fetchAll(refreshed);
     }
   }
 
-  Future<TokenPrivateData> _fetchAll(
-      PrivateAccount a, PrivateAccount? refreshed) async {
+  Future<TokenPrivateData> _fetchAll(PrivateAccount a) async {
     final info = await userInfo(a);
     final g = await grades(a);
     final e = await exams(a);
@@ -120,7 +121,6 @@ class TokenProxyClient {
       exams: e,
       absences: ab,
       agenda: ag,
-      refreshedAccount: refreshed,
     );
   }
 
@@ -131,13 +131,17 @@ class TokenProxyClient {
   /// Schuly regenerates the OTP itself, so the user is never prompted.
   Future<PrivateAccount?> _refreshAccount(PrivateAccount a) async {
     if (a.contextState != null) {
-      final r = await refresh(
-        basePath: a.statelessBasePath,
-        baseUrl: a.baseUrl,
-        userAgent: a.userAgent ?? '',
-        contextState: a.contextState!,
-      );
-      if (r.success && r.accessToken != null) return _applied(a, r);
+      try {
+        final r = await refresh(
+          basePath: a.statelessBasePath,
+          baseUrl: a.baseUrl,
+          userAgent: a.userAgent ?? '',
+          contextState: a.contextState!,
+        );
+        if (r.success && r.accessToken != null) return _applied(a, r);
+      } on DioException {
+        // An HTTP failure falls through to the credential relogin below.
+      }
     }
     return _credentialRelogin(a);
   }
@@ -148,15 +152,20 @@ class TokenProxyClient {
     if (email == null || email.isEmpty || password == null || password.isEmpty) {
       return null;
     }
-    final r = await login(
-      basePath: a.statelessBasePath,
-      baseUrl: a.baseUrl,
-      email: email,
-      password: password,
-      totpSecret: TotpService.secretOf(a.totpSecret),
-    );
-    if (!r.success || r.accessToken == null) return null;
-    return _applied(a, r);
+    try {
+      final r = await login(
+        basePath: a.statelessBasePath,
+        baseUrl: a.baseUrl,
+        email: email,
+        password: password,
+        totpSecret: TotpService.secretOf(a.totpSecret),
+      );
+      if (!r.success || r.accessToken == null) return null;
+      return _applied(a, r);
+    } on DioException {
+      // Let the caller rethrow the original 401 instead of this one.
+      return null;
+    }
   }
 
   PrivateAccount _applied(PrivateAccount a, PrivateRefreshResult r) =>
@@ -199,13 +208,11 @@ class TokenPrivateData {
   final List<PrivateExam> exams;
   final List<PrivateAbsence> absences;
   final List<PrivateAgendaEvent> agenda;
-  final PrivateAccount? refreshedAccount;
   const TokenPrivateData({
     required this.userInfo,
     required this.grades,
     required this.exams,
     required this.absences,
     required this.agenda,
-    this.refreshedAccount,
   });
 }
