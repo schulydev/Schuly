@@ -93,7 +93,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     }
     if (BackendConfig.isInsecure(raw)) {
       setState(() {
-        _serverError = 'Plaintext http:// is blocked by the platform. Use https:// - only localhost is exempt.';
+        _serverError = null;
         _serverOk = null;
       });
       return;
@@ -374,9 +374,9 @@ class _ServerPage extends StatelessWidget {
                 if (BackendConfig.isInsecure(urlController.text)) ...[
                   const SizedBox(height: 8),
                   Text(
-                    'Plaintext http:// is blocked by the platform. Use https:// - only localhost is exempt.',
+                    'Use https:// (http only works for localhost)',
                     textAlign: TextAlign.center,
-                    style: typography.xs.copyWith(color: colors.error),
+                    style: typography.xs.copyWith(color: colors.destructive),
                   ),
                 ],
               ],

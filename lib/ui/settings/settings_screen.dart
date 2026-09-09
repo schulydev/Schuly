@@ -192,7 +192,7 @@ class _ServerDialogState extends State<_ServerDialog> {
         return;
       }
       if (BackendConfig.isInsecure(raw)) {
-        setState(() => _error = 'Plaintext http:// is blocked by the platform. Use https:// - only localhost is exempt.');
+        setState(() => _error = null);
         return;
       }
       setState(() {
@@ -289,8 +289,8 @@ class _ServerDialogState extends State<_ServerDialog> {
             if (BackendConfig.isInsecure(_urlCtrl.text)) ...[
               const SizedBox(height: 6),
               Text(
-                'Plaintext http:// is blocked by the platform. Use https:// - only localhost is exempt.',
-                style: typography.xs.copyWith(color: colors.error),
+                'Use https:// (http only works for localhost)',
+                style: typography.xs.copyWith(color: colors.destructive),
               ),
             ],
           ],
