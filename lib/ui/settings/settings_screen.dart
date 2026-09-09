@@ -217,9 +217,11 @@ class _ServerDialogState extends State<_ServerDialog> {
       setState(() => _busy = true);
     }
 
+    // Log out of the provider we are still pointed at - after the switch the
+    // end-session call would land on the new backend's provider.
+    await AuthService.signOut();
     await BackendConfig.setUrl(url);
     OidcConfig.reset();
-    await AuthService.signOut();
     await PrivateAccountStore.instance.clear();
     await ActiveAccountService.instance.clear();
     SchoolDataService.instance.clear();

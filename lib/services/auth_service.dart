@@ -15,6 +15,27 @@ class AuthTokens {
   AuthTokens({required this.accessToken, this.idToken, this.refreshToken, this.accessTokenExpiry});
 }
 
+/// Why a token refresh failed.
+enum AuthFailure {
+  /// The provider rejected the refresh token (`invalid_grant` and the other
+  /// OAuth error codes) - the session is over and the user has to sign in again.
+  auth,
+
+  /// The provider couldn't be reached (no network, timeout, 5xx, a malformed
+  /// response). The stored tokens are still good: retry, don't sign out.
+  transport,
+}
+
+/// Outcome of [AuthService.refreshAccessToken]: either a fresh access token or
+/// the reason it couldn't be minted.
+class AuthRefresh {
+  const AuthRefresh.token(String this.accessToken) : failure = null;
+  const AuthRefresh.failed(AuthFailure this.failure) : accessToken = null;
+
+  final String? accessToken;
+  final AuthFailure? failure;
+}
+
 /// OIDC Authorization Code + PKCE login backed by [FlutterAppAuth], which drives
 /// the flow through ASWebAuthenticationSession (iOS) / Chrome Custom Tabs
 /// (Android) - the system browser, never a WebView, and never an in-app
@@ -66,6 +87,25 @@ class AuthService {
 
   static AuthorizationServiceConfiguration _serviceConfig(OidcSettings cfg) => AuthorizationServiceConfiguration(authorizationEndpoint: cfg.authorizationEndpoint, tokenEndpoint: cfg.tokenEndpoint, endSessionEndpoint: cfg.endSessionEndpoint);
 
+  /// The standard OAuth 2.0 error codes. The provider reporting any of them
+  /// means it looked at the grant and refused it; everything else that can come
+  /// out of the token call (no network, a timeout, a 5xx, a parse failure) is
+  /// transport trouble and must not cost the user their session.
+  static const _oauthErrors = {
+    FlutterAppAuthOAuthError.invalidRequest,
+    FlutterAppAuthOAuthError.invalidClient,
+    FlutterAppAuthOAuthError.invalidGrant,
+    FlutterAppAuthOAuthError.unauthorizedClient,
+    FlutterAppAuthOAuthError.unsupportedGrantType,
+    FlutterAppAuthOAuthError.invalidScope,
+  };
+
+  @visibleForTesting
+  static AuthFailure classifyRefreshError(Object error) {
+    final oauthError = error is FlutterAppAuthPlatformException ? error.platformErrorDetails.error : null;
+    return _oauthErrors.contains(oauthError) ? AuthFailure.auth : AuthFailure.transport;
+  }
+
   /// Runs the OIDC Authorization Code + PKCE flow in the system browser and
   /// exchanges the code for tokens. flutter_appauth applies PKCE (S256)
   /// automatically. When [register] is true the authorize request carries
@@ -112,7 +152,7 @@ class AuthService {
     if (token != null && expiry != null && expiry.isAfter(DateTime.now().add(const Duration(seconds: 30)))) {
       return token;
     }
-    return refreshAccessToken();
+    return (await refreshAccessToken()).accessToken;
   }
 
   static Future<String?> getRefreshToken() async {
@@ -120,13 +160,17 @@ class AuthService {
     return _storage.read(key: _kRefreshTokenKey);
   }
 
-  static Future<String?>? _refreshing;
+  /// Whether a refresh token is stored - the app has a session it can re-mint an
+  /// access token from, even while it can't reach the provider.
+  static Future<bool> hasSession() async => await getRefreshToken() != null;
 
-  static Future<String?> refreshAccessToken() => _refreshing ??= _refresh().whenComplete(() => _refreshing = null);
+  static Future<AuthRefresh>? _refreshing;
 
-  static Future<String?> _refresh() async {
+  static Future<AuthRefresh> refreshAccessToken() => _refreshing ??= _refresh().whenComplete(() => _refreshing = null);
+
+  static Future<AuthRefresh> _refresh() async {
     final refreshToken = await getRefreshToken();
-    if (refreshToken == null) return null;
+    if (refreshToken == null) return const AuthRefresh.failed(AuthFailure.auth);
     try {
       final cfg = await OidcConfig.settings();
       final result = await _appAuth.token(
@@ -140,9 +184,9 @@ class AuthService {
         ),
       );
       final tokens = await _persist(result);
-      return tokens.accessToken;
-    } catch (_) {
-      return null;
+      return AuthRefresh.token(tokens.accessToken);
+    } catch (e) {
+      return AuthRefresh.failed(classifyRefreshError(e));
     }
   }
 
@@ -160,21 +204,41 @@ class AuthService {
     }
   }
 
-  static Future<void> signOut() async {
+  static Future<bool>? _signingOut;
+
+  /// Ends the session. [endSession] drives the provider's logout page in the
+  /// system browser; pass false for a silent local sign-out (an expired session
+  /// has nothing left to log out of). Memoised, because N requests failing at
+  /// once must not open N browser tabs. Returns true only for the call that
+  /// actually ended a live session, so exactly one caller reports it.
+  static Future<bool> signOut({bool endSession = true}) {
+    final pending = _signingOut;
+    if (pending != null) return pending.then((_) => false);
+    return _signingOut = _signOut(endSession: endSession).whenComplete(() => _signingOut = null);
+  }
+
+  static Future<bool> _signOut({required bool endSession}) async {
+    await _ensureMigrated();
     final idToken = await _storage.read(key: _kIdTokenKey);
-    try {
-      final cfg = await OidcConfig.settings();
-      if (cfg.endSessionEndpoint != null) {
-        await _appAuth.endSession(
-          EndSessionRequest(
-            idTokenHint: idToken,
-            postLogoutRedirectUrl: cfg.redirectUri,
-            serviceConfiguration: _serviceConfig(cfg),
-            allowInsecureConnections: cfg.allowInsecureConnections,
-          ),
-        );
+    final hadSession = idToken != null || _accessToken != null || await _storage.read(key: _kRefreshTokenKey) != null;
+    // No id token means there is no provider session to end - private mode, or
+    // one already dropped - and endSession would just strand the user on a
+    // logout page for an account they never signed into.
+    if (endSession && idToken != null) {
+      try {
+        final cfg = await OidcConfig.settings();
+        if (cfg.endSessionEndpoint != null) {
+          await _appAuth.endSession(
+            EndSessionRequest(
+              idTokenHint: idToken,
+              postLogoutRedirectUrl: cfg.redirectUri,
+              serviceConfiguration: _serviceConfig(cfg),
+              allowInsecureConnections: cfg.allowInsecureConnections,
+            ),
+          );
+        }
+      } catch (_) {
       }
-    } catch (_) {
     }
     _accessToken = null;
     _accessTokenExpiry = null;
@@ -186,5 +250,6 @@ class AuthService {
     await prefs.remove(_kIdTokenKey);
     await prefs.remove(_kRefreshTokenKey);
     sessionEpoch.value++;
+    return hadSession;
   }
 }
