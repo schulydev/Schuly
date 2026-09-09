@@ -78,6 +78,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
     await svc.refresh();
     if (!mounted) return;
     if (svc.schools.isEmpty) {
+      // Empty only counts when the server actually answered - a cold start with no
+      // network must not greet the user with the add-school flow.
       if (svc.error != null) {
         SchoolDataService.instance.settle();
         return;

@@ -5,6 +5,7 @@ import 'package:schuly_api/schuly_api.dart';
 
 import 'active_account_service.dart';
 import 'api_client.dart';
+import 'api_time.dart';
 import 'app_mode_service.dart';
 import 'private_account_store.dart';
 import 'private_data_adapter.dart';
@@ -92,12 +93,12 @@ class SchoolDataService extends ChangeNotifier {
 
     _me = snapshot.me;
     _exams = snapshot.exams;
-    _agenda = snapshot.agenda;
-    _absences = snapshot.absences;
-    _classes = snapshot.classes;
+    _agenda = ApiTime.agenda(snapshot.agenda);
+    _absences = ApiTime.absences(snapshot.absences);
+    _classes = ApiTime.classes(snapshot.classes);
     _reports = snapshot.reports;
     _teachers = snapshot.teachers;
-    _documents = snapshot.documents;
+    _documents = ApiTime.documents(snapshot.documents);
     _snapshotKey = key;
     _hasLoaded = true;
     notifyListeners();
@@ -158,21 +159,18 @@ class SchoolDataService extends ChangeNotifier {
           .where((e) => e.schoolId == schoolId)
           .toList(growable: false);
 
-      final agenda = ((responses[1].data as BuiltList<AgendaEntryDto>?) ?? BuiltList<AgendaEntryDto>())
+      final agenda = ApiTime.agenda(((responses[1].data as BuiltList<AgendaEntryDto>?) ?? BuiltList<AgendaEntryDto>())
           .where((a) =>
               (meId != null && a.schoolUserId == meId) ||
               a.entryType == AgendaEntryType.holiday ||
               myClassIds.isEmpty ||
-              myClassIds.contains(a.classId))
-          .toList(growable: false);
+              myClassIds.contains(a.classId)));
 
-      final absences = ((responses[2].data as BuiltList<AbsenceDto>?) ?? BuiltList<AbsenceDto>())
-          .where((a) => a.schoolId == schoolId)
-          .toList(growable: false);
+      final absences = ApiTime.absences(((responses[2].data as BuiltList<AbsenceDto>?) ?? BuiltList<AbsenceDto>())
+          .where((a) => a.schoolId == schoolId));
 
-      final classes = ((responses[3].data as BuiltList<ClassDto>?) ?? BuiltList<ClassDto>())
-          .where((c) => c.schoolId == schoolId)
-          .toList(growable: false);
+      final classes = ApiTime.classes(((responses[3].data as BuiltList<ClassDto>?) ?? BuiltList<ClassDto>())
+          .where((c) => c.schoolId == schoolId));
 
       final reports = ((responses[4].data as BuiltList<SemesterReportDto>?) ?? BuiltList<SemesterReportDto>())
           .where((r) => meId == null || r.schoolUserId == meId)
@@ -182,9 +180,8 @@ class SchoolDataService extends ChangeNotifier {
           .where((t) => t.schoolId == schoolId)
           .toList(growable: false);
 
-      final documents = ((responses[6].data as BuiltList<StudentDocumentDto>?) ?? BuiltList<StudentDocumentDto>())
-          .where((d) => meId == null || d.schoolUserId == meId)
-          .toList(growable: false);
+      final documents = ApiTime.documents(((responses[6].data as BuiltList<StudentDocumentDto>?) ?? BuiltList<StudentDocumentDto>())
+          .where((d) => meId == null || d.schoolUserId == meId));
 
       if (gen != _generation) return;
       _me = mine;
@@ -234,9 +231,6 @@ class SchoolDataService extends ChangeNotifier {
       List<ClassDto> classes;
       if (account.accessToken != null) {
         final d = await TokenProxyClient.instance.fetchAll(account);
-        if (d.refreshedAccount != null) {
-          await PrivateAccountStore.instance.save(d.refreshedAccount!);
-        }
         mine = PrivateDataAdapter.schoolUser(d.userInfo, d.grades, d.absences);
         exams = PrivateDataAdapter.exams(d.exams);
         absences = PrivateDataAdapter.absencesList(d.absences);

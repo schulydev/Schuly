@@ -35,7 +35,9 @@ class SchulyApp extends StatelessWidget {
           ],
           supportedLocales: AppLocalizations.supportedLocales,
           themeMode: ThemeService.instance.mode,
+          // ignore: experimental_member_use
           theme: FThemes.zinc.light.toApproximateMaterialTheme(),
+          // ignore: experimental_member_use
           darkTheme: FThemes.zinc.dark.toApproximateMaterialTheme(),
           builder: (ctx, child) {
             final mode = ThemeService.instance.mode;

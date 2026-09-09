@@ -50,8 +50,8 @@
 	<!-- OIDC (account mode) returns to the app via the backend's custom
 	     redirect scheme (schulytest://callback), driven by flutter_appauth over
 	     ASWebAuthenticationSession. Registering it here lets iOS route the login
-	     callback back into the app. The scheme matches the backend's redirectUri
-	     / OidcConfig fallback. -->
+	     callback back into the app. Must match OidcConfig.redirectScheme
+	     (lib/config/oidc_config.dart). -->
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>

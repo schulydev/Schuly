@@ -4,11 +4,13 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 import 'package:open_filex/open_filex.dart';
+import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:schuly_api/schuly_api.dart';
 
 import '../../services/active_account_service.dart';
 import '../../services/api_client.dart';
+import '../../services/api_error.dart';
 import '../../services/school_data_service.dart';
 
 class DocumentsScreen extends StatefulWidget {
@@ -74,16 +76,26 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
         '/api/documents/$id',
         options: Options(responseType: ResponseType.bytes),
       );
+      final bytes = res.data;
+      if (bytes == null) throw Exception('The server returned an empty document.');
       final dir = await getTemporaryDirectory();
-      final name = doc.fileName?.isNotEmpty == true ? doc.fileName! : 'document-$id';
-      final file = File('${dir.path}/$name');
-      await file.writeAsBytes(res.data ?? const []);
-      await OpenFilex.open(file.path);
+      // The server-supplied name is untrusted - keep its last segment only.
+      final base = p.basename(doc.fileName ?? '');
+      final unusable = base.isEmpty || base == '.' || base == '..' || p.isAbsolute(base);
+      final file = File(p.join(dir.path, unusable ? 'document-$id' : base));
+      await file.writeAsBytes(bytes);
+      final result = await OpenFilex.open(file.path);
+      if (result.type != ResultType.done && mounted) {
+        showFToast(
+          context: context,
+          title: Text('Could not open document: ${result.message}'),
+        );
+      }
     } catch (e) {
       if (mounted) {
         showFToast(
           context: context,
-          title: Text('Could not open document: $e'),
+          title: Text('Could not open document: ${ApiError.describe(e)}'),
         );
       }
     } finally {

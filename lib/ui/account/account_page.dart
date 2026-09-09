@@ -75,9 +75,13 @@ class _AccountPageState extends State<AccountPage> {
 
   Future<void> _syncNow() async {
     final active = ActiveAccountService.instance.active;
-    final accountId = active?.pluginAccountId;
-    final base = active?.pluginBasePath;
-    if (accountId == null || base == null || base.isEmpty) {
+    if (active == null) {
+      setState(() => _syncMsg = 'No connected account to sync');
+      return;
+    }
+    final target = await ActiveAccountService.instance.resolvePluginTarget(active);
+    if (target == null) {
+      if (!mounted) return;
       setState(() => _syncMsg = 'No connected account to sync');
       return;
     }
@@ -87,7 +91,7 @@ class _AccountPageState extends State<AccountPage> {
     });
     try {
       await ApiClient.instance.dio.post<dynamic>(
-        '$base/accounts/$accountId/sync',
+        '${target.basePath}/accounts/${target.accountId}/sync',
         options: ApiClient.handled(),
       );
       await SchoolDataService.instance.refresh();
