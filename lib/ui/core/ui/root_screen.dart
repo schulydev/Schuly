@@ -49,10 +49,14 @@ class _RootScreenState extends State<RootScreen> {
       return;
     }
     final token = await AuthService.getAccessToken();
-    if (token == null) {
+    // A refresh that failed on the network still leaves a usable session - the
+    // dashboard shows its own offline state. Only a session that is really gone
+    // drops the active school and goes back to the sign-in screen.
+    final signedIn = token != null || await AuthService.hasSession();
+    if (!signedIn) {
       await ActiveAccountService.instance.clear();
     }
-    if (mounted) setState(() => _ready = token != null);
+    if (mounted) setState(() => _ready = signedIn);
   }
 
   Future<void> _signIn({bool register = false}) async {

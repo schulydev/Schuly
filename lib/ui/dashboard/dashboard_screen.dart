@@ -78,7 +78,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
     final svc = ActiveAccountService.instance;
     await svc.refresh();
     if (!mounted) return;
-    if (svc.schools.isEmpty) {
+    // Empty only counts when the server actually answered - a cold start with no
+    // network must not greet the user with the add-school flow.
+    if (svc.schools.isEmpty && svc.error == null) {
       await _addSchool();
     } else {
       _lastSchoolId = svc.active?.id;
