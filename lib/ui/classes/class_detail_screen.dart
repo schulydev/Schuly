@@ -4,6 +4,7 @@ import 'package:schuly_api/schuly_api.dart';
 
 import '../../config/oidc_config.dart';
 import '../../services/api_client.dart';
+import '../../services/api_time.dart';
 import '../core/grade_color.dart';
 
 class ClassDetailScreen extends StatefulWidget {
@@ -35,7 +36,8 @@ class _ClassDetailScreenState extends State<ClassDetailScreen> {
       final res = await ApiClient.instance.api
           .getClassApi()
           .apiClassSearchGet(classId: widget.classId);
-      if (mounted) setState(() => _class = res.data);
+      final data = res.data;
+      if (mounted) setState(() => _class = data == null ? null : ApiTime.schoolClass(data));
     } catch (e) {
       if (mounted) setState(() => _error = e);
     } finally {

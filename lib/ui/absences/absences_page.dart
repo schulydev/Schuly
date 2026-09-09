@@ -4,6 +4,7 @@ import 'package:forui/forui.dart';
 import 'package:schuly_api/schuly_api.dart';
 
 import '../../services/api_client.dart';
+import '../../services/api_time.dart';
 import '../../services/school_data_service.dart';
 
 class AbsencesPage extends StatelessWidget {
@@ -156,8 +157,8 @@ class _AbsenceFormState extends State<_AbsenceForm> {
           createAbsenceCommand: CreateAbsenceCommand((b) => b
             ..reason = _reason.text.trim()
             ..type = _type
-            ..from = _from.toUtc()
-            ..until = _until.toUtc()
+            ..from = ApiTime.utcDate(_from)
+            ..until = ApiTime.utcDate(_until)
             ..schoolUserId = schoolUserId),
         );
       } else {
@@ -166,8 +167,8 @@ class _AbsenceFormState extends State<_AbsenceForm> {
             ..absenceId = existing.id
             ..reason = _reason.text.trim()
             ..type = _type
-            ..from = _from.toUtc()
-            ..until = _until.toUtc()
+            ..from = ApiTime.utcDate(_from)
+            ..until = ApiTime.utcDate(_until)
             ..schoolUserId = existing.schoolUserId),
         );
       }
