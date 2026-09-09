@@ -35,73 +35,77 @@ class _SettingsScreenState extends State<SettingsScreen> {
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
         children: [
           if (!AppModeService.instance.isPrivate) ...[
-            FTileGroup(
-              label: const Text('Account'),
-              children: [
-                FTile(
-                  prefix: const Icon(FIcons.circleUser),
-                  title: const Text('Manage account'),
-                  subtitle: const Text('Profile, password & security'),
-                  suffix: const Icon(FIcons.externalLink),
-                  onPress: _openAccountConsole,
-                ),
-                FTile(
-                  prefix: const Icon(FIcons.image),
-                  title: const Text('Profile picture'),
-                  subtitle: const Text('Upload or change your picture'),
-                  suffix: const Icon(FIcons.externalLink),
-                  onPress: _openProfilePicture,
-                ),
-              ],
+            const _SectionLabel('Account'),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: FTile(
+                prefix: const Icon(FIcons.circleUser),
+                title: const Text('Manage account'),
+                subtitle: const Text('Profile, password & security'),
+                suffix: const Icon(FIcons.externalLink),
+                onPress: _openAccountConsole,
+              ),
             ),
-            const SizedBox(height: 20),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: FTile(
+                prefix: const Icon(FIcons.image),
+                title: const Text('Profile picture'),
+                subtitle: const Text('Upload or change your picture'),
+                suffix: const Icon(FIcons.externalLink),
+                onPress: _openProfilePicture,
+              ),
+            ),
+            const SizedBox(height: 12),
           ],
+          const _SectionLabel('Appearance'),
           AnimatedBuilder(
             animation: ThemeService.instance,
-            builder: (context, _) => FSelectTileGroup<ThemeMode>(
-              label: const Text('Appearance'),
-              control: FMultiValueControl.managedRadio(
-                initial: ThemeService.instance.mode,
-                onChange: (selected) {
-                  if (selected.isNotEmpty) {
-                    ThemeService.instance.setMode(selected.first);
-                  }
-                },
-              ),
-              children: const [
-                FSelectTile(value: ThemeMode.system, title: Text('System')),
-                FSelectTile(value: ThemeMode.light, title: Text('Light')),
-                FSelectTile(value: ThemeMode.dark, title: Text('Dark')),
-              ],
+            builder: (context, _) {
+              final mode = ThemeService.instance.mode;
+              final colors = context.theme.colors;
+              Widget modeTile(ThemeMode value, String label) => Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: FTile(
+                      title: Text(label),
+                      suffix: mode == value
+                          ? Icon(FIcons.check, color: colors.primary)
+                          : null,
+                      onPress: () => ThemeService.instance.setMode(value),
+                    ),
+                  );
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  modeTile(ThemeMode.system, 'System'),
+                  modeTile(ThemeMode.light, 'Light'),
+                  modeTile(ThemeMode.dark, 'Dark'),
+                ],
+              );
+            },
+          ),
+          const SizedBox(height: 12),
+          const _SectionLabel('Server'),
+          Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: FTile(
+              prefix: const Icon(FIcons.server),
+              title: const Text('Backend server'),
+              subtitle: Text(server),
+              suffix: const Icon(FIcons.chevronRight),
+              onPress: _openServerDialog,
             ),
           ),
-          const SizedBox(height: 20),
-          FTileGroup(
-            label: const Text('Server'),
-            children: [
-              FTile(
-                prefix: const Icon(FIcons.server),
-                title: const Text('Backend server'),
-                subtitle: Text(server),
-                suffix: const Icon(FIcons.chevronRight),
-                onPress: _openServerDialog,
-              ),
-            ],
-          ),
-          const SizedBox(height: 20),
-          FTileGroup(
-            label: const Text('About'),
-            children: [
-              FTile(
-                prefix: const Icon(FIcons.fileText),
-                title: const Text('Open-source licenses'),
-                suffix: const Icon(FIcons.chevronRight),
-                onPress: () => showLicensePage(
-                  context: context,
-                  applicationName: 'Schuly',
-                ),
-              ),
-            ],
+          const SizedBox(height: 12),
+          const _SectionLabel('About'),
+          FTile(
+            prefix: const Icon(FIcons.fileText),
+            title: const Text('Open-source licenses'),
+            suffix: const Icon(FIcons.chevronRight),
+            onPress: () => showLicensePage(
+              context: context,
+              applicationName: 'Schuly',
+            ),
           ),
         ],
       ),
@@ -147,6 +151,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
     if (changed != true || !mounted) return;
     Navigator.of(context).popUntil((route) => route.isFirst);
+  }
+}
+
+class _SectionLabel extends StatelessWidget {
+  final String text;
+  const _SectionLabel(this.text);
+  @override
+  Widget build(BuildContext context) {
+    final c = context.theme.colors;
+    final t = context.theme.typography;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(4, 0, 4, 8),
+      child: Text(text.toUpperCase(),
+          style: t.xs.copyWith(color: c.mutedForeground, fontWeight: FontWeight.w600, letterSpacing: 0.5)),
+    );
   }
 }
 
