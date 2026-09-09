@@ -25,14 +25,29 @@ class BreakCard extends StatelessWidget {
 
     final label = item.isLunch ? t.lunchBreakDuration(item.minutes) : t.breakDuration(item.minutes);
     final range = showTime ? '${formatHm(item.start)} – ${formatHm(item.end)}' : null;
+    final base = range == null ? label : '$label · $range';
+    final remaining = current ? t.minutesLeft(item.remainingMinutesAt(now)) : null;
+
+    // The timeline's tile is narrow, so "details" ellipsises there - fold the
+    // remaining-minutes text into the title instead. The home page keeps the
+    // roomier "details" slot.
+    final Widget title;
+    if (!showTime && remaining != null) {
+      title = Text.rich(TextSpan(children: [
+        TextSpan(text: '$base · ', style: TextStyle(color: colors.mutedForeground)),
+        TextSpan(text: remaining, style: TextStyle(color: colors.primary, fontWeight: FontWeight.w600)),
+      ]));
+    } else {
+      title = Text(base, style: TextStyle(color: colors.mutedForeground));
+    }
 
     return FTile(
       style: (style) =>
           style.copyWith(contentStyle: (content) => content.copyWith(padding: const EdgeInsetsDirectional.fromSTEB(15, 6, 10, 6))),
       prefix: Icon(item.isLunch ? FIcons.utensils : FIcons.coffee, size: 16, color: colors.mutedForeground),
-      title: Text(range == null ? label : '$label · $range', style: TextStyle(color: colors.mutedForeground)),
-      details: current
-          ? Text(t.minutesLeft(item.remainingMinutesAt(now)), style: TextStyle(color: colors.primary, fontWeight: FontWeight.w600))
+      title: title,
+      details: showTime && remaining != null
+          ? Text(remaining, style: TextStyle(color: colors.primary, fontWeight: FontWeight.w600))
           : null,
     );
   }

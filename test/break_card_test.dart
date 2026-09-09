@@ -43,4 +43,15 @@ void main() {
 
     expect(find.textContaining('min left'), findsNothing);
   });
+
+  testWidgets('a current break in a narrow timeline tile still shows the full min-left text', (tester) async {
+    final item = BreakItem(start: DateTime(2026, 1, 5, 9), end: DateTime(2026, 1, 5, 9, 15));
+    await tester.pumpWidget(_wrap(SizedBox(
+      width: 260,
+      child: BreakCard(item: item, now: DateTime(2026, 1, 5, 9, 9), showTime: false),
+    )));
+
+    expect(find.textContaining('6 min left'), findsOneWidget);
+    expect(find.textContaining('...'), findsNothing);
+  });
 }

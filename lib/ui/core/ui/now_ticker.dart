@@ -12,13 +12,14 @@ class NowTicker extends StatefulWidget {
   State<NowTicker> createState() => _NowTickerState();
 }
 
-class _NowTickerState extends State<NowTicker> {
+class _NowTickerState extends State<NowTicker> with WidgetsBindingObserver {
   DateTime _now = DateTime.now();
   late Timer _timer;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _startTimer();
   }
 
@@ -35,8 +36,18 @@ class _NowTickerState extends State<NowTicker> {
     }
   }
 
+  // The periodic timer alone can leave `now` stale for as long as the app was
+  // backgrounded (Android/iOS suspend timers while paused) - refresh
+  // immediately when the app comes back to the foreground instead of waiting
+  // for the next tick.
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) setState(() => _now = DateTime.now());
+  }
+
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _timer.cancel();
     super.dispose();
   }

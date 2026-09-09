@@ -27,17 +27,31 @@ class LessonTile extends StatelessWidget {
     final time = item.hasEndTime
         ? '${formatHm(item.start)} – ${formatHm(item.end)}'
         : formatHm(item.start);
-    final subtitle = [
+    final subtitleText = [
       if (showTime) time,
       item.entry.place,
       item.entry.description,
     ].where((s) => s != null && s.isNotEmpty).join(' · ');
+    final remaining = current ? t.minutesLeft(item.remainingMinutesAt(now)) : null;
+
+    // The timeline's tile is narrow, so "details" ellipsises there - fold the
+    // remaining-minutes text into the subtitle instead. The home page keeps
+    // the roomier "details" slot.
+    final Widget? subtitle;
+    if (!showTime && remaining != null) {
+      subtitle = Text.rich(TextSpan(children: [
+        if (subtitleText.isNotEmpty) TextSpan(text: '$subtitleText · '),
+        TextSpan(text: remaining, style: TextStyle(color: colors.primary)),
+      ]));
+    } else {
+      subtitle = subtitleText.isEmpty ? null : Text(subtitleText);
+    }
 
     return FTile(
       prefix: Icon(style.icon, color: current ? colors.primary : null),
       title: Text(item.entry.title.isNotEmpty ? item.entry.title : style.label),
-      subtitle: subtitle.isEmpty ? null : Text(subtitle),
-      details: current ? Text(t.minutesLeft(item.remainingMinutesAt(now))) : null,
+      subtitle: subtitle,
+      details: showTime && remaining != null ? Text(remaining) : null,
     );
   }
 }

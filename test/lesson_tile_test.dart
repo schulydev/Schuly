@@ -58,4 +58,16 @@ void main() {
 
     expect(find.textContaining('min left'), findsNothing);
   });
+
+  testWidgets('a current lesson in a narrow timeline tile still shows the full min-left text', (tester) async {
+    final entry = _entry(date: DateTime(2026, 1, 5, 8), endDate: DateTime(2026, 1, 5, 8, 45));
+    final item = LessonItem(entry);
+    await tester.pumpWidget(_wrap(SizedBox(
+      width: 260,
+      child: LessonTile(item: item, now: DateTime(2026, 1, 5, 8, 39), showTime: false),
+    )));
+
+    expect(find.textContaining('6 min left'), findsOneWidget);
+    expect(find.textContaining('...'), findsNothing);
+  });
 }
