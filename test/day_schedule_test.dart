@@ -191,4 +191,26 @@ void main() {
       expect(item.start, utc.toLocal());
     });
   });
+
+  group('stripShortCode', () {
+    test('strips a trailing 4-letter short code', () {
+      expect(stripShortCode('Bachofner Manuel (BaMa)'), 'Bachofner Manuel');
+    });
+
+    test('strips a different trailing short code', () {
+      expect(stripShortCode('Moor Andy (MoAn)'), 'Moor Andy');
+    });
+
+    test('leaves a parenthesised phrase that is not a short code untouched', () {
+      expect(stripShortCode('Excursion (bring lunch)'), 'Excursion (bring lunch)');
+    });
+
+    test('leaves a plain string untouched', () {
+      expect(stripShortCode('Sport'), 'Sport');
+    });
+
+    test('leaves an empty string untouched', () {
+      expect(stripShortCode(''), '');
+    });
+  });
 }

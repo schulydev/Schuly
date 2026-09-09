@@ -20,6 +20,7 @@ class BreakCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.theme.colors;
+    final typography = context.theme.typography;
     final t = AppLocalizations.of(context)!;
     final current = item.isCurrentAt(now);
 
@@ -34,17 +35,17 @@ class BreakCard extends StatelessWidget {
     final Widget title;
     if (!showTime && remaining != null) {
       title = Text.rich(TextSpan(children: [
-        TextSpan(text: '$base · ', style: TextStyle(color: colors.mutedForeground)),
-        TextSpan(text: remaining, style: TextStyle(color: colors.primary, fontWeight: FontWeight.w600)),
+        TextSpan(text: '$base · ', style: typography.sm.copyWith(color: colors.mutedForeground)),
+        TextSpan(text: remaining, style: typography.sm.copyWith(color: colors.primary, fontWeight: FontWeight.w600)),
       ]));
     } else {
-      title = Text(base, style: TextStyle(color: colors.mutedForeground));
+      title = Text(base, style: typography.sm.copyWith(color: colors.mutedForeground));
     }
 
     return FTile(
       style: (style) =>
           style.copyWith(contentStyle: (content) => content.copyWith(padding: const EdgeInsetsDirectional.fromSTEB(15, 6, 10, 6))),
-      prefix: Icon(item.isLunch ? FIcons.utensils : FIcons.coffee, size: 16, color: colors.mutedForeground),
+      prefix: Icon(item.isLunch ? FIcons.utensils : FIcons.coffee, size: 14, color: colors.mutedForeground),
       title: title,
       details: showTime && remaining != null
           ? Text(remaining, style: TextStyle(color: colors.primary, fontWeight: FontWeight.w600))

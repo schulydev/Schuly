@@ -27,10 +27,11 @@ class LessonTile extends StatelessWidget {
     final time = item.hasEndTime
         ? '${formatHm(item.start)} – ${formatHm(item.end)}'
         : formatHm(item.start);
+    final description = item.entry.description;
     final subtitleText = [
       if (showTime) time,
       item.entry.place,
-      item.entry.description,
+      description == null ? null : stripShortCode(description),
     ].where((s) => s != null && s.isNotEmpty).join(' · ');
     final remaining = current ? t.minutesLeft(item.remainingMinutesAt(now)) : null;
 

@@ -87,3 +87,9 @@ String formatHm(DateTime d) {
   final m = d.minute.toString().padLeft(2, '0');
   return '$h:$m';
 }
+
+final RegExp _shortCodeSuffix = RegExp(r'\s*\([A-Za-z]{2,6}\)\s*$');
+
+// The API's description field appends a trailing teacher short code, e.g.
+// "Bachofner Manuel (BaMa)". Strip it for display; leave anything else as is.
+String stripShortCode(String s) => s.replaceFirst(_shortCodeSuffix, '');
