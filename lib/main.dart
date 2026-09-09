@@ -4,6 +4,7 @@ import 'package:forui/forui.dart';
 import 'config/backend_config.dart';
 import 'l10n/app_localizations.dart';
 import 'services/app_mode_service.dart';
+import 'services/school_data_service.dart';
 import 'services/theme_service.dart';
 import 'services/toast_service.dart';
 import 'ui/core/ui/root_screen.dart';
@@ -13,6 +14,7 @@ Future<void> main() async {
   await BackendConfig.load();
   await AppModeService.instance.load();
   await ThemeService.instance.load();
+  await SchoolDataService.instance.loadCached();
   runApp(const SchulyApp());
 }
 

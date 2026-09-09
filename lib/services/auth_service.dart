@@ -20,11 +20,13 @@ class AuthTokens {
 /// (Android) - the system browser, never a WebView, and never an in-app
 /// credential form. The client is public (no secret); PKCE (S256) replaces it.
 class AuthService {
-  // Only the refresh token and id token are persisted. The access token is kept
-  // in memory (per OAuth mobile best practice) and re-minted from the refresh
-  // token on cold start.
+  // The refresh token, id token, and access token (with its expiry) are all
+  // persisted in the keystore, so a cold start can skip the refresh round trip
+  // while the cached access token is still valid.
   static const _kRefreshTokenKey = 'auth.refresh_token';
   static const _kIdTokenKey = 'auth.id_token';
+  static const _kAccessTokenKey = 'auth.access_token.v2';
+  static const _kAccessTokenExpiryKey = 'auth.access_token_expiry';
   // Legacy key from the old hand-rolled flow that persisted the access token.
   static const _kLegacyAccessTokenKey = 'auth.access_token';
 
@@ -97,13 +99,36 @@ class AuthService {
     if (tokens.idToken != null) {
       await _storage.write(key: _kIdTokenKey, value: tokens.idToken!);
     }
+    await _storage.write(key: _kAccessTokenKey, value: tokens.accessToken);
+    if (tokens.accessTokenExpiry != null) {
+      await _storage.write(key: _kAccessTokenExpiryKey, value: tokens.accessTokenExpiry!.toIso8601String());
+    } else {
+      await _storage.delete(key: _kAccessTokenExpiryKey);
+    }
     return tokens;
+  }
+
+  static Future<void>? _restore;
+  static Future<void> _ensureRestored() => _restore ??= _restoreAccessToken();
+
+  static Future<void> _restoreAccessToken() async {
+    await _ensureMigrated();
+    final token = await _storage.read(key: _kAccessTokenKey);
+    final expiry = await _storage.read(key: _kAccessTokenExpiryKey);
+    if (token == null || expiry == null) return;
+    final parsed = DateTime.tryParse(expiry);
+    if (parsed == null) return;
+    if (_accessToken == null) {
+      _accessToken = token;
+      _accessTokenExpiry = parsed;
+    }
   }
 
   /// Returns a usable access token: the in-memory one if still valid, otherwise
   /// a freshly refreshed one. Null when there's no session (no refresh token or
   /// the refresh failed) - the caller should treat that as signed-out.
   static Future<String?> getAccessToken() async {
+    await _ensureRestored();
     final token = _accessToken;
     final expiry = _accessTokenExpiry;
     if (token != null && expiry != null && expiry.isAfter(DateTime.now().add(const Duration(seconds: 30)))) {
@@ -178,10 +203,13 @@ class AuthService {
     await _storage.delete(key: _kRefreshTokenKey);
     await _storage.delete(key: _kIdTokenKey);
     await _storage.delete(key: _kLegacyAccessTokenKey);
+    await _storage.delete(key: _kAccessTokenKey);
+    await _storage.delete(key: _kAccessTokenExpiryKey);
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_kLegacyAccessTokenKey);
     await prefs.remove(_kIdTokenKey);
     await prefs.remove(_kRefreshTokenKey);
+    _restore = null;
     sessionEpoch.value++;
   }
 }
