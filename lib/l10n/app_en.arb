@@ -19,5 +19,110 @@
   "notifyAbsences": "Absences",
   "notifyAgenda": "Agenda",
   "notifyGradeValue": "Show the grade",
-  "notifyGradeValueSubtitle": "Include the mark in the notification text"
+  "notifyGradeValueSubtitle": "Include the mark in the notification text",
+  "privacySectionLabel": "Privacy",
+  "@privacySectionLabel": {
+    "description": "Settings section label for data export / account deletion"
+  },
+  "exportDataTitle": "Export my data",
+  "@exportDataTitle": {
+    "description": "Settings tile title to download an account data export"
+  },
+  "exportDataSubtitle": "Download a copy as JSON",
+  "@exportDataSubtitle": {
+    "description": "Settings tile subtitle for the data export action"
+  },
+  "exportDataFailed": "Export failed",
+  "@exportDataFailed": {
+    "description": "Toast title when the data export request fails"
+  },
+  "deleteAccountTitle": "Delete account",
+  "@deleteAccountTitle": {
+    "description": "Settings tile title to delete the account"
+  },
+  "deleteAccountSubtitle": "Permanently delete your account and data",
+  "@deleteAccountSubtitle": {
+    "description": "Settings tile subtitle for the account deletion action"
+  },
+  "deleteAccountFailed": "Delete failed",
+  "@deleteAccountFailed": {
+    "description": "Toast title when the account deletion request fails"
+  },
+  "deleteAccountDialogTitle": "Delete account?",
+  "@deleteAccountDialogTitle": {
+    "description": "Title of the account deletion confirmation dialog"
+  },
+  "deleteAccountDialogBody": "This permanently deletes your account and all data on the server. This can't be undone.",
+  "@deleteAccountDialogBody": {
+    "description": "Body text of the account deletion confirmation dialog"
+  },
+  "deleteAccountConfirmLabel": "Type DELETE to confirm",
+  "@deleteAccountConfirmLabel": {
+    "description": "Label for the text field that must contain DELETE to enable the destructive button"
+  },
+  "deleteAccountCancel": "Cancel",
+  "@deleteAccountCancel": {
+    "description": "Cancel button in the account deletion dialog"
+  },
+  "deleteAccountConfirm": "Delete account",
+  "@deleteAccountConfirm": {
+    "description": "Destructive confirm button in the account deletion dialog"
+  },
+  "privacyPrivateModeTitle": "Nothing stored on our servers",
+  "@privacyPrivateModeTitle": {
+    "description": "Explanatory tile title shown in private mode instead of export/delete"
+  },
+  "privacyPrivateModeSubtitle": "Private mode keeps your data on this device only. Use Sign out to disconnect and remove it.",
+  "@privacyPrivateModeSubtitle": {
+    "description": "Explanatory tile subtitle shown in private mode, pointing at the disconnect (sign out) action"
+  },
+  "lessonFrom": "from",
+  "@lessonFrom": {
+    "description": "Label preceding a lesson's start time"
+  },
+  "lessonUntil": "until",
+  "@lessonUntil": {
+    "description": "Label preceding a lesson's end time"
+  },
+  "breakDuration": "Break ({minutes} min)",
+  "@breakDuration": {
+    "description": "Label for a short break with its duration in minutes",
+    "placeholders": {
+      "minutes": {"type": "int"}
+    }
+  },
+  "lunchBreakDuration": "Lunch break ({minutes} min)",
+  "@lunchBreakDuration": {
+    "description": "Label for a lunch break with its duration in minutes",
+    "placeholders": {
+      "minutes": {"type": "int"}
+    }
+  },
+  "minutesLeft": "{minutes} min left",
+  "@minutesLeft": {
+    "description": "Remaining time for the current lesson or break",
+    "placeholders": {
+      "minutes": {"type": "int"}
+    }
+  },
+  "nothingScheduled": "Nothing scheduled",
+  "@nothingScheduled": {
+    "description": "Empty state when a selected day has no agenda entries"
+  },
+  "entryTypeLesson": "Lesson",
+  "@entryTypeLesson": {
+    "description": "Agenda entry type label for a regular lesson"
+  },
+  "entryTypeTest": "Test",
+  "@entryTypeTest": {
+    "description": "Agenda entry type label for a test"
+  },
+  "entryTypeEvent": "Event",
+  "@entryTypeEvent": {
+    "description": "Agenda entry type label for an event"
+  },
+  "entryTypeHoliday": "Holiday",
+  "@entryTypeHoliday": {
+    "description": "Agenda entry type label for a holiday"
+  }
 }

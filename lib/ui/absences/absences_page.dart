@@ -4,6 +4,7 @@ import 'package:forui/forui.dart';
 import 'package:schuly_api/schuly_api.dart';
 
 import '../../services/api_client.dart';
+import '../../services/api_time.dart';
 import '../../services/school_data_service.dart';
 
 class AbsencesPage extends StatelessWidget {
@@ -156,8 +157,8 @@ class _AbsenceFormState extends State<_AbsenceForm> {
           createAbsenceCommand: CreateAbsenceCommand((b) => b
             ..reason = _reason.text.trim()
             ..type = _type
-            ..from = _from.toUtc()
-            ..until = _until.toUtc()
+            ..from = ApiTime.utcDate(_from)
+            ..until = ApiTime.utcDate(_until)
             ..schoolUserId = schoolUserId),
         );
       } else {
@@ -166,15 +167,17 @@ class _AbsenceFormState extends State<_AbsenceForm> {
             ..absenceId = existing.id
             ..reason = _reason.text.trim()
             ..type = _type
-            ..from = _from.toUtc()
-            ..until = _until.toUtc()
+            ..from = ApiTime.utcDate(_from)
+            ..until = ApiTime.utcDate(_until)
             ..schoolUserId = existing.schoolUserId),
         );
       }
       if (mounted) Navigator.of(context).pop(true);
     } on DioException catch (e) {
+      if (!mounted) return;
       setState(() => _error = 'HTTP ${e.response?.statusCode}: ${e.response?.data}');
     } catch (e) {
+      if (!mounted) return;
       setState(() => _error = e.toString());
     } finally {
       if (mounted) setState(() => _busy = false);
@@ -189,6 +192,7 @@ class _AbsenceFormState extends State<_AbsenceForm> {
       await ApiClient.instance.api.getAbsencesApi().apiAbsencesIdDelete(id: existing!.id!);
       if (mounted) Navigator.of(context).pop(true);
     } on DioException catch (e) {
+      if (!mounted) return;
       setState(() {
         _busy = false;
         _error = 'HTTP ${e.response?.statusCode}: ${e.response?.data}';

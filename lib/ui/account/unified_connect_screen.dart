@@ -67,6 +67,7 @@ class _UnifiedConnectScreenState extends State<UnifiedConnectScreen> {
       TextInput.finishAutofillContext();
       if (mounted) Navigator.of(context).pop(accountId);
     } catch (e) {
+      if (!mounted) return;
       setState(() => _error = ApiError.describe(e));
     } finally {
       if (mounted) setState(() => _busy = false);

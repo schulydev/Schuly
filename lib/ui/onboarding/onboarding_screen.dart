@@ -91,6 +91,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       });
       return;
     }
+    if (BackendConfig.isInsecure(raw)) {
+      setState(() {
+        _serverError = null;
+        _serverOk = null;
+      });
+      return;
+    }
     setState(() {
       _probing = true;
       _serverError = null;
@@ -367,9 +374,9 @@ class _ServerPage extends StatelessWidget {
                 if (BackendConfig.isInsecure(urlController.text)) ...[
                   const SizedBox(height: 8),
                   Text(
-                    'Plaintext http:// - your login would be sent unencrypted. Use https:// unless this is a trusted local network.',
+                    'Use https:// (http only works for localhost)',
                     textAlign: TextAlign.center,
-                    style: typography.xs.copyWith(color: colors.error),
+                    style: typography.xs.copyWith(color: colors.destructive),
                   ),
                 ],
               ],

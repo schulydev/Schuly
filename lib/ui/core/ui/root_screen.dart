@@ -10,9 +10,28 @@ import '../../../services/auth_service.dart';
 import '../../../services/onboarding_service.dart';
 import '../../../services/private_account_store.dart';
 import '../../../services/push_service.dart';
+import '../../../services/school_data_service.dart';
 import '../../dashboard/dashboard_screen.dart';
 import '../../onboarding/onboarding_screen.dart';
 import '../../private/private_connect_flow.dart';
+
+/// Full sign-out: clears tokens, the active school, cached school data, and
+/// any on-disk private-mode credentials, then drops the app back to account
+/// mode. Shared by the sign-out action and account deletion.
+Future<void> signOutAndClear() async {
+  if (AppModeService.instance.isPrivate) {
+    await PrivateAccountStore.instance.clear();
+    await AppModeService.instance.setMode(AppMode.account);
+  } else {
+    // Delete the device on the backend before signing out, while the access
+    // token is still valid.
+    await PushService.instance.onSignOut();
+    await AuthService.signOut();
+    await ActiveAccountService.instance.clear();
+  }
+  SchoolDataService.instance.clear();
+  await SchoolDataService.instance.clearCache();
+}
 
 class RootScreen extends StatefulWidget {
   const RootScreen({super.key});
@@ -48,14 +67,20 @@ class _RootScreenState extends State<RootScreen> {
   Future<void> _refresh() async {
     if (AppModeService.instance.isPrivate) {
       final account = await PrivateAccountStore.instance.load();
+      if (account == null) SchoolDataService.instance.clear();
       if (mounted) setState(() => _ready = account != null);
       return;
     }
     final token = await AuthService.getAccessToken();
-    if (token == null) {
+    // A refresh that failed on the network still leaves a usable session - the
+    // dashboard shows its own offline state. Only a session that is really gone
+    // drops the active school and goes back to the sign-in screen.
+    final signedIn = token != null || await AuthService.hasSession();
+    if (!signedIn) {
       await ActiveAccountService.instance.clear();
+      SchoolDataService.instance.clear();
     }
-    if (mounted) setState(() => _ready = token != null);
+    if (mounted) setState(() => _ready = signedIn);
     if (token != null) unawaited(PushService.instance.onSignedIn());
   }
 
@@ -68,6 +93,7 @@ class _RootScreenState extends State<RootScreen> {
       await AuthService.signIn(register: register);
       await _refresh();
     } catch (e) {
+      if (!mounted) return;
       setState(() => _error = '$e');
     } finally {
       if (mounted) setState(() => _busy = false);
@@ -94,16 +120,7 @@ class _RootScreenState extends State<RootScreen> {
   }
 
   Future<void> _signOut() async {
-    if (AppModeService.instance.isPrivate) {
-      await PrivateAccountStore.instance.clear();
-      await AppModeService.instance.setMode(AppMode.account);
-    } else {
-      // Delete the device on the backend before signing out, while the access
-      // token is still valid.
-      await PushService.instance.onSignOut();
-      await AuthService.signOut();
-      await ActiveAccountService.instance.clear();
-    }
+    await signOutAndClear();
     await _refresh();
   }
 
