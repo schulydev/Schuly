@@ -36,6 +36,7 @@ dependencies:
   cupertino_icons: ^1.0.8
   dio: ^5.9.2
   built_collection: ^5.1.1
+  built_value: ^8.4.0
   schuly_api:
     path: lib/api
   flutter_localizations:

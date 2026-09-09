@@ -48,7 +48,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
     final id = ActiveAccountService.instance.active?.id;
     if (id != _lastSchoolId) {
       _lastSchoolId = id;
-      SchoolDataService.instance.clear();
       SchoolDataService.instance.refresh();
     }
   }
@@ -78,13 +77,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
     final svc = ActiveAccountService.instance;
     await svc.refresh();
     if (!mounted) return;
-    // Empty only counts when the server actually answered - a cold start with no
-    // network must not greet the user with the add-school flow.
-    if (svc.schools.isEmpty && svc.error == null) {
-      await _addSchool();
-    } else {
-      _lastSchoolId = svc.active?.id;
+    if (svc.schools.isEmpty) {
+      // Empty only counts when the server actually answered - a cold start with no
+      // network must not greet the user with the add-school flow.
+      if (svc.error != null) {
+        SchoolDataService.instance.settle();
+        return;
+      }
       await SchoolDataService.instance.refresh();
+      await _addSchool();
     }
   }
 
@@ -134,19 +135,33 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ),
         ];
 
-        Widget body;
-        if (data.loading && data.me == null) {
-          body = const Center(child: FCircularProgress());
-        } else if (data.error != null && data.me == null) {
-          body = Center(
-            child: Padding(
-              padding: const EdgeInsets.all(24),
-              child: SelectableText('Failed to load: ${data.error}',
-                  style: TextStyle(color: colors.destructive)),
+        Widget body = IndexedStack(index: _index, children: pages);
+        if (data.error != null && data.me == null) {
+          body = Stack(children: [
+            body,
+            Positioned.fill(
+              child: ColoredBox(
+                color: colors.background,
+                child: Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(24),
+                    child: SelectableText('Failed to load: ${data.error}',
+                        style: TextStyle(color: colors.destructive)),
+                  ),
+                ),
+              ),
             ),
-          );
-        } else {
-          body = IndexedStack(index: _index, children: pages);
+          ]);
+        } else if (!data.hasLoaded) {
+          body = Stack(children: [
+            body,
+            Positioned.fill(
+              child: ColoredBox(
+                color: colors.background,
+                child: const Center(child: FCircularProgress()),
+              ),
+            ),
+          ]);
         }
 
         return FScaffold(

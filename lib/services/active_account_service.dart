@@ -160,4 +160,9 @@ class ActiveAccountService extends ChangeNotifier {
     await prefs.remove(_activeIdKey);
     notifyListeners();
   }
+
+  static Future<String?> persistedActiveId() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_activeIdKey);
+  }
 }

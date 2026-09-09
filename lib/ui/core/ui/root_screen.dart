@@ -7,6 +7,7 @@ import '../../../services/app_mode_service.dart';
 import '../../../services/auth_service.dart';
 import '../../../services/onboarding_service.dart';
 import '../../../services/private_account_store.dart';
+import '../../../services/school_data_service.dart';
 import '../../dashboard/dashboard_screen.dart';
 import '../../onboarding/onboarding_screen.dart';
 import '../../private/private_connect_flow.dart';
@@ -45,6 +46,7 @@ class _RootScreenState extends State<RootScreen> {
   Future<void> _refresh() async {
     if (AppModeService.instance.isPrivate) {
       final account = await PrivateAccountStore.instance.load();
+      if (account == null) SchoolDataService.instance.clear();
       if (mounted) setState(() => _ready = account != null);
       return;
     }
@@ -55,6 +57,7 @@ class _RootScreenState extends State<RootScreen> {
     final signedIn = token != null || await AuthService.hasSession();
     if (!signedIn) {
       await ActiveAccountService.instance.clear();
+      SchoolDataService.instance.clear();
     }
     if (mounted) setState(() => _ready = signedIn);
   }
@@ -102,6 +105,8 @@ class _RootScreenState extends State<RootScreen> {
       await AuthService.signOut();
       await ActiveAccountService.instance.clear();
     }
+    SchoolDataService.instance.clear();
+    await SchoolDataService.instance.clearCache();
     await _refresh();
   }
 
