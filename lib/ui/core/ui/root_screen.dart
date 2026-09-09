@@ -68,6 +68,7 @@ class _RootScreenState extends State<RootScreen> {
       await AuthService.signIn(register: register);
       await _refresh();
     } catch (e) {
+      if (!mounted) return;
       setState(() => _error = '$e');
     } finally {
       if (mounted) setState(() => _busy = false);

@@ -4,6 +4,7 @@ import 'package:schuly_api/schuly_api.dart';
 
 import 'active_account_service.dart';
 import 'api_client.dart';
+import 'api_time.dart';
 import 'app_mode_service.dart';
 import 'private_account_store.dart';
 import 'private_data_adapter.dart';
@@ -99,23 +100,20 @@ class SchoolDataService extends ChangeNotifier {
       };
       final meId = _me?.id;
       final agenda = await _api.getAgendasApi().apiAgendasGet();
-      _agenda = (agenda.data ?? BuiltList<AgendaEntryDto>())
+      _agenda = ApiTime.agenda((agenda.data ?? BuiltList<AgendaEntryDto>())
           .where((a) =>
               (meId != null && a.schoolUserId == meId) ||
               a.entryType == AgendaEntryType.holiday ||
               myClassIds.isEmpty ||
-              myClassIds.contains(a.classId))
-          .toList(growable: false);
+              myClassIds.contains(a.classId)));
 
       final absences = await _api.getAbsencesApi().apiAbsencesGet();
-      _absences = (absences.data ?? BuiltList<AbsenceDto>())
-          .where((a) => a.schoolId == schoolId)
-          .toList(growable: false);
+      _absences = ApiTime.absences(
+          (absences.data ?? BuiltList<AbsenceDto>()).where((a) => a.schoolId == schoolId));
 
       final classes = await _api.getClassApi().apiClassGet();
-      _classes = (classes.data ?? BuiltList<ClassDto>())
-          .where((c) => c.schoolId == schoolId)
-          .toList(growable: false);
+      _classes = ApiTime.classes(
+          (classes.data ?? BuiltList<ClassDto>()).where((c) => c.schoolId == schoolId));
 
       final reports = await _api.getSemesterReportsApi().apiSemesterReportsGet();
       _reports = (reports.data ?? BuiltList<SemesterReportDto>())
@@ -128,9 +126,8 @@ class SchoolDataService extends ChangeNotifier {
           .toList(growable: false);
 
       final documents = await _api.getStudentDocumentsApi().apiDocumentsGet();
-      _documents = (documents.data ?? BuiltList<StudentDocumentDto>())
-          .where((d) => meId == null || d.schoolUserId == meId)
-          .toList(growable: false);
+      _documents = ApiTime.documents((documents.data ?? BuiltList<StudentDocumentDto>())
+          .where((d) => meId == null || d.schoolUserId == meId));
     } catch (e) {
       _error = e;
     } finally {
@@ -152,9 +149,6 @@ class SchoolDataService extends ChangeNotifier {
     try {
       if (account.accessToken != null) {
         final d = await TokenProxyClient.instance.fetchAll(account);
-        if (d.refreshedAccount != null) {
-          await PrivateAccountStore.instance.save(d.refreshedAccount!);
-        }
         _me = PrivateDataAdapter.schoolUser(d.userInfo, d.grades, d.absences);
         _exams = PrivateDataAdapter.exams(d.exams);
         _absences = PrivateDataAdapter.absencesList(d.absences);

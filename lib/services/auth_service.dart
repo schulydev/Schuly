@@ -113,6 +113,9 @@ class AuthService {
   /// registration screen first.
   static Future<AuthTokens> signIn({bool register = false}) async {
     final cfg = await OidcConfig.settings();
+    if (!cfg.schemeIsRegistered) {
+      throw Exception('This backend redirects to ${cfg.callbackScheme}://, which this app build cannot receive. Configure its redirect URI as ${OidcConfig.redirectScheme}://callback.');
+    }
     final result = await _appAuth.authorizeAndExchangeCode(
       AuthorizationTokenRequest(
         cfg.clientId,

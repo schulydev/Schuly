@@ -68,6 +68,7 @@ class _PrivateConnectScreenState extends State<PrivateConnectScreen> {
         await _connectScrape(baseUrl, name, basePath);
       }
     } catch (e) {
+      if (!mounted) return;
       setState(() => _error = ApiError.describe(e));
     } finally {
       if (mounted) setState(() => _busy = false);
@@ -87,6 +88,7 @@ class _PrivateConnectScreenState extends State<PrivateConnectScreen> {
       totpSecret: totpSecret,
     );
     if (!res.success || res.accessToken == null) {
+      if (!mounted) return;
       setState(() => _error = res.message ?? 'Login failed');
       return;
     }

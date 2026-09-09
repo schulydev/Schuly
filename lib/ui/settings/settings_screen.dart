@@ -191,6 +191,10 @@ class _ServerDialogState extends State<_ServerDialog> {
         setState(() => _error = 'Enter a valid http(s) URL.');
         return;
       }
+      if (BackendConfig.isInsecure(raw)) {
+        setState(() => _error = null);
+        return;
+      }
       setState(() {
         _busy = true;
         _error = null;
@@ -287,8 +291,8 @@ class _ServerDialogState extends State<_ServerDialog> {
             if (BackendConfig.isInsecure(_urlCtrl.text)) ...[
               const SizedBox(height: 6),
               Text(
-                'Plaintext http:// - your login would be sent unencrypted. Use https:// unless this is a trusted local network.',
-                style: typography.xs.copyWith(color: colors.error),
+                'Use https:// (http only works for localhost)',
+                style: typography.xs.copyWith(color: colors.destructive),
               ),
             ],
           ],
