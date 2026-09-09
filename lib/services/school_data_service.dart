@@ -149,9 +149,6 @@ class SchoolDataService extends ChangeNotifier {
     try {
       if (account.accessToken != null) {
         final d = await TokenProxyClient.instance.fetchAll(account);
-        if (d.refreshedAccount != null) {
-          await PrivateAccountStore.instance.save(d.refreshedAccount!);
-        }
         _me = PrivateDataAdapter.schoolUser(d.userInfo, d.grades, d.absences);
         _exams = PrivateDataAdapter.exams(d.exams);
         _absences = PrivateDataAdapter.absencesList(d.absences);
