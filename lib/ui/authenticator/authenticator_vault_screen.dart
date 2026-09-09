@@ -122,6 +122,7 @@ class _AuthenticatorVaultScreenState extends State<AuthenticatorVaultScreen> {
           : _rows.isEmpty
               ? _empty(context)
               : ListView.separated(
+                  padding: EdgeInsets.only(bottom: MediaQuery.viewPaddingOf(context).bottom),
                   itemCount: _rows.length,
                   separatorBuilder: (_, _) => const SizedBox(height: 12),
                   itemBuilder: (_, i) => _CodeCard(

@@ -83,6 +83,7 @@ class _UnifiedConnectScreenState extends State<UnifiedConnectScreen> {
         prefixes: [FHeaderAction.back(onPress: () => Navigator.of(context).pop())],
       ),
       child: SingleChildScrollView(
+        padding: EdgeInsets.only(bottom: MediaQuery.viewPaddingOf(context).bottom),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           spacing: 16,

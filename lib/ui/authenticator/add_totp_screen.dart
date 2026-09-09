@@ -100,6 +100,7 @@ class _AddTotpScreenState extends State<AddTotpScreen> {
       ),
       child: LayoutBuilder(
         builder: (context, constraints) => SingleChildScrollView(
+          padding: EdgeInsets.only(bottom: MediaQuery.viewPaddingOf(context).bottom),
           child: ConstrainedBox(
             constraints: BoxConstraints(minHeight: constraints.maxHeight),
             child: IntrinsicHeight(
