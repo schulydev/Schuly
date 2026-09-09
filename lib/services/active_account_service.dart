@@ -127,11 +127,24 @@ class ActiveAccountService extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> removeSchool(MySchool school) async {
-    final accountId = school.pluginAccountId;
+  /// Resolves a school's plugin account, re-running detection when the id is
+  /// missing - startup detection is best-effort and can fail transiently.
+  Future<({String accountId, String basePath})?> resolvePluginTarget(MySchool school) async {
+    final id = school.pluginAccountId;
     final base = school.pluginBasePath;
-    if (accountId == null || base == null || base.isEmpty) return;
-    await ApiClient.instance.dio.delete<dynamic>('$base/accounts/$accountId');
+    if (id != null && base != null && base.isNotEmpty) return (accountId: id, basePath: base);
+    final detected = (await _detectPluginAccounts())[school.id];
+    final detectedBase = detected?.pluginBasePath;
+    if (detected == null || detectedBase == null || detectedBase.isEmpty) return null;
+    return (accountId: detected.accountId, basePath: detectedBase);
+  }
+
+  Future<void> removeSchool(MySchool school) async {
+    final target = await resolvePluginTarget(school);
+    if (target == null) {
+      throw Exception('Could not resolve the connected account for ${school.name}. Check your connection and try again.');
+    }
+    await ApiClient.instance.dio.delete<dynamic>('${target.basePath}/accounts/${target.accountId}');
     if (_activeId == school.id) {
       _activeId = null;
       final prefs = await SharedPreferences.getInstance();
@@ -146,5 +159,10 @@ class ActiveAccountService extends ChangeNotifier {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_activeIdKey);
     notifyListeners();
+  }
+
+  static Future<String?> persistedActiveId() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_activeIdKey);
   }
 }

@@ -20,5 +20,15 @@
   "deleteAccountCancel": "Abbrechen",
   "deleteAccountConfirm": "Konto löschen",
   "privacyPrivateModeTitle": "Nichts wird auf unseren Servern gespeichert",
-  "privacyPrivateModeSubtitle": "Der private Modus speichert deine Daten nur auf diesem Gerät. Verwende „Abmelden“, um die Verbindung zu trennen und die Daten zu entfernen."
+  "privacyPrivateModeSubtitle": "Der private Modus speichert deine Daten nur auf diesem Gerät. Verwende „Abmelden“, um die Verbindung zu trennen und die Daten zu entfernen.",
+  "lessonFrom": "von",
+  "lessonUntil": "bis",
+  "breakDuration": "Pause ({minutes} min)",
+  "lunchBreakDuration": "Mittagspause ({minutes} min)",
+  "minutesLeft": "noch {minutes} min",
+  "nothingScheduled": "Nichts geplant",
+  "entryTypeLesson": "Lektion",
+  "entryTypeTest": "Prüfung",
+  "entryTypeEvent": "Termin",
+  "entryTypeHoliday": "Ferien"
 }
