@@ -6,6 +6,34 @@ import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:schuly_api/schuly_api.dart';
 
+/// Snapshot-only stand-in for the generated client's `Iso8601DateTimeSerializer`.
+/// DTOs reach [SchoolDataSnapshot] with local `DateTime`s (converted by
+/// `ApiTime` before they enter [SchoolDataService]), but the generated
+/// serializer throws on anything that isn't UTC. This accepts either kind,
+/// always writing UTC on the wire and decoding back to UTC - the same kind
+/// the generated deserializer produces - so cached and freshly-fetched values
+/// agree before `ApiTime` runs over them.
+class _SnapshotDateTimeSerializer implements PrimitiveSerializer<DateTime> {
+  const _SnapshotDateTimeSerializer();
+
+  final bool structured = false;
+  @override
+  final Iterable<Type> types = const [DateTime];
+  @override
+  final String wireName = 'DateTime';
+
+  @override
+  Object serialize(Serializers serializers, DateTime dateTime, {FullType specifiedType = FullType.unspecified}) => dateTime.toUtc().toIso8601String();
+
+  @override
+  DateTime deserialize(Serializers serializers, Object? serialized, {FullType specifiedType = FullType.unspecified}) => DateTime.parse(serialized as String).toUtc();
+}
+
+/// Codec used for the disk snapshot only. Built from [standardSerializers]
+/// (keeping [StandardJsonPlugin]) with the DateTime serializer swapped for
+/// [_SnapshotDateTimeSerializer].
+final Serializers _snapshotSerializers = (standardSerializers.toBuilder()..add(const _SnapshotDateTimeSerializer())).build();
+
 class SchoolDataSnapshot {
   final SchoolUserDto? me;
   final List<ExamDto> exams;
@@ -44,7 +72,7 @@ class SchoolDataSnapshot {
       SchoolUserDto? me;
       if (rawMe != null) {
         try {
-          me = standardSerializers.deserializeWith(SchoolUserDto.serializer, rawMe);
+          me = _snapshotSerializers.deserializeWith(SchoolUserDto.serializer, rawMe);
         } catch (e, st) {
           debugPrint('SchoolDataSnapshot.fromJson: failed to decode me, dropping: $e\n$st');
         }
@@ -67,7 +95,7 @@ class SchoolDataSnapshot {
 
   static Object? _encodeOne<T>(T item, Serializer<T> serializer, String label) {
     try {
-      return standardSerializers.serializeWith(serializer, item);
+      return _snapshotSerializers.serializeWith(serializer, item);
     } catch (e, st) {
       debugPrint('SchoolDataSnapshot.toJson: failed to encode $label, dropping: $e\n$st');
       return null;
@@ -78,7 +106,7 @@ class SchoolDataSnapshot {
     final out = <Object?>[];
     for (final item in items) {
       try {
-        out.add(standardSerializers.serializeWith(serializer, item));
+        out.add(_snapshotSerializers.serializeWith(serializer, item));
       } catch (e, st) {
         debugPrint('SchoolDataSnapshot.toJson: failed to encode a $label item, skipping: $e\n$st');
       }
@@ -90,7 +118,7 @@ class SchoolDataSnapshot {
     final out = <T>[];
     for (final item in raw as List<dynamic>) {
       try {
-        final decoded = standardSerializers.deserializeWith(serializer, item as Map<String, dynamic>);
+        final decoded = _snapshotSerializers.deserializeWith(serializer, item as Map<String, dynamic>);
         if (decoded != null) out.add(decoded);
       } catch (e, st) {
         debugPrint('SchoolDataSnapshot.fromJson: failed to decode a $label item, skipping: $e\n$st');

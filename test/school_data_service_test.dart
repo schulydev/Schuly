@@ -194,6 +194,57 @@ void main() {
       expect(restored.documents.single.notifiedAt, DateTime.utc(2026, 4, 1));
     });
 
+    test('accepts local DateTimes and preserves the instant', () {
+      // ApiTime converts DTO DateTimes to local time before they reach the
+      // cache (see lib/services/api_time.dart), so the snapshot codec must
+      // not throw on non-UTC values like the generated Iso8601DateTimeSerializer
+      // does.
+      final now = DateTime.now().toLocal();
+      final later = now.add(const Duration(hours: 1));
+
+      final agenda = [
+        AgendaEntryDto((b) => b
+          ..id = 'ag-1'
+          ..entryType = AgendaEntryType.lesson
+          ..title = 'Math'
+          ..date = now
+          ..endDate = later),
+      ];
+
+      final absences = [
+        AbsenceDto((b) => b
+          ..id = 'a-1'
+          ..reason = 'Sick'
+          ..type = AbsenceType.absence
+          ..from = now
+          ..until = later
+          ..schoolUserId = 'su-1'
+          ..schoolId = 's-1'),
+      ];
+
+      final documents = [
+        StudentDocumentDto((b) => b
+          ..id = 'd-1'
+          ..schoolUserId = 'su-1'
+          ..title = 'Report'
+          ..notifiedAt = now
+          ..createdAt = later),
+      ];
+
+      final snapshot = SchoolDataSnapshot(me: null, exams: const [], agenda: agenda, absences: absences, classes: const [], reports: const [], teachers: const [], documents: documents);
+
+      final encoded = jsonEncode(snapshot.toJson());
+      final restored = SchoolDataSnapshot.fromJson(jsonDecode(encoded) as Map<String, dynamic>);
+
+      expect(restored, isNotNull);
+      expect(restored!.agenda.single.date.millisecondsSinceEpoch, now.millisecondsSinceEpoch);
+      expect(restored.agenda.single.endDate?.millisecondsSinceEpoch, later.millisecondsSinceEpoch);
+      expect(restored.absences.single.from.millisecondsSinceEpoch, now.millisecondsSinceEpoch);
+      expect(restored.absences.single.until.millisecondsSinceEpoch, later.millisecondsSinceEpoch);
+      expect(restored.documents.single.notifiedAt?.millisecondsSinceEpoch, now.millisecondsSinceEpoch);
+      expect(restored.documents.single.createdAt?.millisecondsSinceEpoch, later.millisecondsSinceEpoch);
+    });
+
     test('non-finite doubles do not break jsonEncode and round-trip intact', () {
       // built_value's DoubleSerializer turns NaN/Infinity into sentinel
       // strings ('NaN' / 'INF' / '-INF') before jsonEncode ever sees a raw
