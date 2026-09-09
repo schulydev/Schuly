@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
-import 'package:schuly_api/schuly_api.dart';
-
-import '../../l10n/app_localizations.dart';
 import 'break_card.dart';
 import 'day_schedule.dart';
-import 'entry_style.dart';
+import 'lesson_tile.dart';
 
 class TimelineRow extends StatelessWidget {
   const TimelineRow({super.key, required this.item, required this.now, required this.isLast});
@@ -52,69 +49,11 @@ class TimelineRow extends StatelessWidget {
                       border: Border(bottom: BorderSide(color: colors.border.withValues(alpha: 0.4))),
                     ),
               child: switch (item) {
-                LessonItem lesson => _LessonContent(lesson: lesson, now: now),
-                BreakItem brk => BreakCard(item: brk, now: now),
+                LessonItem lesson => LessonTile(item: lesson, now: now, showTime: false),
+                BreakItem brk => BreakCard(item: brk, now: now, showTime: false),
               },
             ),
           ),
-        ],
-      ),
-    );
-  }
-}
-
-class _LessonContent extends StatelessWidget {
-  const _LessonContent({required this.lesson, required this.now});
-
-  final LessonItem lesson;
-  final DateTime now;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = context.theme.colors;
-    final typography = context.theme.typography;
-    final t = AppLocalizations.of(context)!;
-    final style = entryStyle(context, lesson.entry.entryType);
-    final current = lesson.isCurrentAt(now);
-    final borderColor = current ? colors.primary : colors.border;
-
-    final subtitle = [lesson.entry.place, lesson.entry.description]
-        .where((s) => s != null && s.isNotEmpty)
-        .join(' - ');
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: borderColor, width: current ? 1.5 : 1),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Expanded(
-                child: Text(lesson.entry.title,
-                    style: typography.sm.copyWith(fontWeight: FontWeight.w600),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis),
-              ),
-              if (lesson.entry.entryType != AgendaEntryType.lesson) ...[
-                const SizedBox(width: 6),
-                EntryTypeBadge(label: style.label, color: style.color),
-              ],
-            ],
-          ),
-          if (subtitle.isNotEmpty || current) ...[
-            const SizedBox(height: 2),
-            Text(
-              [
-                if (subtitle.isNotEmpty) subtitle,
-                if (current) t.minutesLeft(lesson.remainingMinutesAt(now)),
-              ].join(' · '),
-              style: typography.xs.copyWith(color: colors.mutedForeground),
-            ),
-          ],
         ],
       ),
     );
