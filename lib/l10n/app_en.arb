@@ -9,5 +9,15 @@
   "tabGrades": "Grades",
   "tabAbsences": "Absences",
   "tabAccount": "Account",
-  "signIn": "Sign in"
+  "signIn": "Sign in",
+  "notifications": "Notifications",
+  "pushNotifications": "Push notifications",
+  "pushNotificationsSubtitle": "New grades, absences and agenda changes",
+  "pushUnavailable": "Not available in this build",
+  "pushDenied": "Blocked - turn notifications on for Schuly in the system settings",
+  "notifyGrades": "Grades",
+  "notifyAbsences": "Absences",
+  "notifyAgenda": "Agenda",
+  "notifyGradeValue": "Show the grade",
+  "notifyGradeValueSubtitle": "Include the mark in the notification text"
 }

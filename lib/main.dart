@@ -1,9 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 
 import 'config/backend_config.dart';
 import 'l10n/app_localizations.dart';
 import 'services/app_mode_service.dart';
+import 'services/firebase_push.dart';
 import 'services/theme_service.dart';
 import 'services/toast_service.dart';
 import 'ui/core/ui/root_screen.dart';
@@ -14,6 +17,9 @@ Future<void> main() async {
   await AppModeService.instance.load();
   await ThemeService.instance.load();
   runApp(const SchulyApp());
+  // Firebase touches disk and the network, so it starts after the first frame
+  // and never delays startup.
+  unawaited(startPush());
 }
 
 class SchulyApp extends StatelessWidget {

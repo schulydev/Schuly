@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 
@@ -7,6 +9,7 @@ import '../../../services/app_mode_service.dart';
 import '../../../services/auth_service.dart';
 import '../../../services/onboarding_service.dart';
 import '../../../services/private_account_store.dart';
+import '../../../services/push_service.dart';
 import '../../dashboard/dashboard_screen.dart';
 import '../../onboarding/onboarding_screen.dart';
 import '../../private/private_connect_flow.dart';
@@ -53,6 +56,7 @@ class _RootScreenState extends State<RootScreen> {
       await ActiveAccountService.instance.clear();
     }
     if (mounted) setState(() => _ready = token != null);
+    if (token != null) unawaited(PushService.instance.onSignedIn());
   }
 
   Future<void> _signIn({bool register = false}) async {
@@ -94,6 +98,9 @@ class _RootScreenState extends State<RootScreen> {
       await PrivateAccountStore.instance.clear();
       await AppModeService.instance.setMode(AppMode.account);
     } else {
+      // Delete the device on the backend before signing out, while the access
+      // token is still valid.
+      await PushService.instance.onSignOut();
       await AuthService.signOut();
       await ActiveAccountService.instance.clear();
     }
