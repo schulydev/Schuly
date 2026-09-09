@@ -1,11 +1,15 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:forui/forui.dart';
 
 import '../../services/active_account_service.dart';
+import '../../services/api_client.dart';
 import '../../services/app_mode_service.dart';
 import '../../services/auth_service.dart';
 import '../../services/private_account_store.dart';
+import '../../services/profile_refresh_requests.dart';
 import '../../services/school_data_service.dart';
 import '../absences/absences_page.dart';
 import '../account/account_page.dart';
@@ -24,16 +28,18 @@ class DashboardScreen extends StatefulWidget {
   State<DashboardScreen> createState() => _DashboardScreenState();
 }
 
-class _DashboardScreenState extends State<DashboardScreen> {
+class _DashboardScreenState extends State<DashboardScreen> with WidgetsBindingObserver {
   String? _pictureUrl;
   String? _userName;
   String? _userEmail;
   String? _privateTitle;
   int _index = 0;
+  DateTime? _lastClaimsRead;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     ActiveAccountService.instance.addListener(_onActiveChanged);
     TabRequests.pending.addListener(_onTabRequested);
     _onTabRequested();
@@ -42,9 +48,51 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     ActiveAccountService.instance.removeListener(_onActiveChanged);
     TabRequests.pending.removeListener(_onTabRequested);
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state != AppLifecycleState.resumed) return;
+    if (AppModeService.instance.isPrivate) return;
+    final requested = ProfileRefreshRequests.pending.value;
+    final stale = _lastClaimsRead == null ||
+        DateTime.now().difference(_lastClaimsRead!) > const Duration(seconds: 60);
+    if (!requested && !stale) return;
+    unawaited(_refreshProfile(bustCache: requested));
+  }
+
+  /// Re-mints the access token (which - per [AuthService] - also persists a
+  /// fresh id token) and re-reads its claims, the same claims [_bootstrap]
+  /// reads on first launch. Called on resume so a picture uploaded on the
+  /// external Keycloak avatar page shows up without an app restart.
+  Future<void> _refreshProfile({required bool bustCache}) async {
+    ProfileRefreshRequests.clear();
+    await AuthService.refreshAccessToken();
+    final claims = await AuthService.getIdTokenClaims();
+    _lastClaimsRead = DateTime.now();
+    if (mounted && claims != null) {
+      var picture = claims['picture'] as String?;
+      // The Keycloak avatar URL is stable per user, so NetworkImage would
+      // keep serving the cached image unless the URL itself changes.
+      if (bustCache && picture != null && picture.isNotEmpty) {
+        final sep = picture.contains('?') ? '&' : '?';
+        picture = '$picture${sep}v=${DateTime.now().millisecondsSinceEpoch}';
+      }
+      setState(() {
+        _pictureUrl = picture;
+        _userName = claims['name'] as String?;
+        _userEmail = claims['email'] as String?;
+      });
+    }
+    try {
+      await ApiClient.instance.api.getAuthApi().apiAuthSyncGet();
+    } catch (_) {
+      // Best-effort - the local claims already reflect the new picture.
+    }
   }
 
   void _onTabRequested() {
@@ -78,6 +126,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     }
 
     final claims = await AuthService.getIdTokenClaims();
+    _lastClaimsRead = DateTime.now();
     if (mounted && claims != null) {
       setState(() {
         _pictureUrl = claims['picture'] as String?;
