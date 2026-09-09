@@ -12,6 +12,7 @@ import '../account/account_page.dart';
 import '../grades/grades_page.dart';
 import '../home/home_page.dart';
 import '../timetable/timetable_page.dart';
+import 'tab_requests.dart';
 import 'widgets/accounts_sidebar.dart';
 import 'widgets/add_school_modal.dart';
 
@@ -34,13 +35,24 @@ class _DashboardScreenState extends State<DashboardScreen> {
   void initState() {
     super.initState();
     ActiveAccountService.instance.addListener(_onActiveChanged);
+    TabRequests.pending.addListener(_onTabRequested);
+    _onTabRequested();
     WidgetsBinding.instance.addPostFrameCallback((_) => _bootstrap());
   }
 
   @override
   void dispose() {
     ActiveAccountService.instance.removeListener(_onActiveChanged);
+    TabRequests.pending.removeListener(_onTabRequested);
     super.dispose();
+  }
+
+  void _onTabRequested() {
+    final tab = TabRequests.pending.value;
+    if (tab == null) return;
+    final index = DashboardTab.values.indexOf(tab);
+    if (mounted && index != _index) setState(() => _index = index);
+    TabRequests.clear();
   }
 
   String? _lastSchoolId;

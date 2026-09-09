@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 
@@ -7,6 +9,7 @@ import '../../../services/app_mode_service.dart';
 import '../../../services/auth_service.dart';
 import '../../../services/onboarding_service.dart';
 import '../../../services/private_account_store.dart';
+import '../../../services/push_service.dart';
 import '../../../services/school_data_service.dart';
 import '../../dashboard/dashboard_screen.dart';
 import '../../onboarding/onboarding_screen.dart';
@@ -20,6 +23,9 @@ Future<void> signOutAndClear() async {
     await PrivateAccountStore.instance.clear();
     await AppModeService.instance.setMode(AppMode.account);
   } else {
+    // Delete the device on the backend before signing out, while the access
+    // token is still valid.
+    await PushService.instance.onSignOut();
     await AuthService.signOut();
     await ActiveAccountService.instance.clear();
   }
@@ -75,6 +81,7 @@ class _RootScreenState extends State<RootScreen> {
       SchoolDataService.instance.clear();
     }
     if (mounted) setState(() => _ready = signedIn);
+    if (token != null) unawaited(PushService.instance.onSignedIn());
   }
 
   Future<void> _signIn({bool register = false}) async {

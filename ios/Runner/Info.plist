@@ -70,5 +70,11 @@
 	     TestFlight/App Store builds skip the manual compliance prompt. -->
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
+	<!-- Lets iOS wake the app to handle a silent/data-only FCM push (and deliver
+	     background notification content) without the user having opened it. -->
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>remote-notification</string>
+	</array>
 </dict>
 </plist>

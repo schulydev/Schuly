@@ -11,6 +11,7 @@ import '../../services/auth_service.dart';
 import '../../services/private_account_store.dart';
 import '../../services/school_data_service.dart';
 import '../../services/theme_service.dart';
+import 'notification_settings_section.dart';
 import 'privacy_settings_section.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -86,6 +87,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             },
           ),
           const SizedBox(height: 12),
+          const NotificationSettingsSection(),
           const _SectionLabel('Server'),
           Padding(
             padding: const EdgeInsets.only(bottom: 8),

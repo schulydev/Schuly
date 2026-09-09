@@ -79,7 +79,11 @@ jobs:
             --dart-define=BACKEND_BASE_URL="${{ vars.BACKEND_BASE_URL || 'https://api.schuly.dev' }}" \
             --dart-define=SENTRY_DSN="$SENTRY_DSN" \
             --dart-define=SENTRY_RELEASE="${{ github.ref_name }}" \
-            --dart-define=SENTRY_ENVIRONMENT="production"
+            --dart-define=SENTRY_ENVIRONMENT="production" \
+            --dart-define=FIREBASE_API_KEY="${{ vars.FIREBASE_API_KEY }}" \
+            --dart-define=FIREBASE_APP_ID="${{ vars.FIREBASE_APP_ID }}" \
+            --dart-define=FIREBASE_SENDER_ID="${{ vars.FIREBASE_SENDER_ID }}" \
+            --dart-define=FIREBASE_PROJECT_ID="${{ vars.FIREBASE_PROJECT_ID }}"
 
       - name: Build Android AAB (App Bundle)
         working-directory: .
@@ -92,7 +96,11 @@ jobs:
             --dart-define=BACKEND_BASE_URL="${{ vars.BACKEND_BASE_URL || 'https://api.schuly.dev' }}" \
             --dart-define=SENTRY_DSN="$SENTRY_DSN" \
             --dart-define=SENTRY_RELEASE="${{ github.ref_name }}" \
-            --dart-define=SENTRY_ENVIRONMENT="production"
+            --dart-define=SENTRY_ENVIRONMENT="production" \
+            --dart-define=FIREBASE_API_KEY="${{ vars.FIREBASE_API_KEY }}" \
+            --dart-define=FIREBASE_APP_ID="${{ vars.FIREBASE_APP_ID }}" \
+            --dart-define=FIREBASE_SENDER_ID="${{ vars.FIREBASE_SENDER_ID }}" \
+            --dart-define=FIREBASE_PROJECT_ID="${{ vars.FIREBASE_PROJECT_ID }}"
 
       - name: Prepare artifacts
         working-directory: .
@@ -139,7 +147,11 @@ jobs:
             --dart-define=BACKEND_BASE_URL="${{ vars.BACKEND_BASE_URL || 'https://api.schuly.dev' }}" \
             --dart-define=SENTRY_DSN="$SENTRY_DSN" \
             --dart-define=SENTRY_RELEASE="${{ github.ref_name }}" \
-            --dart-define=SENTRY_ENVIRONMENT="production"
+            --dart-define=SENTRY_ENVIRONMENT="production" \
+            --dart-define=FIREBASE_API_KEY="${{ vars.FIREBASE_API_KEY }}" \
+            --dart-define=FIREBASE_APP_ID="${{ vars.FIREBASE_APP_ID }}" \
+            --dart-define=FIREBASE_SENDER_ID="${{ vars.FIREBASE_SENDER_ID }}" \
+            --dart-define=FIREBASE_PROJECT_ID="${{ vars.FIREBASE_PROJECT_ID }}"
 
       - name: Create iOS Archive
         working-directory: .

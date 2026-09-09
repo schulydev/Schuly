@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Default channel FCM notifications post to; created in MainActivity.onCreate. -->
+    <string name="default_notification_channel_id">schuly_default</string>
+    <string name="default_notification_channel_name">Schuly</string>
+</resources>
