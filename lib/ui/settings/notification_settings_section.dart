@@ -58,19 +58,19 @@ class _NotificationSettingsSectionState extends State<NotificationSettingsSectio
                 icon: FIcons.chartColumn,
                 title: t.notifyGrades,
                 value: _service.preferences.grades,
-                onChange: (v) => _service.setPreferences(_service.preferences.copyWith(grades: v)),
+                onChange: (v) => _service.setPreferences(_service.preferences.rebuild((b) => b..grades = v)),
               ),
               _PreferenceTile(
                 icon: FIcons.calendarOff,
                 title: t.notifyAbsences,
                 value: _service.preferences.absences,
-                onChange: (v) => _service.setPreferences(_service.preferences.copyWith(absences: v)),
+                onChange: (v) => _service.setPreferences(_service.preferences.rebuild((b) => b..absences = v)),
               ),
               _PreferenceTile(
                 icon: FIcons.calendarDays,
                 title: t.notifyAgenda,
                 value: _service.preferences.agenda,
-                onChange: (v) => _service.setPreferences(_service.preferences.copyWith(agenda: v)),
+                onChange: (v) => _service.setPreferences(_service.preferences.rebuild((b) => b..agenda = v)),
               ),
               _PreferenceTile(
                 icon: FIcons.eye,
@@ -78,7 +78,7 @@ class _NotificationSettingsSectionState extends State<NotificationSettingsSectio
                 subtitle: t.notifyGradeValueSubtitle,
                 value: _service.preferences.includeGradeValue,
                 onChange: (v) =>
-                    _service.setPreferences(_service.preferences.copyWith(includeGradeValue: v)),
+                    _service.setPreferences(_service.preferences.rebuild((b) => b..includeGradeValue = v)),
               ),
             ],
             const SizedBox(height: 20),

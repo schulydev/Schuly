@@ -18,7 +18,7 @@ class _$ClassDto extends ClassDto {
   @override
   final String? schoolName;
   @override
-  final BuiltList<SchoolUserDto>? students;
+  final BuiltList<ClassMemberDto>? students;
   @override
   final BuiltList<AgendaEntryDto>? agenda;
   @override
@@ -111,10 +111,10 @@ class ClassDtoBuilder implements Builder<ClassDto, ClassDtoBuilder> {
   String? get schoolName => _$this._schoolName;
   set schoolName(String? schoolName) => _$this._schoolName = schoolName;
 
-  ListBuilder<SchoolUserDto>? _students;
-  ListBuilder<SchoolUserDto> get students =>
-      _$this._students ??= ListBuilder<SchoolUserDto>();
-  set students(ListBuilder<SchoolUserDto>? students) =>
+  ListBuilder<ClassMemberDto>? _students;
+  ListBuilder<ClassMemberDto> get students =>
+      _$this._students ??= ListBuilder<ClassMemberDto>();
+  set students(ListBuilder<ClassMemberDto>? students) =>
       _$this._students = students;
 
   ListBuilder<AgendaEntryDto>? _agenda;

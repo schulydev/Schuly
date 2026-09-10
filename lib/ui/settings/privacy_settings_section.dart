@@ -1,15 +1,19 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/widgets.dart';
 import 'package:forui/forui.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:schuly_api/schuly_api.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../l10n/app_localizations.dart';
-import '../../services/account_api.dart';
+import '../../services/api_client.dart';
 import '../../services/app_mode_service.dart';
 import '../../services/toast_service.dart';
 import '../core/ui/root_screen.dart';
+
+const _handled = <String, dynamic>{ApiClient.handlesErrors: true};
 
 /// Settings section for exporting or permanently deleting the account's
 /// server-side data. In private mode nothing is ever stored server-side, so
@@ -32,10 +36,12 @@ class _PrivacySettingsSectionState extends State<PrivacySettingsSection> {
     if (_exporting) return;
     setState(() => _exporting = true);
     try {
-      final bytes = await AccountApi.exportData();
+      final res = await ApiClient.instance.api.getAuthApi().apiAuthMeExportGet(extra: _handled);
+      final data = res.data;
+      if (data == null) throw StateError('Account export response had no body');
       final dir = await getApplicationDocumentsDirectory();
       final file = File('${dir.path}/schuly-export-${_stamp(DateTime.now())}.json');
-      await file.writeAsBytes(bytes);
+      await file.writeAsString(jsonEncode(standardSerializers.serializeWith(AccountExportDto.serializer, data)));
       await SharePlus.instance.share(ShareParams(files: [XFile(file.path)]));
     } catch (e) {
       if (mounted) ToastService.error(AppLocalizations.of(context)!.exportDataFailed, e);
@@ -51,7 +57,7 @@ class _PrivacySettingsSectionState extends State<PrivacySettingsSection> {
     );
     if (confirmed != true || !mounted) return;
     try {
-      await AccountApi.deleteAccount();
+      await ApiClient.instance.api.getAuthApi().apiAuthMeDelete(extra: _handled);
       await signOutAndClear();
       if (mounted) Navigator.of(context).popUntil((route) => route.isFirst);
     } catch (e) {

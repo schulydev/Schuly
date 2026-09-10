@@ -16,12 +16,14 @@ import 'package:schuly_api/src/model/date.dart';
 
 import 'package:schuly_api/src/model/absence_dto.dart';
 import 'package:schuly_api/src/model/absence_type.dart';
+import 'package:schuly_api/src/model/account_export_dto.dart';
 import 'package:schuly_api/src/model/add_grade_to_exam_command.dart';
 import 'package:schuly_api/src/model/agenda_entry_dto.dart';
 import 'package:schuly_api/src/model/agenda_entry_type.dart';
 import 'package:schuly_api/src/model/app_dto.dart';
 import 'package:schuly_api/src/model/application_user_dto.dart';
 import 'package:schuly_api/src/model/class_dto.dart';
+import 'package:schuly_api/src/model/class_member_dto.dart';
 import 'package:schuly_api/src/model/create_absence_command.dart';
 import 'package:schuly_api/src/model/create_agenda_entry_command.dart';
 import 'package:schuly_api/src/model/create_application_user_command.dart';
@@ -39,9 +41,12 @@ import 'package:schuly_api/src/model/exam_type.dart';
 import 'package:schuly_api/src/model/grade_dto.dart';
 import 'package:schuly_api/src/model/install_plugin_request.dart';
 import 'package:schuly_api/src/model/my_school_dto.dart';
+import 'package:schuly_api/src/model/notification_preferences_dto.dart';
 import 'package:schuly_api/src/model/plugin_dto.dart';
 import 'package:schuly_api/src/model/plugin_task_status.dart';
 import 'package:schuly_api/src/model/problem_details.dart';
+import 'package:schuly_api/src/model/reencrypt_student_documents_result.dart';
+import 'package:schuly_api/src/model/register_device_token_command.dart';
 import 'package:schuly_api/src/model/roles.dart';
 import 'package:schuly_api/src/model/school_dto.dart';
 import 'package:schuly_api/src/model/school_system_dto.dart';
@@ -58,6 +63,7 @@ import 'package:schuly_api/src/model/update_agenda_entry_command.dart';
 import 'package:schuly_api/src/model/update_application_user_command.dart';
 import 'package:schuly_api/src/model/update_class_command.dart';
 import 'package:schuly_api/src/model/update_exam_command.dart';
+import 'package:schuly_api/src/model/update_notification_preferences_command.dart';
 import 'package:schuly_api/src/model/update_school_command.dart';
 import 'package:schuly_api/src/model/update_school_system_command.dart';
 import 'package:schuly_api/src/model/update_school_user_command.dart';
@@ -70,12 +76,14 @@ part 'serializers.g.dart';
 @SerializersFor([
   AbsenceDto,
   AbsenceType,
+  AccountExportDto,
   AddGradeToExamCommand,
   AgendaEntryDto,
   AgendaEntryType,
   AppDto,
   ApplicationUserDto,
   ClassDto,
+  ClassMemberDto,
   CreateAbsenceCommand,
   CreateAgendaEntryCommand,
   CreateApplicationUserCommand,
@@ -93,9 +101,12 @@ part 'serializers.g.dart';
   GradeDto,
   InstallPluginRequest,
   MySchoolDto,
+  NotificationPreferencesDto,
   PluginDto,
   PluginTaskStatus,
   ProblemDetails,
+  ReencryptStudentDocumentsResult,
+  RegisterDeviceTokenCommand,
   Roles,
   SchoolDto,
   SchoolSystemDto,
@@ -112,6 +123,7 @@ part 'serializers.g.dart';
   UpdateApplicationUserCommand,
   UpdateClassCommand,
   UpdateExamCommand,
+  UpdateNotificationPreferencesCommand,
   UpdateSchoolCommand,
   UpdateSchoolSystemCommand,
   UpdateSchoolUserCommand,

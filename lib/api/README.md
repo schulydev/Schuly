@@ -82,6 +82,8 @@ Class | Method | HTTP request | Description
 [*ApplicationUsersApi*](doc/ApplicationUsersApi.md) | [**apiApplicationUsersPost**](doc/ApplicationUsersApi.md#apiapplicationuserspost) | **POST** /api/ApplicationUsers | 
 [*ApplicationUsersApi*](doc/ApplicationUsersApi.md) | [**apiApplicationUsersPut**](doc/ApplicationUsersApi.md#apiapplicationusersput) | **PUT** /api/ApplicationUsers | 
 [*AuthApi*](doc/AuthApi.md) | [**apiAuthLoginPost**](doc/AuthApi.md#apiauthloginpost) | **POST** /api/Auth/login | 
+[*AuthApi*](doc/AuthApi.md) | [**apiAuthMeDelete**](doc/AuthApi.md#apiauthmedelete) | **DELETE** /api/Auth/me | 
+[*AuthApi*](doc/AuthApi.md) | [**apiAuthMeExportGet**](doc/AuthApi.md#apiauthmeexportget) | **GET** /api/Auth/me/export | 
 [*AuthApi*](doc/AuthApi.md) | [**apiAuthMeGet**](doc/AuthApi.md#apiauthmeget) | **GET** /api/Auth/me | 
 [*AuthApi*](doc/AuthApi.md) | [**apiAuthSyncGet**](doc/AuthApi.md#apiauthsyncget) | **GET** /api/Auth/sync | 
 [*AvatarsApi*](doc/AvatarsApi.md) | [**apiAvatarsSchoolUserIdGet**](doc/AvatarsApi.md#apiavatarsschooluseridget) | **GET** /api/avatars/{schoolUserId} | 
@@ -98,6 +100,10 @@ Class | Method | HTTP request | Description
 [*ExamsApi*](doc/ExamsApi.md) | [**apiExamsPost**](doc/ExamsApi.md#apiexamspost) | **POST** /api/Exams | 
 [*ExamsApi*](doc/ExamsApi.md) | [**apiExamsPut**](doc/ExamsApi.md#apiexamsput) | **PUT** /api/Exams | 
 [*ExamsApi*](doc/ExamsApi.md) | [**apiExamsSearchGet**](doc/ExamsApi.md#apiexamssearchget) | **GET** /api/Exams/search | 
+[*NotificationsApi*](doc/NotificationsApi.md) | [**apiNotificationsDevicesPost**](doc/NotificationsApi.md#apinotificationsdevicespost) | **POST** /api/notifications/devices | 
+[*NotificationsApi*](doc/NotificationsApi.md) | [**apiNotificationsDevicesTokenDelete**](doc/NotificationsApi.md#apinotificationsdevicestokendelete) | **DELETE** /api/notifications/devices/{token} | 
+[*NotificationsApi*](doc/NotificationsApi.md) | [**apiNotificationsPreferencesGet**](doc/NotificationsApi.md#apinotificationspreferencesget) | **GET** /api/notifications/preferences | 
+[*NotificationsApi*](doc/NotificationsApi.md) | [**apiNotificationsPreferencesPut**](doc/NotificationsApi.md#apinotificationspreferencesput) | **PUT** /api/notifications/preferences | 
 [*PluginsApi*](doc/PluginsApi.md) | [**apiPluginsGet**](doc/PluginsApi.md#apipluginsget) | **GET** /api/Plugins | 
 [*PluginsApi*](doc/PluginsApi.md) | [**apiPluginsInstallPost**](doc/PluginsApi.md#apipluginsinstallpost) | **POST** /api/Plugins/install | 
 [*PluginsApi*](doc/PluginsApi.md) | [**apiPluginsNameDelete**](doc/PluginsApi.md#apipluginsnamedelete) | **DELETE** /api/Plugins/{name} | 
@@ -123,6 +129,7 @@ Class | Method | HTTP request | Description
 [*SemesterReportsApi*](doc/SemesterReportsApi.md) | [**apiSemesterReportsGet**](doc/SemesterReportsApi.md#apisemesterreportsget) | **GET** /api/SemesterReports | 
 [*StudentDocumentsApi*](doc/StudentDocumentsApi.md) | [**apiDocumentsDocumentIdGet**](doc/StudentDocumentsApi.md#apidocumentsdocumentidget) | **GET** /api/documents/{documentId} | 
 [*StudentDocumentsApi*](doc/StudentDocumentsApi.md) | [**apiDocumentsGet**](doc/StudentDocumentsApi.md#apidocumentsget) | **GET** /api/documents | 
+[*StudentDocumentsApi*](doc/StudentDocumentsApi.md) | [**apiDocumentsReencryptPost**](doc/StudentDocumentsApi.md#apidocumentsreencryptpost) | **POST** /api/documents/reencrypt | 
 [*StudentDocumentsApi*](doc/StudentDocumentsApi.md) | [**apiStudentsSchoolUserIdDocumentsPost**](doc/StudentDocumentsApi.md#apistudentsschooluseriddocumentspost) | **POST** /api/students/{schoolUserId}/documents | 
 [*TeachersApi*](doc/TeachersApi.md) | [**apiTeachersGet**](doc/TeachersApi.md#apiteachersget) | **GET** /api/Teachers | 
 [*TeachersApi*](doc/TeachersApi.md) | [**apiTeachersIdDelete**](doc/TeachersApi.md#apiteachersiddelete) | **DELETE** /api/Teachers/{id} | 
@@ -135,12 +142,14 @@ Class | Method | HTTP request | Description
 
  - [AbsenceDto](doc/AbsenceDto.md)
  - [AbsenceType](doc/AbsenceType.md)
+ - [AccountExportDto](doc/AccountExportDto.md)
  - [AddGradeToExamCommand](doc/AddGradeToExamCommand.md)
  - [AgendaEntryDto](doc/AgendaEntryDto.md)
  - [AgendaEntryType](doc/AgendaEntryType.md)
  - [AppDto](doc/AppDto.md)
  - [ApplicationUserDto](doc/ApplicationUserDto.md)
  - [ClassDto](doc/ClassDto.md)
+ - [ClassMemberDto](doc/ClassMemberDto.md)
  - [CreateAbsenceCommand](doc/CreateAbsenceCommand.md)
  - [CreateAgendaEntryCommand](doc/CreateAgendaEntryCommand.md)
  - [CreateApplicationUserCommand](doc/CreateApplicationUserCommand.md)
@@ -158,9 +167,12 @@ Class | Method | HTTP request | Description
  - [GradeDto](doc/GradeDto.md)
  - [InstallPluginRequest](doc/InstallPluginRequest.md)
  - [MySchoolDto](doc/MySchoolDto.md)
+ - [NotificationPreferencesDto](doc/NotificationPreferencesDto.md)
  - [PluginDto](doc/PluginDto.md)
  - [PluginTaskStatus](doc/PluginTaskStatus.md)
  - [ProblemDetails](doc/ProblemDetails.md)
+ - [ReencryptStudentDocumentsResult](doc/ReencryptStudentDocumentsResult.md)
+ - [RegisterDeviceTokenCommand](doc/RegisterDeviceTokenCommand.md)
  - [Roles](doc/Roles.md)
  - [SchoolDto](doc/SchoolDto.md)
  - [SchoolSystemDto](doc/SchoolSystemDto.md)
@@ -177,6 +189,7 @@ Class | Method | HTTP request | Description
  - [UpdateApplicationUserCommand](doc/UpdateApplicationUserCommand.md)
  - [UpdateClassCommand](doc/UpdateClassCommand.md)
  - [UpdateExamCommand](doc/UpdateExamCommand.md)
+ - [UpdateNotificationPreferencesCommand](doc/UpdateNotificationPreferencesCommand.md)
  - [UpdateSchoolCommand](doc/UpdateSchoolCommand.md)
  - [UpdateSchoolSystemCommand](doc/UpdateSchoolSystemCommand.md)
  - [UpdateSchoolUserCommand](doc/UpdateSchoolUserCommand.md)
@@ -193,7 +206,7 @@ Authentication schemes defined for the API:
 
 - **Type**: OAuth
 - **Flow**: accessCode
-- **Authorization URL**: https://auth.gaggao.com/authorize
+- **Authorization URL**: https://auth.schuly.dev/realms/schuly/authorize
 - **Scopes**: 
  - **openid**: OpenID Connect
  - **profile**: User profile

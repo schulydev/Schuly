@@ -10,12 +10,14 @@ Serializers _$serializers =
     (Serializers().toBuilder()
           ..add(AbsenceDto.serializer)
           ..add(AbsenceType.serializer)
+          ..add(AccountExportDto.serializer)
           ..add(AddGradeToExamCommand.serializer)
           ..add(AgendaEntryDto.serializer)
           ..add(AgendaEntryType.serializer)
           ..add(AppDto.serializer)
           ..add(ApplicationUserDto.serializer)
           ..add(ClassDto.serializer)
+          ..add(ClassMemberDto.serializer)
           ..add(CreateAbsenceCommand.serializer)
           ..add(CreateAgendaEntryCommand.serializer)
           ..add(CreateApplicationUserCommand.serializer)
@@ -33,9 +35,12 @@ Serializers _$serializers =
           ..add(GradeDto.serializer)
           ..add(InstallPluginRequest.serializer)
           ..add(MySchoolDto.serializer)
+          ..add(NotificationPreferencesDto.serializer)
           ..add(PluginDto.serializer)
           ..add(PluginTaskStatus.serializer)
           ..add(ProblemDetails.serializer)
+          ..add(ReencryptStudentDocumentsResult.serializer)
+          ..add(RegisterDeviceTokenCommand.serializer)
           ..add(Roles.serializer)
           ..add(SchoolDto.serializer)
           ..add(SchoolSystemDto.serializer)
@@ -52,6 +57,7 @@ Serializers _$serializers =
           ..add(UpdateApplicationUserCommand.serializer)
           ..add(UpdateClassCommand.serializer)
           ..add(UpdateExamCommand.serializer)
+          ..add(UpdateNotificationPreferencesCommand.serializer)
           ..add(UpdateSchoolCommand.serializer)
           ..add(UpdateSchoolSystemCommand.serializer)
           ..add(UpdateSchoolUserCommand.serializer)
@@ -67,8 +73,28 @@ Serializers _$serializers =
             () => ListBuilder<GradeDto>(),
           )
           ..addBuilderFactory(
+            const FullType(BuiltList, const [const FullType(AbsenceDto)]),
+            () => ListBuilder<AbsenceDto>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, const [const FullType(GradeDto)]),
+            () => ListBuilder<GradeDto>(),
+          )
+          ..addBuilderFactory(
             const FullType(BuiltList, const [const FullType(UserClassDto)]),
             () => ListBuilder<UserClassDto>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, const [const FullType(ClassMemberDto)]),
+            () => ListBuilder<ClassMemberDto>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, const [const FullType(AgendaEntryDto)]),
+            () => ListBuilder<AgendaEntryDto>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, const [const FullType(ExamDto)]),
+            () => ListBuilder<ExamDto>(),
           )
           ..addBuilderFactory(
             const FullType(BuiltList, const [const FullType(GradeDto)]),
@@ -101,8 +127,16 @@ Serializers _$serializers =
             () => ListBuilder<AgendaEntryDto>(),
           )
           ..addBuilderFactory(
-            const FullType(BuiltList, const [const FullType(ExamDto)]),
-            () => ListBuilder<ExamDto>(),
+            const FullType(BuiltList, const [
+              const FullType(SemesterReportDto),
+            ]),
+            () => ListBuilder<SemesterReportDto>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, const [
+              const FullType(StudentDocumentDto),
+            ]),
+            () => ListBuilder<StudentDocumentDto>(),
           )
           ..addBuilderFactory(
             const FullType(BuiltList, const [

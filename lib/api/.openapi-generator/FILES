@@ -4,6 +4,7 @@ analysis_options.yaml
 doc/AbsenceDto.md
 doc/AbsenceType.md
 doc/AbsencesApi.md
+doc/AccountExportDto.md
 doc/AddGradeToExamCommand.md
 doc/AgendaEntryDto.md
 doc/AgendaEntryType.md
@@ -16,6 +17,7 @@ doc/AuthApi.md
 doc/AvatarsApi.md
 doc/ClassApi.md
 doc/ClassDto.md
+doc/ClassMemberDto.md
 doc/CreateAbsenceCommand.md
 doc/CreateAgendaEntryCommand.md
 doc/CreateApplicationUserCommand.md
@@ -35,10 +37,14 @@ doc/ExamsApi.md
 doc/GradeDto.md
 doc/InstallPluginRequest.md
 doc/MySchoolDto.md
+doc/NotificationPreferencesDto.md
+doc/NotificationsApi.md
 doc/PluginDto.md
 doc/PluginTaskStatus.md
 doc/PluginsApi.md
 doc/ProblemDetails.md
+doc/ReencryptStudentDocumentsResult.md
+doc/RegisterDeviceTokenCommand.md
 doc/Roles.md
 doc/SchoolDto.md
 doc/SchoolSystemDto.md
@@ -61,6 +67,7 @@ doc/UpdateAgendaEntryCommand.md
 doc/UpdateApplicationUserCommand.md
 doc/UpdateClassCommand.md
 doc/UpdateExamCommand.md
+doc/UpdateNotificationPreferencesCommand.md
 doc/UpdateSchoolCommand.md
 doc/UpdateSchoolSystemCommand.md
 doc/UpdateSchoolUserCommand.md
@@ -78,6 +85,7 @@ lib/src/api/avatars_api.dart
 lib/src/api/class_api.dart
 lib/src/api/dev_auth_api.dart
 lib/src/api/exams_api.dart
+lib/src/api/notifications_api.dart
 lib/src/api/plugins_api.dart
 lib/src/api/school_systems_api.dart
 lib/src/api/school_users_api.dart
@@ -94,12 +102,14 @@ lib/src/auth/oauth.dart
 lib/src/date_serializer.dart
 lib/src/model/absence_dto.dart
 lib/src/model/absence_type.dart
+lib/src/model/account_export_dto.dart
 lib/src/model/add_grade_to_exam_command.dart
 lib/src/model/agenda_entry_dto.dart
 lib/src/model/agenda_entry_type.dart
 lib/src/model/app_dto.dart
 lib/src/model/application_user_dto.dart
 lib/src/model/class_dto.dart
+lib/src/model/class_member_dto.dart
 lib/src/model/create_absence_command.dart
 lib/src/model/create_agenda_entry_command.dart
 lib/src/model/create_application_user_command.dart
@@ -118,9 +128,12 @@ lib/src/model/exam_type.dart
 lib/src/model/grade_dto.dart
 lib/src/model/install_plugin_request.dart
 lib/src/model/my_school_dto.dart
+lib/src/model/notification_preferences_dto.dart
 lib/src/model/plugin_dto.dart
 lib/src/model/plugin_task_status.dart
 lib/src/model/problem_details.dart
+lib/src/model/reencrypt_student_documents_result.dart
+lib/src/model/register_device_token_command.dart
 lib/src/model/roles.dart
 lib/src/model/school_dto.dart
 lib/src/model/school_system_dto.dart
@@ -137,6 +150,7 @@ lib/src/model/update_agenda_entry_command.dart
 lib/src/model/update_application_user_command.dart
 lib/src/model/update_class_command.dart
 lib/src/model/update_exam_command.dart
+lib/src/model/update_notification_preferences_command.dart
 lib/src/model/update_school_command.dart
 lib/src/model/update_school_system_command.dart
 lib/src/model/update_school_user_command.dart
@@ -145,3 +159,10 @@ lib/src/model/user_class_dto.dart
 lib/src/model/user_state.dart
 lib/src/serializers.dart
 pubspec.yaml
+test/account_export_dto_test.dart
+test/class_member_dto_test.dart
+test/notification_preferences_dto_test.dart
+test/notifications_api_test.dart
+test/reencrypt_student_documents_result_test.dart
+test/register_device_token_command_test.dart
+test/update_notification_preferences_command_test.dart

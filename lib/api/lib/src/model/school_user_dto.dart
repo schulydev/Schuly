@@ -148,7 +148,7 @@ class _$SchoolUserDtoSerializer implements PrimitiveSerializer<SchoolUserDto> {
       yield r'applicationUserId';
       yield serializers.serialize(
         object.applicationUserId,
-        specifiedType: const FullType(String),
+        specifiedType: const FullType.nullable(String),
       );
     }
     if (object.schoolId != null) {
@@ -323,8 +323,9 @@ class _$SchoolUserDtoSerializer implements PrimitiveSerializer<SchoolUserDto> {
         case r'applicationUserId':
           final valueDes = serializers.deserialize(
             value,
-            specifiedType: const FullType(String),
-          ) as String;
+            specifiedType: const FullType.nullable(String),
+          ) as String?;
+          if (valueDes == null) continue;
           result.applicationUserId = valueDes;
           break;
         case r'schoolId':

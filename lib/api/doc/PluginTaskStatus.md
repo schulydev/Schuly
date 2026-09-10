@@ -8,7 +8,9 @@ import 'package:schuly_api/api.dart';
 ## Properties
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
+**plugin** | **String** |  | 
 **name** | **String** |  | 
+**cron** | **String** |  | 
 **intervalSeconds** | **double** |  | 
 **lastStatus** | **String** |  | 
 **lastStartedAt** | [**DateTime**](DateTime.md) |  | 
