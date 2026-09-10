@@ -1,69 +1,54 @@
+import 'package:schuly_api/schuly_api.dart';
+
 import 'api_client.dart';
 
-/// Which push notifications a user wants, and whether a grade notification may
-/// include the mark itself. Missing/malformed fields fall back to the defaults
-/// rather than failing the whole response, since the backend may add fields
-/// this client doesn't know about yet.
-class NotificationPreferences {
-  const NotificationPreferences({this.grades = true, this.absences = true, this.agenda = true, this.includeGradeValue = false});
+const _handled = <String, dynamic>{ApiClient.handlesErrors: true};
 
-  final bool grades;
-  final bool absences;
-  final bool agenda;
-  final bool includeGradeValue;
-
-  factory NotificationPreferences.fromJson(Map<String, dynamic> json) => NotificationPreferences(
-    grades: json['grades'] is bool ? json['grades'] as bool : true,
-    absences: json['absences'] is bool ? json['absences'] as bool : true,
-    agenda: json['agenda'] is bool ? json['agenda'] as bool : true,
-    includeGradeValue: json['includeGradeValue'] is bool ? json['includeGradeValue'] as bool : false,
-  );
-
-  Map<String, dynamic> toJson() => {'grades': grades, 'absences': absences, 'agenda': agenda, 'includeGradeValue': includeGradeValue};
-
-  NotificationPreferences copyWith({bool? grades, bool? absences, bool? agenda, bool? includeGradeValue}) => NotificationPreferences(
-    grades: grades ?? this.grades,
-    absences: absences ?? this.absences,
-    agenda: agenda ?? this.agenda,
-    includeGradeValue: includeGradeValue ?? this.includeGradeValue,
-  );
-
-  @override
-  bool operator ==(Object other) =>
-      other is NotificationPreferences &&
-      other.grades == grades &&
-      other.absences == absences &&
-      other.agenda == agenda &&
-      other.includeGradeValue == includeGradeValue;
-
-  @override
-  int get hashCode => Object.hash(grades, absences, agenda, includeGradeValue);
-}
-
-/// Hand-written against SchulyBackend's `/api/notifications/*` routes because
-/// its OpenAPI spec doesn't carry them yet (schulydev/SchulyBackend#273). Move
-/// this to the generated `lib/api` client once `bun run apigen` picks them up.
+/// Typed seam over the generated [NotificationsApi] so [PushService] (and its
+/// tests) can depend on a small interface instead of the full generated
+/// client.
 class NotificationApi {
   const NotificationApi();
 
+  /// Default preferences used before the server has ever been asked, and as
+  /// the fallback after sign-out.
+  static final NotificationPreferencesDto defaults = NotificationPreferencesDto(
+    (b) => b
+      ..grades = true
+      ..absences = true
+      ..agenda = true
+      ..includeGradeValue = false,
+  );
+
   Future<void> registerDevice({required String token, required String platform, required String locale}) async {
-    await ApiClient.instance.dio.post<void>(
-      '/api/notifications/devices',
-      data: {'token': token, 'platform': platform, 'locale': locale},
-      options: ApiClient.handled(),
+    await ApiClient.instance.api.getNotificationsApi().apiNotificationsDevicesPost(
+      registerDeviceTokenCommand: RegisterDeviceTokenCommand((b) => b
+        ..token = token
+        ..platform = platform
+        ..locale = locale),
+      extra: _handled,
     );
   }
 
   Future<void> deleteDevice(String token) async {
-    await ApiClient.instance.dio.delete<void>('/api/notifications/devices/${Uri.encodeComponent(token)}', options: ApiClient.handled());
+    await ApiClient.instance.api.getNotificationsApi().apiNotificationsDevicesTokenDelete(token: token, extra: _handled);
   }
 
-  Future<NotificationPreferences> getPreferences() async {
-    final res = await ApiClient.instance.dio.get<Map<String, dynamic>>('/api/notifications/preferences', options: ApiClient.handled());
-    return NotificationPreferences.fromJson(res.data ?? const {});
+  Future<NotificationPreferencesDto> getPreferences() async {
+    final res = await ApiClient.instance.api.getNotificationsApi().apiNotificationsPreferencesGet(extra: _handled);
+    final data = res.data;
+    if (data == null) throw StateError('Notification preferences response had no body');
+    return data;
   }
 
-  Future<void> putPreferences(NotificationPreferences preferences) async {
-    await ApiClient.instance.dio.put<void>('/api/notifications/preferences', data: preferences.toJson(), options: ApiClient.handled());
+  Future<void> putPreferences(NotificationPreferencesDto preferences) async {
+    await ApiClient.instance.api.getNotificationsApi().apiNotificationsPreferencesPut(
+      updateNotificationPreferencesCommand: UpdateNotificationPreferencesCommand((b) => b
+        ..grades = preferences.grades
+        ..absences = preferences.absences
+        ..agenda = preferences.agenda
+        ..includeGradeValue = preferences.includeGradeValue),
+      extra: _handled,
+    );
   }
 }

@@ -112,7 +112,26 @@ void main() {
           ..name = '4a'
           ..description = 'Fourth grade A'
           ..schoolId = 's-1'
-          ..schoolName = 'School'),
+          ..schoolName = 'School'
+          ..students.add(ClassMemberDto((m) => m
+            ..id = 'su-2'
+            ..schoolId = 's-1'
+            ..firstName = 'Grace'
+            ..lastName = 'Hopper'
+            ..role = Roles.student
+            ..absences.add(AbsenceDto((a) => a
+              ..id = 'a-c1'
+              ..reason = 'Sick'
+              ..type = AbsenceType.absence
+              ..from = DateTime.utc(2026, 2, 3)
+              ..until = DateTime.utc(2026, 2, 4)
+              ..schoolUserId = 'su-2'))
+            ..grades.add(GradeDto((g) => g
+              ..id = 'g-c1'
+              ..score = 4.5
+              ..weighting = 1
+              ..examId = 'e-1'
+              ..schoolUserId = 'su-2'))))),
       ];
 
       final reports = [
@@ -188,6 +207,9 @@ void main() {
       expect(restored.agenda.map((a) => a.entryType), containsAll(AgendaEntryType.values));
       expect(restored.absences.single.reason, 'Sick');
       expect(restored.classes.single.name, '4a');
+      expect(restored.classes.single.students?.single.lastName, 'Hopper');
+      expect(restored.classes.single.students?.single.absences?.single.from, DateTime.utc(2026, 2, 3));
+      expect(restored.classes.single.students?.single.grades?.single.score, 4.5);
       expect(restored.reports.single.subjects?.single.subjectCode, 'MATH');
       expect(restored.teachers.single.code, 'JD');
       expect(restored.documents.single.followUpDate, Date(2026, 5, 1));

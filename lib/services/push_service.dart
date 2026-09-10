@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
+import 'package:schuly_api/schuly_api.dart';
 
 import '../config/firebase_config.dart';
 import '../ui/dashboard/tab_requests.dart';
@@ -33,13 +34,13 @@ class PushService extends ChangeNotifier {
   StreamSubscription<Map<String, dynamic>>? _messageOpenedSub;
 
   PushStatus _status = PushStatus.unavailable;
-  NotificationPreferences _preferences = const NotificationPreferences();
+  NotificationPreferencesDto _preferences = NotificationApi.defaults;
   bool _busy = false;
   String? _registeredToken;
 
   bool get supported => _supported;
   PushStatus get status => _status;
-  NotificationPreferences get preferences => _preferences;
+  NotificationPreferencesDto get preferences => _preferences;
   bool get busy => _busy;
 
   String get _platform => defaultTargetPlatform == TargetPlatform.iOS ? 'ios' : 'android';
@@ -130,7 +131,7 @@ class PushService extends ChangeNotifier {
     }
   }
 
-  Future<void> setPreferences(NotificationPreferences preferences) async {
+  Future<void> setPreferences(NotificationPreferencesDto preferences) async {
     final previous = _preferences;
     _preferences = preferences;
     notifyListeners();
@@ -153,7 +154,7 @@ class PushService extends ChangeNotifier {
       }
     }
     _registeredToken = null;
-    _preferences = const NotificationPreferences();
+    _preferences = NotificationApi.defaults;
     _status = _messaging != null ? PushStatus.off : PushStatus.unavailable;
     notifyListeners();
   }

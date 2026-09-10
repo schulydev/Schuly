@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:schuly/services/notification_api.dart';
 import 'package:schuly/services/push_messaging.dart';
 import 'package:schuly/services/push_service.dart';
 import 'package:schuly/ui/dashboard/tab_requests.dart';
+import 'package:schuly_api/schuly_api.dart';
 
 import 'fakes/push_fakes.dart';
 
@@ -18,7 +18,12 @@ void main() {
   group('PushService.onSignedIn', () {
     test('registers the device token and loads preferences when permission is granted', () async {
       final messaging = FakePushMessaging()..permissionResult = PushPermission.granted;
-      final api = FakeNotificationApi()..preferences = const NotificationPreferences(grades: false);
+      final api = FakeNotificationApi()
+        ..preferences = NotificationPreferencesDto((b) => b
+          ..grades = false
+          ..absences = true
+          ..agenda = true
+          ..includeGradeValue = false);
       final service = PushService.forTest(messaging: messaging, api: api);
 
       await service.attach(messaging);
@@ -123,7 +128,7 @@ void main() {
       await service.onSignedIn();
 
       final before = service.preferences;
-      await service.setPreferences(before.copyWith(grades: !before.grades));
+      await service.setPreferences(before.rebuild((b) => b..grades = !before.grades));
 
       expect(service.preferences.grades, !before.grades);
       expect(api.putPreferencesCalls, isNotEmpty);
@@ -138,7 +143,7 @@ void main() {
 
       final before = service.preferences;
       api.throwOnPutPreferences = true;
-      final future = service.setPreferences(before.copyWith(grades: !before.grades));
+      final future = service.setPreferences(before.rebuild((b) => b..grades = !before.grades));
       expect(service.preferences.grades, !before.grades);
       await future;
 

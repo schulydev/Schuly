@@ -11,6 +11,7 @@ Method | HTTP request | Description
 ------------- | ------------- | -------------
 [**apiDocumentsDocumentIdGet**](StudentDocumentsApi.md#apidocumentsdocumentidget) | **GET** /api/documents/{documentId} | 
 [**apiDocumentsGet**](StudentDocumentsApi.md#apidocumentsget) | **GET** /api/documents | 
+[**apiDocumentsReencryptPost**](StudentDocumentsApi.md#apidocumentsreencryptpost) | **POST** /api/documents/reencrypt | 
 [**apiStudentsSchoolUserIdDocumentsPost**](StudentDocumentsApi.md#apistudentsschooluseriddocumentspost) | **POST** /api/students/{schoolUserId}/documents | 
 
 
@@ -87,6 +88,45 @@ Name | Type | Description  | Notes
 ### Return type
 
 [**BuiltList&lt;StudentDocumentDto&gt;**](StudentDocumentDto.md)
+
+### Authorization
+
+[OAuth2](../README.md#OAuth2)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: text/plain, application/json, text/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **apiDocumentsReencryptPost**
+> ReencryptStudentDocumentsResult apiDocumentsReencryptPost()
+
+
+
+### Example
+```dart
+import 'package:schuly_api/api.dart';
+// TODO Configure OAuth2 access token for authorization: OAuth2
+//defaultApiClient.getAuthentication<OAuth>('OAuth2').accessToken = 'YOUR_ACCESS_TOKEN';
+
+final api = SchulyApi().getStudentDocumentsApi();
+
+try {
+    final response = api.apiDocumentsReencryptPost();
+    print(response);
+} catch on DioException (e) {
+    print('Exception when calling StudentDocumentsApi->apiDocumentsReencryptPost: $e\n');
+}
+```
+
+### Parameters
+This endpoint does not need any parameter.
+
+### Return type
+
+[**ReencryptStudentDocumentsResult**](ReencryptStudentDocumentsResult.md)
 
 ### Authorization
 

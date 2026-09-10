@@ -11,7 +11,9 @@ part 'plugin_task_status.g.dart';
 /// PluginTaskStatus
 ///
 /// Properties:
+/// * [plugin] 
 /// * [name] 
+/// * [cron] 
 /// * [intervalSeconds] 
 /// * [lastStatus] 
 /// * [lastStartedAt] 
@@ -24,8 +26,14 @@ part 'plugin_task_status.g.dart';
 /// * [consecutiveFailures] 
 @BuiltValue()
 abstract class PluginTaskStatus implements Built<PluginTaskStatus, PluginTaskStatusBuilder> {
+  @BuiltValueField(wireName: r'plugin')
+  String get plugin;
+
   @BuiltValueField(wireName: r'name')
   String get name;
+
+  @BuiltValueField(wireName: r'cron')
+  String get cron;
 
   @BuiltValueField(wireName: r'intervalSeconds')
   double get intervalSeconds;
@@ -80,9 +88,19 @@ class _$PluginTaskStatusSerializer implements PrimitiveSerializer<PluginTaskStat
     PluginTaskStatus object, {
     FullType specifiedType = FullType.unspecified,
   }) sync* {
+    yield r'plugin';
+    yield serializers.serialize(
+      object.plugin,
+      specifiedType: const FullType(String),
+    );
     yield r'name';
     yield serializers.serialize(
       object.name,
+      specifiedType: const FullType(String),
+    );
+    yield r'cron';
+    yield serializers.serialize(
+      object.cron,
       specifiedType: const FullType(String),
     );
     yield r'intervalSeconds';
@@ -158,12 +176,26 @@ class _$PluginTaskStatusSerializer implements PrimitiveSerializer<PluginTaskStat
       final key = serializedList[i] as String;
       final value = serializedList[i + 1];
       switch (key) {
+        case r'plugin':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType(String),
+          ) as String;
+          result.plugin = valueDes;
+          break;
         case r'name':
           final valueDes = serializers.deserialize(
             value,
             specifiedType: const FullType(String),
           ) as String;
           result.name = valueDes;
+          break;
+        case r'cron':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType(String),
+          ) as String;
+          result.cron = valueDes;
           break;
         case r'intervalSeconds':
           final valueDes = serializers.deserialize(

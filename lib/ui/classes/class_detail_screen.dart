@@ -64,7 +64,7 @@ class _ClassDetailScreenState extends State<ClassDetailScreen> {
     } else if (c == null) {
       body = Center(child: Text('Not found', style: TextStyle(color: colors.mutedForeground)));
     } else {
-      final students = (c.students ?? const <SchoolUserDto>[]).toList()
+      final students = (c.students ?? const <ClassMemberDto>[]).toList()
         ..sort((a, b) => a.lastName.compareTo(b.lastName));
       final exams = c.exams ?? const <ExamDto>[];
       final agenda = (c.agenda ?? const <AgendaEntryDto>[]).toList()

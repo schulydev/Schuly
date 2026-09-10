@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:schuly/services/notification_api.dart';
 import 'package:schuly/services/push_messaging.dart';
+import 'package:schuly_api/schuly_api.dart';
 
 /// A controllable [PushMessaging] fake: permission / token results are set
 /// directly on the instance, and refresh / tap events are pushed through the
@@ -52,7 +53,7 @@ class FakePushMessaging implements PushMessaging {
 
 /// A [NotificationApi] fake that records calls and can be told to throw.
 class FakeNotificationApi implements NotificationApi {
-  NotificationPreferences preferences = const NotificationPreferences();
+  NotificationPreferencesDto preferences = NotificationApi.defaults;
   bool throwOnPutPreferences = false;
   bool throwOnRegisterDevice = false;
   bool throwOnDeleteDevice = false;
@@ -61,7 +62,7 @@ class FakeNotificationApi implements NotificationApi {
   String? registeredPlatform;
   String? registeredLocale;
   final deletedTokens = <String>[];
-  final putPreferencesCalls = <NotificationPreferences>[];
+  final putPreferencesCalls = <NotificationPreferencesDto>[];
 
   @override
   Future<void> registerDevice({required String token, required String platform, required String locale}) async {
@@ -78,10 +79,10 @@ class FakeNotificationApi implements NotificationApi {
   }
 
   @override
-  Future<NotificationPreferences> getPreferences() async => preferences;
+  Future<NotificationPreferencesDto> getPreferences() async => preferences;
 
   @override
-  Future<void> putPreferences(NotificationPreferences preferences) async {
+  Future<void> putPreferences(NotificationPreferencesDto preferences) async {
     putPreferencesCalls.add(preferences);
     if (throwOnPutPreferences) throw Exception('put failed');
     this.preferences = preferences;

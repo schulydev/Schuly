@@ -8,7 +8,11 @@ part of 'plugin_task_status.dart';
 
 class _$PluginTaskStatus extends PluginTaskStatus {
   @override
+  final String plugin;
+  @override
   final String name;
+  @override
+  final String cron;
   @override
   final double intervalSeconds;
   @override
@@ -35,7 +39,9 @@ class _$PluginTaskStatus extends PluginTaskStatus {
   ]) => (PluginTaskStatusBuilder()..update(updates))._build();
 
   _$PluginTaskStatus._({
+    required this.plugin,
     required this.name,
+    required this.cron,
     required this.intervalSeconds,
     required this.lastStatus,
     this.lastStartedAt,
@@ -59,7 +65,9 @@ class _$PluginTaskStatus extends PluginTaskStatus {
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
     return other is PluginTaskStatus &&
+        plugin == other.plugin &&
         name == other.name &&
+        cron == other.cron &&
         intervalSeconds == other.intervalSeconds &&
         lastStatus == other.lastStatus &&
         lastStartedAt == other.lastStartedAt &&
@@ -75,7 +83,9 @@ class _$PluginTaskStatus extends PluginTaskStatus {
   @override
   int get hashCode {
     var _$hash = 0;
+    _$hash = $jc(_$hash, plugin.hashCode);
     _$hash = $jc(_$hash, name.hashCode);
+    _$hash = $jc(_$hash, cron.hashCode);
     _$hash = $jc(_$hash, intervalSeconds.hashCode);
     _$hash = $jc(_$hash, lastStatus.hashCode);
     _$hash = $jc(_$hash, lastStartedAt.hashCode);
@@ -93,7 +103,9 @@ class _$PluginTaskStatus extends PluginTaskStatus {
   @override
   String toString() {
     return (newBuiltValueToStringHelper(r'PluginTaskStatus')
+          ..add('plugin', plugin)
           ..add('name', name)
+          ..add('cron', cron)
           ..add('intervalSeconds', intervalSeconds)
           ..add('lastStatus', lastStatus)
           ..add('lastStartedAt', lastStartedAt)
@@ -112,9 +124,17 @@ class PluginTaskStatusBuilder
     implements Builder<PluginTaskStatus, PluginTaskStatusBuilder> {
   _$PluginTaskStatus? _$v;
 
+  String? _plugin;
+  String? get plugin => _$this._plugin;
+  set plugin(String? plugin) => _$this._plugin = plugin;
+
   String? _name;
   String? get name => _$this._name;
   set name(String? name) => _$this._name = name;
+
+  String? _cron;
+  String? get cron => _$this._cron;
+  set cron(String? cron) => _$this._cron = cron;
 
   double? _intervalSeconds;
   double? get intervalSeconds => _$this._intervalSeconds;
@@ -169,7 +189,9 @@ class PluginTaskStatusBuilder
   PluginTaskStatusBuilder get _$this {
     final $v = _$v;
     if ($v != null) {
+      _plugin = $v.plugin;
       _name = $v.name;
+      _cron = $v.cron;
       _intervalSeconds = $v.intervalSeconds;
       _lastStatus = $v.lastStatus;
       _lastStartedAt = $v.lastStartedAt;
@@ -202,10 +224,20 @@ class PluginTaskStatusBuilder
     final _$result =
         _$v ??
         _$PluginTaskStatus._(
+          plugin: BuiltValueNullFieldError.checkNotNull(
+            plugin,
+            r'PluginTaskStatus',
+            'plugin',
+          ),
           name: BuiltValueNullFieldError.checkNotNull(
             name,
             r'PluginTaskStatus',
             'name',
+          ),
+          cron: BuiltValueNullFieldError.checkNotNull(
+            cron,
+            r'PluginTaskStatus',
+            'cron',
           ),
           intervalSeconds: BuiltValueNullFieldError.checkNotNull(
             intervalSeconds,
