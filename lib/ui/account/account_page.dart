@@ -16,11 +16,17 @@ class AccountPage extends StatefulWidget {
   final String? pictureUrl;
   final String? userName;
   final VoidCallback onSignOut;
+  final bool visible;
+  final ActiveAccountService? accountService;
+  final Future<Map<String, dynamic>?> Function(String path)? fetchJson;
   const AccountPage({
     super.key,
     required this.pictureUrl,
     required this.userName,
     required this.onSignOut,
+    this.visible = true,
+    this.accountService,
+    this.fetchJson,
   });
 
   @override
@@ -34,23 +40,63 @@ class _AccountPageState extends State<AccountPage> {
   DateTime? _lastSync;
   String? _syncStatus;
   String? _syncError;
+  (String?, String?, String?) _pluginKey = (null, null, null);
+
+  ActiveAccountService get _accountService => widget.accountService ?? ActiveAccountService.instance;
 
   @override
   void initState() {
     super.initState();
+    _accountService.addListener(_onActiveChanged);
+    _pluginKey = _currentPluginKey();
     _loadVersion();
     _loadSyncStatus();
   }
 
+  @override
+  void dispose() {
+    _accountService.removeListener(_onActiveChanged);
+    super.dispose();
+  }
+
+  @override
+  void didUpdateWidget(covariant AccountPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // This page lives inside a dashboard IndexedStack, so it can go from
+    // hidden to visible without ever being rebuilt for a new active school -
+    // only the tab index changes. Catch the case where plugin detection
+    // finished while the tab was hidden and nothing ever fetched.
+    if (widget.visible && !oldWidget.visible && _version == null && _syncStatus == null && _lastSync == null) {
+      _loadVersion();
+      _loadSyncStatus();
+    }
+  }
+
+  (String?, String?, String?) _currentPluginKey() {
+    final active = _accountService.active;
+    return (active?.id, active?.pluginAccountId, active?.pluginBasePath);
+  }
+
+  void _onActiveChanged() {
+    final key = _currentPluginKey();
+    if (key == _pluginKey) return;
+    _pluginKey = key;
+    _loadVersion();
+    _loadSyncStatus();
+  }
+
+  Future<Map<String, dynamic>?> _fetchJson(String path) {
+    if (widget.fetchJson != null) return widget.fetchJson!(path);
+    return ApiClient.instance.dio.get<Map<String, dynamic>>(path).then((res) => res.data);
+  }
+
   Future<void> _loadSyncStatus() async {
     try {
-      final active = ActiveAccountService.instance.active;
+      final active = _accountService.active;
       final accountId = active?.pluginAccountId;
       final base = active?.pluginBasePath;
       if (accountId == null || base == null || base.isEmpty) return;
-      final res = await ApiClient.instance.dio
-          .get<Map<String, dynamic>>('$base/accounts/$accountId/sync');
-      final data = res.data;
+      final data = await _fetchJson('$base/accounts/$accountId/sync');
       if (!mounted || data == null) return;
       setState(() {
         final last = data['lastSync'];
@@ -58,28 +104,30 @@ class _AccountPageState extends State<AccountPage> {
         _syncStatus = data['syncStatus']?.toString();
         _syncError = data['syncError']?.toString();
       });
-    } catch (_) {}
+    } catch (e, st) {
+      debugPrint('AccountPage: failed to load sync status: $e\n$st');
+    }
   }
 
   Future<void> _loadVersion() async {
     try {
-      final active = ActiveAccountService.instance.active;
+      final active = _accountService.active;
       final base = active?.pluginBasePath;
       if (base == null || base.isEmpty) return;
-      final res =
-          await ApiClient.instance.dio.get<Map<String, dynamic>>('$base/status');
-      final data = res.data;
+      final data = await _fetchJson('$base/status');
       if (mounted) setState(() => _version = data?['version']?.toString());
-    } catch (_) {}
+    } catch (e, st) {
+      debugPrint('AccountPage: failed to load version: $e\n$st');
+    }
   }
 
   Future<void> _syncNow() async {
-    final active = ActiveAccountService.instance.active;
+    final active = _accountService.active;
     if (active == null) {
       setState(() => _syncMsg = 'No connected account to sync');
       return;
     }
-    final target = await ActiveAccountService.instance.resolvePluginTarget(active);
+    final target = await _accountService.resolvePluginTarget(active);
     if (target == null) {
       if (!mounted) return;
       setState(() => _syncMsg = 'No connected account to sync');

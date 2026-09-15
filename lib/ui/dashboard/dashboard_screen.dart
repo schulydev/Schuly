@@ -193,6 +193,7 @@ class _DashboardScreenState extends State<DashboardScreen> with WidgetsBindingOb
             pictureUrl: _pictureUrl,
             userName: _userName,
             onSignOut: widget.onSignOut,
+            visible: _index == 4,
           ),
         ];
 

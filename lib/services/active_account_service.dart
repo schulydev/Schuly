@@ -11,6 +11,11 @@ class ActiveAccountService extends ChangeNotifier {
   ActiveAccountService._();
   static final ActiveAccountService instance = ActiveAccountService._();
 
+  /// A standalone instance for widget tests, so they don't share (or race)
+  /// the app-wide singleton's state.
+  @visibleForTesting
+  ActiveAccountService.forTest();
+
   static const _activeIdKey = 'accounts.active_id';
 
   List<MySchool> _schools = const [];
@@ -21,6 +26,15 @@ class ActiveAccountService extends ChangeNotifier {
   List<MySchool> get schools => _schools;
   bool get loading => _loading;
   Object? get error => _error;
+
+  /// Test-only: seeds schools/active id directly, bypassing the network
+  /// `refresh()` call and its `SharedPreferences` persistence.
+  @visibleForTesting
+  void setSchoolsForTest(List<MySchool> schools, {String? activeId}) {
+    _schools = schools;
+    _activeId = activeId;
+    notifyListeners();
+  }
 
   MySchool? get active {
     if (_schools.isEmpty) return null;
@@ -91,7 +105,8 @@ class ActiveAccountService extends ChangeNotifier {
       List<SchoolSystem> systems;
       try {
         systems = await SchoolSystemsService.fetch();
-      } catch (_) {
+      } catch (e, st) {
+        debugPrint('ActiveAccountService: failed to fetch school systems: $e\n$st');
         systems = const [];
       }
 
@@ -111,10 +126,13 @@ class ActiveAccountService extends ChangeNotifier {
                   (provider: sys.key, accountId: accId, pluginBasePath: base);
             }
           }
-        } catch (_) {}
+        } catch (e, st) {
+          debugPrint('ActiveAccountService: failed to list ${sys.key} accounts: $e\n$st');
+        }
       }
       return out;
-    } catch (_) {
+    } catch (e, st) {
+      debugPrint('ActiveAccountService: plugin detection failed: $e\n$st');
       return const {};
     }
   }
