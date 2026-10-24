@@ -94,7 +94,10 @@ class _RootScreenState extends State<RootScreen> {
       await _refresh();
     } catch (e) {
       if (!mounted) return;
-      setState(() => _error = '$e');
+      // Closing the browser isn't an error; anything else gets a short, friendly
+      // message rather than the raw exception.
+      final cancelled = e.toString().toLowerCase().contains('cancel');
+      setState(() => _error = cancelled ? null : 'Sign-in failed. Please try again.');
     } finally {
       if (mounted) setState(() => _busy = false);
     }
