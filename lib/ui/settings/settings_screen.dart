@@ -11,6 +11,8 @@ import '../../services/auth_service.dart';
 import '../../services/private_account_store.dart';
 import '../../services/profile_refresh_requests.dart';
 import '../../services/school_data_service.dart';
+import '../../services/toast_service.dart';
+import '../microsoft/microsoft_link_flow.dart';
 import '../../services/theme_service.dart';
 import 'notification_settings_section.dart';
 import 'privacy_settings_section.dart';
@@ -61,6 +63,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
             const SizedBox(height: 12),
           ],
+          const _SectionLabel('Connections'),
+          Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: FTile(
+              prefix: const Icon(FIcons.mail),
+              title: const Text('Microsoft 365'),
+              subtitle: const Text('Connect your school Microsoft account'),
+              suffix: const Icon(FIcons.plus),
+              onPress: _connectMicrosoft,
+            ),
+          ),
+          const SizedBox(height: 12),
           const _SectionLabel('Appearance'),
           AnimatedBuilder(
             animation: ThemeService.instance,
@@ -130,6 +144,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
       if (mounted) {
         showFToast(context: context, title: const Text("Couldn't open the account page"));
       }
+    }
+  }
+
+  Future<void> _connectMicrosoft() async {
+    final account = await linkMicrosoftAccount(context);
+    if (!mounted) return;
+    if (account == null) {
+      ToastService.error('Microsoft sign-in cancelled');
+    } else {
+      ToastService.success('Connected', account.email);
     }
   }
 
