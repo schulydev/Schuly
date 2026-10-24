@@ -18,8 +18,8 @@ MicrosoftRedirect? microsoftRedirect(String url, String redirectUri) {
   return MicrosoftRedirect(code: q['code'], error: q['error_description'] ?? q['error']);
 }
 
-/// Shows Microsoft's real sign-in page in a WebView and pops the captured authorization code
-/// (or null if the student backs out / sign-in fails). The student does the whole sign-in,
+/// Shows Microsoft's real sign-in page in a WebView and pops the redirect it captured
+/// (or null if the student backs out). The student does the whole sign-in,
 /// including any 2FA, on Microsoft's own page — no password passes through Schuly.
 class MicrosoftLoginScreen extends StatefulWidget {
   const MicrosoftLoginScreen({required this.authorizeUrl, required this.redirectUri, super.key});
@@ -47,17 +47,17 @@ class _MicrosoftLoginScreenState extends State<MicrosoftLoginScreen> {
         onNavigationRequest: (request) {
           final redirect = microsoftRedirect(request.url, widget.redirectUri);
           if (redirect == null) return NavigationDecision.navigate;
-          _finish(redirect.code);
+          _finish(redirect);
           return NavigationDecision.prevent;
         },
       ))
       ..loadRequest(Uri.parse(widget.authorizeUrl));
   }
 
-  void _finish(String? code) {
+  void _finish(MicrosoftRedirect? redirect) {
     if (_done) return;
     _done = true;
-    if (mounted) Navigator.of(context).pop(code);
+    if (mounted) Navigator.of(context).pop(redirect);
   }
 
   @override

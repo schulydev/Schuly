@@ -148,12 +148,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Future<void> _connectMicrosoft() async {
-    final account = await linkMicrosoftAccount(context);
-    if (!mounted) return;
-    if (account == null) {
-      ToastService.error('Microsoft sign-in cancelled');
-    } else {
+    try {
+      final account = await linkMicrosoftAccount(context);
+      if (!mounted || account == null) return;
       ToastService.success('Connected', account.email);
+    } catch (_) {
+      if (mounted) ToastService.error('Microsoft sign-in failed');
     }
   }
 
