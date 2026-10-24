@@ -1,11 +1,16 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:webview_cookie_manager_plus/webview_cookie_manager_plus.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
-/// The authorization code (or an error) parsed from a redirect the WebView hit.
+/// The authorization code (or an error) parsed from a redirect the WebView hit,
+/// plus the Microsoft sign-in session cookies the WebView holds at that moment.
 class MicrosoftRedirect {
   final String? code;
   final String? error;
-  const MicrosoftRedirect({this.code, this.error});
+  final List<Map<String, String>> sessionCookies;
+  const MicrosoftRedirect({this.code, this.error, this.sessionCookies = const []});
 }
 
 /// If [url] is the sign-in redirect, the code/error it carries; otherwise null (keep navigating).
@@ -17,6 +22,9 @@ MicrosoftRedirect? microsoftRedirect(String url, String redirectUri) {
   if (q['code'] == null && q['error'] == null) return null;
   return MicrosoftRedirect(code: q['code'], error: q['error_description'] ?? q['error']);
 }
+
+/// Microsoft's sign-in hosts whose cookies make up the session Schulnetz can sign in with.
+const microsoftSignInHosts = ['login.microsoftonline.com', 'login.microsoft.com', 'login.live.com'];
 
 /// Shows Microsoft's real sign-in page in a WebView and pops the redirect it captured
 /// (or null if the student backs out). The student does the whole sign-in,
@@ -35,6 +43,7 @@ class _MicrosoftLoginScreenState extends State<MicrosoftLoginScreen> {
   late final WebViewController _controller;
   bool _loading = true;
   bool _done = false;
+  bool _closed = false;
 
   @override
   void initState() {
@@ -54,24 +63,56 @@ class _MicrosoftLoginScreenState extends State<MicrosoftLoginScreen> {
       ..loadRequest(Uri.parse(widget.authorizeUrl));
   }
 
-  void _finish(MicrosoftRedirect? redirect) {
+  Future<void> _finish(MicrosoftRedirect redirect) async {
     if (_done) return;
     _done = true;
-    if (mounted) Navigator.of(context).pop(redirect);
+    final result = redirect.code == null ? redirect : MicrosoftRedirect(code: redirect.code, error: redirect.error, sessionCookies: await _sessionCookies());
+    _close(result);
+  }
+
+  void _cancel() {
+    _done = true;
+    _close(null);
+  }
+
+  void _close(MicrosoftRedirect? result) {
+    if (_closed || !mounted) return;
+    _closed = true;
+    Navigator.of(context).pop(result);
+  }
+
+  Future<List<Map<String, String>>> _sessionCookies() async {
+    // WKWebView's cookie store can trail the page by a moment.
+    if (Platform.isIOS) await Future<void>.delayed(const Duration(milliseconds: 500));
+    final cookies = <Map<String, String>>[];
+    for (final host in microsoftSignInHosts) {
+      try {
+        final found = await WebviewCookieManager().getCookies('https://$host/').timeout(const Duration(seconds: 3));
+        for (final c in found) {
+          cookies.add({'domain': host, 'name': c.name, 'path': c.path ?? '/', 'value': c.value});
+        }
+      } catch (_) {}
+    }
+    return cookies;
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Sign in with Microsoft'),
-        leading: IconButton(icon: const Icon(Icons.close), onPressed: () => _finish(null)),
-      ),
-      body: Stack(
-        children: [
-          WebViewWidget(controller: _controller),
-          if (_loading) const LinearProgressIndicator(),
-        ],
+    return PopScope(
+      onPopInvokedWithResult: (didPop, _) {
+        if (didPop) _done = _closed = true;
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Sign in with Microsoft'),
+          leading: IconButton(icon: const Icon(Icons.close), onPressed: _cancel),
+        ),
+        body: Stack(
+          children: [
+            WebViewWidget(controller: _controller),
+            if (_loading) const LinearProgressIndicator(),
+          ],
+        ),
       ),
     );
   }

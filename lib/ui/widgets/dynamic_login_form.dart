@@ -18,12 +18,12 @@ class DynamicLoginFormController {
 
   String value(String key) => _controllers[key]?.text.trim() ?? '';
 
-  Map<String, String> get values =>
-      {for (final f in fields) f.key: value(f.key)};
+  Map<String, String> values({Set<String> hidden = const {}}) =>
+      {for (final f in fields) if (!hidden.contains(f.key)) f.key: value(f.key)};
 
-  String? validateRequired() {
+  String? validateRequired({Set<String> hidden = const {}}) {
     for (final f in fields) {
-      if (f.required && value(f.key).isEmpty) {
+      if (f.required && !hidden.contains(f.key) && value(f.key).isEmpty) {
         return '${f.label} is required';
       }
     }
@@ -40,7 +40,10 @@ class DynamicLoginFormController {
 class DynamicLoginForm extends StatelessWidget {
   final DynamicLoginFormController controller;
 
-  const DynamicLoginForm({required this.controller, super.key});
+  /// Fields not shown (e.g. the ones a linked account replaces).
+  final Set<String> hidden;
+
+  const DynamicLoginForm({required this.controller, this.hidden = const {}, super.key});
 
   static bool _isTotp(SchoolSystemLoginField f) =>
       f.type == 'totp' || f.key.toLowerCase() == 'totp';
@@ -69,7 +72,7 @@ class DynamicLoginForm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final fields = controller.fields;
+    final fields = controller.fields.where((f) => !hidden.contains(f.key)).toList();
     // One group, so the platform treats the boxes as a single credential rather
     // than unrelated inputs.
     return AutofillGroup(

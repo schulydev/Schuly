@@ -5,6 +5,7 @@ import 'package:dio/dio.dart';
 import '../domain/private_data.dart';
 import 'backend_dio.dart';
 import 'private_account_store.dart';
+import 'private_microsoft_store.dart';
 import 'totp_service.dart';
 
 /// Client for the backend's stateless **token-strategy** proxy used in private
@@ -130,17 +131,21 @@ class TokenProxyClient {
   /// back to a full credential re-login from the vaulted email/password/seed -
   /// Schuly regenerates the OTP itself, so the user is never prompted.
   Future<PrivateAccount?> _refreshAccount(PrivateAccount a) async {
-    if (a.contextState != null) {
+    final link = a.linkedAccountId == null ? null : await PrivateMicrosoftStore.instance.get(a.linkedAccountId!);
+    for (final session in {a.contextState, link?.sessionCookies}.whereType<String>()) {
       try {
         final r = await refresh(
           basePath: a.statelessBasePath,
           baseUrl: a.baseUrl,
           userAgent: a.userAgent ?? '',
-          contextState: a.contextState!,
+          contextState: session,
         );
-        if (r.success && r.accessToken != null) return _applied(a, r);
+        if (r.success && r.accessToken != null) {
+          if (link != null && r.contextState != null) await PrivateMicrosoftStore.instance.updateSession(link.id, r.contextState!);
+          return _applied(a, r);
+        }
       } on DioException {
-        // An HTTP failure falls through to the credential relogin below.
+        // An HTTP failure falls through to the next session, then the credential relogin below.
       }
     }
     return _credentialRelogin(a);
@@ -182,6 +187,7 @@ class TokenProxyClient {
         username: a.username,
         password: a.password,
         totpSecret: a.totpSecret,
+        linkedAccountId: a.linkedAccountId,
       );
 
   Future<List<T>> _list<T>(

@@ -4,11 +4,13 @@ import 'package:forui/forui.dart';
 
 import '../../domain/school_system.dart';
 import '../../services/private_account_store.dart';
+import '../../services/private_microsoft_store.dart';
 import '../../services/scrape_proxy_client.dart';
 import '../../services/token_proxy_client.dart';
 import '../../services/api_error.dart';
 import '../../services/totp_service.dart';
 import '../widgets/dynamic_login_form.dart';
+import '../widgets/linked_account_login.dart';
 
 class PrivateConnectScreen extends StatefulWidget {
   final SchoolSystem system;
@@ -20,7 +22,9 @@ class PrivateConnectScreen extends StatefulWidget {
 
 class _PrivateConnectScreenState extends State<PrivateConnectScreen> {
   late final DynamicLoginFormController _form;
+  late final LoginMethodController _method;
   late final TextEditingController _nameCtrl;
+  String? _linkedAccountId;
   bool _busy = false;
   String? _error;
 
@@ -30,18 +34,20 @@ class _PrivateConnectScreenState extends State<PrivateConnectScreen> {
   void initState() {
     super.initState();
     _form = DynamicLoginFormController(_system.loginFields);
+    _method = LoginMethodController(_system, _system.loginFields.any((f) => f.key == 'baseUrl') ? _form.controllerFor('baseUrl') : null);
     _nameCtrl = TextEditingController(text: _system.displayName);
   }
 
   @override
   void dispose() {
+    _method.dispose();
     _form.dispose();
     _nameCtrl.dispose();
     super.dispose();
   }
 
   Future<void> _connect() async {
-    final missing = _form.validateRequired();
+    final missing = _form.validateRequired(hidden: _method.hiddenKeys) ?? (_method.usesLinkedAccount && _linkedAccountId == null ? 'Choose a Microsoft account' : null);
     if (missing != null) {
       setState(() => _error = missing);
       return;
@@ -62,7 +68,9 @@ class _PrivateConnectScreenState extends State<PrivateConnectScreen> {
         return;
       }
 
-      if (_system.privateAuthStrategy == 'token') {
+      if (_method.usesLinkedAccount) {
+        await _connectLinked(baseUrl, name, basePath);
+      } else if (_system.privateAuthStrategy == 'token') {
         await _connectToken(baseUrl, name, basePath);
       } else {
         await _connectScrape(baseUrl, name, basePath);
@@ -73,6 +81,33 @@ class _PrivateConnectScreenState extends State<PrivateConnectScreen> {
     } finally {
       if (mounted) setState(() => _busy = false);
     }
+  }
+
+  Future<void> _connectLinked(String baseUrl, String name, String basePath) async {
+    final link = await PrivateMicrosoftStore.instance.get(_linkedAccountId!);
+    if (link == null) {
+      setState(() => _error = 'Choose a Microsoft account');
+      return;
+    }
+    final res = await TokenProxyClient.instance.refresh(basePath: basePath, baseUrl: baseUrl, userAgent: '', contextState: link.sessionCookies);
+    if (!res.success || res.accessToken == null) {
+      if (!mounted) return;
+      setState(() => _error = 'The Microsoft sign-in of that account has expired. Link it again in Settings.');
+      return;
+    }
+    if (res.contextState != null) await PrivateMicrosoftStore.instance.updateSession(link.id, res.contextState!);
+    await PrivateAccountStore.instance.save(PrivateAccount(
+      systemKey: _system.key,
+      loginMethod: _system.loginMethod,
+      baseUrl: baseUrl,
+      displayName: name,
+      statelessBasePath: basePath,
+      accessToken: res.accessToken,
+      refreshToken: res.refreshToken,
+      contextState: res.contextState,
+      linkedAccountId: link.id,
+    ));
+    if (mounted) Navigator.of(context).pop(true);
   }
 
   Future<void> _connectToken(
@@ -134,26 +169,34 @@ class _PrivateConnectScreenState extends State<PrivateConnectScreen> {
         title: Text('Connect ${_system.displayName}'),
         prefixes: [FHeaderAction.back(onPress: () => Navigator.of(context).pop())],
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        spacing: 16,
-        children: [
-          const Text(
-            'Private mode keeps everything on this device - no account, '
-            'nothing stored on a server.',
-          ),
-          DynamicLoginForm(controller: _form),
-          FTextField(
-            control: FTextFieldControl.managed(controller: _nameCtrl),
-            label: const Text('Display Name'),
-          ),
-          FButton(
-            onPress: _busy ? null : _connect,
-            child: Text(_busy ? 'Working…' : 'Connect'),
-          ),
-          if (_error != null)
-            SelectableText(_error!, style: TextStyle(color: colors.destructive)),
-        ],
+      child: ListenableBuilder(
+        listenable: _method,
+        builder: (context, _) => Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          spacing: 16,
+          children: [
+            const Text(
+              'Private mode keeps everything on this device - no account, '
+              'nothing stored on a server.',
+            ),
+            DynamicLoginForm(controller: _form, hidden: _method.hiddenKeys),
+            if (_method.usesLinkedAccount)
+              LinkedMicrosoftAccountPicker(
+                selectedId: _linkedAccountId,
+                onChanged: (id) => setState(() => _linkedAccountId = id),
+              ),
+            FTextField(
+              control: FTextFieldControl.managed(controller: _nameCtrl),
+              label: const Text('Display Name'),
+            ),
+            FButton(
+              onPress: _busy || _method.checking ? null : _connect,
+              child: Text(_busy ? 'Working…' : _method.checking ? 'Checking sign-in…' : 'Connect'),
+            ),
+            if (_error != null)
+              SelectableText(_error!, style: TextStyle(color: colors.destructive)),
+          ],
+        ),
       ),
     );
   }

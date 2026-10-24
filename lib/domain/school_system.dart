@@ -12,6 +12,14 @@ class SchoolSystem {
   /// catalog because the system key differs from the plugin name.
   final String? pluginBasePath;
 
+  /// Anonymous endpoint answering, for the entered school URL, whether to sign
+  /// in with a linked account (`{ "linkedProvider": "microsoft" }`) instead of
+  /// the fields marked [SchoolSystemLoginField.replacedByLinkedAccount].
+  final String? loginMethodPath;
+
+  /// The login field carrying the chosen linked account's id.
+  static const linkedAccountFieldKey = 'linkedAccountId';
+
   final String loginMethod;
   final bool enabled;
   final int sortOrder;
@@ -25,6 +33,7 @@ class SchoolSystem {
     this.privateAuthStrategy,
     this.statelessBasePath,
     this.pluginBasePath,
+    this.loginMethodPath,
     this.enabled = true,
     this.sortOrder = 0,
     this.loginFields = const [],
@@ -41,6 +50,7 @@ class SchoolSystem {
       privateAuthStrategy: json['privateAuthStrategy'] as String?,
       statelessBasePath: json['statelessBasePath'] as String?,
       pluginBasePath: json['pluginBasePath'] as String?,
+      loginMethodPath: json['loginMethodPath'] as String?,
       loginMethod: json['loginMethod'] as String? ?? 'oauth-webview',
       enabled: json['enabled'] as bool? ?? true,
       sortOrder: json['sortOrder'] as int? ?? 0,
@@ -58,6 +68,9 @@ class SchoolSystemLoginField {
   final String? defaultValue;
   final bool required;
 
+  /// Hidden when the school signs in with a linked account.
+  final bool replacedByLinkedAccount;
+
   const SchoolSystemLoginField({
     required this.key,
     required this.label,
@@ -65,6 +78,7 @@ class SchoolSystemLoginField {
     this.placeholder,
     this.defaultValue,
     this.required = true,
+    this.replacedByLinkedAccount = false,
   });
 
   factory SchoolSystemLoginField.fromJson(Map<String, dynamic> json) {
@@ -75,6 +89,7 @@ class SchoolSystemLoginField {
       placeholder: json['placeholder'] as String?,
       defaultValue: json['defaultValue'] as String?,
       required: json['required'] as bool? ?? true,
+      replacedByLinkedAccount: json['replacedByLinkedAccount'] as bool? ?? false,
     );
   }
 }
