@@ -455,6 +455,17 @@ class _ModeChoicePage extends StatelessWidget {
                 selected: selected == _Mode.private,
                 onTap: () => onSelect(_Mode.private),
               ),
+              if (selected == _Mode.account) ...[
+                const SizedBox(height: 16),
+                Text(
+                  'In account mode your school data - grades, timetable, '
+                  'agenda, and absences including their reasons - is synced to '
+                  'and stored on the Schuly server, so it is available on the '
+                  'web and across your devices.',
+                  textAlign: TextAlign.center,
+                  style: typography.xs.copyWith(color: colors.mutedForeground),
+                ),
+              ],
               const SizedBox(height: 16),
               Text(
                 'You can switch modes later by signing out.',
