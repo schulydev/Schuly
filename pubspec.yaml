@@ -61,6 +61,8 @@ dependencies:
   # Microsoft account sign-in: the WebView shows Microsoft's real page and we
   # capture the authorization code from the redirect (see lib/ui/microsoft/).
   webview_flutter: ^4.10.0
+  # Reads the Microsoft sign-in session cookies from that WebView after a link.
+  webview_cookie_manager_plus: ^2.0.17
   # Push notifications only (grades/absences/agenda alerts); see lib/services/push_service.dart.
   firebase_core: ^4.14.0
   firebase_messaging: ^16.6.0

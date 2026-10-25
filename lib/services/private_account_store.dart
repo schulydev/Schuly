@@ -23,6 +23,9 @@ class PrivateAccount {
 
   final String? totpSecret;
 
+  /// The device-held Microsoft link ([PrivateMicrosoftLink.id]) this account signs in with.
+  final String? linkedAccountId;
+
   const PrivateAccount({
     required this.systemKey,
     required this.loginMethod,
@@ -36,6 +39,7 @@ class PrivateAccount {
     this.username,
     this.password,
     this.totpSecret,
+    this.linkedAccountId,
   });
 
   Map<String, dynamic> toJson() => {
@@ -51,6 +55,7 @@ class PrivateAccount {
         'username': username,
         'password': password,
         'totpSecret': totpSecret,
+        'linkedAccountId': linkedAccountId,
       };
 
   factory PrivateAccount.fromJson(Map<String, dynamic> json) => PrivateAccount(
@@ -66,6 +71,7 @@ class PrivateAccount {
         username: json['username'] as String?,
         password: json['password'] as String?,
         totpSecret: json['totpSecret'] as String?,
+        linkedAccountId: json['linkedAccountId'] as String?,
       );
 }
 

@@ -6,6 +6,7 @@ import '../../domain/school_system.dart';
 import '../../services/api_client.dart';
 import '../../services/api_error.dart';
 import '../widgets/dynamic_login_form.dart';
+import '../widgets/linked_account_login.dart';
 
 class UnifiedConnectScreen extends StatefulWidget {
   final SchoolSystem system;
@@ -17,7 +18,9 @@ class UnifiedConnectScreen extends StatefulWidget {
 
 class _UnifiedConnectScreenState extends State<UnifiedConnectScreen> {
   late final DynamicLoginFormController _form;
+  late final LoginMethodController _method;
   late final TextEditingController _nameCtrl;
+  String? _linkedAccountId;
   bool _busy = false;
   String? _error;
 
@@ -27,18 +30,20 @@ class _UnifiedConnectScreenState extends State<UnifiedConnectScreen> {
   void initState() {
     super.initState();
     _form = DynamicLoginFormController(_system.loginFields);
+    _method = LoginMethodController(_system, _system.loginFields.any((f) => f.key == 'baseUrl') ? _form.controllerFor('baseUrl') : null);
     _nameCtrl = TextEditingController(text: _system.displayName);
   }
 
   @override
   void dispose() {
+    _method.dispose();
     _form.dispose();
     _nameCtrl.dispose();
     super.dispose();
   }
 
   Future<void> _connect() async {
-    final missing = _form.validateRequired();
+    final missing = _form.validateRequired(hidden: _method.hiddenKeys) ?? (_method.usesLinkedAccount && _linkedAccountId == null ? 'Choose a Microsoft account' : null);
     if (missing != null) {
       setState(() => _error = missing);
       return;
@@ -49,7 +54,8 @@ class _UnifiedConnectScreenState extends State<UnifiedConnectScreen> {
     });
     try {
       final fields = {
-        for (final f in _system.loginFields) f.key: _form.value(f.key),
+        ..._form.values(hidden: _method.hiddenKeys),
+        if (_method.usesLinkedAccount) SchoolSystem.linkedAccountFieldKey: _linkedAccountId!,
       };
       final name = _nameCtrl.text.trim();
       final res = await ApiClient.instance.dio.post<Map<String, dynamic>>(
@@ -84,22 +90,30 @@ class _UnifiedConnectScreenState extends State<UnifiedConnectScreen> {
       ),
       child: SingleChildScrollView(
         padding: EdgeInsets.only(bottom: MediaQuery.viewPaddingOf(context).bottom),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          spacing: 16,
-          children: [
-            DynamicLoginForm(controller: _form),
-            FTextField(
-              control: FTextFieldControl.managed(controller: _nameCtrl),
-              label: const Text('Display Name'),
-            ),
-            FButton(
-              onPress: _busy ? null : _connect,
-              child: Text(_busy ? 'Connecting…' : 'Connect'),
-            ),
-            if (_error != null)
-              SelectableText(_error!, style: TextStyle(color: colors.destructive)),
-          ],
+        child: ListenableBuilder(
+          listenable: _method,
+          builder: (context, _) => Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            spacing: 16,
+            children: [
+              DynamicLoginForm(controller: _form, hidden: _method.hiddenKeys),
+              if (_method.usesLinkedAccount)
+                LinkedMicrosoftAccountPicker(
+                  selectedId: _linkedAccountId,
+                  onChanged: (id) => setState(() => _linkedAccountId = id),
+                ),
+              FTextField(
+                control: FTextFieldControl.managed(controller: _nameCtrl),
+                label: const Text('Display Name'),
+              ),
+              FButton(
+                onPress: _busy || _method.checking ? null : _connect,
+                child: Text(_busy ? 'Connecting…' : _method.checking ? 'Checking sign-in…' : 'Connect'),
+              ),
+              if (_error != null)
+                SelectableText(_error!, style: TextStyle(color: colors.destructive)),
+            ],
+          ),
         ),
       ),
     );

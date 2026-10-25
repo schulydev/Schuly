@@ -9,6 +9,7 @@ import '../../../services/app_mode_service.dart';
 import '../../../services/auth_service.dart';
 import '../../../services/onboarding_service.dart';
 import '../../../services/private_account_store.dart';
+import '../../../services/private_microsoft_store.dart';
 import '../../../services/push_service.dart';
 import '../../../services/school_data_service.dart';
 import '../../dashboard/dashboard_screen.dart';
@@ -21,6 +22,7 @@ import '../../private/private_connect_flow.dart';
 Future<void> signOutAndClear() async {
   if (AppModeService.instance.isPrivate) {
     await PrivateAccountStore.instance.clear();
+    await PrivateMicrosoftStore.instance.clear();
     await AppModeService.instance.setMode(AppMode.account);
   } else {
     // Delete the device on the backend before signing out, while the access
