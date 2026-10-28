@@ -104,6 +104,7 @@ Class | Method | HTTP request | Description
 [*AuthenticationApi*](doc/AuthenticationApi.md) | [**toamaisutaaVerifyEmail**](doc/AuthenticationApi.md#toamaisutaaverifyemail) | **POST** /auth/email/verify | Redeems a verification token and writes the address it names.
 [*AvatarsApi*](doc/AvatarsApi.md) | [**apiAvatarsSchoolUserIdGet**](doc/AvatarsApi.md#apiavatarsschooluseridget) | **GET** /api/avatars/{schoolUserId} | 
 [*AvatarsApi*](doc/AvatarsApi.md) | [**apiAvatarsUsersApplicationUserIdGet**](doc/AvatarsApi.md#apiavatarsusersapplicationuseridget) | **GET** /api/avatars/users/{applicationUserId} | 
+[*CalendarApi*](doc/CalendarApi.md) | [**apiPluginsMicrosoftCalendarGet**](doc/CalendarApi.md#apipluginsmicrosoftcalendarget) | **GET** /api/plugins/microsoft/calendar | 
 [*ClassApi*](doc/ClassApi.md) | [**apiClassEnrolStudentPost**](doc/ClassApi.md#apiclassenrolstudentpost) | **POST** /api/Class/enrol-student | 
 [*ClassApi*](doc/ClassApi.md) | [**apiClassGet**](doc/ClassApi.md#apiclassget) | **GET** /api/Class | 
 [*ClassApi*](doc/ClassApi.md) | [**apiClassIdDelete**](doc/ClassApi.md#apiclassiddelete) | **DELETE** /api/Class/{id} | 
@@ -118,6 +119,13 @@ Class | Method | HTTP request | Description
 [*ExamsApi*](doc/ExamsApi.md) | [**apiExamsPost**](doc/ExamsApi.md#apiexamspost) | **POST** /api/Exams | 
 [*ExamsApi*](doc/ExamsApi.md) | [**apiExamsPut**](doc/ExamsApi.md#apiexamsput) | **PUT** /api/Exams | 
 [*ExamsApi*](doc/ExamsApi.md) | [**apiExamsSearchGet**](doc/ExamsApi.md#apiexamssearchget) | **GET** /api/Exams/search | 
+[*ExternalLoginApi*](doc/ExternalLoginApi.md) | [**toamaisutaaExternalCallback**](doc/ExternalLoginApi.md#toamaisutaaexternalcallback) | **GET** /auth/external/{provider}/callback | Where the provider sends the browser back. Register this address with the provider.
+[*ExternalLoginApi*](doc/ExternalLoginApi.md) | [**toamaisutaaExternalExchange**](doc/ExternalLoginApi.md#toamaisutaaexternalexchange) | **POST** /auth/external/exchange | Exchanges the code a provider sign-in returned for tokens.
+[*ExternalLoginApi*](doc/ExternalLoginApi.md) | [**toamaisutaaExternalLink**](doc/ExternalLoginApi.md#toamaisutaaexternallink) | **POST** /auth/external/{provider}/link | Starts linking a provider to the caller&#39;s account.
+[*ExternalLoginApi*](doc/ExternalLoginApi.md) | [**toamaisutaaExternalLogins**](doc/ExternalLoginApi.md#toamaisutaaexternallogins) | **GET** /auth/external/logins | Lists the providers linked to the caller&#39;s account.
+[*ExternalLoginApi*](doc/ExternalLoginApi.md) | [**toamaisutaaExternalProviders**](doc/ExternalLoginApi.md#toamaisutaaexternalproviders) | **GET** /auth/providers | Lists the identity providers a user can sign in with.
+[*ExternalLoginApi*](doc/ExternalLoginApi.md) | [**toamaisutaaExternalStart**](doc/ExternalLoginApi.md#toamaisutaaexternalstart) | **GET** /auth/external/{provider}/start | Sends the browser to a provider to sign in.
+[*ExternalLoginApi*](doc/ExternalLoginApi.md) | [**toamaisutaaExternalUnlink**](doc/ExternalLoginApi.md#toamaisutaaexternalunlink) | **DELETE** /auth/external/logins/{provider} | Unlinks a provider. Takes the same proof linking does.
 [*LinkApi*](doc/LinkApi.md) | [**apiPluginsMicrosoftLinkCompletePost**](doc/LinkApi.md#apipluginsmicrosoftlinkcompletepost) | **POST** /api/plugins/microsoft/link/complete | 
 [*LinkApi*](doc/LinkApi.md) | [**apiPluginsMicrosoftLinkStartPost**](doc/LinkApi.md#apipluginsmicrosoftlinkstartpost) | **POST** /api/plugins/microsoft/link/start | 
 [*LinkedAccountsApi*](doc/LinkedAccountsApi.md) | [**apiMeLinkedAccountsGet**](doc/LinkedAccountsApi.md#apimelinkedaccountsget) | **GET** /api/me/linked-accounts | 
@@ -132,6 +140,7 @@ Class | Method | HTTP request | Description
 [*NotificationsApi*](doc/NotificationsApi.md) | [**apiNotificationsDevicesTokenDelete**](doc/NotificationsApi.md#apinotificationsdevicestokendelete) | **DELETE** /api/notifications/devices/{token} | 
 [*NotificationsApi*](doc/NotificationsApi.md) | [**apiNotificationsPreferencesGet**](doc/NotificationsApi.md#apinotificationspreferencesget) | **GET** /api/notifications/preferences | 
 [*NotificationsApi*](doc/NotificationsApi.md) | [**apiNotificationsPreferencesPut**](doc/NotificationsApi.md#apinotificationspreferencesput) | **PUT** /api/notifications/preferences | 
+[*NotificationsApi*](doc/NotificationsApi.md) | [**apiNotificationsTestPost**](doc/NotificationsApi.md#apinotificationstestpost) | **POST** /api/notifications/test | 
 [*OdaorgStatelessApi*](doc/OdaorgStatelessApi.md) | [**apiPluginsOdaorgStatelessDataPost**](doc/OdaorgStatelessApi.md#apipluginsodaorgstatelessdatapost) | **POST** /api/plugins/odaorg/stateless/data | 
 [*PluginsApi*](doc/PluginsApi.md) | [**apiPluginsGet**](doc/PluginsApi.md#apipluginsget) | **GET** /api/Plugins | 
 [*PluginsApi*](doc/PluginsApi.md) | [**apiPluginsInstallPost**](doc/PluginsApi.md#apipluginsinstallpost) | **POST** /api/Plugins/install | 
@@ -230,12 +239,20 @@ Class | Method | HTTP request | Description
  - [ErrorResponse](doc/ErrorResponse.md)
  - [ExamDto](doc/ExamDto.md)
  - [ExamType](doc/ExamType.md)
+ - [ExternalLinkResponse](doc/ExternalLinkResponse.md)
+ - [ExternalLoginExchangeRequest](doc/ExternalLoginExchangeRequest.md)
+ - [ExternalLoginResponse](doc/ExternalLoginResponse.md)
+ - [ExternalProviderResponse](doc/ExternalProviderResponse.md)
  - [ForgotPasswordRequest](doc/ForgotPasswordRequest.md)
  - [GradeDto](doc/GradeDto.md)
  - [InstallPluginRequest](doc/InstallPluginRequest.md)
+ - [LinkExternalLoginRequest](doc/LinkExternalLoginRequest.md)
  - [LinkedAccountDto](doc/LinkedAccountDto.md)
  - [LoginRequest](doc/LoginRequest.md)
  - [LogoutRequest](doc/LogoutRequest.md)
+ - [MicrosoftCalendarAccount](doc/MicrosoftCalendarAccount.md)
+ - [MicrosoftCalendarEvent](doc/MicrosoftCalendarEvent.md)
+ - [MicrosoftCalendarFeed](doc/MicrosoftCalendarFeed.md)
  - [MySchoolDto](doc/MySchoolDto.md)
  - [NotificationPreferencesDto](doc/NotificationPreferencesDto.md)
  - [OdaorgStatelessAgendaEvent](doc/OdaorgStatelessAgendaEvent.md)
@@ -247,6 +264,7 @@ Class | Method | HTTP request | Description
  - [PluginDto](doc/PluginDto.md)
  - [PluginTaskStatus](doc/PluginTaskStatus.md)
  - [ProblemDetails](doc/ProblemDetails.md)
+ - [PushResult](doc/PushResult.md)
  - [ReencryptStudentDocumentsResult](doc/ReencryptStudentDocumentsResult.md)
  - [RefreshRequest](doc/RefreshRequest.md)
  - [RegenerateRecoveryCodesRequest](doc/RegenerateRecoveryCodesRequest.md)
@@ -270,10 +288,12 @@ Class | Method | HTTP request | Description
  - [TeacherDto](doc/TeacherDto.md)
  - [TokenResponse](doc/TokenResponse.md)
  - [TrustedDeviceSummary](doc/TrustedDeviceSummary.md)
+ - [TwoFactorChallengeResponse](doc/TwoFactorChallengeResponse.md)
  - [TwoFactorEnrolmentCompleted](doc/TwoFactorEnrolmentCompleted.md)
  - [TwoFactorEnrolmentStarted](doc/TwoFactorEnrolmentStarted.md)
  - [TwoFactorStatus](doc/TwoFactorStatus.md)
  - [UnifiedLoginRequest](doc/UnifiedLoginRequest.md)
+ - [UnlinkExternalLoginRequest](doc/UnlinkExternalLoginRequest.md)
  - [UpdateAbsenceCommand](doc/UpdateAbsenceCommand.md)
  - [UpdateAgendaEntryCommand](doc/UpdateAgendaEntryCommand.md)
  - [UpdateApplicationUserCommand](doc/UpdateApplicationUserCommand.md)

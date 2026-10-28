@@ -18,6 +18,8 @@ class _$AbsenceDto extends AbsenceDto {
   @override
   final DateTime until;
   @override
+  final bool? isExcused;
+  @override
   final String? schoolUserId;
   @override
   final String? schoolId;
@@ -31,6 +33,7 @@ class _$AbsenceDto extends AbsenceDto {
     required this.type,
     required this.from,
     required this.until,
+    this.isExcused,
     this.schoolUserId,
     this.schoolId,
   }) : super._();
@@ -50,6 +53,7 @@ class _$AbsenceDto extends AbsenceDto {
         type == other.type &&
         from == other.from &&
         until == other.until &&
+        isExcused == other.isExcused &&
         schoolUserId == other.schoolUserId &&
         schoolId == other.schoolId;
   }
@@ -62,6 +66,7 @@ class _$AbsenceDto extends AbsenceDto {
     _$hash = $jc(_$hash, type.hashCode);
     _$hash = $jc(_$hash, from.hashCode);
     _$hash = $jc(_$hash, until.hashCode);
+    _$hash = $jc(_$hash, isExcused.hashCode);
     _$hash = $jc(_$hash, schoolUserId.hashCode);
     _$hash = $jc(_$hash, schoolId.hashCode);
     _$hash = $jf(_$hash);
@@ -76,6 +81,7 @@ class _$AbsenceDto extends AbsenceDto {
           ..add('type', type)
           ..add('from', from)
           ..add('until', until)
+          ..add('isExcused', isExcused)
           ..add('schoolUserId', schoolUserId)
           ..add('schoolId', schoolId))
         .toString();
@@ -105,6 +111,10 @@ class AbsenceDtoBuilder implements Builder<AbsenceDto, AbsenceDtoBuilder> {
   DateTime? get until => _$this._until;
   set until(DateTime? until) => _$this._until = until;
 
+  bool? _isExcused;
+  bool? get isExcused => _$this._isExcused;
+  set isExcused(bool? isExcused) => _$this._isExcused = isExcused;
+
   String? _schoolUserId;
   String? get schoolUserId => _$this._schoolUserId;
   set schoolUserId(String? schoolUserId) => _$this._schoolUserId = schoolUserId;
@@ -125,6 +135,7 @@ class AbsenceDtoBuilder implements Builder<AbsenceDto, AbsenceDtoBuilder> {
       _type = $v.type;
       _from = $v.from;
       _until = $v.until;
+      _isExcused = $v.isExcused;
       _schoolUserId = $v.schoolUserId;
       _schoolId = $v.schoolId;
       _$v = null;
@@ -170,6 +181,7 @@ class AbsenceDtoBuilder implements Builder<AbsenceDto, AbsenceDtoBuilder> {
             r'AbsenceDto',
             'until',
           ),
+          isExcused: isExcused,
           schoolUserId: schoolUserId,
           schoolId: schoolId,
         );

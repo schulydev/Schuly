@@ -9,12 +9,17 @@ part of 'regenerate_recovery_codes_request.dart';
 class _$RegenerateRecoveryCodesRequest extends RegenerateRecoveryCodesRequest {
   @override
   final String proof;
+  @override
+  final String? currentPassword;
 
   factory _$RegenerateRecoveryCodesRequest([
     void Function(RegenerateRecoveryCodesRequestBuilder)? updates,
   ]) => (RegenerateRecoveryCodesRequestBuilder()..update(updates))._build();
 
-  _$RegenerateRecoveryCodesRequest._({required this.proof}) : super._();
+  _$RegenerateRecoveryCodesRequest._({
+    required this.proof,
+    this.currentPassword,
+  }) : super._();
   @override
   RegenerateRecoveryCodesRequest rebuild(
     void Function(RegenerateRecoveryCodesRequestBuilder) updates,
@@ -27,22 +32,26 @@ class _$RegenerateRecoveryCodesRequest extends RegenerateRecoveryCodesRequest {
   @override
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
-    return other is RegenerateRecoveryCodesRequest && proof == other.proof;
+    return other is RegenerateRecoveryCodesRequest &&
+        proof == other.proof &&
+        currentPassword == other.currentPassword;
   }
 
   @override
   int get hashCode {
     var _$hash = 0;
     _$hash = $jc(_$hash, proof.hashCode);
+    _$hash = $jc(_$hash, currentPassword.hashCode);
     _$hash = $jf(_$hash);
     return _$hash;
   }
 
   @override
   String toString() {
-    return (newBuiltValueToStringHelper(
-      r'RegenerateRecoveryCodesRequest',
-    )..add('proof', proof)).toString();
+    return (newBuiltValueToStringHelper(r'RegenerateRecoveryCodesRequest')
+          ..add('proof', proof)
+          ..add('currentPassword', currentPassword))
+        .toString();
   }
 }
 
@@ -58,6 +67,11 @@ class RegenerateRecoveryCodesRequestBuilder
   String? get proof => _$this._proof;
   set proof(String? proof) => _$this._proof = proof;
 
+  String? _currentPassword;
+  String? get currentPassword => _$this._currentPassword;
+  set currentPassword(String? currentPassword) =>
+      _$this._currentPassword = currentPassword;
+
   RegenerateRecoveryCodesRequestBuilder() {
     RegenerateRecoveryCodesRequest._defaults(this);
   }
@@ -66,6 +80,7 @@ class RegenerateRecoveryCodesRequestBuilder
     final $v = _$v;
     if ($v != null) {
       _proof = $v.proof;
+      _currentPassword = $v.currentPassword;
       _$v = null;
     }
     return this;
@@ -93,6 +108,7 @@ class RegenerateRecoveryCodesRequestBuilder
             r'RegenerateRecoveryCodesRequest',
             'proof',
           ),
+          currentPassword: currentPassword,
         );
     replace(_$result);
     return _$result;

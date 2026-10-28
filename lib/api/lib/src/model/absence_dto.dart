@@ -17,6 +17,7 @@ part 'absence_dto.g.dart';
 /// * [type] 
 /// * [from] 
 /// * [until] 
+/// * [isExcused] 
 /// * [schoolUserId] 
 /// * [schoolId] 
 @BuiltValue()
@@ -36,6 +37,9 @@ abstract class AbsenceDto implements Built<AbsenceDto, AbsenceDtoBuilder> {
 
   @BuiltValueField(wireName: r'until')
   DateTime get until;
+
+  @BuiltValueField(wireName: r'isExcused')
+  bool? get isExcused;
 
   @BuiltValueField(wireName: r'schoolUserId')
   String? get schoolUserId;
@@ -93,6 +97,13 @@ class _$AbsenceDtoSerializer implements PrimitiveSerializer<AbsenceDto> {
       object.until,
       specifiedType: const FullType(DateTime),
     );
+    if (object.isExcused != null) {
+      yield r'isExcused';
+      yield serializers.serialize(
+        object.isExcused,
+        specifiedType: const FullType.nullable(bool),
+      );
+    }
     if (object.schoolUserId != null) {
       yield r'schoolUserId';
       yield serializers.serialize(
@@ -164,6 +175,14 @@ class _$AbsenceDtoSerializer implements PrimitiveSerializer<AbsenceDto> {
             specifiedType: const FullType(DateTime),
           ) as DateTime;
           result.until = valueDes;
+          break;
+        case r'isExcused':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType.nullable(bool),
+          ) as bool?;
+          if (valueDes == null) continue;
+          result.isExcused = valueDes;
           break;
         case r'schoolUserId':
           final valueDes = serializers.deserialize(

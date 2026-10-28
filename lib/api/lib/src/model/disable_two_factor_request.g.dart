@@ -9,12 +9,15 @@ part of 'disable_two_factor_request.dart';
 class _$DisableTwoFactorRequest extends DisableTwoFactorRequest {
   @override
   final String proof;
+  @override
+  final String? currentPassword;
 
   factory _$DisableTwoFactorRequest([
     void Function(DisableTwoFactorRequestBuilder)? updates,
   ]) => (DisableTwoFactorRequestBuilder()..update(updates))._build();
 
-  _$DisableTwoFactorRequest._({required this.proof}) : super._();
+  _$DisableTwoFactorRequest._({required this.proof, this.currentPassword})
+    : super._();
   @override
   DisableTwoFactorRequest rebuild(
     void Function(DisableTwoFactorRequestBuilder) updates,
@@ -27,22 +30,26 @@ class _$DisableTwoFactorRequest extends DisableTwoFactorRequest {
   @override
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
-    return other is DisableTwoFactorRequest && proof == other.proof;
+    return other is DisableTwoFactorRequest &&
+        proof == other.proof &&
+        currentPassword == other.currentPassword;
   }
 
   @override
   int get hashCode {
     var _$hash = 0;
     _$hash = $jc(_$hash, proof.hashCode);
+    _$hash = $jc(_$hash, currentPassword.hashCode);
     _$hash = $jf(_$hash);
     return _$hash;
   }
 
   @override
   String toString() {
-    return (newBuiltValueToStringHelper(
-      r'DisableTwoFactorRequest',
-    )..add('proof', proof)).toString();
+    return (newBuiltValueToStringHelper(r'DisableTwoFactorRequest')
+          ..add('proof', proof)
+          ..add('currentPassword', currentPassword))
+        .toString();
   }
 }
 
@@ -55,6 +62,11 @@ class DisableTwoFactorRequestBuilder
   String? get proof => _$this._proof;
   set proof(String? proof) => _$this._proof = proof;
 
+  String? _currentPassword;
+  String? get currentPassword => _$this._currentPassword;
+  set currentPassword(String? currentPassword) =>
+      _$this._currentPassword = currentPassword;
+
   DisableTwoFactorRequestBuilder() {
     DisableTwoFactorRequest._defaults(this);
   }
@@ -63,6 +75,7 @@ class DisableTwoFactorRequestBuilder
     final $v = _$v;
     if ($v != null) {
       _proof = $v.proof;
+      _currentPassword = $v.currentPassword;
       _$v = null;
     }
     return this;
@@ -90,6 +103,7 @@ class DisableTwoFactorRequestBuilder
             r'DisableTwoFactorRequest',
             'proof',
           ),
+          currentPassword: currentPassword,
         );
     replace(_$result);
     return _$result;
