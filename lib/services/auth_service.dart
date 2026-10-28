@@ -1,7 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
+import 'package:crypto/crypto.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -33,6 +37,14 @@ class TwoFactorChallenge {
   const TwoFactorChallenge(this.challenge);
 
   final String challenge;
+}
+
+/// A single sign-on provider the server offers next to the password.
+class SignInProvider {
+  const SignInProvider(this.key, this.displayName);
+
+  final String key;
+  final String displayName;
 }
 
 /// A refusal from the server, worded for the user.
@@ -101,6 +113,69 @@ class AuthService {
     if (body['two_factor_required'] == true) return TwoFactorChallenge(body['challenge'] as String);
     await _persist(body);
     return null;
+  }
+
+  static const _externalErrors = {
+    'access_denied': 'You cancelled the sign-in.',
+    'account_not_found': 'No Schuly account uses that sign-in yet. Create an account first, then link it on the web.',
+    'account_exists': 'An account with that email already exists. Sign in with your password, then link this provider on the web.',
+    'external_login_failed': 'Signing in with that provider did not work. Try again.',
+  };
+
+  static String get _callbackScheme => appFlavor == 'dev' ? 'schuly-dev' : 'schuly';
+
+  /// The single sign-on providers the server offers; empty when it offers none.
+  static Future<List<SignInProvider>> providers() async {
+    try {
+      final response = await http.get(_uri('/auth/providers')).timeout(const Duration(seconds: 10));
+      if (response.statusCode != 200) return const [];
+      return [
+        for (final entry in jsonDecode(response.body) as List)
+          SignInProvider(entry['key'] as String, (entry['display_name'] as String?) ?? entry['key'] as String),
+      ];
+    } catch (_) {
+      return const [];
+    }
+  }
+
+  /// Signs in through a provider in the system browser. Returns null when the
+  /// account is signed in, or a [TwoFactorChallenge] when a code is needed.
+  static Future<TwoFactorChallenge?> signInWithProvider(String provider) async {
+    final verifier = _randomToken();
+    final state = _randomToken();
+    final challenge = base64Url.encode(sha256.convert(utf8.encode(verifier)).bytes).replaceAll('=', '');
+    final start = _uri('/auth/external/${Uri.encodeComponent(provider)}/start').replace(queryParameters: {
+      'returnUrl': '$_callbackScheme://auth/callback',
+      'codeChallenge': challenge,
+      'codeChallengeMethod': 'S256',
+      'state': state,
+    });
+
+    final String result;
+    try {
+      result = await FlutterWebAuth2.authenticate(url: start.toString(), callbackUrlScheme: _callbackScheme);
+    } on PlatformException catch (e) {
+      if (e.code == 'CANCELED') throw AuthException(_externalErrors['access_denied']!);
+      rethrow;
+    }
+
+    final query = Uri.parse(result).queryParameters;
+    final error = query['error'];
+    if (error != null) throw AuthException(_externalErrors[error] ?? _externalErrors['external_login_failed']!);
+    final code = query['code'];
+    if (code == null || query['state'] != state) throw AuthException(_externalErrors['external_login_failed']!);
+
+    final response = await _post('/auth/external/exchange', {'code': code, 'codeVerifier': verifier});
+    if (response.statusCode != 200) throw _refusal(response, _externalErrors['external_login_failed']!);
+    final body = jsonDecode(response.body) as Map<String, dynamic>;
+    if (body['two_factor_required'] == true) return TwoFactorChallenge(body['challenge'] as String);
+    await _persist(body);
+    return null;
+  }
+
+  static String _randomToken() {
+    final random = Random.secure();
+    return base64Url.encode(List<int>.generate(32, (_) => random.nextInt(256))).replaceAll('=', '');
   }
 
   /// Finishes a sign-in with a code from the authenticator app or a recovery code.

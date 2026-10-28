@@ -65,6 +65,7 @@ dependencies:
   # Push notifications only (grades/absences/agenda alerts); see lib/services/push_service.dart.
   firebase_core: ^4.14.0
   firebase_messaging: ^16.6.0
+  flutter_web_auth_2: ^5.1.0
 
 dev_dependencies:
   flutter_test:

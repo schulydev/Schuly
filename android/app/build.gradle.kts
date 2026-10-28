@@ -45,10 +45,12 @@ android {
             applicationIdSuffix = ".dev"
             versionNameSuffix = "-DEV"
             resValue("string", "app_name", "Schuly DEV")
+            manifestPlaceholders["authCallbackScheme"] = "schuly-dev"
         }
         create("prod") {
             dimension = "environment"
             resValue("string", "app_name", "Schuly")
+            manifestPlaceholders["authCallbackScheme"] = "schuly"
         }
     }
 
