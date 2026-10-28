@@ -77,7 +77,13 @@ class _SignInScreenState extends State<SignInScreen> {
         });
       case _Step.code:
         await _run(() async {
-          await AuthService.verifyCode(_challenge!, _code.text.trim(), rememberDevice: _rememberDevice);
+          try {
+            await AuthService.verifyCode(_challenge!, _code.text.trim(), rememberDevice: _rememberDevice);
+          } on AuthException catch (e) {
+            _code.clear();
+            if (e.statusCode == 429 || _usingRecoveryCode) rethrow;
+            throw const AuthException("That code didn't work. Wait for the next code in your app and enter that one.");
+          }
           if (mounted) Navigator.of(context).pop(true);
         });
       case _Step.register:
