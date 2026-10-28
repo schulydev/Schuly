@@ -1,10 +1,8 @@
 import 'package:flutter/foundation.dart';
 
-/// A cross-screen flag set when the user has been sent to the external
-/// Keycloak avatar page (Settings -> Profile picture), so the dashboard
-/// knows to force a claims refresh - with cache-busting on the picture URL -
-/// the next time the app resumes, instead of waiting for the normal
-/// staleness window.
+/// A cross-screen flag set when the user has been sent to the web app's
+/// settings (Settings -> Profile picture), so the dashboard re-reads the
+/// profile the next time the app resumes.
 class ProfileRefreshRequests {
   ProfileRefreshRequests._();
 
