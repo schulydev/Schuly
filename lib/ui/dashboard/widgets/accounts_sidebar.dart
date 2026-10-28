@@ -127,7 +127,7 @@ class AccountsSidebar extends StatelessWidget {
                           children: [
                             for (final s in svc.schools)
                               FTile(
-                                prefix: _SchoolAvatar(logoUrl: s.logoUrl),
+                                prefix: _SchoolAvatar(logoUrl: s.logoUrl, systemKey: s.schoolSystemKey),
                                 title: Text(s.name),
                                 subtitle: (s.fullName?.isNotEmpty ?? false)
                                     ? Text(s.fullName!)
@@ -207,7 +207,10 @@ class AccountsSidebar extends StatelessWidget {
 class _SchoolAvatar extends StatelessWidget {
   static const double size = 40;
   final String? logoUrl;
-  const _SchoolAvatar({required this.logoUrl});
+  final String? systemKey;
+  const _SchoolAvatar({required this.logoUrl, this.systemKey});
+
+  Widget _network(Widget fallback) => logoUrl == null ? fallback : Image.network(logoUrl!, fit: BoxFit.contain, errorBuilder: (_, _, _) => fallback);
 
   @override
   Widget build(BuildContext context) {
@@ -222,10 +225,9 @@ class _SchoolAvatar extends StatelessWidget {
         borderRadius: BorderRadius.circular(10),
       ),
       padding: const EdgeInsets.all(7),
-      child: (logoUrl == null)
-          ? fallback
-          : Image.network(logoUrl!, fit: BoxFit.contain,
-              errorBuilder: (_, _, _) => fallback),
+      child: systemKey != null
+          ? Image.asset('assets/schoolsystems/$systemKey.webp', fit: BoxFit.contain, errorBuilder: (_, _, _) => _network(fallback))
+          : _network(fallback),
     );
   }
 }

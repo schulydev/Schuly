@@ -40,12 +40,20 @@ Serializers _$serializers =
           ..add(ErrorResponse.serializer)
           ..add(ExamDto.serializer)
           ..add(ExamType.serializer)
+          ..add(ExternalLinkResponse.serializer)
+          ..add(ExternalLoginExchangeRequest.serializer)
+          ..add(ExternalLoginResponse.serializer)
+          ..add(ExternalProviderResponse.serializer)
           ..add(ForgotPasswordRequest.serializer)
           ..add(GradeDto.serializer)
           ..add(InstallPluginRequest.serializer)
+          ..add(LinkExternalLoginRequest.serializer)
           ..add(LinkedAccountDto.serializer)
           ..add(LoginRequest.serializer)
           ..add(LogoutRequest.serializer)
+          ..add(MicrosoftCalendarAccount.serializer)
+          ..add(MicrosoftCalendarEvent.serializer)
+          ..add(MicrosoftCalendarFeed.serializer)
           ..add(MySchoolDto.serializer)
           ..add(NotificationPreferencesDto.serializer)
           ..add(OdaorgStatelessAgendaEvent.serializer)
@@ -57,6 +65,7 @@ Serializers _$serializers =
           ..add(PluginDto.serializer)
           ..add(PluginTaskStatus.serializer)
           ..add(ProblemDetails.serializer)
+          ..add(PushResult.serializer)
           ..add(ReencryptStudentDocumentsResult.serializer)
           ..add(RefreshRequest.serializer)
           ..add(RegenerateRecoveryCodesRequest.serializer)
@@ -80,10 +89,12 @@ Serializers _$serializers =
           ..add(TeacherDto.serializer)
           ..add(TokenResponse.serializer)
           ..add(TrustedDeviceSummary.serializer)
+          ..add(TwoFactorChallengeResponse.serializer)
           ..add(TwoFactorEnrolmentCompleted.serializer)
           ..add(TwoFactorEnrolmentStarted.serializer)
           ..add(TwoFactorStatus.serializer)
           ..add(UnifiedLoginRequest.serializer)
+          ..add(UnlinkExternalLoginRequest.serializer)
           ..add(UpdateAbsenceCommand.serializer)
           ..add(UpdateAgendaEntryCommand.serializer)
           ..add(UpdateApplicationUserCommand.serializer)
@@ -139,6 +150,18 @@ Serializers _$serializers =
           ..addBuilderFactory(
             const FullType(BuiltList, const [const FullType(GradeDto)]),
             () => ListBuilder<GradeDto>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, const [
+              const FullType(MicrosoftCalendarAccount),
+            ]),
+            () => ListBuilder<MicrosoftCalendarAccount>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, const [
+              const FullType(MicrosoftCalendarEvent),
+            ]),
+            () => ListBuilder<MicrosoftCalendarEvent>(),
           )
           ..addBuilderFactory(
             const FullType(BuiltList, const [
@@ -211,6 +234,14 @@ Serializers _$serializers =
               const FullType(SemesterSubjectGradeDto),
             ]),
             () => ListBuilder<SemesterSubjectGradeDto>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, const [const FullType(String)]),
+            () => ListBuilder<String>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, const [const FullType(String)]),
+            () => ListBuilder<String>(),
           )
           ..addBuilderFactory(
             const FullType(BuiltList, const [const FullType(String)]),

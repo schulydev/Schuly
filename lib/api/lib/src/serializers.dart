@@ -46,12 +46,20 @@ import 'package:schuly_api/src/model/enrol_student_command.dart';
 import 'package:schuly_api/src/model/error_response.dart';
 import 'package:schuly_api/src/model/exam_dto.dart';
 import 'package:schuly_api/src/model/exam_type.dart';
+import 'package:schuly_api/src/model/external_link_response.dart';
+import 'package:schuly_api/src/model/external_login_exchange_request.dart';
+import 'package:schuly_api/src/model/external_login_response.dart';
+import 'package:schuly_api/src/model/external_provider_response.dart';
 import 'package:schuly_api/src/model/forgot_password_request.dart';
 import 'package:schuly_api/src/model/grade_dto.dart';
 import 'package:schuly_api/src/model/install_plugin_request.dart';
+import 'package:schuly_api/src/model/link_external_login_request.dart';
 import 'package:schuly_api/src/model/linked_account_dto.dart';
 import 'package:schuly_api/src/model/login_request.dart';
 import 'package:schuly_api/src/model/logout_request.dart';
+import 'package:schuly_api/src/model/microsoft_calendar_account.dart';
+import 'package:schuly_api/src/model/microsoft_calendar_event.dart';
+import 'package:schuly_api/src/model/microsoft_calendar_feed.dart';
 import 'package:schuly_api/src/model/my_school_dto.dart';
 import 'package:schuly_api/src/model/notification_preferences_dto.dart';
 import 'package:schuly_api/src/model/odaorg_stateless_agenda_event.dart';
@@ -63,6 +71,7 @@ import 'package:schuly_api/src/model/odaorg_stateless_user_info.dart';
 import 'package:schuly_api/src/model/plugin_dto.dart';
 import 'package:schuly_api/src/model/plugin_task_status.dart';
 import 'package:schuly_api/src/model/problem_details.dart';
+import 'package:schuly_api/src/model/push_result.dart';
 import 'package:schuly_api/src/model/reencrypt_student_documents_result.dart';
 import 'package:schuly_api/src/model/refresh_request.dart';
 import 'package:schuly_api/src/model/regenerate_recovery_codes_request.dart';
@@ -86,10 +95,12 @@ import 'package:schuly_api/src/model/student_document_dto.dart';
 import 'package:schuly_api/src/model/teacher_dto.dart';
 import 'package:schuly_api/src/model/token_response.dart';
 import 'package:schuly_api/src/model/trusted_device_summary.dart';
+import 'package:schuly_api/src/model/two_factor_challenge_response.dart';
 import 'package:schuly_api/src/model/two_factor_enrolment_completed.dart';
 import 'package:schuly_api/src/model/two_factor_enrolment_started.dart';
 import 'package:schuly_api/src/model/two_factor_status.dart';
 import 'package:schuly_api/src/model/unified_login_request.dart';
+import 'package:schuly_api/src/model/unlink_external_login_request.dart';
 import 'package:schuly_api/src/model/update_absence_command.dart';
 import 'package:schuly_api/src/model/update_agenda_entry_command.dart';
 import 'package:schuly_api/src/model/update_application_user_command.dart';
@@ -142,12 +153,20 @@ part 'serializers.g.dart';
   ErrorResponse,
   ExamDto,
   ExamType,
+  ExternalLinkResponse,
+  ExternalLoginExchangeRequest,
+  ExternalLoginResponse,
+  ExternalProviderResponse,
   ForgotPasswordRequest,
   GradeDto,
   InstallPluginRequest,
+  LinkExternalLoginRequest,
   LinkedAccountDto,
   LoginRequest,
   LogoutRequest,
+  MicrosoftCalendarAccount,
+  MicrosoftCalendarEvent,
+  MicrosoftCalendarFeed,
   MySchoolDto,
   NotificationPreferencesDto,
   OdaorgStatelessAgendaEvent,
@@ -159,6 +178,7 @@ part 'serializers.g.dart';
   PluginDto,
   PluginTaskStatus,
   ProblemDetails,
+  PushResult,
   ReencryptStudentDocumentsResult,
   RefreshRequest,
   RegenerateRecoveryCodesRequest,
@@ -182,10 +202,12 @@ part 'serializers.g.dart';
   TeacherDto,
   TokenResponse,
   TrustedDeviceSummary,
+  TwoFactorChallengeResponse,
   TwoFactorEnrolmentCompleted,
   TwoFactorEnrolmentStarted,
   TwoFactorStatus,
   UnifiedLoginRequest,
+  UnlinkExternalLoginRequest,
   UpdateAbsenceCommand,
   UpdateAgendaEntryCommand,
   UpdateApplicationUserCommand,
@@ -241,6 +263,10 @@ Serializers serializers = (_$serializers.toBuilder()
         () => ListBuilder<ApplicationUserDto>(),
       )
       ..addBuilderFactory(
+        const FullType(BuiltList, [FullType(ExternalProviderResponse)]),
+        () => ListBuilder<ExternalProviderResponse>(),
+      )
+      ..addBuilderFactory(
         const FullType(BuiltList, [FullType(PluginTaskStatus)]),
         () => ListBuilder<PluginTaskStatus>(),
       )
@@ -259,6 +285,10 @@ Serializers serializers = (_$serializers.toBuilder()
       ..addBuilderFactory(
         const FullType(BuiltList, [FullType(ClassDto)]),
         () => ListBuilder<ClassDto>(),
+      )
+      ..addBuilderFactory(
+        const FullType(BuiltList, [FullType(ExternalLoginResponse)]),
+        () => ListBuilder<ExternalLoginResponse>(),
       )
       ..addBuilderFactory(
         const FullType(BuiltList, [FullType(AgendaEntryDto)]),

@@ -13,6 +13,7 @@ Name | Type | Description | Notes
 **type** | [**AbsenceType**](AbsenceType.md) |  | 
 **from** | [**DateTime**](DateTime.md) |  | 
 **until** | [**DateTime**](DateTime.md) |  | 
+**isExcused** | **bool** |  | [optional] 
 **schoolUserId** | **String** |  | [optional] 
 **schoolId** | **String** |  | [optional] 
 

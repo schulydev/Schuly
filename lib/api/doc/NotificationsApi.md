@@ -13,6 +13,7 @@ Method | HTTP request | Description
 [**apiNotificationsDevicesTokenDelete**](NotificationsApi.md#apinotificationsdevicestokendelete) | **DELETE** /api/notifications/devices/{token} | 
 [**apiNotificationsPreferencesGet**](NotificationsApi.md#apinotificationspreferencesget) | **GET** /api/notifications/preferences | 
 [**apiNotificationsPreferencesPut**](NotificationsApi.md#apinotificationspreferencesput) | **PUT** /api/notifications/preferences | 
+[**apiNotificationsTestPost**](NotificationsApi.md#apinotificationstestpost) | **POST** /api/notifications/test | 
 
 
 # **apiNotificationsDevicesPost**
@@ -168,6 +169,43 @@ void (empty response body)
 ### HTTP request headers
 
  - **Content-Type**: application/json, text/json, application/*+json
+ - **Accept**: text/plain, application/json, text/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **apiNotificationsTestPost**
+> PushResult apiNotificationsTestPost()
+
+
+
+### Example
+```dart
+import 'package:schuly_api/api.dart';
+
+final api = SchulyApi().getNotificationsApi();
+
+try {
+    final response = api.apiNotificationsTestPost();
+    print(response);
+} catch on DioException (e) {
+    print('Exception when calling NotificationsApi->apiNotificationsTestPost: $e\n');
+}
+```
+
+### Parameters
+This endpoint does not need any parameter.
+
+### Return type
+
+[**PushResult**](PushResult.md)
+
+### Authorization
+
+[Bearer](../README.md#Bearer)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
  - **Accept**: text/plain, application/json, text/json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)

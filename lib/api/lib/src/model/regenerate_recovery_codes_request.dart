@@ -12,10 +12,14 @@ part 'regenerate_recovery_codes_request.g.dart';
 ///
 /// Properties:
 /// * [proof] 
+/// * [currentPassword] 
 @BuiltValue()
 abstract class RegenerateRecoveryCodesRequest implements Built<RegenerateRecoveryCodesRequest, RegenerateRecoveryCodesRequestBuilder> {
   @BuiltValueField(wireName: r'proof')
   String get proof;
+
+  @BuiltValueField(wireName: r'currentPassword')
+  String? get currentPassword;
 
   RegenerateRecoveryCodesRequest._();
 
@@ -45,6 +49,13 @@ class _$RegenerateRecoveryCodesRequestSerializer implements PrimitiveSerializer<
       object.proof,
       specifiedType: const FullType(String),
     );
+    if (object.currentPassword != null) {
+      yield r'currentPassword';
+      yield serializers.serialize(
+        object.currentPassword,
+        specifiedType: const FullType.nullable(String),
+      );
+    }
   }
 
   @override
@@ -74,6 +85,14 @@ class _$RegenerateRecoveryCodesRequestSerializer implements PrimitiveSerializer<
             specifiedType: const FullType(String),
           ) as String;
           result.proof = valueDes;
+          break;
+        case r'currentPassword':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType.nullable(String),
+          ) as String?;
+          if (valueDes == null) continue;
+          result.currentPassword = valueDes;
           break;
         default:
           unhandled.add(key);

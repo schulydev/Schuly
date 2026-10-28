@@ -11,6 +11,7 @@ class MySchool {
   final String? pluginBasePath;
   final String? pluginAccountId;
   final String? logoUrl;
+  final String? schoolSystemKey;
   final String? profilePictureUrl;
 
   const MySchool({
@@ -22,6 +23,7 @@ class MySchool {
     this.pluginBasePath,
     this.pluginAccountId,
     this.logoUrl,
+    this.schoolSystemKey,
     this.profilePictureUrl,
   });
 
@@ -40,6 +42,7 @@ class MySchool {
         pluginBasePath: pluginBasePath,
         pluginAccountId: pluginAccountId,
         logoUrl: BackendConfig.resolveUrl(dto.logoUrl),
+        schoolSystemKey: dto.schoolSystemKey,
         profilePictureUrl: BackendConfig.resolveUrl(dto.profilePictureUrl),
       );
 }

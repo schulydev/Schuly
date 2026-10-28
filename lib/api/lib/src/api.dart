@@ -17,9 +17,11 @@ import 'package:schuly_api/src/api/application_users_api.dart';
 import 'package:schuly_api/src/api/auth_api.dart';
 import 'package:schuly_api/src/api/authentication_api.dart';
 import 'package:schuly_api/src/api/avatars_api.dart';
+import 'package:schuly_api/src/api/calendar_api.dart';
 import 'package:schuly_api/src/api/class_api.dart';
 import 'package:schuly_api/src/api/example_plugin_api.dart';
 import 'package:schuly_api/src/api/exams_api.dart';
+import 'package:schuly_api/src/api/external_login_api.dart';
 import 'package:schuly_api/src/api/link_api.dart';
 import 'package:schuly_api/src/api/linked_accounts_api.dart';
 import 'package:schuly_api/src/api/me_api.dart';
@@ -144,6 +146,12 @@ class SchulyApi {
     return AvatarsApi(dio, serializers);
   }
 
+  /// Get CalendarApi instance, base route and serializer can be overridden by a given but be careful,
+  /// by doing that all interceptors will not be executed
+  CalendarApi getCalendarApi() {
+    return CalendarApi(dio, serializers);
+  }
+
   /// Get ClassApi instance, base route and serializer can be overridden by a given but be careful,
   /// by doing that all interceptors will not be executed
   ClassApi getClassApi() {
@@ -160,6 +168,12 @@ class SchulyApi {
   /// by doing that all interceptors will not be executed
   ExamsApi getExamsApi() {
     return ExamsApi(dio, serializers);
+  }
+
+  /// Get ExternalLoginApi instance, base route and serializer can be overridden by a given but be careful,
+  /// by doing that all interceptors will not be executed
+  ExternalLoginApi getExternalLoginApi() {
+    return ExternalLoginApi(dio, serializers);
   }
 
   /// Get LinkApi instance, base route and serializer can be overridden by a given but be careful,

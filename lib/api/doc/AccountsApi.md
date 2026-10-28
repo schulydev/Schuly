@@ -19,7 +19,7 @@ Method | HTTP request | Description
 
 
 # **apiPluginsMicrosoftAccountsAccountIdCalendarGet**
-> apiPluginsMicrosoftAccountsAccountIdCalendarGet(accountId, top)
+> apiPluginsMicrosoftAccountsAccountIdCalendarGet(accountId, top, start, end)
 
 
 
@@ -30,9 +30,11 @@ import 'package:schuly_api/api.dart';
 final api = SchulyApi().getAccountsApi();
 final String accountId = 38400000-8cf0-11bd-b23e-10b96e4ef00d; // String | 
 final int top = 56; // int | 
+final DateTime start = 2013-10-20T19:20:30+01:00; // DateTime | 
+final DateTime end = 2013-10-20T19:20:30+01:00; // DateTime | 
 
 try {
-    api.apiPluginsMicrosoftAccountsAccountIdCalendarGet(accountId, top);
+    api.apiPluginsMicrosoftAccountsAccountIdCalendarGet(accountId, top, start, end);
 } catch on DioException (e) {
     print('Exception when calling AccountsApi->apiPluginsMicrosoftAccountsAccountIdCalendarGet: $e\n');
 }
@@ -44,6 +46,8 @@ Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **accountId** | **String**|  | 
  **top** | **int**|  | [optional] [default to 25]
+ **start** | **DateTime**|  | [optional] 
+ **end** | **DateTime**|  | [optional] 
 
 ### Return type
 

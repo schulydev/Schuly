@@ -24,6 +24,8 @@ class AccountsApi {
   /// Parameters:
   /// * [accountId] 
   /// * [top] 
+  /// * [start] 
+  /// * [end] 
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -36,6 +38,8 @@ class AccountsApi {
   Future<Response<void>> apiPluginsMicrosoftAccountsAccountIdCalendarGet({ 
     required String accountId,
     int? top = 25,
+    DateTime? start,
+    DateTime? end,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
     Map<String, dynamic>? extra,
@@ -64,6 +68,8 @@ class AccountsApi {
 
     final _queryParameters = <String, dynamic>{
       if (top != null) r'top': encodeQueryParameter(_serializers, top, const FullType(int)),
+      if (start != null) r'start': encodeQueryParameter(_serializers, start, const FullType(DateTime)),
+      if (end != null) r'end': encodeQueryParameter(_serializers, end, const FullType(DateTime)),
     };
 
     final _response = await _dio.request<Object>(
