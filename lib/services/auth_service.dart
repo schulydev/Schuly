@@ -41,10 +41,11 @@ class TwoFactorChallenge {
 
 /// A single sign-on provider the server offers next to the password.
 class SignInProvider {
-  const SignInProvider(this.key, this.displayName);
+  const SignInProvider(this.key, this.displayName, this.iconUrl);
 
   final String key;
   final String displayName;
+  final String? iconUrl;
 }
 
 /// A refusal from the server, worded for the user.
@@ -131,7 +132,7 @@ class AuthService {
       if (response.statusCode != 200) return const [];
       return [
         for (final entry in jsonDecode(response.body) as List)
-          SignInProvider(entry['key'] as String, (entry['display_name'] as String?) ?? entry['key'] as String),
+          SignInProvider(entry['key'] as String, (entry['display_name'] as String?) ?? entry['key'] as String, BackendConfig.resolveUrl(entry['icon_url'] as String?)),
       ];
     } catch (_) {
       return const [];

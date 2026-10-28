@@ -236,7 +236,12 @@ class _SignInScreenState extends State<SignInScreen> {
                   ),
                   if (_step == _Step.signIn) ...[
                     for (final provider in _providers)
-                      FButton(style: FButtonStyle.outline(), onPress: _busy ? null : () => _signInWith(provider), child: Text('Continue with ${provider.displayName}')),
+                      FButton(
+                        style: FButtonStyle.outline(),
+                        onPress: _busy ? null : () => _signInWith(provider),
+                        prefix: provider.iconUrl == null ? null : Image.network(provider.iconUrl!, width: 18, height: 18, errorBuilder: (_, _, _) => const SizedBox.shrink()),
+                        child: Text('Continue with ${provider.displayName}'),
+                      ),
                     FButton(style: FButtonStyle.ghost(), onPress: () => _go(_Step.forgot), child: const Text('Forgot password?')),
                     FButton(style: FButtonStyle.outline(), onPress: () => _go(_Step.register), child: const Text('Create an account')),
                   ],
