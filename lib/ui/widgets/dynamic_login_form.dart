@@ -3,6 +3,7 @@ import 'package:forui/forui.dart';
 
 import '../../domain/school_system.dart';
 import '../authenticator/totp_field_picker.dart';
+import 'suggestion_picker.dart';
 
 class DynamicLoginFormController {
   final List<SchoolSystemLoginField> fields;
@@ -87,21 +88,30 @@ class DynamicLoginForm extends StatelessWidget {
                 controller: controller.controllerFor(field.key),
                 field: field,
               )
+            else if (field.suggestions.isNotEmpty)
+              SuggestionPicker(
+                controller: controller.controllerFor(field.key),
+                field: field,
+                textField: _textField(field, index, fields.length),
+              )
             else
-              FTextField(
-                control: FTextFieldControl.managed(
-                  controller: controller.controllerFor(field.key),
-                ),
-                label: Text(field.label),
-                hint: field.placeholder,
-                obscureText: field.type == 'password',
-                keyboardType: _keyboard(field),
-                textInputAction: index == fields.length - 1 ? TextInputAction.done : TextInputAction.next,
-                autofillHints: _autofillHints(field),
-                autocorrect: false,
-              ),
+              _textField(field, index, fields.length),
         ],
       ),
     );
   }
+
+  Widget _textField(SchoolSystemLoginField field, int index, int count) => FTextField(
+        control: FTextFieldControl.managed(
+          controller: controller.controllerFor(field.key),
+        ),
+        label: Text(field.label),
+        hint: field.placeholder,
+        obscureText: field.type == 'password',
+        keyboardType: _keyboard(field),
+        textInputAction: index == count - 1 ? TextInputAction.done : TextInputAction.next,
+        autofillHints: _autofillHints(field),
+        autocorrect: false,
+      );
 }
+

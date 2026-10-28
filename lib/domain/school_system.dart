@@ -71,6 +71,9 @@ class SchoolSystemLoginField {
   /// Hidden when the school signs in with a linked account.
   final bool replacedByLinkedAccount;
 
+  /// Known values to pick from, e.g. schools and their URLs.
+  final List<LoginFieldSuggestion> suggestions;
+
   const SchoolSystemLoginField({
     required this.key,
     required this.label,
@@ -79,6 +82,7 @@ class SchoolSystemLoginField {
     this.defaultValue,
     this.required = true,
     this.replacedByLinkedAccount = false,
+    this.suggestions = const [],
   });
 
   factory SchoolSystemLoginField.fromJson(Map<String, dynamic> json) {
@@ -90,6 +94,17 @@ class SchoolSystemLoginField {
       defaultValue: json['defaultValue'] as String?,
       required: json['required'] as bool? ?? true,
       replacedByLinkedAccount: json['replacedByLinkedAccount'] as bool? ?? false,
+      suggestions: [
+        for (final s in json['suggestions'] as List<dynamic>? ?? [])
+          LoginFieldSuggestion(label: (s as Map<String, dynamic>)['label'] as String, value: s['value'] as String),
+      ],
     );
   }
+}
+
+class LoginFieldSuggestion {
+  final String label;
+  final String value;
+
+  const LoginFieldSuggestion({required this.label, required this.value});
 }
