@@ -69,7 +69,7 @@ Flavors: `dev` (`com.schuly.app.dev`, "Schuly DEV") and `prod` (`com.schuly.app`
 
 ## Regenerate API client
 
-The client at `lib/api/` is generated from [SchulyBackend](https://github.com/schulydev/SchulyBackend)'s
+The client at `lib/api/` is generated from [SchulyServer](https://github.com/schulydev/SchulyServer)'s
 OpenAPI spec. `apigen` chains three steps in `package.json`:
 
 1. `bunx openapi-generator-cli` against the live OpenAPI 3.0 spec (`/openapi/v1.json`)
