@@ -9,6 +9,7 @@ import '../../services/scrape_proxy_client.dart';
 import '../../services/token_proxy_client.dart';
 import '../../services/api_error.dart';
 import '../../services/totp_service.dart';
+import '../widgets/browser_sign_in.dart';
 import '../widgets/dynamic_login_form.dart';
 import '../widgets/linked_account_login.dart';
 
@@ -70,6 +71,8 @@ class _PrivateConnectScreenState extends State<PrivateConnectScreen> {
 
       if (_method.usesLinkedAccount) {
         await _connectLinked(baseUrl, name, basePath);
+      } else if (_method.usesBrowser) {
+        await _connectBrowser(baseUrl, name, basePath);
       } else if (_system.privateAuthStrategy == 'token') {
         await _connectToken(baseUrl, name, basePath);
       } else {
@@ -106,6 +109,28 @@ class _PrivateConnectScreenState extends State<PrivateConnectScreen> {
       refreshToken: res.refreshToken,
       contextState: res.contextState,
       linkedAccountId: link.id,
+    ));
+    if (mounted) Navigator.of(context).pop(true);
+  }
+
+  Future<void> _connectBrowser(String baseUrl, String name, String basePath) async {
+    final browser = await signInThroughBrowser(context, _method.browserLoginPath!, baseUrl);
+    if (browser == null || browser.completePath == null) return;
+    final res = await TokenProxyClient.instance.completeBrowser(completePath: browser.completePath!, baseUrl: baseUrl, sign: browser);
+    if (!res.success || res.accessToken == null) {
+      if (!mounted) return;
+      setState(() => _error = res.message ?? 'Sign-in failed');
+      return;
+    }
+    await PrivateAccountStore.instance.save(PrivateAccount(
+      systemKey: _system.key,
+      loginMethod: _system.loginMethod,
+      baseUrl: baseUrl,
+      displayName: name,
+      statelessBasePath: basePath,
+      accessToken: res.accessToken,
+      refreshToken: res.refreshToken,
+      contextState: res.contextState,
     ));
     if (mounted) Navigator.of(context).pop(true);
   }
@@ -185,13 +210,15 @@ class _PrivateConnectScreenState extends State<PrivateConnectScreen> {
                 selectedId: _linkedAccountId,
                 onChanged: (id) => setState(() => _linkedAccountId = id),
               ),
+            if (_method.usesBrowser)
+              Text('This school uses its own login. You sign in on its page in the next step.', style: context.theme.typography.sm.copyWith(color: colors.mutedForeground)),
             FTextField(
               control: FTextFieldControl.managed(controller: _nameCtrl),
               label: const Text('Display Name'),
             ),
             FButton(
               onPress: _busy || _method.checking ? null : _connect,
-              child: Text(_busy ? 'Working…' : _method.checking ? 'Checking sign-in…' : 'Connect'),
+              child: Text(_busy ? 'Working…' : _method.checking ? 'Checking sign-in…' : _method.usesBrowser ? 'Sign in at your school' : 'Connect'),
             ),
             if (_error != null)
               SelectableText(_error!, style: TextStyle(color: colors.destructive)),
