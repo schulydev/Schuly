@@ -19,6 +19,8 @@ class _$SchoolSystemLoginFieldDto extends SchoolSystemLoginFieldDto {
   final String? defaultValue;
   @override
   final bool? required_;
+  @override
+  final bool? replacedByLinkedAccount;
 
   factory _$SchoolSystemLoginFieldDto([
     void Function(SchoolSystemLoginFieldDtoBuilder)? updates,
@@ -31,6 +33,7 @@ class _$SchoolSystemLoginFieldDto extends SchoolSystemLoginFieldDto {
     this.placeholder,
     this.defaultValue,
     this.required_,
+    this.replacedByLinkedAccount,
   }) : super._();
   @override
   SchoolSystemLoginFieldDto rebuild(
@@ -50,7 +53,8 @@ class _$SchoolSystemLoginFieldDto extends SchoolSystemLoginFieldDto {
         type == other.type &&
         placeholder == other.placeholder &&
         defaultValue == other.defaultValue &&
-        required_ == other.required_;
+        required_ == other.required_ &&
+        replacedByLinkedAccount == other.replacedByLinkedAccount;
   }
 
   @override
@@ -62,6 +66,7 @@ class _$SchoolSystemLoginFieldDto extends SchoolSystemLoginFieldDto {
     _$hash = $jc(_$hash, placeholder.hashCode);
     _$hash = $jc(_$hash, defaultValue.hashCode);
     _$hash = $jc(_$hash, required_.hashCode);
+    _$hash = $jc(_$hash, replacedByLinkedAccount.hashCode);
     _$hash = $jf(_$hash);
     return _$hash;
   }
@@ -74,7 +79,8 @@ class _$SchoolSystemLoginFieldDto extends SchoolSystemLoginFieldDto {
           ..add('type', type)
           ..add('placeholder', placeholder)
           ..add('defaultValue', defaultValue)
-          ..add('required_', required_))
+          ..add('required_', required_)
+          ..add('replacedByLinkedAccount', replacedByLinkedAccount))
         .toString();
   }
 }
@@ -108,6 +114,11 @@ class SchoolSystemLoginFieldDtoBuilder
   bool? get required_ => _$this._required_;
   set required_(bool? required_) => _$this._required_ = required_;
 
+  bool? _replacedByLinkedAccount;
+  bool? get replacedByLinkedAccount => _$this._replacedByLinkedAccount;
+  set replacedByLinkedAccount(bool? replacedByLinkedAccount) =>
+      _$this._replacedByLinkedAccount = replacedByLinkedAccount;
+
   SchoolSystemLoginFieldDtoBuilder() {
     SchoolSystemLoginFieldDto._defaults(this);
   }
@@ -121,6 +132,7 @@ class SchoolSystemLoginFieldDtoBuilder
       _placeholder = $v.placeholder;
       _defaultValue = $v.defaultValue;
       _required_ = $v.required_;
+      _replacedByLinkedAccount = $v.replacedByLinkedAccount;
       _$v = null;
     }
     return this;
@@ -161,6 +173,7 @@ class SchoolSystemLoginFieldDtoBuilder
           placeholder: placeholder,
           defaultValue: defaultValue,
           required_: required_,
+          replacedByLinkedAccount: replacedByLinkedAccount,
         );
     replace(_$result);
     return _$result;

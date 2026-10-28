@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 
-import '../../../config/oidc_config.dart';
+import '../../../config/backend_config.dart';
 import '../../../domain/school_system.dart';
 import '../../../services/school_systems_service.dart';
 import '../../account/unified_connect_screen.dart';
@@ -99,7 +99,7 @@ class _SystemCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.theme.colors;
     final disabled = onTap == null;
-    final logoUrl = OidcConfig.resolveUrl(system.logoUrl);
+    final logoUrl = BackendConfig.resolveUrl(system.logoUrl);
     final fallbackIcon =
         Icon(Icons.school, size: 36, color: colors.mutedForeground);
     final logo = Image.asset(

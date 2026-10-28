@@ -11,31 +11,15 @@ part 'app_dto.g.dart';
 /// AppDto
 ///
 /// Properties:
-/// * [authority] 
-/// * [clientId] 
-/// * [redirectUri] 
-/// * [postLogoutRedirectUri] 
-/// * [scope] 
 /// * [version] 
+/// * [registrationEnabled] 
 @BuiltValue()
 abstract class AppDto implements Built<AppDto, AppDtoBuilder> {
-  @BuiltValueField(wireName: r'authority')
-  String get authority;
-
-  @BuiltValueField(wireName: r'clientId')
-  String get clientId;
-
-  @BuiltValueField(wireName: r'redirectUri')
-  String get redirectUri;
-
-  @BuiltValueField(wireName: r'postLogoutRedirectUri')
-  String get postLogoutRedirectUri;
-
-  @BuiltValueField(wireName: r'scope')
-  String get scope;
-
   @BuiltValueField(wireName: r'version')
   String get version;
+
+  @BuiltValueField(wireName: r'registrationEnabled')
+  bool get registrationEnabled;
 
   AppDto._();
 
@@ -60,35 +44,15 @@ class _$AppDtoSerializer implements PrimitiveSerializer<AppDto> {
     AppDto object, {
     FullType specifiedType = FullType.unspecified,
   }) sync* {
-    yield r'authority';
-    yield serializers.serialize(
-      object.authority,
-      specifiedType: const FullType(String),
-    );
-    yield r'clientId';
-    yield serializers.serialize(
-      object.clientId,
-      specifiedType: const FullType(String),
-    );
-    yield r'redirectUri';
-    yield serializers.serialize(
-      object.redirectUri,
-      specifiedType: const FullType(String),
-    );
-    yield r'postLogoutRedirectUri';
-    yield serializers.serialize(
-      object.postLogoutRedirectUri,
-      specifiedType: const FullType(String),
-    );
-    yield r'scope';
-    yield serializers.serialize(
-      object.scope,
-      specifiedType: const FullType(String),
-    );
     yield r'version';
     yield serializers.serialize(
       object.version,
       specifiedType: const FullType(String),
+    );
+    yield r'registrationEnabled';
+    yield serializers.serialize(
+      object.registrationEnabled,
+      specifiedType: const FullType(bool),
     );
   }
 
@@ -113,47 +77,19 @@ class _$AppDtoSerializer implements PrimitiveSerializer<AppDto> {
       final key = serializedList[i] as String;
       final value = serializedList[i + 1];
       switch (key) {
-        case r'authority':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(String),
-          ) as String;
-          result.authority = valueDes;
-          break;
-        case r'clientId':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(String),
-          ) as String;
-          result.clientId = valueDes;
-          break;
-        case r'redirectUri':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(String),
-          ) as String;
-          result.redirectUri = valueDes;
-          break;
-        case r'postLogoutRedirectUri':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(String),
-          ) as String;
-          result.postLogoutRedirectUri = valueDes;
-          break;
-        case r'scope':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(String),
-          ) as String;
-          result.scope = valueDes;
-          break;
         case r'version':
           final valueDes = serializers.deserialize(
             value,
             specifiedType: const FullType(String),
           ) as String;
           result.version = valueDes;
+          break;
+        case r'registrationEnabled':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType(bool),
+          ) as bool;
+          result.registrationEnabled = valueDes;
           break;
         default:
           unhandled.add(key);

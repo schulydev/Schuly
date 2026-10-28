@@ -8,29 +8,15 @@ part of 'app_dto.dart';
 
 class _$AppDto extends AppDto {
   @override
-  final String authority;
-  @override
-  final String clientId;
-  @override
-  final String redirectUri;
-  @override
-  final String postLogoutRedirectUri;
-  @override
-  final String scope;
-  @override
   final String version;
+  @override
+  final bool registrationEnabled;
 
   factory _$AppDto([void Function(AppDtoBuilder)? updates]) =>
       (AppDtoBuilder()..update(updates))._build();
 
-  _$AppDto._({
-    required this.authority,
-    required this.clientId,
-    required this.redirectUri,
-    required this.postLogoutRedirectUri,
-    required this.scope,
-    required this.version,
-  }) : super._();
+  _$AppDto._({required this.version, required this.registrationEnabled})
+    : super._();
   @override
   AppDto rebuild(void Function(AppDtoBuilder) updates) =>
       (toBuilder()..update(updates)).build();
@@ -42,23 +28,15 @@ class _$AppDto extends AppDto {
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
     return other is AppDto &&
-        authority == other.authority &&
-        clientId == other.clientId &&
-        redirectUri == other.redirectUri &&
-        postLogoutRedirectUri == other.postLogoutRedirectUri &&
-        scope == other.scope &&
-        version == other.version;
+        version == other.version &&
+        registrationEnabled == other.registrationEnabled;
   }
 
   @override
   int get hashCode {
     var _$hash = 0;
-    _$hash = $jc(_$hash, authority.hashCode);
-    _$hash = $jc(_$hash, clientId.hashCode);
-    _$hash = $jc(_$hash, redirectUri.hashCode);
-    _$hash = $jc(_$hash, postLogoutRedirectUri.hashCode);
-    _$hash = $jc(_$hash, scope.hashCode);
     _$hash = $jc(_$hash, version.hashCode);
+    _$hash = $jc(_$hash, registrationEnabled.hashCode);
     _$hash = $jf(_$hash);
     return _$hash;
   }
@@ -66,12 +44,8 @@ class _$AppDto extends AppDto {
   @override
   String toString() {
     return (newBuiltValueToStringHelper(r'AppDto')
-          ..add('authority', authority)
-          ..add('clientId', clientId)
-          ..add('redirectUri', redirectUri)
-          ..add('postLogoutRedirectUri', postLogoutRedirectUri)
-          ..add('scope', scope)
-          ..add('version', version))
+          ..add('version', version)
+          ..add('registrationEnabled', registrationEnabled))
         .toString();
   }
 }
@@ -79,30 +53,14 @@ class _$AppDto extends AppDto {
 class AppDtoBuilder implements Builder<AppDto, AppDtoBuilder> {
   _$AppDto? _$v;
 
-  String? _authority;
-  String? get authority => _$this._authority;
-  set authority(String? authority) => _$this._authority = authority;
-
-  String? _clientId;
-  String? get clientId => _$this._clientId;
-  set clientId(String? clientId) => _$this._clientId = clientId;
-
-  String? _redirectUri;
-  String? get redirectUri => _$this._redirectUri;
-  set redirectUri(String? redirectUri) => _$this._redirectUri = redirectUri;
-
-  String? _postLogoutRedirectUri;
-  String? get postLogoutRedirectUri => _$this._postLogoutRedirectUri;
-  set postLogoutRedirectUri(String? postLogoutRedirectUri) =>
-      _$this._postLogoutRedirectUri = postLogoutRedirectUri;
-
-  String? _scope;
-  String? get scope => _$this._scope;
-  set scope(String? scope) => _$this._scope = scope;
-
   String? _version;
   String? get version => _$this._version;
   set version(String? version) => _$this._version = version;
+
+  bool? _registrationEnabled;
+  bool? get registrationEnabled => _$this._registrationEnabled;
+  set registrationEnabled(bool? registrationEnabled) =>
+      _$this._registrationEnabled = registrationEnabled;
 
   AppDtoBuilder() {
     AppDto._defaults(this);
@@ -111,12 +69,8 @@ class AppDtoBuilder implements Builder<AppDto, AppDtoBuilder> {
   AppDtoBuilder get _$this {
     final $v = _$v;
     if ($v != null) {
-      _authority = $v.authority;
-      _clientId = $v.clientId;
-      _redirectUri = $v.redirectUri;
-      _postLogoutRedirectUri = $v.postLogoutRedirectUri;
-      _scope = $v.scope;
       _version = $v.version;
+      _registrationEnabled = $v.registrationEnabled;
       _$v = null;
     }
     return this;
@@ -139,35 +93,15 @@ class AppDtoBuilder implements Builder<AppDto, AppDtoBuilder> {
     final _$result =
         _$v ??
         _$AppDto._(
-          authority: BuiltValueNullFieldError.checkNotNull(
-            authority,
-            r'AppDto',
-            'authority',
-          ),
-          clientId: BuiltValueNullFieldError.checkNotNull(
-            clientId,
-            r'AppDto',
-            'clientId',
-          ),
-          redirectUri: BuiltValueNullFieldError.checkNotNull(
-            redirectUri,
-            r'AppDto',
-            'redirectUri',
-          ),
-          postLogoutRedirectUri: BuiltValueNullFieldError.checkNotNull(
-            postLogoutRedirectUri,
-            r'AppDto',
-            'postLogoutRedirectUri',
-          ),
-          scope: BuiltValueNullFieldError.checkNotNull(
-            scope,
-            r'AppDto',
-            'scope',
-          ),
           version: BuiltValueNullFieldError.checkNotNull(
             version,
             r'AppDto',
             'version',
+          ),
+          registrationEnabled: BuiltValueNullFieldError.checkNotNull(
+            registrationEnabled,
+            r'AppDto',
+            'registrationEnabled',
           ),
         );
     replace(_$result);

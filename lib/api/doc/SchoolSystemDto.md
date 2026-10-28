@@ -15,6 +15,7 @@ Name | Type | Description | Notes
 **privateAuthStrategy** | **String** |  | [optional] 
 **statelessBasePath** | **String** |  | [optional] 
 **pluginBasePath** | **String** |  | [optional] 
+**loginMethodPath** | **String** |  | [optional] 
 **loginMethod** | **String** |  | 
 **enabled** | **bool** |  | [optional] 
 **sortOrder** | **int** |  | [optional] 

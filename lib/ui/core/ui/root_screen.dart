@@ -12,6 +12,7 @@ import '../../../services/private_account_store.dart';
 import '../../../services/private_microsoft_store.dart';
 import '../../../services/push_service.dart';
 import '../../../services/school_data_service.dart';
+import '../../auth/sign_in_screen.dart';
 import '../../dashboard/dashboard_screen.dart';
 import '../../onboarding/onboarding_screen.dart';
 import '../../private/private_connect_flow.dart';
@@ -92,14 +93,8 @@ class _RootScreenState extends State<RootScreen> {
       _error = null;
     });
     try {
-      await AuthService.signIn(register: register);
-      await _refresh();
-    } catch (e) {
-      if (!mounted) return;
-      // Closing the browser isn't an error; anything else gets a short, friendly
-      // message rather than the raw exception.
-      final cancelled = e.toString().toLowerCase().contains('cancel');
-      setState(() => _error = cancelled ? null : 'Sign-in failed. Please try again.');
+      final signedIn = await Navigator.of(context).push<bool>(MaterialPageRoute(builder: (_) => SignInScreen(register: register)));
+      if (signedIn == true) await _refresh();
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -178,7 +173,7 @@ class _RootScreenState extends State<RootScreen> {
               ),
               FButton(
                 onPress: _busy ? null : _signIn,
-                child: Text(_busy ? 'Waiting for browser…' : t.signIn),
+                child: Text(t.signIn),
               ),
               FButton(
                 style: FButtonStyle.outline(),

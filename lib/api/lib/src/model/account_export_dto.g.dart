@@ -19,6 +19,8 @@ class _$AccountExportDto extends AccountExportDto {
   final BuiltList<SemesterReportDto>? semesterReports;
   @override
   final BuiltList<StudentDocumentDto>? documents;
+  @override
+  final BuiltList<LinkedAccountDto>? linkedAccounts;
 
   factory _$AccountExportDto([
     void Function(AccountExportDtoBuilder)? updates,
@@ -31,6 +33,7 @@ class _$AccountExportDto extends AccountExportDto {
     this.agendaEntries,
     this.semesterReports,
     this.documents,
+    this.linkedAccounts,
   }) : super._();
   @override
   AccountExportDto rebuild(void Function(AccountExportDtoBuilder) updates) =>
@@ -49,7 +52,8 @@ class _$AccountExportDto extends AccountExportDto {
         schoolUsers == other.schoolUsers &&
         agendaEntries == other.agendaEntries &&
         semesterReports == other.semesterReports &&
-        documents == other.documents;
+        documents == other.documents &&
+        linkedAccounts == other.linkedAccounts;
   }
 
   @override
@@ -61,6 +65,7 @@ class _$AccountExportDto extends AccountExportDto {
     _$hash = $jc(_$hash, agendaEntries.hashCode);
     _$hash = $jc(_$hash, semesterReports.hashCode);
     _$hash = $jc(_$hash, documents.hashCode);
+    _$hash = $jc(_$hash, linkedAccounts.hashCode);
     _$hash = $jf(_$hash);
     return _$hash;
   }
@@ -73,7 +78,8 @@ class _$AccountExportDto extends AccountExportDto {
           ..add('schoolUsers', schoolUsers)
           ..add('agendaEntries', agendaEntries)
           ..add('semesterReports', semesterReports)
-          ..add('documents', documents))
+          ..add('documents', documents)
+          ..add('linkedAccounts', linkedAccounts))
         .toString();
   }
 }
@@ -115,6 +121,12 @@ class AccountExportDtoBuilder
   set documents(ListBuilder<StudentDocumentDto>? documents) =>
       _$this._documents = documents;
 
+  ListBuilder<LinkedAccountDto>? _linkedAccounts;
+  ListBuilder<LinkedAccountDto> get linkedAccounts =>
+      _$this._linkedAccounts ??= ListBuilder<LinkedAccountDto>();
+  set linkedAccounts(ListBuilder<LinkedAccountDto>? linkedAccounts) =>
+      _$this._linkedAccounts = linkedAccounts;
+
   AccountExportDtoBuilder() {
     AccountExportDto._defaults(this);
   }
@@ -128,6 +140,7 @@ class AccountExportDtoBuilder
       _agendaEntries = $v.agendaEntries?.toBuilder();
       _semesterReports = $v.semesterReports?.toBuilder();
       _documents = $v.documents?.toBuilder();
+      _linkedAccounts = $v.linkedAccounts?.toBuilder();
       _$v = null;
     }
     return this;
@@ -158,6 +171,7 @@ class AccountExportDtoBuilder
             agendaEntries: _agendaEntries?.build(),
             semesterReports: _semesterReports?.build(),
             documents: _documents?.build(),
+            linkedAccounts: _linkedAccounts?.build(),
           );
     } catch (_) {
       late String _$failedField;
@@ -172,6 +186,8 @@ class AccountExportDtoBuilder
         _semesterReports?.build();
         _$failedField = 'documents';
         _documents?.build();
+        _$failedField = 'linkedAccounts';
+        _linkedAccounts?.build();
       } catch (e) {
         throw BuiltValueNestedFieldError(
           r'AccountExportDto',

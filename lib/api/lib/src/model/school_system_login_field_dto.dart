@@ -17,6 +17,7 @@ part 'school_system_login_field_dto.g.dart';
 /// * [placeholder] 
 /// * [defaultValue] 
 /// * [required_] 
+/// * [replacedByLinkedAccount] 
 @BuiltValue()
 abstract class SchoolSystemLoginFieldDto implements Built<SchoolSystemLoginFieldDto, SchoolSystemLoginFieldDtoBuilder> {
   @BuiltValueField(wireName: r'key')
@@ -36,6 +37,9 @@ abstract class SchoolSystemLoginFieldDto implements Built<SchoolSystemLoginField
 
   @BuiltValueField(wireName: r'required')
   bool? get required_;
+
+  @BuiltValueField(wireName: r'replacedByLinkedAccount')
+  bool? get replacedByLinkedAccount;
 
   SchoolSystemLoginFieldDto._();
 
@@ -93,6 +97,13 @@ class _$SchoolSystemLoginFieldDtoSerializer implements PrimitiveSerializer<Schoo
       yield r'required';
       yield serializers.serialize(
         object.required_,
+        specifiedType: const FullType(bool),
+      );
+    }
+    if (object.replacedByLinkedAccount != null) {
+      yield r'replacedByLinkedAccount';
+      yield serializers.serialize(
+        object.replacedByLinkedAccount,
         specifiedType: const FullType(bool),
       );
     }
@@ -162,6 +173,13 @@ class _$SchoolSystemLoginFieldDtoSerializer implements PrimitiveSerializer<Schoo
             specifiedType: const FullType(bool),
           ) as bool;
           result.required_ = valueDes;
+          break;
+        case r'replacedByLinkedAccount':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType(bool),
+          ) as bool;
+          result.replacedByLinkedAccount = valueDes;
           break;
         default:
           unhandled.add(key);

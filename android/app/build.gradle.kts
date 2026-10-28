@@ -36,7 +36,6 @@ android {
         versionName = flutter.versionName
         // OIDC redirect scheme for flutter_appauth's RedirectUriReceiverActivity.
         // Must match OidcConfig.redirectScheme (lib/config/oidc_config.dart).
-        manifestPlaceholders["appAuthRedirectScheme"] = "schulytest"
     }
 
     flavorDimensions += "environment"

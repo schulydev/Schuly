@@ -9,6 +9,7 @@ import 'package:schuly_api/src/model/student_document_dto.dart';
 import 'package:schuly_api/src/model/agenda_entry_dto.dart';
 import 'package:schuly_api/src/model/school_user_dto.dart';
 import 'package:schuly_api/src/model/semester_report_dto.dart';
+import 'package:schuly_api/src/model/linked_account_dto.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
@@ -23,6 +24,7 @@ part 'account_export_dto.g.dart';
 /// * [agendaEntries] 
 /// * [semesterReports] 
 /// * [documents] 
+/// * [linkedAccounts] 
 @BuiltValue()
 abstract class AccountExportDto implements Built<AccountExportDto, AccountExportDtoBuilder> {
   @BuiltValueField(wireName: r'exportedAt')
@@ -42,6 +44,9 @@ abstract class AccountExportDto implements Built<AccountExportDto, AccountExport
 
   @BuiltValueField(wireName: r'documents')
   BuiltList<StudentDocumentDto>? get documents;
+
+  @BuiltValueField(wireName: r'linkedAccounts')
+  BuiltList<LinkedAccountDto>? get linkedAccounts;
 
   AccountExportDto._();
 
@@ -104,6 +109,13 @@ class _$AccountExportDtoSerializer implements PrimitiveSerializer<AccountExportD
       yield serializers.serialize(
         object.documents,
         specifiedType: const FullType(BuiltList, [FullType(StudentDocumentDto)]),
+      );
+    }
+    if (object.linkedAccounts != null) {
+      yield r'linkedAccounts';
+      yield serializers.serialize(
+        object.linkedAccounts,
+        specifiedType: const FullType(BuiltList, [FullType(LinkedAccountDto)]),
       );
     }
   }
@@ -170,6 +182,13 @@ class _$AccountExportDtoSerializer implements PrimitiveSerializer<AccountExportD
             specifiedType: const FullType(BuiltList, [FullType(StudentDocumentDto)]),
           ) as BuiltList<StudentDocumentDto>;
           result.documents.replace(valueDes);
+          break;
+        case r'linkedAccounts':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType(BuiltList, [FullType(LinkedAccountDto)]),
+          ) as BuiltList<LinkedAccountDto>;
+          result.linkedAccounts.replace(valueDes);
           break;
         default:
           unhandled.add(key);

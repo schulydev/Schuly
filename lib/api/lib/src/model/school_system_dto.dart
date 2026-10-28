@@ -20,6 +20,7 @@ part 'school_system_dto.g.dart';
 /// * [privateAuthStrategy] 
 /// * [statelessBasePath] 
 /// * [pluginBasePath] 
+/// * [loginMethodPath] 
 /// * [loginMethod] 
 /// * [enabled] 
 /// * [sortOrder] 
@@ -48,6 +49,9 @@ abstract class SchoolSystemDto implements Built<SchoolSystemDto, SchoolSystemDto
 
   @BuiltValueField(wireName: r'pluginBasePath')
   String? get pluginBasePath;
+
+  @BuiltValueField(wireName: r'loginMethodPath')
+  String? get loginMethodPath;
 
   @BuiltValueField(wireName: r'loginMethod')
   String get loginMethod;
@@ -132,6 +136,13 @@ class _$SchoolSystemDtoSerializer implements PrimitiveSerializer<SchoolSystemDto
       yield r'pluginBasePath';
       yield serializers.serialize(
         object.pluginBasePath,
+        specifiedType: const FullType.nullable(String),
+      );
+    }
+    if (object.loginMethodPath != null) {
+      yield r'loginMethodPath';
+      yield serializers.serialize(
+        object.loginMethodPath,
         specifiedType: const FullType.nullable(String),
       );
     }
@@ -250,6 +261,14 @@ class _$SchoolSystemDtoSerializer implements PrimitiveSerializer<SchoolSystemDto
           ) as String?;
           if (valueDes == null) continue;
           result.pluginBasePath = valueDes;
+          break;
+        case r'loginMethodPath':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType.nullable(String),
+          ) as String?;
+          if (valueDes == null) continue;
+          result.loginMethodPath = valueDes;
           break;
         case r'loginMethod':
           final valueDes = serializers.deserialize(

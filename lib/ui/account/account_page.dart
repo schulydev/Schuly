@@ -3,7 +3,7 @@ import 'package:forui/forui.dart';
 import 'package:schuly_api/schuly_api.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../../config/oidc_config.dart';
+import '../../config/backend_config.dart';
 import '../../services/active_account_service.dart';
 import '../../services/api_client.dart';
 import '../../services/api_error.dart';
@@ -170,7 +170,7 @@ class _AccountPageState extends State<AccountPage> {
     final initial = fullName.isNotEmpty ? fullName.characters.first.toUpperCase() : '?';
     final fallback = Text(initial,
         style: TextStyle(color: colors.mutedForeground, fontWeight: FontWeight.w600));
-    final providerPfp = OidcConfig.resolveUrl(me?.profilePictureUrl);
+    final providerPfp = BackendConfig.resolveUrl(me?.profilePictureUrl);
     final avatarUrl = providerPfp ?? widget.pictureUrl;
 
     return RefreshIndicator(
