@@ -65,11 +65,9 @@ class _MicrosoftLoginScreenState extends State<MicrosoftLoginScreen> {
   }
 
   Future<void> _start() async {
-    for (final host in microsoftSignInHosts) {
-      try {
-        await WebviewCookieManager().removeCookie('https://$host/').timeout(const Duration(seconds: 3));
-      } catch (_) {}
-    }
+    try {
+      await WebViewCookieManager().clearCookies().timeout(const Duration(seconds: 3));
+    } catch (_) {}
     if (mounted) await _controller.loadRequest(Uri.parse(widget.authorizeUrl));
   }
 
