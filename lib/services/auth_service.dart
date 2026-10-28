@@ -106,7 +106,7 @@ class AuthService {
   /// Finishes a sign-in with a code from the authenticator app or a recovery code.
   static Future<void> verifyCode(TwoFactorChallenge challenge, String code, {bool rememberDevice = false}) async {
     final response = await _post('/auth/2fa/verify', {'challenge': challenge.challenge, 'code': code, 'rememberDevice': rememberDevice, 'deviceLabel': _deviceLabel()});
-    if (response.statusCode != 200) throw _refusal(response, "That code didn't match. Try the current one from your app.");
+    if (response.statusCode != 200) throw _refusal(response, "That code didn't work. Wait for the next code in your app and enter that one.");
     await _persist(jsonDecode(response.body) as Map<String, dynamic>);
   }
 
