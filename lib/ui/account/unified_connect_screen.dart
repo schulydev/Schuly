@@ -5,6 +5,7 @@ import 'package:forui/forui.dart';
 import '../../domain/school_system.dart';
 import '../../services/api_client.dart';
 import '../../services/api_error.dart';
+import '../widgets/browser_sign_in.dart';
 import '../widgets/dynamic_login_form.dart';
 import '../widgets/linked_account_login.dart';
 
@@ -53,9 +54,12 @@ class _UnifiedConnectScreenState extends State<UnifiedConnectScreen> {
       _error = null;
     });
     try {
+      final browser = _method.usesBrowser ? await signInThroughBrowser(context, _method.browserLoginPath!, _form.value('baseUrl')) : null;
+      if (_method.usesBrowser && browser == null) return;
       final fields = {
         ..._form.values(hidden: _method.hiddenKeys),
         if (_method.usesLinkedAccount) SchoolSystem.linkedAccountFieldKey: _linkedAccountId!,
+        ...?browser?.fields,
       };
       final name = _nameCtrl.text.trim();
       final res = await ApiClient.instance.dio.post<Map<String, dynamic>>(
@@ -102,13 +106,15 @@ class _UnifiedConnectScreenState extends State<UnifiedConnectScreen> {
                   selectedId: _linkedAccountId,
                   onChanged: (id) => setState(() => _linkedAccountId = id),
                 ),
+              if (_method.usesBrowser)
+                Text('This school uses its own login. You sign in on its page in the next step.', style: context.theme.typography.sm.copyWith(color: colors.mutedForeground)),
               FTextField(
                 control: FTextFieldControl.managed(controller: _nameCtrl),
                 label: const Text('Display Name'),
               ),
               FButton(
                 onPress: _busy || _method.checking ? null : _connect,
-                child: Text(_busy ? 'Connecting…' : _method.checking ? 'Checking sign-in…' : 'Connect'),
+                child: Text(_busy ? 'Connecting…' : _method.checking ? 'Checking sign-in…' : _method.usesBrowser ? 'Sign in at your school' : 'Connect'),
               ),
               if (_error != null)
                 SelectableText(_error!, style: TextStyle(color: colors.destructive)),

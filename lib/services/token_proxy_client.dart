@@ -1,4 +1,5 @@
 import 'dart:convert';
+import '../ui/widgets/browser_sign_in.dart';
 
 import 'package:dio/dio.dart';
 
@@ -40,6 +41,12 @@ class TokenProxyClient {
         'totpSecret': totpSecret,
       },
     );
+    return _parse(res.data ?? const {});
+  }
+
+  /// Finishes a browser sign-in (private mode) at the catalog-given [completePath].
+  Future<PrivateRefreshResult> completeBrowser({required String completePath, required String baseUrl, required BrowserSignInResult sign}) async {
+    final res = await _dio.post<Map<String, dynamic>>(completePath, data: {'baseUrl': baseUrl, ...sign.fields});
     return _parse(res.data ?? const {});
   }
 

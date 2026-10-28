@@ -20,6 +20,7 @@ class LoginMethodController extends ChangeNotifier {
   String? _checkedUrl;
   bool checking = false;
   String? linkedProvider;
+  String? browserLoginPath;
 
   LoginMethodController(this.system, this.baseUrl) {
     if (system.loginMethodPath != null) baseUrl?.addListener(_onChanged);
@@ -27,7 +28,9 @@ class LoginMethodController extends ChangeNotifier {
 
   bool get usesLinkedAccount => linkedProvider != null;
 
-  Set<String> get hiddenKeys => usesLinkedAccount ? {for (final f in system.loginFields) if (f.replacedByLinkedAccount) f.key} : const {};
+  bool get usesBrowser => browserLoginPath != null;
+
+  Set<String> get hiddenKeys => usesLinkedAccount || usesBrowser ? {for (final f in system.loginFields) if (f.replacedByLinkedAccount) f.key} : const {};
 
   void _onChanged() {
     _debounce?.cancel();
@@ -40,23 +43,27 @@ class LoginMethodController extends ChangeNotifier {
     if (url == _checkedUrl) return;
     _checkedUrl = url;
     if (!valid) {
-      _set(checking: false, provider: null);
+      _set(checking: false, provider: null, browserPath: null);
       return;
     }
-    _set(checking: true, provider: linkedProvider);
+    _set(checking: true, provider: linkedProvider, browserPath: browserLoginPath);
     String? provider;
+    String? browserPath;
     try {
       final res = await backendDio().get<Map<String, dynamic>>(system.loginMethodPath!, queryParameters: {'baseUrl': url});
       provider = res.data?['linkedProvider'] as String?;
+      browserPath = res.data?['browserLoginPath'] as String?;
     } catch (_) {
       provider = null;
+      browserPath = null;
     }
-    if (url == _checkedUrl) _set(checking: false, provider: provider);
+    if (url == _checkedUrl) _set(checking: false, provider: provider, browserPath: browserPath);
   }
 
-  void _set({required bool checking, required String? provider}) {
+  void _set({required bool checking, required String? provider, required String? browserPath}) {
     this.checking = checking;
     linkedProvider = provider;
+    browserLoginPath = browserPath;
     notifyListeners();
   }
 
