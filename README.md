@@ -51,7 +51,7 @@ New to Schuly as a user? Start with the [getting-started walkthrough](https://do
 | Repo | Purpose |
 |---|---|
 | [**Schuly**](https://github.com/schulydev/Schuly) | Flutter mobile app *(this repo)* |
-| [**SchulyBackend**](https://github.com/schulydev/SchulyBackend) | ASP.NET Core API backend |
+| [**SchulyServer**](https://github.com/schulydev/SchulyServer) | ASP.NET Core API and web app |
 | [**SchulyKeycloak**](https://github.com/schulydev/SchulyKeycloak) | Keycloak image + the `schuly` realm |
 | [**SchulyPluginAbstractions**](https://github.com/schulydev/SchulyPluginAbstractions) | Plugin contract (NuGet) |
 | [**SchulyPlugins**](https://github.com/schulydev/SchulyPlugins) | Official plugins monorepo |

@@ -12,14 +12,14 @@ kept and whether any of the data comes to rest on a server.
 flowchart LR
   subgraph account["Account mode"]
     direction TB
-    AU(["You"]) -->|"sign in to Schuly"| AB["SchulyBackend"]
+    AU(["You"]) -->|"sign in to Schuly"| AB["SchulyServer"]
     AB -->|"keeps a copy of your data"| ADB[("Schuly's database")]
   end
 
   subgraph private["Private mode"]
     direction TB
     PU(["You"]) -->|"sign in to your school"| PP[("Your phone<br/>holds the login")]
-    PP -->|"sent with each request"| PB["SchulyBackend<br/>passes it straight through"]
+    PP -->|"sent with each request"| PB["SchulyServer<br/>passes it straight through"]
   end
 
   School[("Your school's system")]
