@@ -29,6 +29,15 @@ class _SignInScreenState extends State<SignInScreen> {
   bool _busy = false;
   String? _error;
   String? _notice;
+  List<SignInProvider> _providers = const [];
+
+  @override
+  void initState() {
+    super.initState();
+    AuthService.providers().then((providers) {
+      if (mounted) setState(() => _providers = providers);
+    });
+  }
 
   @override
   void dispose() {
@@ -98,6 +107,18 @@ class _SignInScreenState extends State<SignInScreen> {
         });
     }
   }
+
+  Future<void> _signInWith(SignInProvider provider) => _run(() async {
+        final challenge = await AuthService.signInWithProvider(provider.key);
+        if (challenge == null) {
+          if (mounted) Navigator.of(context).pop(true);
+          return;
+        }
+        setState(() {
+          _challenge = challenge;
+          _step = _Step.code;
+        });
+      });
 
   String get _title => switch (_step) {
         _Step.signIn => 'Welcome back',
@@ -214,6 +235,8 @@ class _SignInScreenState extends State<SignInScreen> {
                     child: _busy ? const SizedBox(width: 16, height: 16, child: FCircularProgress()) : Text(_action),
                   ),
                   if (_step == _Step.signIn) ...[
+                    for (final provider in _providers)
+                      FButton(style: FButtonStyle.outline(), onPress: _busy ? null : () => _signInWith(provider), child: Text('Continue with ${provider.displayName}')),
                     FButton(style: FButtonStyle.ghost(), onPress: () => _go(_Step.forgot), child: const Text('Forgot password?')),
                     FButton(style: FButtonStyle.outline(), onPress: () => _go(_Step.register), child: const Text('Create an account')),
                   ],
