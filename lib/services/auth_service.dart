@@ -1,27 +1,19 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/foundation.dart';
-import 'package:flutter_appauth/flutter_appauth.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-import '../config/oidc_config.dart';
-
-class AuthTokens {
-  final String accessToken;
-  final String? idToken;
-  final String? refreshToken;
-  final DateTime? accessTokenExpiry;
-
-  AuthTokens({required this.accessToken, this.idToken, this.refreshToken, this.accessTokenExpiry});
-}
+import '../config/backend_config.dart';
 
 /// Why a token refresh failed.
 enum AuthFailure {
-  /// The provider rejected the refresh token (`invalid_grant` and the other
-  /// OAuth error codes) - the session is over and the user has to sign in again.
+  /// The server rejected the refresh token - the session is over and the user
+  /// has to sign in again.
   auth,
 
-  /// The provider couldn't be reached (no network, timeout, 5xx, a malformed
+  /// The server couldn't be reached (no network, timeout, 5xx, a malformed
   /// response). The stored tokens are still good: retry, don't sign out.
   transport,
 }
@@ -36,25 +28,33 @@ class AuthRefresh {
   final AuthFailure? failure;
 }
 
-/// OIDC Authorization Code + PKCE login backed by [FlutterAppAuth], which drives
-/// the flow through ASWebAuthenticationSession (iOS) / Chrome Custom Tabs
-/// (Android) - the system browser, never a WebView, and never an in-app
-/// credential form. The client is public (no secret); PKCE (S256) replaces it.
+/// A sign-in the server answered with a second-factor challenge instead of tokens.
+class TwoFactorChallenge {
+  const TwoFactorChallenge(this.challenge);
+
+  final String challenge;
+}
+
+/// A refusal from the server, worded for the user.
+class AuthException implements Exception {
+  const AuthException(this.message, {this.statusCode});
+
+  final String message;
+  final int? statusCode;
+
+  @override
+  String toString() => message;
+}
+
+/// Password sign-in against the Schuly server's own `/auth` endpoints. The
+/// refresh token and the remembered-device token live in the platform keystore.
 class AuthService {
-  // The refresh token, id token, and access token (with its expiry) are all
-  // persisted in the keystore, so a cold start can skip the refresh round trip
-  // while the cached access token is still valid.
   static const _kRefreshTokenKey = 'auth.refresh_token';
-  static const _kIdTokenKey = 'auth.id_token';
   static const _kAccessTokenKey = 'auth.access_token.v2';
   static const _kAccessTokenExpiryKey = 'auth.access_token_expiry';
-  // Legacy key from the old hand-rolled flow that persisted the access token.
-  static const _kLegacyAccessTokenKey = 'auth.access_token';
+  static const _kDeviceTokenKey = 'auth.device_token';
+  static const _kLegacyKeys = ['auth.access_token', 'auth.id_token'];
 
-  static const _appAuth = FlutterAppAuth();
-
-  /// Refresh/id tokens live in the platform keystore (Android
-  /// EncryptedSharedPrefs / iOS Keychain), not plaintext SharedPreferences.
   static const _storage = FlutterSecureStorage(
     aOptions: AndroidOptions(encryptedSharedPreferences: true),
   );
@@ -62,114 +62,102 @@ class AuthService {
   static String? _accessToken;
   static DateTime? _accessTokenExpiry;
 
-  /// One-shot migration of tokens written by older builds into SharedPreferences.
-  /// Memoised so it runs at most once per process.
-  static Future<void>? _migration;
-  static Future<void> _ensureMigrated() => _migration ??= _migrate();
-
-  static Future<void> _migrate() async {
-    await _storage.delete(key: _kLegacyAccessTokenKey);
-
-    if (await _storage.containsKey(key: _kRefreshTokenKey)) return;
-
-    final prefs = await SharedPreferences.getInstance();
-    final refresh = prefs.getString(_kRefreshTokenKey);
-    if (refresh == null) return; // fresh install or already migrated + signed out
-
-    final idToken = prefs.getString(_kIdTokenKey);
-    await _storage.write(key: _kRefreshTokenKey, value: refresh);
-    if (idToken != null) await _storage.write(key: _kIdTokenKey, value: idToken);
-
-    await prefs.remove(_kLegacyAccessTokenKey);
-    await prefs.remove(_kIdTokenKey);
-    await prefs.remove(_kRefreshTokenKey);
-  }
-
   static final ValueNotifier<int> sessionEpoch = ValueNotifier<int>(0);
 
-  static AuthorizationServiceConfiguration _serviceConfig(OidcSettings cfg) => AuthorizationServiceConfiguration(authorizationEndpoint: cfg.authorizationEndpoint, tokenEndpoint: cfg.tokenEndpoint, endSessionEndpoint: cfg.endSessionEndpoint);
+  static Uri _uri(String path) => Uri.parse('${BackendConfig.url}$path');
 
-  /// The standard OAuth 2.0 error codes. The provider reporting any of them
-  /// means it looked at the grant and refused it; everything else that can come
-  /// out of the token call (no network, a timeout, a 5xx, a parse failure) is
-  /// transport trouble and must not cost the user their session.
-  static const _oauthErrors = {
-    FlutterAppAuthOAuthError.invalidRequest,
-    FlutterAppAuthOAuthError.invalidClient,
-    FlutterAppAuthOAuthError.invalidGrant,
-    FlutterAppAuthOAuthError.unauthorizedClient,
-    FlutterAppAuthOAuthError.unsupportedGrantType,
-    FlutterAppAuthOAuthError.invalidScope,
-  };
-
-  @visibleForTesting
-  static AuthFailure classifyRefreshError(Object error) {
-    final oauthError = error is FlutterAppAuthPlatformException ? error.platformErrorDetails.error : null;
-    return _oauthErrors.contains(oauthError) ? AuthFailure.auth : AuthFailure.transport;
+  static Future<http.Response> _post(String path, Map<String, Object?> body, {String? accessToken}) {
+    return http.post(
+      _uri(path),
+      headers: {
+        HttpHeaders.contentTypeHeader: 'application/json',
+        if (accessToken != null) HttpHeaders.authorizationHeader: 'Bearer $accessToken',
+      },
+      body: jsonEncode(body),
+    ).timeout(const Duration(seconds: 20));
   }
 
-  /// Runs the OIDC Authorization Code + PKCE flow in the system browser and
-  /// exchanges the code for tokens. flutter_appauth applies PKCE (S256)
-  /// automatically. When [register] is true the authorize request carries
-  /// `prompt=create` (the OIDC registration hint) so Keycloak opens the
-  /// registration screen first.
-  static Future<AuthTokens> signIn({bool register = false}) async {
-    final cfg = await OidcConfig.settings();
-    if (!cfg.schemeIsRegistered) {
-      throw Exception('This backend redirects to ${cfg.callbackScheme}://, which this app build cannot receive. Configure its redirect URI as ${OidcConfig.redirectScheme}://callback.');
-    }
-    final result = await _appAuth.authorizeAndExchangeCode(
-      AuthorizationTokenRequest(
-        cfg.clientId,
-        cfg.redirectUri,
-        serviceConfiguration: _serviceConfig(cfg),
-        scopes: cfg.scopes,
-        promptValues: register ? const ['create'] : null,
-        allowInsecureConnections: cfg.allowInsecureConnections,
-      ),
-    );
-    return _persist(result);
+  static AuthException _refusal(http.Response response, String fallback) {
+    try {
+      final body = jsonDecode(response.body);
+      if (body is Map) {
+        final errors = body['errors'];
+        if (errors is List && errors.isNotEmpty) return AuthException(errors.join(' '), statusCode: response.statusCode);
+        final description = body['error_description'];
+        if (description is String && description.isNotEmpty) return AuthException(description, statusCode: response.statusCode);
+      }
+    } catch (_) {}
+    if (response.statusCode == 429) return AuthException('Too many attempts. Wait a minute and try again.', statusCode: response.statusCode);
+    return AuthException(fallback, statusCode: response.statusCode);
   }
 
-  static Future<AuthTokens> _persist(TokenResponse r) async {
-    await _ensureMigrated();
-    final tokens = AuthTokens(accessToken: r.accessToken!, idToken: r.idToken, refreshToken: r.refreshToken, accessTokenExpiry: r.accessTokenExpirationDateTime);
-    _accessToken = tokens.accessToken;
-    _accessTokenExpiry = tokens.accessTokenExpiry;
-    if (tokens.refreshToken != null) {
-      await _storage.write(key: _kRefreshTokenKey, value: tokens.refreshToken!);
-    }
-    if (tokens.idToken != null) {
-      await _storage.write(key: _kIdTokenKey, value: tokens.idToken!);
-    }
-    await _storage.write(key: _kAccessTokenKey, value: tokens.accessToken);
-    if (tokens.accessTokenExpiry != null) {
-      await _storage.write(key: _kAccessTokenExpiryKey, value: tokens.accessTokenExpiry!.toIso8601String());
-    } else {
-      await _storage.delete(key: _kAccessTokenExpiryKey);
-    }
-    return tokens;
+  /// Signs in with a username or email and a password. Returns null when the
+  /// account is signed in, or a [TwoFactorChallenge] when a code is needed.
+  static Future<TwoFactorChallenge?> signIn(String identifier, String password) async {
+    final deviceToken = await _storage.read(key: _kDeviceTokenKey);
+    final response = await _post('/auth/login', {'identifier': identifier, 'password': password, 'deviceToken': ?deviceToken});
+    if (response.statusCode != 200) throw _refusal(response, "That didn't match. Check your username and password.");
+    final body = jsonDecode(response.body) as Map<String, dynamic>;
+    if (body['two_factor_required'] == true) return TwoFactorChallenge(body['challenge'] as String);
+    await _persist(body);
+    return null;
+  }
+
+  /// Finishes a sign-in with a code from the authenticator app or a recovery code.
+  static Future<void> verifyCode(TwoFactorChallenge challenge, String code, {bool rememberDevice = false}) async {
+    final response = await _post('/auth/2fa/verify', {'challenge': challenge.challenge, 'code': code, 'rememberDevice': rememberDevice, 'deviceLabel': _deviceLabel()});
+    if (response.statusCode != 200) throw _refusal(response, "That code didn't match. Try the current one from your app.");
+    await _persist(jsonDecode(response.body) as Map<String, dynamic>);
+  }
+
+  /// Creates an account, signs in, and mails a link to confirm the address.
+  static Future<void> register(String userName, String email, String password) async {
+    final response = await _post('/auth/register', {'userName': userName, 'email': email, 'password': password});
+    if (response.statusCode != 201) throw _refusal(response, 'That username or email is already taken.');
+    final tokens = await _persist(jsonDecode(response.body) as Map<String, dynamic>);
+    try {
+      await _post('/auth/email', {'newEmail': email, 'currentPassword': password}, accessToken: tokens);
+    } catch (_) {}
+  }
+
+  /// Mails a password reset link when the address belongs to a confirmed account.
+  static Future<void> requestPasswordReset(String email) async {
+    final response = await _post('/auth/password/forgot', {'email': email});
+    if (response.statusCode != 204) throw _refusal(response, 'That did not work. Try again in a moment.');
+  }
+
+  static Future<String> _persist(Map<String, dynamic> body) async {
+    final accessToken = body['access_token'] as String;
+    final expiresIn = (body['expires_in'] as num?)?.toInt() ?? 900;
+    _accessToken = accessToken;
+    _accessTokenExpiry = DateTime.now().add(Duration(seconds: expiresIn));
+    await _storage.write(key: _kAccessTokenKey, value: accessToken);
+    await _storage.write(key: _kAccessTokenExpiryKey, value: _accessTokenExpiry!.toIso8601String());
+    final refreshToken = body['refresh_token'] as String?;
+    if (refreshToken != null) await _storage.write(key: _kRefreshTokenKey, value: refreshToken);
+    final deviceToken = body['device_token'] as String?;
+    if (deviceToken != null) await _storage.write(key: _kDeviceTokenKey, value: deviceToken);
+    sessionEpoch.value++;
+    return accessToken;
   }
 
   static Future<void>? _restore;
   static Future<void> _ensureRestored() => _restore ??= _restoreAccessToken();
 
   static Future<void> _restoreAccessToken() async {
-    await _ensureMigrated();
+    for (final key in _kLegacyKeys) {
+      await _storage.delete(key: key);
+    }
     final token = await _storage.read(key: _kAccessTokenKey);
-    final expiry = await _storage.read(key: _kAccessTokenExpiryKey);
-    if (token == null || expiry == null) return;
-    final parsed = DateTime.tryParse(expiry);
-    if (parsed == null) return;
-    if (_accessToken == null) {
+    final expiry = DateTime.tryParse(await _storage.read(key: _kAccessTokenExpiryKey) ?? '');
+    if (token != null && expiry != null && _accessToken == null) {
       _accessToken = token;
-      _accessTokenExpiry = parsed;
+      _accessTokenExpiry = expiry;
     }
   }
 
-  /// Returns a usable access token: the in-memory one if still valid, otherwise
-  /// a freshly refreshed one. Null when there's no session (no refresh token or
-  /// the refresh failed) - the caller should treat that as signed-out.
+  /// Returns a usable access token: the cached one if still valid, otherwise a
+  /// freshly refreshed one. Null when there's no session.
   static Future<String?> getAccessToken() async {
     await _ensureRestored();
     final token = _accessToken;
@@ -180,104 +168,61 @@ class AuthService {
     return (await refreshAccessToken()).accessToken;
   }
 
-  static Future<String?> getRefreshToken() async {
-    await _ensureMigrated();
-    return _storage.read(key: _kRefreshTokenKey);
-  }
-
   /// Whether a refresh token is stored - the app has a session it can re-mint an
-  /// access token from, even while it can't reach the provider.
-  static Future<bool> hasSession() async => await getRefreshToken() != null;
+  /// access token from, even while it can't reach the server.
+  static Future<bool> hasSession() async => await _storage.read(key: _kRefreshTokenKey) != null;
 
   static Future<AuthRefresh>? _refreshing;
 
   static Future<AuthRefresh> refreshAccessToken() => _refreshing ??= _refresh().whenComplete(() => _refreshing = null);
 
   static Future<AuthRefresh> _refresh() async {
-    final refreshToken = await getRefreshToken();
+    final refreshToken = await _storage.read(key: _kRefreshTokenKey);
     if (refreshToken == null) return const AuthRefresh.failed(AuthFailure.auth);
     try {
-      final cfg = await OidcConfig.settings();
-      final result = await _appAuth.token(
-        TokenRequest(
-          cfg.clientId,
-          cfg.redirectUri,
-          serviceConfiguration: _serviceConfig(cfg),
-          refreshToken: refreshToken,
-          scopes: cfg.scopes,
-          allowInsecureConnections: cfg.allowInsecureConnections,
-        ),
-      );
-      final tokens = await _persist(result);
-      return AuthRefresh.token(tokens.accessToken);
-    } catch (e) {
-      return AuthRefresh.failed(classifyRefreshError(e));
-    }
-  }
-
-  static Future<Map<String, dynamic>?> getIdTokenClaims() async {
-    await _ensureMigrated();
-    final idToken = await _storage.read(key: _kIdTokenKey);
-    if (idToken == null) return null;
-    final parts = idToken.split('.');
-    if (parts.length != 3) return null;
-    try {
-      final payload = utf8.decode(base64Url.decode(base64Url.normalize(parts[1])));
-      return jsonDecode(payload) as Map<String, dynamic>;
+      final response = await _post('/auth/refresh', {'refreshToken': refreshToken});
+      if (response.statusCode == 400 || response.statusCode == 401) return const AuthRefresh.failed(AuthFailure.auth);
+      if (response.statusCode != 200) return const AuthRefresh.failed(AuthFailure.transport);
+      return AuthRefresh.token(await _persist(jsonDecode(response.body) as Map<String, dynamic>));
     } catch (_) {
-      return null;
+      return const AuthRefresh.failed(AuthFailure.transport);
     }
   }
 
   static Future<bool>? _signingOut;
 
-  /// Ends the session. [endSession] drives the provider's logout page in the
-  /// system browser; pass false for a silent local sign-out (an expired session
-  /// has nothing left to log out of). Memoised, because N requests failing at
-  /// once must not open N browser tabs. Returns true only for the call that
-  /// actually ended a live session, so exactly one caller reports it.
-  static Future<bool> signOut({bool endSession = true}) {
+  /// Ends the session. Memoised, because N requests failing at once must sign
+  /// out once. Returns true only for the call that actually ended a live session.
+  static Future<bool> signOut() {
     final pending = _signingOut;
     if (pending != null) return pending.then((_) => false);
-    return _signingOut = _signOut(endSession: endSession).whenComplete(() => _signingOut = null);
+    return _signingOut = _signOut().whenComplete(() => _signingOut = null);
   }
 
-  static Future<bool> _signOut({required bool endSession}) async {
-    await _ensureMigrated();
-    final idToken = await _storage.read(key: _kIdTokenKey);
-    final hadSession = idToken != null || _accessToken != null || await _storage.read(key: _kRefreshTokenKey) != null;
-    // No id token means there is no provider session to end - private mode, or
-    // one already dropped - and endSession would just strand the user on a
-    // logout page for an account they never signed into.
-    if (endSession && idToken != null) {
+  static Future<bool> _signOut() async {
+    final refreshToken = await _storage.read(key: _kRefreshTokenKey);
+    final hadSession = refreshToken != null || _accessToken != null;
+    if (refreshToken != null) {
       try {
-        final cfg = await OidcConfig.settings();
-        if (cfg.endSessionEndpoint != null) {
-          await _appAuth.endSession(
-            EndSessionRequest(
-              idTokenHint: idToken,
-              postLogoutRedirectUrl: cfg.redirectUri,
-              serviceConfiguration: _serviceConfig(cfg),
-              allowInsecureConnections: cfg.allowInsecureConnections,
-            ),
-          );
-        }
-      } catch (_) {
-      }
+        await _post('/auth/logout', {'refreshToken': refreshToken});
+      } catch (_) {}
     }
     _accessToken = null;
     _accessTokenExpiry = null;
     await _storage.delete(key: _kRefreshTokenKey);
-    await _storage.delete(key: _kIdTokenKey);
-    await _storage.delete(key: _kLegacyAccessTokenKey);
     await _storage.delete(key: _kAccessTokenKey);
     await _storage.delete(key: _kAccessTokenExpiryKey);
     final prefs = await SharedPreferences.getInstance();
-    await prefs.remove(_kLegacyAccessTokenKey);
-    await prefs.remove(_kIdTokenKey);
-    await prefs.remove(_kRefreshTokenKey);
+    for (final key in [..._kLegacyKeys, _kRefreshTokenKey]) {
+      await prefs.remove(key);
+    }
     _restore = null;
     sessionEpoch.value++;
     return hadSession;
+  }
+
+  static String _deviceLabel() {
+    if (kIsWeb) return 'Schuly app';
+    return 'Schuly app on ${Platform.isIOS ? 'iOS' : Platform.isAndroid ? 'Android' : Platform.operatingSystem}';
   }
 }

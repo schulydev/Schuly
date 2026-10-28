@@ -4,10 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:forui/forui.dart';
 
+import '../../config/backend_config.dart';
 import '../../services/active_account_service.dart';
 import '../../services/api_client.dart';
 import '../../services/app_mode_service.dart';
-import '../../services/auth_service.dart';
 import '../../services/private_account_store.dart';
 import '../../services/profile_refresh_requests.dart';
 import '../../services/school_data_service.dart';
@@ -65,34 +65,24 @@ class _DashboardScreenState extends State<DashboardScreen> with WidgetsBindingOb
     unawaited(_refreshProfile(bustCache: requested));
   }
 
-  /// Re-mints the access token (which - per [AuthService] - also persists a
-  /// fresh id token) and re-reads its claims, the same claims [_bootstrap]
-  /// reads on first launch. Called on resume so a picture uploaded on the
-  /// external Keycloak avatar page shows up without an app restart.
+  /// Re-reads the signed-in account's name, email and picture. Called on resume
+  /// so a picture changed in the web app shows up without an app restart.
   Future<void> _refreshProfile({required bool bustCache}) async {
     ProfileRefreshRequests.clear();
-    await AuthService.refreshAccessToken();
-    final claims = await AuthService.getIdTokenClaims();
+    await _loadProfile();
+  }
+
+  Future<void> _loadProfile() async {
     _lastClaimsRead = DateTime.now();
-    if (mounted && claims != null) {
-      var picture = claims['picture'] as String?;
-      // The Keycloak avatar URL is stable per user, so NetworkImage would
-      // keep serving the cached image unless the URL itself changes.
-      if (bustCache && picture != null && picture.isNotEmpty) {
-        final sep = picture.contains('?') ? '&' : '?';
-        picture = '$picture${sep}v=${DateTime.now().millisecondsSinceEpoch}';
-      }
-      setState(() {
-        _pictureUrl = picture;
-        _userName = claims['name'] as String?;
-        _userEmail = claims['email'] as String?;
-      });
-    }
     try {
-      await ApiClient.instance.api.getAuthApi().apiAuthSyncGet();
-    } catch (_) {
-      // Best-effort - the local claims already reflect the new picture.
-    }
+      final me = (await ApiClient.instance.api.getAuthApi().apiAuthMeGet()).data;
+      if (!mounted || me == null) return;
+      setState(() {
+        _pictureUrl = BackendConfig.resolveUrl(me.profilePictureUrl);
+        _userName = me.displayName;
+        _userEmail = me.email.isEmpty ? null : me.email;
+      });
+    } catch (_) {}
   }
 
   void _onTabRequested() {
@@ -125,15 +115,7 @@ class _DashboardScreenState extends State<DashboardScreen> with WidgetsBindingOb
       return;
     }
 
-    final claims = await AuthService.getIdTokenClaims();
-    _lastClaimsRead = DateTime.now();
-    if (mounted && claims != null) {
-      setState(() {
-        _pictureUrl = claims['picture'] as String?;
-        _userName = claims['name'] as String?;
-        _userEmail = claims['email'] as String?;
-      });
-    }
+    await _loadProfile();
 
     final svc = ActiveAccountService.instance;
     await svc.refresh();

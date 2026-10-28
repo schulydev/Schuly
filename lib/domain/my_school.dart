@@ -1,6 +1,6 @@
 import 'package:schuly_api/schuly_api.dart';
 
-import '../config/oidc_config.dart';
+import '../config/backend_config.dart';
 
 class MySchool {
   final String id;
@@ -39,7 +39,7 @@ class MySchool {
         provider: provider,
         pluginBasePath: pluginBasePath,
         pluginAccountId: pluginAccountId,
-        logoUrl: OidcConfig.resolveUrl(dto.logoUrl),
-        profilePictureUrl: OidcConfig.resolveUrl(dto.profilePictureUrl),
+        logoUrl: BackendConfig.resolveUrl(dto.logoUrl),
+        profilePictureUrl: BackendConfig.resolveUrl(dto.profilePictureUrl),
       );
 }

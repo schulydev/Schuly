@@ -14,6 +14,7 @@ Name | Type | Description | Notes
 **placeholder** | **String** |  | [optional] 
 **defaultValue** | **String** |  | [optional] 
 **required_** | **bool** |  | [optional] 
+**replacedByLinkedAccount** | **bool** |  | [optional] 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
 

@@ -47,24 +47,6 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
-	<!-- OIDC (account mode) returns to the app via the backend's custom
-	     redirect scheme (schulytest://callback), driven by flutter_appauth over
-	     ASWebAuthenticationSession. Registering it here lets iOS route the login
-	     callback back into the app. Must match OidcConfig.redirectScheme
-	     (lib/config/oidc_config.dart). -->
-	<key>CFBundleURLTypes</key>
-	<array>
-		<dict>
-			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
-			<key>CFBundleURLName</key>
-			<string>app.schuly.oidc</string>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>schulytest</string>
-			</array>
-		</dict>
-	</array>
 	<!-- App only uses standard, exempt encryption (HTTPS + TOTP/HMAC), so no
 	     export-compliance documentation is required. Declaring this lets
 	     TestFlight/App Store builds skip the manual compliance prompt. -->

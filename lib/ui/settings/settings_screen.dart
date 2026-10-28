@@ -4,7 +4,6 @@ import 'package:forui/forui.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../config/backend_config.dart';
-import '../../config/oidc_config.dart';
 import '../../services/active_account_service.dart';
 import '../../services/app_mode_service.dart';
 import '../../services/auth_service.dart';
@@ -159,15 +158,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Future<void> _openAccountConsole() async {
-    Uri? url;
-    try {
-      final cfg = await OidcConfig.settings();
-      url = Uri.parse('${cfg.authority}/account');
-    } catch (_) {
-      url = null;
-    }
-    if (!mounted) return;
-    if (url == null || !await launchUrl(url, mode: LaunchMode.externalApplication)) {
+    final url = Uri.parse('${BackendConfig.url}/settings');
+    if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
       if (mounted) {
         showFToast(context: context, title: const Text("Couldn't open the account page"));
       }
@@ -208,15 +200,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Future<void> _openProfilePicture() async {
-    Uri? url;
-    try {
-      final cfg = await OidcConfig.settings();
-      url = Uri.parse('${cfg.authority}/avatar/ui');
-    } catch (_) {
-      url = null;
-    }
-    if (!mounted) return;
-    if (url == null || !await launchUrl(url, mode: LaunchMode.externalApplication)) {
+    final url = Uri.parse('${BackendConfig.url}/settings');
+    if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
       if (mounted) {
         showFToast(context: context, title: const Text("Couldn't open the picture page"));
       }
@@ -317,11 +302,8 @@ class _ServerDialogState extends State<_ServerDialog> {
       setState(() => _busy = true);
     }
 
-    // Log out of the provider we are still pointed at - after the switch the
-    // end-session call would land on the new backend's provider.
     await AuthService.signOut();
     await BackendConfig.setUrl(url);
-    OidcConfig.reset();
     await PrivateAccountStore.instance.clear();
     await ActiveAccountService.instance.clear();
     SchoolDataService.instance.clear();

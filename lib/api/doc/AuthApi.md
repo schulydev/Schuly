@@ -24,8 +24,6 @@ Method | HTTP request | Description
 ### Example
 ```dart
 import 'package:schuly_api/api.dart';
-// TODO Configure OAuth2 access token for authorization: OAuth2
-//defaultApiClient.getAuthentication<OAuth>('OAuth2').accessToken = 'YOUR_ACCESS_TOKEN';
 
 final api = SchulyApi().getAuthApi();
 final UnifiedLoginRequest unifiedLoginRequest = ; // UnifiedLoginRequest | 
@@ -49,7 +47,7 @@ void (empty response body)
 
 ### Authorization
 
-[OAuth2](../README.md#OAuth2)
+[Bearer](../README.md#Bearer)
 
 ### HTTP request headers
 
@@ -66,8 +64,6 @@ void (empty response body)
 ### Example
 ```dart
 import 'package:schuly_api/api.dart';
-// TODO Configure OAuth2 access token for authorization: OAuth2
-//defaultApiClient.getAuthentication<OAuth>('OAuth2').accessToken = 'YOUR_ACCESS_TOKEN';
 
 final api = SchulyApi().getAuthApi();
 
@@ -87,7 +83,7 @@ void (empty response body)
 
 ### Authorization
 
-[OAuth2](../README.md#OAuth2)
+[Bearer](../README.md#Bearer)
 
 ### HTTP request headers
 
@@ -104,8 +100,6 @@ void (empty response body)
 ### Example
 ```dart
 import 'package:schuly_api/api.dart';
-// TODO Configure OAuth2 access token for authorization: OAuth2
-//defaultApiClient.getAuthentication<OAuth>('OAuth2').accessToken = 'YOUR_ACCESS_TOKEN';
 
 final api = SchulyApi().getAuthApi();
 
@@ -126,7 +120,7 @@ This endpoint does not need any parameter.
 
 ### Authorization
 
-[OAuth2](../README.md#OAuth2)
+[Bearer](../README.md#Bearer)
 
 ### HTTP request headers
 
@@ -143,8 +137,6 @@ This endpoint does not need any parameter.
 ### Example
 ```dart
 import 'package:schuly_api/api.dart';
-// TODO Configure OAuth2 access token for authorization: OAuth2
-//defaultApiClient.getAuthentication<OAuth>('OAuth2').accessToken = 'YOUR_ACCESS_TOKEN';
 
 final api = SchulyApi().getAuthApi();
 
@@ -165,7 +157,7 @@ This endpoint does not need any parameter.
 
 ### Authorization
 
-[OAuth2](../README.md#OAuth2)
+[Bearer](../README.md#Bearer)
 
 ### HTTP request headers
 
@@ -182,8 +174,6 @@ This endpoint does not need any parameter.
 ### Example
 ```dart
 import 'package:schuly_api/api.dart';
-// TODO Configure OAuth2 access token for authorization: OAuth2
-//defaultApiClient.getAuthentication<OAuth>('OAuth2').accessToken = 'YOUR_ACCESS_TOKEN';
 
 final api = SchulyApi().getAuthApi();
 
@@ -203,7 +193,7 @@ void (empty response body)
 
 ### Authorization
 
-[OAuth2](../README.md#OAuth2)
+[Bearer](../README.md#Bearer)
 
 ### HTTP request headers
 

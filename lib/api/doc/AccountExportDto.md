@@ -14,6 +14,7 @@ Name | Type | Description | Notes
 **agendaEntries** | [**BuiltList&lt;AgendaEntryDto&gt;**](AgendaEntryDto.md) |  | [optional] 
 **semesterReports** | [**BuiltList&lt;SemesterReportDto&gt;**](SemesterReportDto.md) |  | [optional] 
 **documents** | [**BuiltList&lt;StudentDocumentDto&gt;**](StudentDocumentDto.md) |  | [optional] 
+**linkedAccounts** | [**BuiltList&lt;LinkedAccountDto&gt;**](LinkedAccountDto.md) |  | [optional] 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
 

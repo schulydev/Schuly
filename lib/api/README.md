@@ -69,6 +69,13 @@ Class | Method | HTTP request | Description
 [*AbsencesApi*](doc/AbsencesApi.md) | [**apiAbsencesPost**](doc/AbsencesApi.md#apiabsencespost) | **POST** /api/Absences | 
 [*AbsencesApi*](doc/AbsencesApi.md) | [**apiAbsencesPut**](doc/AbsencesApi.md#apiabsencesput) | **PUT** /api/Absences | 
 [*AbsencesApi*](doc/AbsencesApi.md) | [**apiAbsencesSearchGet**](doc/AbsencesApi.md#apiabsencessearchget) | **GET** /api/Absences/search | 
+[*AccountsApi*](doc/AccountsApi.md) | [**apiPluginsMicrosoftAccountsAccountIdCalendarGet**](doc/AccountsApi.md#apipluginsmicrosoftaccountsaccountidcalendarget) | **GET** /api/plugins/microsoft/accounts/{accountId}/calendar | 
+[*AccountsApi*](doc/AccountsApi.md) | [**apiPluginsMicrosoftAccountsAccountIdFilesGet**](doc/AccountsApi.md#apipluginsmicrosoftaccountsaccountidfilesget) | **GET** /api/plugins/microsoft/accounts/{accountId}/files | 
+[*AccountsApi*](doc/AccountsApi.md) | [**apiPluginsMicrosoftAccountsAccountIdMailGet**](doc/AccountsApi.md#apipluginsmicrosoftaccountsaccountidmailget) | **GET** /api/plugins/microsoft/accounts/{accountId}/mail | 
+[*AccountsApi*](doc/AccountsApi.md) | [**apiPluginsOdaorgAccountsAccountIdDelete**](doc/AccountsApi.md#apipluginsodaorgaccountsaccountiddelete) | **DELETE** /api/plugins/odaorg/accounts/{accountId} | 
+[*AccountsApi*](doc/AccountsApi.md) | [**apiPluginsOdaorgAccountsGet**](doc/AccountsApi.md#apipluginsodaorgaccountsget) | **GET** /api/plugins/odaorg/accounts | 
+[*AccountsApi*](doc/AccountsApi.md) | [**apiPluginsSchulwareAccountsAccountIdDelete**](doc/AccountsApi.md#apipluginsschulwareaccountsaccountiddelete) | **DELETE** /api/plugins/schulware/accounts/{accountId} | 
+[*AccountsApi*](doc/AccountsApi.md) | [**apiPluginsSchulwareAccountsGet**](doc/AccountsApi.md#apipluginsschulwareaccountsget) | **GET** /api/plugins/schulware/accounts | 
 [*AgendasApi*](doc/AgendasApi.md) | [**apiAgendasGet**](doc/AgendasApi.md#apiagendasget) | **GET** /api/Agendas | 
 [*AgendasApi*](doc/AgendasApi.md) | [**apiAgendasIdDelete**](doc/AgendasApi.md#apiagendasiddelete) | **DELETE** /api/Agendas/{id} | 
 [*AgendasApi*](doc/AgendasApi.md) | [**apiAgendasPost**](doc/AgendasApi.md#apiagendaspost) | **POST** /api/Agendas | 
@@ -86,30 +93,53 @@ Class | Method | HTTP request | Description
 [*AuthApi*](doc/AuthApi.md) | [**apiAuthMeExportGet**](doc/AuthApi.md#apiauthmeexportget) | **GET** /api/Auth/me/export | 
 [*AuthApi*](doc/AuthApi.md) | [**apiAuthMeGet**](doc/AuthApi.md#apiauthmeget) | **GET** /api/Auth/me | 
 [*AuthApi*](doc/AuthApi.md) | [**apiAuthSyncGet**](doc/AuthApi.md#apiauthsyncget) | **GET** /api/Auth/sync | 
+[*AuthenticationApi*](doc/AuthenticationApi.md) | [**toamaisutaaChangeEmail**](doc/AuthenticationApi.md#toamaisutaachangeemail) | **POST** /auth/email | Sends a verification link to an address, and changes nothing yet.
+[*AuthenticationApi*](doc/AuthenticationApi.md) | [**toamaisutaaChangePassword**](doc/AuthenticationApi.md#toamaisutaachangepassword) | **POST** /auth/password | Sets a first password or changes an existing one.
+[*AuthenticationApi*](doc/AuthenticationApi.md) | [**toamaisutaaForgotPassword**](doc/AuthenticationApi.md#toamaisutaaforgotpassword) | **POST** /auth/password/forgot | Requests a password reset link.
+[*AuthenticationApi*](doc/AuthenticationApi.md) | [**toamaisutaaLogin**](doc/AuthenticationApi.md#toamaisutaalogin) | **POST** /auth/login | Signs in with a password, or asks for a second factor.
+[*AuthenticationApi*](doc/AuthenticationApi.md) | [**toamaisutaaLogout**](doc/AuthenticationApi.md#toamaisutaalogout) | **POST** /auth/logout | Revokes the presented refresh token&#39;s family.
+[*AuthenticationApi*](doc/AuthenticationApi.md) | [**toamaisutaaRefresh**](doc/AuthenticationApi.md#toamaisutaarefresh) | **POST** /auth/refresh | Exchanges a refresh token for a new pair, rotating it.
+[*AuthenticationApi*](doc/AuthenticationApi.md) | [**toamaisutaaRegister**](doc/AuthenticationApi.md#toamaisutaaregister) | **POST** /auth/register | Creates a local account and signs it in.
+[*AuthenticationApi*](doc/AuthenticationApi.md) | [**toamaisutaaResetPassword**](doc/AuthenticationApi.md#toamaisutaaresetpassword) | **POST** /auth/password/reset | Redeems a reset token and sets a new password.
+[*AuthenticationApi*](doc/AuthenticationApi.md) | [**toamaisutaaVerifyEmail**](doc/AuthenticationApi.md#toamaisutaaverifyemail) | **POST** /auth/email/verify | Redeems a verification token and writes the address it names.
 [*AvatarsApi*](doc/AvatarsApi.md) | [**apiAvatarsSchoolUserIdGet**](doc/AvatarsApi.md#apiavatarsschooluseridget) | **GET** /api/avatars/{schoolUserId} | 
+[*AvatarsApi*](doc/AvatarsApi.md) | [**apiAvatarsUsersApplicationUserIdGet**](doc/AvatarsApi.md#apiavatarsusersapplicationuseridget) | **GET** /api/avatars/users/{applicationUserId} | 
 [*ClassApi*](doc/ClassApi.md) | [**apiClassEnrolStudentPost**](doc/ClassApi.md#apiclassenrolstudentpost) | **POST** /api/Class/enrol-student | 
 [*ClassApi*](doc/ClassApi.md) | [**apiClassGet**](doc/ClassApi.md#apiclassget) | **GET** /api/Class | 
 [*ClassApi*](doc/ClassApi.md) | [**apiClassIdDelete**](doc/ClassApi.md#apiclassiddelete) | **DELETE** /api/Class/{id} | 
 [*ClassApi*](doc/ClassApi.md) | [**apiClassPost**](doc/ClassApi.md#apiclasspost) | **POST** /api/Class | 
 [*ClassApi*](doc/ClassApi.md) | [**apiClassPut**](doc/ClassApi.md#apiclassput) | **PUT** /api/Class | 
 [*ClassApi*](doc/ClassApi.md) | [**apiClassSearchGet**](doc/ClassApi.md#apiclasssearchget) | **GET** /api/Class/search | 
-[*DevAuthApi*](doc/DevAuthApi.md) | [**apiDevTokenPost**](doc/DevAuthApi.md#apidevtokenpost) | **POST** /api/dev/token | 
+[*ExamplePluginApi*](doc/ExamplePluginApi.md) | [**apiPluginsExampleHelloGet**](doc/ExamplePluginApi.md#apipluginsexamplehelloget) | **GET** /api/plugins/example/hello | 
+[*ExamplePluginApi*](doc/ExamplePluginApi.md) | [**apiPluginsExampleInfoGet**](doc/ExamplePluginApi.md#apipluginsexampleinfoget) | **GET** /api/plugins/example/info | 
 [*ExamsApi*](doc/ExamsApi.md) | [**apiExamsGet**](doc/ExamsApi.md#apiexamsget) | **GET** /api/Exams | 
 [*ExamsApi*](doc/ExamsApi.md) | [**apiExamsGradePost**](doc/ExamsApi.md#apiexamsgradepost) | **POST** /api/Exams/grade | 
 [*ExamsApi*](doc/ExamsApi.md) | [**apiExamsIdDelete**](doc/ExamsApi.md#apiexamsiddelete) | **DELETE** /api/Exams/{id} | 
 [*ExamsApi*](doc/ExamsApi.md) | [**apiExamsPost**](doc/ExamsApi.md#apiexamspost) | **POST** /api/Exams | 
 [*ExamsApi*](doc/ExamsApi.md) | [**apiExamsPut**](doc/ExamsApi.md#apiexamsput) | **PUT** /api/Exams | 
 [*ExamsApi*](doc/ExamsApi.md) | [**apiExamsSearchGet**](doc/ExamsApi.md#apiexamssearchget) | **GET** /api/Exams/search | 
+[*LinkApi*](doc/LinkApi.md) | [**apiPluginsMicrosoftLinkCompletePost**](doc/LinkApi.md#apipluginsmicrosoftlinkcompletepost) | **POST** /api/plugins/microsoft/link/complete | 
+[*LinkApi*](doc/LinkApi.md) | [**apiPluginsMicrosoftLinkStartPost**](doc/LinkApi.md#apipluginsmicrosoftlinkstartpost) | **POST** /api/plugins/microsoft/link/start | 
+[*LinkedAccountsApi*](doc/LinkedAccountsApi.md) | [**apiMeLinkedAccountsGet**](doc/LinkedAccountsApi.md#apimelinkedaccountsget) | **GET** /api/me/linked-accounts | 
+[*LinkedAccountsApi*](doc/LinkedAccountsApi.md) | [**apiMeLinkedAccountsIdDelete**](doc/LinkedAccountsApi.md#apimelinkedaccountsiddelete) | **DELETE** /api/me/linked-accounts/{id} | 
+[*MeApi*](doc/MeApi.md) | [**apiMeAvatarDelete**](doc/MeApi.md#apimeavatardelete) | **DELETE** /api/me/avatar | 
+[*MeApi*](doc/MeApi.md) | [**apiMeAvatarPut**](doc/MeApi.md#apimeavatarput) | **PUT** /api/me/avatar | 
+[*MeApi*](doc/MeApi.md) | [**apiMeGradesIdDelete**](doc/MeApi.md#apimegradesiddelete) | **DELETE** /api/me/grades/{id} | 
+[*MeApi*](doc/MeApi.md) | [**apiMeGradesPost**](doc/MeApi.md#apimegradespost) | **POST** /api/me/grades | 
+[*MeApi*](doc/MeApi.md) | [**apiMeGradesPut**](doc/MeApi.md#apimegradesput) | **PUT** /api/me/grades | 
+[*MeApi*](doc/MeApi.md) | [**apiMeSchoolsPost**](doc/MeApi.md#apimeschoolspost) | **POST** /api/me/schools | 
 [*NotificationsApi*](doc/NotificationsApi.md) | [**apiNotificationsDevicesPost**](doc/NotificationsApi.md#apinotificationsdevicespost) | **POST** /api/notifications/devices | 
 [*NotificationsApi*](doc/NotificationsApi.md) | [**apiNotificationsDevicesTokenDelete**](doc/NotificationsApi.md#apinotificationsdevicestokendelete) | **DELETE** /api/notifications/devices/{token} | 
 [*NotificationsApi*](doc/NotificationsApi.md) | [**apiNotificationsPreferencesGet**](doc/NotificationsApi.md#apinotificationspreferencesget) | **GET** /api/notifications/preferences | 
 [*NotificationsApi*](doc/NotificationsApi.md) | [**apiNotificationsPreferencesPut**](doc/NotificationsApi.md#apinotificationspreferencesput) | **PUT** /api/notifications/preferences | 
+[*OdaorgStatelessApi*](doc/OdaorgStatelessApi.md) | [**apiPluginsOdaorgStatelessDataPost**](doc/OdaorgStatelessApi.md#apipluginsodaorgstatelessdatapost) | **POST** /api/plugins/odaorg/stateless/data | 
 [*PluginsApi*](doc/PluginsApi.md) | [**apiPluginsGet**](doc/PluginsApi.md#apipluginsget) | **GET** /api/Plugins | 
 [*PluginsApi*](doc/PluginsApi.md) | [**apiPluginsInstallPost**](doc/PluginsApi.md#apipluginsinstallpost) | **POST** /api/Plugins/install | 
 [*PluginsApi*](doc/PluginsApi.md) | [**apiPluginsNameDelete**](doc/PluginsApi.md#apipluginsnamedelete) | **DELETE** /api/Plugins/{name} | 
 [*PluginsApi*](doc/PluginsApi.md) | [**apiPluginsNameUpdatePost**](doc/PluginsApi.md#apipluginsnameupdatepost) | **POST** /api/Plugins/{name}/update | 
 [*PluginsApi*](doc/PluginsApi.md) | [**apiPluginsRegistryGet**](doc/PluginsApi.md#apipluginsregistryget) | **GET** /api/Plugins/registry | 
 [*PluginsApi*](doc/PluginsApi.md) | [**apiPluginsSchedulerGet**](doc/PluginsApi.md#apipluginsschedulerget) | **GET** /api/Plugins/scheduler | 
+[*PushApi*](doc/PushApi.md) | [**apiPluginsSchulwarePushAccountIdPost**](doc/PushApi.md#apipluginsschulwarepushaccountidpost) | **POST** /api/plugins/schulware/push/{accountId} | 
 [*SchoolSystemsApi*](doc/SchoolSystemsApi.md) | [**apiSchoolSystemsGet**](doc/SchoolSystemsApi.md#apischoolsystemsget) | **GET** /api/SchoolSystems | 
 [*SchoolSystemsApi*](doc/SchoolSystemsApi.md) | [**apiSchoolSystemsIdDelete**](doc/SchoolSystemsApi.md#apischoolsystemsiddelete) | **DELETE** /api/SchoolSystems/{id} | 
 [*SchoolSystemsApi*](doc/SchoolSystemsApi.md) | [**apiSchoolSystemsIdGet**](doc/SchoolSystemsApi.md#apischoolsystemsidget) | **GET** /api/SchoolSystems/{id} | 
@@ -126,16 +156,44 @@ Class | Method | HTTP request | Description
 [*SchoolsApi*](doc/SchoolsApi.md) | [**apiSchoolsMySchoolsGet**](doc/SchoolsApi.md#apischoolsmyschoolsget) | **GET** /api/Schools/my-schools | 
 [*SchoolsApi*](doc/SchoolsApi.md) | [**apiSchoolsPost**](doc/SchoolsApi.md#apischoolspost) | **POST** /api/Schools | 
 [*SchoolsApi*](doc/SchoolsApi.md) | [**apiSchoolsPut**](doc/SchoolsApi.md#apischoolsput) | **PUT** /api/Schools | 
+[*SchulyAPIApi*](doc/SchulyAPIApi.md) | [**apiPluginsExampleVaultDemoGet**](doc/SchulyAPIApi.md#apipluginsexamplevaultdemoget) | **GET** /api/plugins/example/vault-demo | 
 [*SemesterReportsApi*](doc/SemesterReportsApi.md) | [**apiSemesterReportsGet**](doc/SemesterReportsApi.md#apisemesterreportsget) | **GET** /api/SemesterReports | 
+[*StatelessAuthApi*](doc/StatelessAuthApi.md) | [**apiPluginsSchulwareStatelessLoginMethodGet**](doc/StatelessAuthApi.md#apipluginsschulwarestatelessloginmethodget) | **GET** /api/plugins/schulware/stateless/login-method | 
+[*StatelessAuthApi*](doc/StatelessAuthApi.md) | [**apiPluginsSchulwareStatelessLoginPost**](doc/StatelessAuthApi.md#apipluginsschulwarestatelessloginpost) | **POST** /api/plugins/schulware/stateless/login | 
+[*StatelessAuthApi*](doc/StatelessAuthApi.md) | [**apiPluginsSchulwareStatelessRefreshPost**](doc/StatelessAuthApi.md#apipluginsschulwarestatelessrefreshpost) | **POST** /api/plugins/schulware/stateless/refresh | 
+[*StatelessDataApi*](doc/StatelessDataApi.md) | [**apiPluginsSchulwareStatelessAbsencesGet**](doc/StatelessDataApi.md#apipluginsschulwarestatelessabsencesget) | **GET** /api/plugins/schulware/stateless/absences | 
+[*StatelessDataApi*](doc/StatelessDataApi.md) | [**apiPluginsSchulwareStatelessAgendaGet**](doc/StatelessDataApi.md#apipluginsschulwarestatelessagendaget) | **GET** /api/plugins/schulware/stateless/agenda | 
+[*StatelessDataApi*](doc/StatelessDataApi.md) | [**apiPluginsSchulwareStatelessExamsGet**](doc/StatelessDataApi.md#apipluginsschulwarestatelessexamsget) | **GET** /api/plugins/schulware/stateless/exams | 
+[*StatelessDataApi*](doc/StatelessDataApi.md) | [**apiPluginsSchulwareStatelessGradesGet**](doc/StatelessDataApi.md#apipluginsschulwarestatelessgradesget) | **GET** /api/plugins/schulware/stateless/grades | 
+[*StatelessDataApi*](doc/StatelessDataApi.md) | [**apiPluginsSchulwareStatelessUserinfoGet**](doc/StatelessDataApi.md#apipluginsschulwarestatelessuserinfoget) | **GET** /api/plugins/schulware/stateless/userinfo | 
+[*StatelessLinkApi*](doc/StatelessLinkApi.md) | [**apiPluginsMicrosoftStatelessLinkCompletePost**](doc/StatelessLinkApi.md#apipluginsmicrosoftstatelesslinkcompletepost) | **POST** /api/plugins/microsoft/stateless/link/complete | 
+[*StatelessLinkApi*](doc/StatelessLinkApi.md) | [**apiPluginsMicrosoftStatelessLinkStartPost**](doc/StatelessLinkApi.md#apipluginsmicrosoftstatelesslinkstartpost) | **POST** /api/plugins/microsoft/stateless/link/start | 
+[*StatusApi*](doc/StatusApi.md) | [**apiPluginsOdaorgStatusGet**](doc/StatusApi.md#apipluginsodaorgstatusget) | **GET** /api/plugins/odaorg/status | 
+[*StatusApi*](doc/StatusApi.md) | [**apiPluginsSchulwareStatusGet**](doc/StatusApi.md#apipluginsschulwarestatusget) | **GET** /api/plugins/schulware/status | 
 [*StudentDocumentsApi*](doc/StudentDocumentsApi.md) | [**apiDocumentsDocumentIdGet**](doc/StudentDocumentsApi.md#apidocumentsdocumentidget) | **GET** /api/documents/{documentId} | 
 [*StudentDocumentsApi*](doc/StudentDocumentsApi.md) | [**apiDocumentsGet**](doc/StudentDocumentsApi.md#apidocumentsget) | **GET** /api/documents | 
 [*StudentDocumentsApi*](doc/StudentDocumentsApi.md) | [**apiDocumentsReencryptPost**](doc/StudentDocumentsApi.md#apidocumentsreencryptpost) | **POST** /api/documents/reencrypt | 
 [*StudentDocumentsApi*](doc/StudentDocumentsApi.md) | [**apiStudentsSchoolUserIdDocumentsPost**](doc/StudentDocumentsApi.md#apistudentsschooluseriddocumentspost) | **POST** /api/students/{schoolUserId}/documents | 
+[*SyncApi*](doc/SyncApi.md) | [**apiPluginsOdaorgAccountsAccountIdSyncGet**](doc/SyncApi.md#apipluginsodaorgaccountsaccountidsyncget) | **GET** /api/plugins/odaorg/accounts/{accountId}/sync | 
+[*SyncApi*](doc/SyncApi.md) | [**apiPluginsOdaorgAccountsAccountIdSyncPost**](doc/SyncApi.md#apipluginsodaorgaccountsaccountidsyncpost) | **POST** /api/plugins/odaorg/accounts/{accountId}/sync | 
+[*SyncApi*](doc/SyncApi.md) | [**apiPluginsSchulwareAccountsAccountIdSyncGet**](doc/SyncApi.md#apipluginsschulwareaccountsaccountidsyncget) | **GET** /api/plugins/schulware/accounts/{accountId}/sync | 
+[*SyncApi*](doc/SyncApi.md) | [**apiPluginsSchulwareAccountsAccountIdSyncPost**](doc/SyncApi.md#apipluginsschulwareaccountsaccountidsyncpost) | **POST** /api/plugins/schulware/accounts/{accountId}/sync | 
 [*TeachersApi*](doc/TeachersApi.md) | [**apiTeachersGet**](doc/TeachersApi.md#apiteachersget) | **GET** /api/Teachers | 
 [*TeachersApi*](doc/TeachersApi.md) | [**apiTeachersIdDelete**](doc/TeachersApi.md#apiteachersiddelete) | **DELETE** /api/Teachers/{id} | 
 [*TeachersApi*](doc/TeachersApi.md) | [**apiTeachersIdGet**](doc/TeachersApi.md#apiteachersidget) | **GET** /api/Teachers/{id} | 
 [*TeachersApi*](doc/TeachersApi.md) | [**apiTeachersPost**](doc/TeachersApi.md#apiteacherspost) | **POST** /api/Teachers | 
 [*TeachersApi*](doc/TeachersApi.md) | [**apiTeachersPut**](doc/TeachersApi.md#apiteachersput) | **PUT** /api/Teachers | 
+[*TrustedDevicesApi*](doc/TrustedDevicesApi.md) | [**toamaisutaaRevokeAllTrustedDevices**](doc/TrustedDevicesApi.md#toamaisutaarevokealltrusteddevices) | **DELETE** /auth/devices | Revokes every device this user has trusted.
+[*TrustedDevicesApi*](doc/TrustedDevicesApi.md) | [**toamaisutaaRevokeTrustedDevice**](doc/TrustedDevicesApi.md#toamaisutaarevoketrusteddevice) | **DELETE** /auth/devices/{id} | Revokes one device by its id.
+[*TrustedDevicesApi*](doc/TrustedDevicesApi.md) | [**toamaisutaaTrustedDevices**](doc/TrustedDevicesApi.md#toamaisutaatrusteddevices) | **GET** /auth/devices | Lists the devices this user has trusted.
+[*TwoFactorAuthenticationApi*](doc/TwoFactorAuthenticationApi.md) | [**toamaisutaaStepUp**](doc/TwoFactorAuthenticationApi.md#toamaisutaastepup) | **POST** /auth/2fa/step-up | Asks for a second factor from a session that is already signed in.
+[*TwoFactorAuthenticationApi*](doc/TwoFactorAuthenticationApi.md) | [**toamaisutaaStepUpVerify**](doc/TwoFactorAuthenticationApi.md#toamaisutaastepupverify) | **POST** /auth/2fa/step-up/verify | Completes a step-up and returns a new access token for the same session.
+[*TwoFactorAuthenticationApi*](doc/TwoFactorAuthenticationApi.md) | [**toamaisutaaTwoFactorBegin**](doc/TwoFactorAuthenticationApi.md#toamaisutaatwofactorbegin) | **POST** /auth/2fa/begin | Generates a secret and stores it unconfirmed. Enables nothing.
+[*TwoFactorAuthenticationApi*](doc/TwoFactorAuthenticationApi.md) | [**toamaisutaaTwoFactorConfirm**](doc/TwoFactorAuthenticationApi.md#toamaisutaatwofactorconfirm) | **POST** /auth/2fa/confirm | Proves the authenticator holds the secret, and turns the second factor on.
+[*TwoFactorAuthenticationApi*](doc/TwoFactorAuthenticationApi.md) | [**toamaisutaaTwoFactorDisable**](doc/TwoFactorAuthenticationApi.md#toamaisutaatwofactordisable) | **POST** /auth/2fa/disable | Turns the second factor off. Requires a current code as proof.
+[*TwoFactorAuthenticationApi*](doc/TwoFactorAuthenticationApi.md) | [**toamaisutaaTwoFactorRecoveryCodes**](doc/TwoFactorAuthenticationApi.md#toamaisutaatwofactorrecoverycodes) | **POST** /auth/2fa/recovery-codes | Issues a fresh set of recovery codes and invalidates every previous one.
+[*TwoFactorAuthenticationApi*](doc/TwoFactorAuthenticationApi.md) | [**toamaisutaaTwoFactorStatus**](doc/TwoFactorAuthenticationApi.md#toamaisutaatwofactorstatus) | **GET** /auth/2fa | Whether the caller has enrolled, and how many recovery codes remain.
+[*TwoFactorAuthenticationApi*](doc/TwoFactorAuthenticationApi.md) | [**toamaisutaaTwoFactorVerify**](doc/TwoFactorAuthenticationApi.md#toamaisutaatwofactorverify) | **POST** /auth/2fa/verify | Finishes a sign-in that stopped for a second factor.
 
 
 ## Documentation For Models
@@ -144,35 +202,57 @@ Class | Method | HTTP request | Description
  - [AbsenceType](doc/AbsenceType.md)
  - [AccountExportDto](doc/AccountExportDto.md)
  - [AddGradeToExamCommand](doc/AddGradeToExamCommand.md)
+ - [AddMyGradeCommand](doc/AddMyGradeCommand.md)
  - [AgendaEntryDto](doc/AgendaEntryDto.md)
  - [AgendaEntryType](doc/AgendaEntryType.md)
  - [AppDto](doc/AppDto.md)
  - [ApplicationUserDto](doc/ApplicationUserDto.md)
+ - [BeginTwoFactorRequest](doc/BeginTwoFactorRequest.md)
+ - [ChangeEmailRequest](doc/ChangeEmailRequest.md)
+ - [ChangePasswordRequest](doc/ChangePasswordRequest.md)
  - [ClassDto](doc/ClassDto.md)
  - [ClassMemberDto](doc/ClassMemberDto.md)
+ - [CompleteRequest](doc/CompleteRequest.md)
+ - [ConfirmTwoFactorRequest](doc/ConfirmTwoFactorRequest.md)
+ - [Cookie](doc/Cookie.md)
  - [CreateAbsenceCommand](doc/CreateAbsenceCommand.md)
  - [CreateAgendaEntryCommand](doc/CreateAgendaEntryCommand.md)
  - [CreateApplicationUserCommand](doc/CreateApplicationUserCommand.md)
  - [CreateClassCommand](doc/CreateClassCommand.md)
  - [CreateExamCommand](doc/CreateExamCommand.md)
+ - [CreateMySchoolCommand](doc/CreateMySchoolCommand.md)
  - [CreateSchoolCommand](doc/CreateSchoolCommand.md)
  - [CreateSchoolSystemCommand](doc/CreateSchoolSystemCommand.md)
  - [CreateSchoolUserCommand](doc/CreateSchoolUserCommand.md)
  - [CreateTeacherCommand](doc/CreateTeacherCommand.md)
- - [DevTokenRequest](doc/DevTokenRequest.md)
- - [DevTokenResponse](doc/DevTokenResponse.md)
+ - [DisableTwoFactorRequest](doc/DisableTwoFactorRequest.md)
  - [EnrolStudentCommand](doc/EnrolStudentCommand.md)
+ - [ErrorResponse](doc/ErrorResponse.md)
  - [ExamDto](doc/ExamDto.md)
  - [ExamType](doc/ExamType.md)
+ - [ForgotPasswordRequest](doc/ForgotPasswordRequest.md)
  - [GradeDto](doc/GradeDto.md)
  - [InstallPluginRequest](doc/InstallPluginRequest.md)
+ - [LinkedAccountDto](doc/LinkedAccountDto.md)
+ - [LoginRequest](doc/LoginRequest.md)
+ - [LogoutRequest](doc/LogoutRequest.md)
  - [MySchoolDto](doc/MySchoolDto.md)
  - [NotificationPreferencesDto](doc/NotificationPreferencesDto.md)
+ - [OdaorgStatelessAgendaEvent](doc/OdaorgStatelessAgendaEvent.md)
+ - [OdaorgStatelessData](doc/OdaorgStatelessData.md)
+ - [OdaorgStatelessExam](doc/OdaorgStatelessExam.md)
+ - [OdaorgStatelessGrade](doc/OdaorgStatelessGrade.md)
+ - [OdaorgStatelessRequest](doc/OdaorgStatelessRequest.md)
+ - [OdaorgStatelessUserInfo](doc/OdaorgStatelessUserInfo.md)
  - [PluginDto](doc/PluginDto.md)
  - [PluginTaskStatus](doc/PluginTaskStatus.md)
  - [ProblemDetails](doc/ProblemDetails.md)
  - [ReencryptStudentDocumentsResult](doc/ReencryptStudentDocumentsResult.md)
+ - [RefreshRequest](doc/RefreshRequest.md)
+ - [RegenerateRecoveryCodesRequest](doc/RegenerateRecoveryCodesRequest.md)
  - [RegisterDeviceTokenCommand](doc/RegisterDeviceTokenCommand.md)
+ - [RegisterRequest](doc/RegisterRequest.md)
+ - [ResetPasswordRequest](doc/ResetPasswordRequest.md)
  - [Roles](doc/Roles.md)
  - [SchoolDto](doc/SchoolDto.md)
  - [SchoolSystemDto](doc/SchoolSystemDto.md)
@@ -181,14 +261,25 @@ Class | Method | HTTP request | Description
  - [SchoolUserSummaryDto](doc/SchoolUserSummaryDto.md)
  - [SemesterReportDto](doc/SemesterReportDto.md)
  - [SemesterSubjectGradeDto](doc/SemesterSubjectGradeDto.md)
+ - [StatelessLoginRequest](doc/StatelessLoginRequest.md)
+ - [StatelessRefreshRequest](doc/StatelessRefreshRequest.md)
+ - [StepUpChallengeResponse](doc/StepUpChallengeResponse.md)
+ - [StepUpResponse](doc/StepUpResponse.md)
+ - [StepUpVerifyRequest](doc/StepUpVerifyRequest.md)
  - [StudentDocumentDto](doc/StudentDocumentDto.md)
  - [TeacherDto](doc/TeacherDto.md)
+ - [TokenResponse](doc/TokenResponse.md)
+ - [TrustedDeviceSummary](doc/TrustedDeviceSummary.md)
+ - [TwoFactorEnrolmentCompleted](doc/TwoFactorEnrolmentCompleted.md)
+ - [TwoFactorEnrolmentStarted](doc/TwoFactorEnrolmentStarted.md)
+ - [TwoFactorStatus](doc/TwoFactorStatus.md)
  - [UnifiedLoginRequest](doc/UnifiedLoginRequest.md)
  - [UpdateAbsenceCommand](doc/UpdateAbsenceCommand.md)
  - [UpdateAgendaEntryCommand](doc/UpdateAgendaEntryCommand.md)
  - [UpdateApplicationUserCommand](doc/UpdateApplicationUserCommand.md)
  - [UpdateClassCommand](doc/UpdateClassCommand.md)
  - [UpdateExamCommand](doc/UpdateExamCommand.md)
+ - [UpdateMyGradeCommand](doc/UpdateMyGradeCommand.md)
  - [UpdateNotificationPreferencesCommand](doc/UpdateNotificationPreferencesCommand.md)
  - [UpdateSchoolCommand](doc/UpdateSchoolCommand.md)
  - [UpdateSchoolSystemCommand](doc/UpdateSchoolSystemCommand.md)
@@ -196,23 +287,18 @@ Class | Method | HTTP request | Description
  - [UpdateTeacherCommand](doc/UpdateTeacherCommand.md)
  - [UserClassDto](doc/UserClassDto.md)
  - [UserState](doc/UserState.md)
+ - [ValidationErrorResponse](doc/ValidationErrorResponse.md)
+ - [VerifyEmailRequest](doc/VerifyEmailRequest.md)
+ - [VerifyTwoFactorRequest](doc/VerifyTwoFactorRequest.md)
 
 
 ## Documentation For Authorization
 
 
 Authentication schemes defined for the API:
-### OAuth2
+### Bearer
 
-- **Type**: OAuth
-- **Flow**: accessCode
-- **Authorization URL**: https://auth.schuly.dev/realms/schuly/authorize
-- **Scopes**: 
- - **openid**: OpenID Connect
- - **profile**: User profile
- - **email**: User email
- - **groups**: User groups (roles)
- - **picture**: Profile Picture
+- **Type**: HTTP Bearer Token authentication (JWT)
 
 
 ## Author

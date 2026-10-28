@@ -28,9 +28,9 @@ icons (`FIcons`) for prefixes/suffixes, never Material icons or widgets.
 
 The app runs in one of two modes, chosen at the gate (`AppModeService`):
 
-- **Account mode** - OIDC login (Keycloak) via `ApiClient`; data lives server-side
+- **Account mode** - native sign-in against the Schuly server (`AuthService`, `/auth/*`) via `ApiClient`; data lives server-side
   and the backend syncs it. The normal flow.
-- **Private / secure mode** - **no Schuly login, no OIDC**. Credentials live only in
+- **Private / secure mode** - **no Schuly login**. Credentials live only in
   the device keystore (`PrivateAccountStore`); data is fetched live from the backend's
   **anonymous** stateless proxy endpoints with **clean `Dio`** clients
   (`TokenProxyClient`, `ScrapeProxyClient`) and never persisted server-side.

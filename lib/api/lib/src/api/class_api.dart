@@ -56,8 +56,9 @@ class ClassApi {
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
           {
-            'type': 'oauth2',
-            'name': 'OAuth2',
+            'type': 'http',
+            'scheme': 'bearer',
+            'name': 'Bearer',
           },
         ],
         ...?extra,
@@ -126,8 +127,9 @@ class ClassApi {
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
           {
-            'type': 'oauth2',
-            'name': 'OAuth2',
+            'type': 'http',
+            'scheme': 'bearer',
+            'name': 'Bearer',
           },
         ],
         ...?extra,
@@ -206,8 +208,9 @@ class ClassApi {
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
           {
-            'type': 'oauth2',
-            'name': 'OAuth2',
+            'type': 'http',
+            'scheme': 'bearer',
+            'name': 'Bearer',
           },
         ],
         ...?extra,
@@ -258,8 +261,9 @@ class ClassApi {
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
           {
-            'type': 'oauth2',
-            'name': 'OAuth2',
+            'type': 'http',
+            'scheme': 'bearer',
+            'name': 'Bearer',
           },
         ],
         ...?extra,
@@ -330,8 +334,9 @@ class ClassApi {
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
           {
-            'type': 'oauth2',
-            'name': 'OAuth2',
+            'type': 'http',
+            'scheme': 'bearer',
+            'name': 'Bearer',
           },
         ],
         ...?extra,
@@ -402,8 +407,9 @@ class ClassApi {
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
           {
-            'type': 'oauth2',
-            'name': 'OAuth2',
+            'type': 'http',
+            'scheme': 'bearer',
+            'name': 'Bearer',
           },
         ],
         ...?extra,

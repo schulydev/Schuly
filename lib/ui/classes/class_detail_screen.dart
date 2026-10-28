@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 import 'package:schuly_api/schuly_api.dart';
 
-import '../../config/oidc_config.dart';
+import '../../config/backend_config.dart';
 import '../../services/api_client.dart';
 import '../../services/api_time.dart';
 import '../core/grade_color.dart';
@@ -88,7 +88,7 @@ class _ClassDetailScreenState extends State<ClassDetailScreen> {
                   padding: const EdgeInsets.only(bottom: 8),
                   child: FTile(
                     prefix: _StudentAvatar(
-                      url: OidcConfig.resolveUrl(s.profilePictureUrl),
+                      url: BackendConfig.resolveUrl(s.profilePictureUrl),
                       name: '${s.firstName} ${s.lastName}'.trim(),
                     ),
                     title: Text('${s.firstName} ${s.lastName}'.trim()),

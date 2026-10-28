@@ -54,7 +54,7 @@ class BackendConfig {
           .timeout(const Duration(seconds: 8));
       if (r.statusCode != 200) return null;
       final body = jsonDecode(r.body);
-      if (body is! Map<String, dynamic> || body['clientId'] is! String) {
+      if (body is! Map<String, dynamic> || body['registrationEnabled'] is! bool) {
         return null;
       }
       final version = body['version'];
@@ -62,6 +62,14 @@ class BackendConfig {
     } catch (_) {
       return null;
     }
+  }
+
+  /// Turns a server-relative path such as a signed avatar URL into an absolute one.
+  static String? resolveUrl(String? url) {
+    if (url == null || url.isEmpty) return null;
+    if (url.startsWith('http')) return url;
+    if (url.startsWith('/')) return '$_url$url';
+    return url;
   }
 
   static Future<String> setUrl(String? value) async {

@@ -30,10 +30,6 @@
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
-            <!-- The OIDC callback (schulytest://callback) is handled by
-                 flutter_appauth's own RedirectUriReceiverActivity, registered via
-                 the appAuthRedirectScheme manifestPlaceholder in build.gradle.kts.
-                 No manual intent-filter is needed here. -->
         </activity>
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->

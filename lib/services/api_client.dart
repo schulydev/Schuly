@@ -90,7 +90,7 @@ class ApiClient {
 /// RootScreen react to `sessionEpoch`. Only the call that actually ended the
 /// session toasts, so N concurrent 401s produce one message.
 Future<void> _endExpiredSession() async {
-  if (await AuthService.signOut(endSession: false)) {
+  if (await AuthService.signOut()) {
     ToastService.error('Session expired', 'Please sign in again.');
   }
 }

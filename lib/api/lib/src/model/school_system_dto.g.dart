@@ -22,6 +22,8 @@ class _$SchoolSystemDto extends SchoolSystemDto {
   @override
   final String? pluginBasePath;
   @override
+  final String? loginMethodPath;
+  @override
   final String loginMethod;
   @override
   final bool? enabled;
@@ -45,6 +47,7 @@ class _$SchoolSystemDto extends SchoolSystemDto {
     this.privateAuthStrategy,
     this.statelessBasePath,
     this.pluginBasePath,
+    this.loginMethodPath,
     required this.loginMethod,
     this.enabled,
     this.sortOrder,
@@ -70,6 +73,7 @@ class _$SchoolSystemDto extends SchoolSystemDto {
         privateAuthStrategy == other.privateAuthStrategy &&
         statelessBasePath == other.statelessBasePath &&
         pluginBasePath == other.pluginBasePath &&
+        loginMethodPath == other.loginMethodPath &&
         loginMethod == other.loginMethod &&
         enabled == other.enabled &&
         sortOrder == other.sortOrder &&
@@ -88,6 +92,7 @@ class _$SchoolSystemDto extends SchoolSystemDto {
     _$hash = $jc(_$hash, privateAuthStrategy.hashCode);
     _$hash = $jc(_$hash, statelessBasePath.hashCode);
     _$hash = $jc(_$hash, pluginBasePath.hashCode);
+    _$hash = $jc(_$hash, loginMethodPath.hashCode);
     _$hash = $jc(_$hash, loginMethod.hashCode);
     _$hash = $jc(_$hash, enabled.hashCode);
     _$hash = $jc(_$hash, sortOrder.hashCode);
@@ -108,6 +113,7 @@ class _$SchoolSystemDto extends SchoolSystemDto {
           ..add('privateAuthStrategy', privateAuthStrategy)
           ..add('statelessBasePath', statelessBasePath)
           ..add('pluginBasePath', pluginBasePath)
+          ..add('loginMethodPath', loginMethodPath)
           ..add('loginMethod', loginMethod)
           ..add('enabled', enabled)
           ..add('sortOrder', sortOrder)
@@ -153,6 +159,11 @@ class SchoolSystemDtoBuilder
   set pluginBasePath(String? pluginBasePath) =>
       _$this._pluginBasePath = pluginBasePath;
 
+  String? _loginMethodPath;
+  String? get loginMethodPath => _$this._loginMethodPath;
+  set loginMethodPath(String? loginMethodPath) =>
+      _$this._loginMethodPath = loginMethodPath;
+
   String? _loginMethod;
   String? get loginMethod => _$this._loginMethod;
   set loginMethod(String? loginMethod) => _$this._loginMethod = loginMethod;
@@ -193,6 +204,7 @@ class SchoolSystemDtoBuilder
       _privateAuthStrategy = $v.privateAuthStrategy;
       _statelessBasePath = $v.statelessBasePath;
       _pluginBasePath = $v.pluginBasePath;
+      _loginMethodPath = $v.loginMethodPath;
       _loginMethod = $v.loginMethod;
       _enabled = $v.enabled;
       _sortOrder = $v.sortOrder;
@@ -238,6 +250,7 @@ class SchoolSystemDtoBuilder
             privateAuthStrategy: privateAuthStrategy,
             statelessBasePath: statelessBasePath,
             pluginBasePath: pluginBasePath,
+            loginMethodPath: loginMethodPath,
             loginMethod: BuiltValueNullFieldError.checkNotNull(
               loginMethod,
               r'SchoolSystemDto',
