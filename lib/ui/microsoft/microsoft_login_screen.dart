@@ -26,7 +26,8 @@ MicrosoftRedirect? microsoftRedirect(String url, String redirectUri) {
 /// Microsoft's sign-in hosts whose cookies make up the session Schulnetz can sign in with.
 const microsoftSignInHosts = ['login.microsoftonline.com', 'login.microsoft.com', 'login.live.com'];
 
-/// Shows Microsoft's real sign-in page in a WebView and pops the redirect it captured
+/// Shows Microsoft's real sign-in page in a WebView, starting without any earlier Microsoft
+/// session so every link is a fresh sign-in for one account, and pops the redirect it captured
 /// (or null if the student backs out). The student does the whole sign-in,
 /// including any 2FA, on Microsoft's own page — no password passes through Schuly.
 class MicrosoftLoginScreen extends StatefulWidget {
@@ -59,8 +60,17 @@ class _MicrosoftLoginScreenState extends State<MicrosoftLoginScreen> {
           _finish(redirect);
           return NavigationDecision.prevent;
         },
-      ))
-      ..loadRequest(Uri.parse(widget.authorizeUrl));
+      ));
+    _start();
+  }
+
+  Future<void> _start() async {
+    for (final host in microsoftSignInHosts) {
+      try {
+        await WebviewCookieManager().removeCookie('https://$host/').timeout(const Duration(seconds: 3));
+      } catch (_) {}
+    }
+    if (mounted) await _controller.loadRequest(Uri.parse(widget.authorizeUrl));
   }
 
   Future<void> _finish(MicrosoftRedirect redirect) async {
