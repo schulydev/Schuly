@@ -24,9 +24,13 @@ String _issueText(AppLocalizations t, AbsenceDraftIssue issue) => switch (issue)
       AbsenceDraftIssue.endBeforeStart => t.absenceIssueEndBeforeStart,
       AbsenceDraftIssue.timesIncomplete => t.absenceIssueTimesIncomplete,
       AbsenceDraftIssue.timeEndNotAfterStart => t.absenceIssueTimeEnd,
+      AbsenceDraftIssue.reasonRequired => t.absenceIssueReasonRequired,
       AbsenceDraftIssue.reasonTooLong => t.absenceIssueReasonLong,
       AbsenceDraftIssue.commentTooLong => t.absenceIssueCommentLong,
     };
+
+const _noReason = '';
+const _otherReason = '__other__';
 
 /// The "Report absence" sheet that sends the report to the school.
 class ReportAbsenceSheet extends StatefulWidget {
@@ -42,6 +46,7 @@ class _ReportAbsenceSheetState extends State<ReportAbsenceSheet> {
   final _comment = TextEditingController();
   late DateTime _from;
   late DateTime _to;
+  String _reasonChoice = _noReason;
   bool _partial = false;
   FTime? _start;
   FTime? _end;
@@ -71,7 +76,8 @@ class _ReportAbsenceSheetState extends State<ReportAbsenceSheet> {
         dateTo: _to,
         hourFrom: _partial && _start != null ? AbsenceDraft.formatTime(_start!.hour, _start!.minute) : null,
         hourTo: _partial && _end != null ? AbsenceDraft.formatTime(_end!.hour, _end!.minute) : null,
-        reason: _reason.text,
+        reason: _reasonChoice == _otherReason ? _reason.text : _reasonChoice,
+        customReason: _reasonChoice == _otherReason,
         comment: _comment.text,
       );
 
@@ -193,7 +199,19 @@ class _ReportAbsenceSheetState extends State<ReportAbsenceSheet> {
               ),
             ],
             const SizedBox(height: 12),
-            FTextField(control: FTextFieldControl.managed(controller: _reason), label: Text(t.absenceReasonLabel)),
+            FSelect<String>(
+              label: Text(t.absenceReasonLabel),
+              control: FSelectControl<String>.lifted(value: _reasonChoice, onChange: (v) => setState(() => _reasonChoice = v ?? _noReason)),
+              items: {
+                t.absenceReasonNone: _noReason,
+                for (final r in absenceReasons) r: r,
+                t.absenceReasonOther: _otherReason,
+              },
+            ),
+            if (_reasonChoice == _otherReason) ...[
+              const SizedBox(height: 12),
+              FTextField(control: FTextFieldControl.managed(controller: _reason), label: Text(t.absenceReasonCustomLabel), maxLength: absenceTextLimit),
+            ],
             const SizedBox(height: 12),
             FTextField(control: FTextFieldControl.managed(controller: _comment), label: Text(t.absenceCommentLabel), minLines: 2, maxLines: 4),
             if (_error != null) ...[

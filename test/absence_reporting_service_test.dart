@@ -23,6 +23,17 @@ void main() {
       expect(AbsenceDraft.formatTime(8, 5), '08:05');
     });
 
+    test('requires a typed reason only for a custom reason', () {
+      expect(AbsenceDraft(dateFrom: day, dateTo: day, customReason: true, reason: '  ').validate(), AbsenceDraftIssue.reasonRequired);
+      expect(AbsenceDraft(dateFrom: day, dateTo: day, customReason: true, reason: 'Zahnarzt').validate(), isNull);
+      expect(AbsenceDraft(dateFrom: day, dateTo: day, customReason: true, reason: 'x' * 501).validate(), AbsenceDraftIssue.reasonTooLong);
+      expect(AbsenceDraft(dateFrom: day, dateTo: day).validate(), isNull);
+    });
+
+    test('offers the six Schulnetz reasons', () {
+      expect(absenceReasons, ['Krankheit', 'Unfall', 'Militär', 'gültiges Arztzeugnis für Sport', 'Andere Absenz', 'Urlaubsgesuch']);
+    });
+
     test('accepts a valid draft', () {
       expect(AbsenceDraft(dateFrom: day, dateTo: day).validate(), isNull);
       expect(AbsenceDraft(dateFrom: day, dateTo: day, hourFrom: '08:00', hourTo: '09:30').validate(), isNull);
