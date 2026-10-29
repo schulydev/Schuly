@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 
 import '../domain/my_school.dart';
 import 'active_account_service.dart';
@@ -11,9 +12,6 @@ const schulnetzSystemKey = 'schulnetz';
 
 /// Longest reason or comment the school accepts.
 const absenceTextLimit = 500;
-
-/// The reasons the school's Schulnetz form offers; sent exactly as written in every locale.
-const absenceReasons = ['Krankheit', 'Unfall', 'Militär', 'gültiges Arztzeugnis für Sport', 'Andere Absenz', 'Urlaubsgesuch'];
 
 enum AbsenceDraftIssue { endBeforeStart, timesIncomplete, timeEndNotAfterStart, reasonRequired, reasonTooLong, commentTooLong }
 
@@ -151,8 +149,14 @@ class AbsenceReportTarget {
 
 /// Reports absences to the school (Schulnetz) and lists the reports it has not processed yet.
 class AbsenceReportingService {
-  AbsenceReportingService._();
+  AbsenceReportingService._() : _fetcher = null;
   static final AbsenceReportingService instance = AbsenceReportingService._();
+
+  @visibleForTesting
+  AbsenceReportingService.withFetcher(Future<Object?> Function(AbsenceReportTarget target) fetcher) : _fetcher = fetcher;
+
+  final Future<Object?> Function(AbsenceReportTarget target)? _fetcher;
+  final Map<String, List<String>> _reasonCache = {};
 
   static bool isSchulnetz(MySchool school) => school.provider == schulnetzSystemKey || school.schoolSystemKey == schulnetzSystemKey;
 
@@ -174,6 +178,28 @@ class AbsenceReportingService {
   Future<List<ReportedAbsence>> reported(AbsenceReportTarget target) async {
     final res = await _send<List<dynamic>>(target, 'GET', '${target.absencesPath}/reported');
     return [for (final e in (res.data ?? const [])) ReportedAbsence.fromJson(e as Map<String, dynamic>)];
+  }
+
+  /// Parses the reasons response (`string[]`), dropping anything that is not a non-empty string.
+  static List<String> parseReasons(Object? data) {
+    if (data is! List) return const [];
+    return [for (final r in data) if (r is String && r.trim().isNotEmpty) r.trim()];
+  }
+
+  /// The reasons the school offers, in server order; cached per connection for the app session.
+  /// Any failure (including a 404) yields an empty list, and is not cached so the next open retries.
+  Future<List<String>> reasons(AbsenceReportTarget target) async {
+    final key = target.absencesPath;
+    final cached = _reasonCache[key];
+    if (cached != null) return cached;
+    try {
+      final fetcher = _fetcher;
+      final Object? data = fetcher != null ? await fetcher(target) : (await _send<List<dynamic>>(target, 'GET', '${target.absencesPath}/reasons')).data;
+      final list = parseReasons(data);
+      return _reasonCache[key] = list;
+    } catch (_) {
+      return const [];
+    }
   }
 
   Future<void> create(AbsenceReportTarget target, AbsenceDraft draft) => _send<dynamic>(target, 'POST', target.absencesPath, data: draft.toJson());

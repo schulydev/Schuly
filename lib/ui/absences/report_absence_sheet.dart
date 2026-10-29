@@ -52,6 +52,7 @@ class _ReportAbsenceSheetState extends State<ReportAbsenceSheet> {
   FTime? _end;
   bool _busy = false;
   String? _error;
+  List<String>? _reasons;
 
   /// Bumped when the end date is moved programmatically, so its field picks up the new value.
   int _toRevision = 0;
@@ -62,6 +63,12 @@ class _ReportAbsenceSheetState extends State<ReportAbsenceSheet> {
     final now = DateTime.now();
     _from = DateTime(now.year, now.month, now.day);
     _to = _from;
+    _loadReasons();
+  }
+
+  Future<void> _loadReasons() async {
+    final list = await AbsenceReportingService.instance.reasons(widget.target);
+    if (mounted) setState(() => _reasons = list);
   }
 
   @override
@@ -201,10 +208,11 @@ class _ReportAbsenceSheetState extends State<ReportAbsenceSheet> {
             const SizedBox(height: 12),
             FSelect<String>(
               label: Text(t.absenceReasonLabel),
+              enabled: _reasons != null,
               control: FSelectControl<String>.lifted(value: _reasonChoice, onChange: (v) => setState(() => _reasonChoice = v ?? _noReason)),
               items: {
                 t.absenceReasonNone: _noReason,
-                for (final r in absenceReasons) r: r,
+                for (final r in _reasons ?? const <String>[]) r: r,
                 t.absenceReasonOther: _otherReason,
               },
             ),
