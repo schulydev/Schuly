@@ -7,6 +7,7 @@ import '../../l10n/app_localizations.dart';
 import '../../services/absence_reporting_service.dart';
 import '../../services/active_account_service.dart';
 import '../../services/api_client.dart';
+import '../../services/linked_accounts_controller.dart';
 import '../../services/app_mode_service.dart';
 import '../../services/api_time.dart';
 import '../../services/school_data_service.dart';
@@ -21,7 +22,7 @@ class AbsencesPage extends StatefulWidget {
 }
 
 class _AbsencesPageState extends State<AbsencesPage> {
-  /// The Schulnetz connection reports go to, or null when absences stay in Schuly only.
+  /// The school connection reports go to, or null when absences stay in Schuly only.
   AbsenceReportTarget? _target;
   List<ReportedAbsence> _reported = const [];
   int _generation = 0;
@@ -30,6 +31,7 @@ class _AbsencesPageState extends State<AbsencesPage> {
   void initState() {
     super.initState();
     ActiveAccountService.instance.addListener(_loadReported);
+    LinkedAccountsController.instance.addListener(_loadReported);
     AppModeService.instance.addListener(_loadReported);
     _loadReported();
   }
@@ -37,6 +39,7 @@ class _AbsencesPageState extends State<AbsencesPage> {
   @override
   void dispose() {
     ActiveAccountService.instance.removeListener(_loadReported);
+    LinkedAccountsController.instance.removeListener(_loadReported);
     AppModeService.instance.removeListener(_loadReported);
     super.dispose();
   }

@@ -62,15 +62,15 @@ void main() {
 
     test('maps the backend error codes', () {
       expect(kind(_error(400, {'code': 'invalid_request', 'message': 'x'})), AbsenceReportErrorKind.invalidRequest);
-      expect(kind(_error(400, {'code': 'schulnetz_rejected', 'message': 'x'})), AbsenceReportErrorKind.schulnetzRejected);
+      expect(kind(_error(400, {'code': 'school_rejected', 'message': 'x'})), AbsenceReportErrorKind.schoolRejected);
       expect(kind(_error(400, {'code': 'not_withdrawable'})), AbsenceReportErrorKind.notWithdrawable);
       expect(kind(_error(403, {'code': 'absence_reporting_not_allowed'})), AbsenceReportErrorKind.notAllowed);
-      expect(kind(_error(409, {'code': 'schulnetz_signin_expired'})), AbsenceReportErrorKind.signInExpired);
-      expect(kind(_error(502, {'code': 'schulnetz_unavailable'})), AbsenceReportErrorKind.schoolUnavailable);
+      expect(kind(_error(409, {'code': 'signin_expired'})), AbsenceReportErrorKind.signInExpired);
+      expect(kind(_error(502, {'code': 'school_unavailable'})), AbsenceReportErrorKind.schoolUnavailable);
     });
 
     test('keeps the school message and trims it', () {
-      final e = AbsenceReportException.fromDio(_error(400, {'code': 'schulnetz_rejected', 'message': '  Too late. '}));
+      final e = AbsenceReportException.fromDio(_error(400, {'code': 'school_rejected', 'message': '  Too late. '}));
       expect(e.serverMessage, 'Too late.');
       expect(AbsenceReportException.fromDio(_error(400, {'code': 'invalid_request', 'message': ' '})).serverMessage, isNull);
     });
@@ -120,7 +120,7 @@ void main() {
   });
 
   group('reasons', () {
-    const target = AbsenceReportTarget.account(basePath: '/api/plugins/schulware', accountId: 'acc1');
+    const target = AbsenceReportTarget.account(basePath: '/api/plugins/x/accounts', accountId: 'acc1');
 
     test('parses the string array in server order and drops junk', () {
       expect(AbsenceReportingService.parseReasons(['Krankheit', ' Unfall ', '', 3, null, 'Urlaubsgesuch']), ['Krankheit', 'Unfall', 'Urlaubsgesuch']);
@@ -154,10 +154,10 @@ void main() {
   });
 
   group('AbsenceReportTarget', () {
-    test('account mode uses the plugin account route', () {
-      const t = AbsenceReportTarget.account(basePath: '/api/plugins/schulware', accountId: 'acc1');
+    test('account mode uses the capability base path', () {
+      const t = AbsenceReportTarget.account(basePath: '/api/plugins/x/accounts', accountId: 'acc1');
       expect(t.isPrivate, isFalse);
-      expect(t.absencesPath, '/api/plugins/schulware/accounts/acc1/absences');
+      expect(t.absencesPath, '/api/plugins/x/accounts/acc1/absences');
     });
 
     test('private mode uses the stateless route from the catalog', () {

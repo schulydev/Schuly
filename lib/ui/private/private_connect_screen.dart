@@ -4,7 +4,7 @@ import 'package:forui/forui.dart';
 
 import '../../domain/school_system.dart';
 import '../../services/private_account_store.dart';
-import '../../services/private_microsoft_store.dart';
+import '../../services/private_linked_account_store.dart';
 import '../../services/scrape_proxy_client.dart';
 import '../../services/token_proxy_client.dart';
 import '../../services/api_error.dart';
@@ -48,7 +48,7 @@ class _PrivateConnectScreenState extends State<PrivateConnectScreen> {
   }
 
   Future<void> _connect() async {
-    final missing = _form.validateRequired(hidden: _method.hiddenKeys) ?? (_method.usesLinkedAccount && _linkedAccountId == null ? 'Choose a Microsoft account' : null);
+    final missing = _form.validateRequired(hidden: _method.hiddenKeys) ?? (_method.usesLinkedAccount && _linkedAccountId == null ? 'Choose an account' : null);
     if (missing != null) {
       setState(() => _error = missing);
       return;
@@ -87,18 +87,18 @@ class _PrivateConnectScreenState extends State<PrivateConnectScreen> {
   }
 
   Future<void> _connectLinked(String baseUrl, String name, String basePath) async {
-    final link = await PrivateMicrosoftStore.instance.get(_linkedAccountId!);
+    final link = await PrivateLinkedAccountStore.instance.get(_linkedAccountId!);
     if (link == null) {
-      setState(() => _error = 'Choose a Microsoft account');
+      setState(() => _error = 'Choose an account');
       return;
     }
     final res = await TokenProxyClient.instance.refresh(basePath: basePath, baseUrl: baseUrl, userAgent: '', contextState: link.sessionCookies);
     if (!res.success || res.accessToken == null) {
       if (!mounted) return;
-      setState(() => _error = 'The Microsoft sign-in of that account has expired. Link it again in Settings.');
+      setState(() => _error = 'The sign-in of that account has expired. Link it again.');
       return;
     }
-    if (res.contextState != null) await PrivateMicrosoftStore.instance.updateSession(link.id, res.contextState!);
+    if (res.contextState != null) await PrivateLinkedAccountStore.instance.updateSession(link.id, res.contextState!);
     await PrivateAccountStore.instance.save(PrivateAccount(
       systemKey: _system.key,
       loginMethod: _system.loginMethod,
@@ -206,7 +206,8 @@ class _PrivateConnectScreenState extends State<PrivateConnectScreen> {
             ),
             DynamicLoginForm(controller: _form, hidden: _method.hiddenKeys),
             if (_method.usesLinkedAccount)
-              LinkedMicrosoftAccountPicker(
+              PrivateLinkedAccountPicker(
+                provider: _method.linkedProvider!,
                 selectedId: _linkedAccountId,
                 onChanged: (id) => setState(() => _linkedAccountId = id),
               ),

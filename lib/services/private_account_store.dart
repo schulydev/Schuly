@@ -23,7 +23,7 @@ class PrivateAccount {
 
   final String? totpSecret;
 
-  /// The device-held Microsoft link ([PrivateMicrosoftLink.id]) this account signs in with.
+  /// The device-held linked account ([PrivateLinkedAccount.id]) this account signs in with.
   final String? linkedAccountId;
 
   const PrivateAccount({

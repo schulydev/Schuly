@@ -132,7 +132,7 @@ class _AddTotpScreenState extends State<AddTotpScreen> {
                   FTextField(
                     control: FTextFieldControl.managed(controller: _issuerCtrl),
                     label: const Text('Provider (optional)'),
-                    hint: 'e.g. Schulnetz, GitHub',
+                    hint: 'e.g. School, GitHub',
                     autocorrect: false,
                   ),
                   FTextField(
