@@ -3,15 +3,72 @@ import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 import 'package:schuly_api/schuly_api.dart';
 
+import '../../l10n/app_localizations.dart';
+import '../../services/absence_reporting_service.dart';
+import '../../services/active_account_service.dart';
 import '../../services/api_client.dart';
+import '../../services/app_mode_service.dart';
 import '../../services/api_time.dart';
 import '../../services/school_data_service.dart';
+import '../../services/toast_service.dart';
+import 'report_absence_sheet.dart';
 
-class AbsencesPage extends StatelessWidget {
+class AbsencesPage extends StatefulWidget {
   const AbsencesPage({super.key});
 
   @override
+  State<AbsencesPage> createState() => _AbsencesPageState();
+}
+
+class _AbsencesPageState extends State<AbsencesPage> {
+  /// The Schulnetz connection reports go to, or null when absences stay in Schuly only.
+  AbsenceReportTarget? _target;
+  List<ReportedAbsence> _reported = const [];
+  int _generation = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    ActiveAccountService.instance.addListener(_loadReported);
+    AppModeService.instance.addListener(_loadReported);
+    _loadReported();
+  }
+
+  @override
+  void dispose() {
+    ActiveAccountService.instance.removeListener(_loadReported);
+    AppModeService.instance.removeListener(_loadReported);
+    super.dispose();
+  }
+
+  Future<void> _loadReported() async {
+    final gen = ++_generation;
+    AbsenceReportTarget? target;
+    var reported = const <ReportedAbsence>[];
+    try {
+      target = await AbsenceReportingService.instance.resolveTarget(isPrivate: AppModeService.instance.isPrivate);
+      if (target != null) reported = await AbsenceReportingService.instance.reported(target);
+    } on AbsenceReportException catch (e) {
+      // The plugin has no reporting endpoints: fall back to Schuly-only absences. Other failures
+      // keep the target so the student can still report.
+      if (e.kind == AbsenceReportErrorKind.notAvailable) target = null;
+    } catch (_) {
+      // Detection is best effort; without a target the page behaves as before.
+    }
+    if (!mounted || gen != _generation) return;
+    setState(() {
+      _target = target;
+      _reported = reported;
+    });
+  }
+
+  Future<void> _refresh() async {
+    await Future.wait([SchoolDataService.instance.refresh(), _loadReported()]);
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context)!;
     final colors = context.theme.colors;
     final svc = SchoolDataService.instance;
     final absences = svc.absences.toList()
@@ -22,15 +79,24 @@ class AbsencesPage extends StatelessWidget {
       floatingActionButton: FButton(
         mainAxisSize: MainAxisSize.min,
         prefix: const Icon(FIcons.plus),
-        onPress: svc.me == null ? null : () => _openForm(context),
+        onPress: _target == null && svc.me == null ? null : () => _openForm(context),
         child: const Text('Report'),
       ),
       body: RefreshIndicator(
-        onRefresh: svc.refresh,
+        onRefresh: _refresh,
         child: ListView(
           physics: const AlwaysScrollableScrollPhysics(),
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 88),
           children: [
+            if (_reported.isNotEmpty) ...[
+              _SectionLabel(t.absenceWaitingTitle),
+              for (final r in _reported)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: _ReportedTile(report: r, onWithdraw: () => _confirmWithdraw(context, r)),
+                ),
+              const SizedBox(height: 8),
+            ],
             if (absences.isEmpty)
               Padding(
                 padding: const EdgeInsets.only(top: 40),
@@ -57,19 +123,95 @@ class AbsencesPage extends StatelessWidget {
   }
 
   Future<void> _openForm(BuildContext context, {AbsenceDto? existing}) async {
+    final target = _target;
     final changed = await showFSheet<bool>(
       context: context,
       side: FLayout.btt,
       mainAxisMaxRatio: null,
-      builder: (_) => _AbsenceForm(existing: existing),
+      builder: (_) => target != null && existing == null ? ReportAbsenceSheet(target: target) : _AbsenceForm(existing: existing),
     );
-    if (changed == true) await SchoolDataService.instance.refresh();
+    if (changed == true) await _refresh();
+  }
+
+  Future<void> _confirmWithdraw(BuildContext context, ReportedAbsence report) async {
+    final target = _target;
+    if (target == null) return;
+    final t = AppLocalizations.of(context)!;
+    final confirmed = await showFDialog<bool>(
+      context: context,
+      builder: (dCtx, style, animation) => FDialog(
+        animation: animation,
+        title: Text(t.absenceWithdrawTitle),
+        body: Text(t.absenceWithdrawBody),
+        actions: [
+          FButton(onPress: () => Navigator.of(dCtx).pop(false), child: Text(t.absenceCancel)),
+          FButton(onPress: () => Navigator.of(dCtx).pop(true), child: Text(t.absenceWithdraw)),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+    try {
+      await AbsenceReportingService.instance.withdraw(target, report.ids);
+      ToastService.success(t.absenceWithdrawnToast);
+    } on AbsenceReportException catch (e) {
+      ToastService.error(t.absenceWithdrawTitle, absenceReportErrorText(t, e));
+    }
+    await _refresh();
   }
 
   static String _rangeLabel(DateTime from, DateTime until) {
     String d(DateTime x) => '${x.day}.${x.month}.${x.year}';
     final f = d(from);
     return until.difference(from).inDays.abs() < 1 ? f : '$f – ${d(until)}';
+  }
+}
+
+class _SectionLabel extends StatelessWidget {
+  final String text;
+  const _SectionLabel(this.text);
+  @override
+  Widget build(BuildContext context) {
+    final c = context.theme.colors;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(4, 0, 4, 8),
+      child: Text(text.toUpperCase(), style: context.theme.typography.xs.copyWith(color: c.mutedForeground, fontWeight: FontWeight.w600, letterSpacing: 0.5)),
+    );
+  }
+}
+
+class _ReportedTile extends StatelessWidget {
+  final ReportedAbsence report;
+  final VoidCallback onWithdraw;
+  const _ReportedTile({required this.report, required this.onWithdraw});
+
+  @override
+  Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context)!;
+    final colors = context.theme.colors;
+    String d(DateTime x) => '${x.day}.${x.month}.${x.year}';
+    final dates = report.dateFrom == report.dateTo ? d(report.dateFrom) : '${d(report.dateFrom)} – ${d(report.dateTo)}';
+    final hasTimes = report.hourFrom != null && report.hourTo != null;
+    final title = hasTimes ? '$dates, ${report.hourFrom} – ${report.hourTo}' : dates;
+    final text = [report.reason, report.comment].whereType<String>().where((s) => s.trim().isNotEmpty).join(' - ');
+    return FTile(
+      prefix: const Icon(FIcons.clock),
+      title: Text(title),
+      subtitle: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (text.isNotEmpty) Text(text, style: TextStyle(color: colors.mutedForeground)),
+          if (report.profiles.isNotEmpty) ...[
+            const SizedBox(height: 6),
+            Wrap(
+              spacing: 6,
+              runSpacing: 6,
+              children: [for (final p in report.profiles) FBadge(style: FBadgeStyle.secondary(), child: Text(p))],
+            ),
+          ],
+        ],
+      ),
+      suffix: FButton(style: FButtonStyle.outline(), mainAxisSize: MainAxisSize.min, onPress: onWithdraw, child: Text(t.absenceWithdraw)),
+    );
   }
 }
 
