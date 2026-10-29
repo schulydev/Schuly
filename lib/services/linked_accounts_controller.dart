@@ -52,6 +52,7 @@ class LinkedAccountsController extends ChangeNotifier with WidgetsBindingObserve
   bool get syncing => _accounts.any(_isSyncing);
 
   bool _isSyncing(LinkedAccount a) {
+    if (a.isProviderError) return false;
     if (a.status == LinkedAccountStatus.syncing) return true;
     return a.status == LinkedAccountStatus.ok && a.lastSyncedAt == null && _linkedThisSession.contains(a.key) && a.hasCapability(schoolDataCapability);
   }
@@ -64,7 +65,7 @@ class LinkedAccountsController extends ChangeNotifier with WidgetsBindingObserve
   }
 
   /// Accounts offering the capability [kind], grouped for display by provider name.
-  List<LinkedAccount> withCapability(String kind) => [for (final a in _accounts) if (a.hasCapability(kind)) a];
+  List<LinkedAccount> withCapability(String kind) => [for (final a in _accounts) if (!a.isProviderError && a.hasCapability(kind)) a];
 
   /// Provider display name -> accounts, for the capability sections of the UI.
   Map<String, List<LinkedAccount>> groupedByProvider() {

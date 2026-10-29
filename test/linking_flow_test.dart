@@ -113,6 +113,21 @@ void main() {
     expect(find.textContaining('offline'), findsNothing);
   });
 
+  testWidgets('a provider that failed to list shows as a row without unlink or sign-in', (tester) async {
+    final api = FakeLinkingApi();
+    api.store.add(const LinkedAccount(providerId: FakeLinkingApi.school, providerName: 'School', id: '', title: '', status: LinkedAccountStatus.error, message: 'The school is unreachable.'));
+    final controller = _controller(api);
+    await tester.pumpWidget(_app(SchoolsAccountsScreen(controller: controller)));
+    await tester.pumpAndSettle();
+
+    expect(find.text("Couldn't load School accounts"), findsOneWidget);
+    expect(find.textContaining('The school is unreachable.'), findsOneWidget);
+    await tester.tap(find.text("Couldn't load School accounts"));
+    await tester.pumpAndSettle();
+    expect(find.text('Unlink'), findsNothing);
+    expect(controller.withCapability('x'), isEmpty);
+  });
+
   group('data after link and unlink', () {
     // Stands in for the school data stores: it only has data while a synced account exists.
     Widget dataPage(LinkedAccountsController c, ValueNotifier<List<String>> data) => _app(FScaffold(

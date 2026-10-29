@@ -325,7 +325,6 @@ class _AccountPageState extends State<AccountPage> {
 
   static String _roleLabel(Roles? r) => switch (r) {
         Roles.teacher => 'Teacher',
-        Roles.administrator => 'Administrator',
         _ => 'Student',
       };
 }

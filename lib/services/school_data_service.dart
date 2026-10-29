@@ -133,7 +133,7 @@ class SchoolDataService extends ChangeNotifier {
       if (appUserId != null) {
         final users = await _api
             .getSchoolUsersApi()
-            .apiSchoolUsersGet(applicationUserId: appUserId, extra: _handled);
+            .apiSchoolUsersGet(extra: _handled);
         mine = (users.data ?? BuiltList<SchoolUserDto>())
             .where((u) => u.schoolId == schoolId)
             .cast<SchoolUserDto?>()

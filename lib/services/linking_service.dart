@@ -86,6 +86,10 @@ class LinkedAccount {
         canReauth: j['canReauth'] as bool? ?? false,
       );
 
+  /// A provider that failed to list its accounts is reported as one entry with an empty id and status error.
+  /// It is shown as a provider-level problem and has nothing to unlink or re-sign-in.
+  bool get isProviderError => id.isEmpty;
+
   bool hasCapability(String kind) => capabilities.any((c) => c.kind == kind);
 
   LinkCapability? capability(String kind) {
