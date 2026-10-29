@@ -88,21 +88,27 @@
   "@breakDuration": {
     "description": "Label for a short break with its duration in minutes",
     "placeholders": {
-      "minutes": {"type": "int"}
+      "minutes": {
+        "type": "int"
+      }
     }
   },
   "lunchBreakDuration": "Lunch break ({minutes} min)",
   "@lunchBreakDuration": {
     "description": "Label for a lunch break with its duration in minutes",
     "placeholders": {
-      "minutes": {"type": "int"}
+      "minutes": {
+        "type": "int"
+      }
     }
   },
   "minutesLeft": "{minutes} min left",
   "@minutesLeft": {
     "description": "Remaining time for the current lesson or break",
     "placeholders": {
-      "minutes": {"type": "int"}
+      "minutes": {
+        "type": "int"
+      }
     }
   },
   "nothingScheduled": "Nothing scheduled",
@@ -124,5 +130,133 @@
   "entryTypeHoliday": "Holiday",
   "@entryTypeHoliday": {
     "description": "Agenda entry type label for a holiday"
+  },
+  "absenceReportTitle": "Report absence",
+  "@absenceReportTitle": {
+    "description": "Absence reporting: absenceReportTitle"
+  },
+  "absenceReportNote": "This goes to your school and is created for each class. You can withdraw it until the school has processed it.",
+  "@absenceReportNote": {
+    "description": "Absence reporting: absenceReportNote"
+  },
+  "absenceFrom": "From",
+  "@absenceFrom": {
+    "description": "Absence reporting: absenceFrom"
+  },
+  "absenceTo": "To",
+  "@absenceTo": {
+    "description": "Absence reporting: absenceTo"
+  },
+  "absencePartialLessons": "Only some lessons",
+  "@absencePartialLessons": {
+    "description": "Absence reporting: absencePartialLessons"
+  },
+  "absenceTimeStart": "Start time",
+  "@absenceTimeStart": {
+    "description": "Absence reporting: absenceTimeStart"
+  },
+  "absenceTimeEnd": "End time",
+  "@absenceTimeEnd": {
+    "description": "Absence reporting: absenceTimeEnd"
+  },
+  "absenceReasonLabel": "Reason (optional)",
+  "@absenceReasonLabel": {
+    "description": "Absence reporting: absenceReasonLabel"
+  },
+  "absenceCommentLabel": "Comment (optional)",
+  "@absenceCommentLabel": {
+    "description": "Absence reporting: absenceCommentLabel"
+  },
+  "absenceSend": "Send to school",
+  "@absenceSend": {
+    "description": "Absence reporting: absenceSend"
+  },
+  "absenceSending": "Sending…",
+  "@absenceSending": {
+    "description": "Absence reporting: absenceSending"
+  },
+  "absenceSentToast": "Absence reported to your school",
+  "@absenceSentToast": {
+    "description": "Absence reporting: absenceSentToast"
+  },
+  "absenceIssueEndBeforeStart": "The end date can't be before the start date.",
+  "@absenceIssueEndBeforeStart": {
+    "description": "Absence reporting: absenceIssueEndBeforeStart"
+  },
+  "absenceIssueTimesIncomplete": "Set both times or neither.",
+  "@absenceIssueTimesIncomplete": {
+    "description": "Absence reporting: absenceIssueTimesIncomplete"
+  },
+  "absenceIssueTimeEnd": "The end time must be after the start time.",
+  "@absenceIssueTimeEnd": {
+    "description": "Absence reporting: absenceIssueTimeEnd"
+  },
+  "absenceIssueReasonLong": "The reason can be at most 500 characters.",
+  "@absenceIssueReasonLong": {
+    "description": "Absence reporting: absenceIssueReasonLong"
+  },
+  "absenceIssueCommentLong": "The comment can be at most 500 characters.",
+  "@absenceIssueCommentLong": {
+    "description": "Absence reporting: absenceIssueCommentLong"
+  },
+  "absenceErrInvalid": "Check the details and try again.",
+  "@absenceErrInvalid": {
+    "description": "Absence reporting: absenceErrInvalid"
+  },
+  "absenceErrRejected": "Your school rejected the report.",
+  "@absenceErrRejected": {
+    "description": "Absence reporting: absenceErrRejected"
+  },
+  "absenceErrNotWithdrawable": "The school has already processed this report.",
+  "@absenceErrNotWithdrawable": {
+    "description": "Absence reporting: absenceErrNotWithdrawable"
+  },
+  "absenceErrNotAllowed": "Your school doesn't let you report absences here.",
+  "@absenceErrNotAllowed": {
+    "description": "Absence reporting: absenceErrNotAllowed"
+  },
+  "absenceErrSignIn": "Your school sign-in has expired. Reconnect your school and try again.",
+  "@absenceErrSignIn": {
+    "description": "Absence reporting: absenceErrSignIn"
+  },
+  "absenceErrUnavailable": "Your school isn't reachable right now. Try again shortly.",
+  "@absenceErrUnavailable": {
+    "description": "Absence reporting: absenceErrUnavailable"
+  },
+  "absenceErrNetwork": "Couldn't reach the server. Check your connection and try again.",
+  "@absenceErrNetwork": {
+    "description": "Absence reporting: absenceErrNetwork"
+  },
+  "absenceErrOther": "Something went wrong. Try again.",
+  "@absenceErrOther": {
+    "description": "Absence reporting: absenceErrOther"
+  },
+  "absenceWaitingTitle": "Waiting for your school",
+  "@absenceWaitingTitle": {
+    "description": "Absence reporting: absenceWaitingTitle"
+  },
+  "absenceWithdraw": "Withdraw",
+  "@absenceWithdraw": {
+    "description": "Absence reporting: absenceWithdraw"
+  },
+  "absenceWithdrawTitle": "Withdraw report",
+  "@absenceWithdrawTitle": {
+    "description": "Absence reporting: absenceWithdrawTitle"
+  },
+  "absenceWithdrawBody": "Your school won't see this report any more.",
+  "@absenceWithdrawBody": {
+    "description": "Absence reporting: absenceWithdrawBody"
+  },
+  "absenceWithdrawnToast": "Report withdrawn",
+  "@absenceWithdrawnToast": {
+    "description": "Absence reporting: absenceWithdrawnToast"
+  },
+  "absenceCancel": "Cancel",
+  "@absenceCancel": {
+    "description": "Absence reporting: absenceCancel"
+  },
+  "absenceWholeDay": "Whole day",
+  "@absenceWholeDay": {
+    "description": "Absence reporting: absenceWholeDay"
   }
 }

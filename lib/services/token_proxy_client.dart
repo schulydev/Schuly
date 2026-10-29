@@ -209,6 +209,24 @@ class TokenProxyClient {
         .toList();
   }
 
+  /// Calls any stateless endpoint with the account's headers. When the token is refused (401) or the
+  /// school sign-in has expired (409 `schulnetz_signin_expired`) it refreshes once, persists the
+  /// rotated session and retries.
+  Future<Response<T>> send<T>(PrivateAccount a, String method, String path, {Object? data, Map<String, dynamic>? query}) async {
+    Future<Response<T>> call(PrivateAccount acc) => _dio.request<T>(path, data: data, queryParameters: query, options: Options(method: method, headers: _headers(acc)));
+    try {
+      return await call(a);
+    } on DioException catch (e) {
+      final body = e.response?.data;
+      final expired = e.response?.statusCode == 401 || (e.response?.statusCode == 409 && body is Map && body['code'] == 'schulnetz_signin_expired');
+      if (!expired) rethrow;
+      final refreshed = await _refreshAccount(a);
+      if (refreshed == null) rethrow;
+      await PrivateAccountStore.instance.save(refreshed);
+      return await call(refreshed);
+    }
+  }
+
   Map<String, String> _headers(PrivateAccount a) => {
         'X-Plugin-Token': a.accessToken ?? '',
         'X-Provider-Base-Url': a.baseUrl,
