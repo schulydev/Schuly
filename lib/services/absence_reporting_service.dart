@@ -12,7 +12,10 @@ const schulnetzSystemKey = 'schulnetz';
 /// Longest reason or comment the school accepts.
 const absenceTextLimit = 500;
 
-enum AbsenceDraftIssue { endBeforeStart, timesIncomplete, timeEndNotAfterStart, reasonTooLong, commentTooLong }
+/// The reasons the school's Schulnetz form offers; sent exactly as written in every locale.
+const absenceReasons = ['Krankheit', 'Unfall', 'Militär', 'gültiges Arztzeugnis für Sport', 'Andere Absenz', 'Urlaubsgesuch'];
+
+enum AbsenceDraftIssue { endBeforeStart, timesIncomplete, timeEndNotAfterStart, reasonRequired, reasonTooLong, commentTooLong }
 
 /// What the student fills in to report an absence to the school.
 class AbsenceDraft {
@@ -23,7 +26,10 @@ class AbsenceDraft {
   final String reason;
   final String comment;
 
-  const AbsenceDraft({required this.dateFrom, required this.dateTo, this.hourFrom, this.hourTo, this.reason = '', this.comment = ''});
+  /// True when [reason] is free text the student typed ("Other..."), which must then not be empty.
+  final bool customReason;
+
+  const AbsenceDraft({required this.dateFrom, required this.dateTo, this.hourFrom, this.hourTo, this.reason = '', this.comment = '', this.customReason = false});
 
   static String formatDate(DateTime d) => '${d.year.toString().padLeft(4, '0')}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
 
@@ -37,6 +43,7 @@ class AbsenceDraft {
     if ((hourFrom == null) != (hourTo == null)) return AbsenceDraftIssue.timesIncomplete;
     // Zero-padded HH:mm compares correctly as text.
     if (hourFrom != null && hourTo != null && to == from && hourTo!.compareTo(hourFrom!) <= 0) return AbsenceDraftIssue.timeEndNotAfterStart;
+    if (customReason && reason.trim().isEmpty) return AbsenceDraftIssue.reasonRequired;
     if (reason.trim().length > absenceTextLimit) return AbsenceDraftIssue.reasonTooLong;
     if (comment.trim().length > absenceTextLimit) return AbsenceDraftIssue.commentTooLong;
     return null;

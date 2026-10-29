@@ -159,9 +159,25 @@
   "@absenceTimeEnd": {
     "description": "Absence reporting: absenceTimeEnd"
   },
-  "absenceReasonLabel": "Reason (optional)",
+  "absenceReasonLabel": "Reason",
   "@absenceReasonLabel": {
     "description": "Absence reporting: absenceReasonLabel"
+  },
+  "absenceReasonNone": "No reason",
+  "@absenceReasonNone": {
+    "description": "Absence reporting: absenceReasonNone"
+  },
+  "absenceReasonOther": "Other…",
+  "@absenceReasonOther": {
+    "description": "Absence reporting: absenceReasonOther"
+  },
+  "absenceReasonCustomLabel": "Your reason",
+  "@absenceReasonCustomLabel": {
+    "description": "Absence reporting: absenceReasonCustomLabel"
+  },
+  "absenceIssueReasonRequired": "Please enter your reason.",
+  "@absenceIssueReasonRequired": {
+    "description": "Absence reporting: absenceIssueReasonRequired"
   },
   "absenceCommentLabel": "Comment (optional)",
   "@absenceCommentLabel": {
