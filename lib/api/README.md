@@ -69,13 +69,8 @@ Class | Method | HTTP request | Description
 [*AbsencesApi*](doc/AbsencesApi.md) | [**apiAbsencesPost**](doc/AbsencesApi.md#apiabsencespost) | **POST** /api/Absences | 
 [*AbsencesApi*](doc/AbsencesApi.md) | [**apiAbsencesPut**](doc/AbsencesApi.md#apiabsencesput) | **PUT** /api/Absences | 
 [*AbsencesApi*](doc/AbsencesApi.md) | [**apiAbsencesSearchGet**](doc/AbsencesApi.md#apiabsencessearchget) | **GET** /api/Absences/search | 
-[*AccountsApi*](doc/AccountsApi.md) | [**apiPluginsMicrosoftAccountsAccountIdCalendarGet**](doc/AccountsApi.md#apipluginsmicrosoftaccountsaccountidcalendarget) | **GET** /api/plugins/microsoft/accounts/{accountId}/calendar | 
-[*AccountsApi*](doc/AccountsApi.md) | [**apiPluginsMicrosoftAccountsAccountIdFilesGet**](doc/AccountsApi.md#apipluginsmicrosoftaccountsaccountidfilesget) | **GET** /api/plugins/microsoft/accounts/{accountId}/files | 
-[*AccountsApi*](doc/AccountsApi.md) | [**apiPluginsMicrosoftAccountsAccountIdMailGet**](doc/AccountsApi.md#apipluginsmicrosoftaccountsaccountidmailget) | **GET** /api/plugins/microsoft/accounts/{accountId}/mail | 
 [*AccountsApi*](doc/AccountsApi.md) | [**apiPluginsOdaorgAccountsAccountIdDelete**](doc/AccountsApi.md#apipluginsodaorgaccountsaccountiddelete) | **DELETE** /api/plugins/odaorg/accounts/{accountId} | 
 [*AccountsApi*](doc/AccountsApi.md) | [**apiPluginsOdaorgAccountsGet**](doc/AccountsApi.md#apipluginsodaorgaccountsget) | **GET** /api/plugins/odaorg/accounts | 
-[*AccountsApi*](doc/AccountsApi.md) | [**apiPluginsSchulwareAccountsAccountIdDelete**](doc/AccountsApi.md#apipluginsschulwareaccountsaccountiddelete) | **DELETE** /api/plugins/schulware/accounts/{accountId} | 
-[*AccountsApi*](doc/AccountsApi.md) | [**apiPluginsSchulwareAccountsGet**](doc/AccountsApi.md#apipluginsschulwareaccountsget) | **GET** /api/plugins/schulware/accounts | 
 [*AgendasApi*](doc/AgendasApi.md) | [**apiAgendasGet**](doc/AgendasApi.md#apiagendasget) | **GET** /api/Agendas | 
 [*AgendasApi*](doc/AgendasApi.md) | [**apiAgendasIdDelete**](doc/AgendasApi.md#apiagendasiddelete) | **DELETE** /api/Agendas/{id} | 
 [*AgendasApi*](doc/AgendasApi.md) | [**apiAgendasPost**](doc/AgendasApi.md#apiagendaspost) | **POST** /api/Agendas | 
@@ -83,11 +78,6 @@ Class | Method | HTTP request | Description
 [*AgendasApi*](doc/AgendasApi.md) | [**apiAgendasSearchGet**](doc/AgendasApi.md#apiagendassearchget) | **GET** /api/Agendas/search | 
 [*AppApi*](doc/AppApi.md) | [**apiAppGet**](doc/AppApi.md#apiappget) | **GET** /api/App | 
 [*AppApi*](doc/AppApi.md) | [**apiAppSchoolSystemsGet**](doc/AppApi.md#apiappschoolsystemsget) | **GET** /api/App/school-systems | 
-[*ApplicationUsersApi*](doc/ApplicationUsersApi.md) | [**apiApplicationUsersGet**](doc/ApplicationUsersApi.md#apiapplicationusersget) | **GET** /api/ApplicationUsers | 
-[*ApplicationUsersApi*](doc/ApplicationUsersApi.md) | [**apiApplicationUsersIdDelete**](doc/ApplicationUsersApi.md#apiapplicationusersiddelete) | **DELETE** /api/ApplicationUsers/{id} | 
-[*ApplicationUsersApi*](doc/ApplicationUsersApi.md) | [**apiApplicationUsersIdGet**](doc/ApplicationUsersApi.md#apiapplicationusersidget) | **GET** /api/ApplicationUsers/{id} | 
-[*ApplicationUsersApi*](doc/ApplicationUsersApi.md) | [**apiApplicationUsersPost**](doc/ApplicationUsersApi.md#apiapplicationuserspost) | **POST** /api/ApplicationUsers | 
-[*ApplicationUsersApi*](doc/ApplicationUsersApi.md) | [**apiApplicationUsersPut**](doc/ApplicationUsersApi.md#apiapplicationusersput) | **PUT** /api/ApplicationUsers | 
 [*AuthApi*](doc/AuthApi.md) | [**apiAuthLoginPost**](doc/AuthApi.md#apiauthloginpost) | **POST** /api/Auth/login | 
 [*AuthApi*](doc/AuthApi.md) | [**apiAuthMeDelete**](doc/AuthApi.md#apiauthmedelete) | **DELETE** /api/Auth/me | 
 [*AuthApi*](doc/AuthApi.md) | [**apiAuthMeExportGet**](doc/AuthApi.md#apiauthmeexportget) | **GET** /api/Auth/me/export | 
@@ -104,32 +94,32 @@ Class | Method | HTTP request | Description
 [*AuthenticationApi*](doc/AuthenticationApi.md) | [**toamaisutaaVerifyEmail**](doc/AuthenticationApi.md#toamaisutaaverifyemail) | **POST** /auth/email/verify | Redeems a verification token and writes the address it names.
 [*AvatarsApi*](doc/AvatarsApi.md) | [**apiAvatarsSchoolUserIdGet**](doc/AvatarsApi.md#apiavatarsschooluseridget) | **GET** /api/avatars/{schoolUserId} | 
 [*AvatarsApi*](doc/AvatarsApi.md) | [**apiAvatarsUsersApplicationUserIdGet**](doc/AvatarsApi.md#apiavatarsusersapplicationuseridget) | **GET** /api/avatars/users/{applicationUserId} | 
-[*CalendarApi*](doc/CalendarApi.md) | [**apiPluginsMicrosoftCalendarGet**](doc/CalendarApi.md#apipluginsmicrosoftcalendarget) | **GET** /api/plugins/microsoft/calendar | 
-[*ClassApi*](doc/ClassApi.md) | [**apiClassEnrolStudentPost**](doc/ClassApi.md#apiclassenrolstudentpost) | **POST** /api/Class/enrol-student | 
 [*ClassApi*](doc/ClassApi.md) | [**apiClassGet**](doc/ClassApi.md#apiclassget) | **GET** /api/Class | 
-[*ClassApi*](doc/ClassApi.md) | [**apiClassIdDelete**](doc/ClassApi.md#apiclassiddelete) | **DELETE** /api/Class/{id} | 
-[*ClassApi*](doc/ClassApi.md) | [**apiClassPost**](doc/ClassApi.md#apiclasspost) | **POST** /api/Class | 
-[*ClassApi*](doc/ClassApi.md) | [**apiClassPut**](doc/ClassApi.md#apiclassput) | **PUT** /api/Class | 
 [*ClassApi*](doc/ClassApi.md) | [**apiClassSearchGet**](doc/ClassApi.md#apiclasssearchget) | **GET** /api/Class/search | 
-[*ExamplePluginApi*](doc/ExamplePluginApi.md) | [**apiPluginsExampleHelloGet**](doc/ExamplePluginApi.md#apipluginsexamplehelloget) | **GET** /api/plugins/example/hello | 
-[*ExamplePluginApi*](doc/ExamplePluginApi.md) | [**apiPluginsExampleInfoGet**](doc/ExamplePluginApi.md#apipluginsexampleinfoget) | **GET** /api/plugins/example/info | 
 [*ExamsApi*](doc/ExamsApi.md) | [**apiExamsGet**](doc/ExamsApi.md#apiexamsget) | **GET** /api/Exams | 
-[*ExamsApi*](doc/ExamsApi.md) | [**apiExamsGradePost**](doc/ExamsApi.md#apiexamsgradepost) | **POST** /api/Exams/grade | 
-[*ExamsApi*](doc/ExamsApi.md) | [**apiExamsIdDelete**](doc/ExamsApi.md#apiexamsiddelete) | **DELETE** /api/Exams/{id} | 
-[*ExamsApi*](doc/ExamsApi.md) | [**apiExamsPost**](doc/ExamsApi.md#apiexamspost) | **POST** /api/Exams | 
-[*ExamsApi*](doc/ExamsApi.md) | [**apiExamsPut**](doc/ExamsApi.md#apiexamsput) | **PUT** /api/Exams | 
 [*ExamsApi*](doc/ExamsApi.md) | [**apiExamsSearchGet**](doc/ExamsApi.md#apiexamssearchget) | **GET** /api/Exams/search | 
-[*ExternalLoginApi*](doc/ExternalLoginApi.md) | [**toamaisutaaExternalCallback**](doc/ExternalLoginApi.md#toamaisutaaexternalcallback) | **GET** /auth/external/{provider}/callback | Where the provider sends the browser back. Register this address with the provider.
-[*ExternalLoginApi*](doc/ExternalLoginApi.md) | [**toamaisutaaExternalExchange**](doc/ExternalLoginApi.md#toamaisutaaexternalexchange) | **POST** /auth/external/exchange | Exchanges the code a provider sign-in returned for tokens.
-[*ExternalLoginApi*](doc/ExternalLoginApi.md) | [**toamaisutaaExternalLink**](doc/ExternalLoginApi.md#toamaisutaaexternallink) | **POST** /auth/external/{provider}/link | Starts linking a provider to the caller&#39;s account.
-[*ExternalLoginApi*](doc/ExternalLoginApi.md) | [**toamaisutaaExternalLogins**](doc/ExternalLoginApi.md#toamaisutaaexternallogins) | **GET** /auth/external/logins | Lists the providers linked to the caller&#39;s account.
-[*ExternalLoginApi*](doc/ExternalLoginApi.md) | [**toamaisutaaExternalProviders**](doc/ExternalLoginApi.md#toamaisutaaexternalproviders) | **GET** /auth/providers | Lists the identity providers a user can sign in with.
-[*ExternalLoginApi*](doc/ExternalLoginApi.md) | [**toamaisutaaExternalStart**](doc/ExternalLoginApi.md#toamaisutaaexternalstart) | **GET** /auth/external/{provider}/start | Sends the browser to a provider to sign in.
-[*ExternalLoginApi*](doc/ExternalLoginApi.md) | [**toamaisutaaExternalUnlink**](doc/ExternalLoginApi.md#toamaisutaaexternalunlink) | **DELETE** /auth/external/logins/{provider} | Unlinks a provider. Takes the same proof linking does.
-[*LinkApi*](doc/LinkApi.md) | [**apiPluginsMicrosoftLinkCompletePost**](doc/LinkApi.md#apipluginsmicrosoftlinkcompletepost) | **POST** /api/plugins/microsoft/link/complete | 
-[*LinkApi*](doc/LinkApi.md) | [**apiPluginsMicrosoftLinkStartPost**](doc/LinkApi.md#apipluginsmicrosoftlinkstartpost) | **POST** /api/plugins/microsoft/link/start | 
 [*LinkedAccountsApi*](doc/LinkedAccountsApi.md) | [**apiMeLinkedAccountsGet**](doc/LinkedAccountsApi.md#apimelinkedaccountsget) | **GET** /api/me/linked-accounts | 
 [*LinkedAccountsApi*](doc/LinkedAccountsApi.md) | [**apiMeLinkedAccountsIdDelete**](doc/LinkedAccountsApi.md#apimelinkedaccountsiddelete) | **DELETE** /api/me/linked-accounts/{id} | 
+[*LinkingApi*](doc/LinkingApi.md) | [**apiLinkingAccountsGet**](doc/LinkingApi.md#apilinkingaccountsget) | **GET** /api/linking/accounts | 
+[*LinkingApi*](doc/LinkingApi.md) | [**apiLinkingAccountsProviderIdAccountIdDelete**](doc/LinkingApi.md#apilinkingaccountsprovideridaccountiddelete) | **DELETE** /api/linking/accounts/{providerId}/{accountId} | 
+[*LinkingApi*](doc/LinkingApi.md) | [**apiLinkingCallbackGet**](doc/LinkingApi.md#apilinkingcallbackget) | **GET** /api/linking/callback | 
+[*LinkingApi*](doc/LinkingApi.md) | [**apiLinkingProvidersGet**](doc/LinkingApi.md#apilinkingprovidersget) | **GET** /api/linking/providers | 
+[*LinkingApi*](doc/LinkingApi.md) | [**apiLinkingProvidersProviderIdIconSvgGet**](doc/LinkingApi.md#apilinkingprovidersprovideridiconsvgget) | **GET** /api/linking/providers/{providerId}/icon.svg | 
+[*LinkingApi*](doc/LinkingApi.md) | [**apiLinkingProvidersProviderIdStartPost**](doc/LinkingApi.md#apilinkingprovidersprovideridstartpost) | **POST** /api/linking/providers/{providerId}/start | 
+[*LinkingApi*](doc/LinkingApi.md) | [**apiLinkingSessionsSessionIdDelete**](doc/LinkingApi.md#apilinkingsessionssessioniddelete) | **DELETE** /api/linking/sessions/{sessionId} | 
+[*LinkingApi*](doc/LinkingApi.md) | [**apiLinkingSessionsSessionIdGet**](doc/LinkingApi.md#apilinkingsessionssessionidget) | **GET** /api/linking/sessions/{sessionId} | 
+[*LinkingApi*](doc/LinkingApi.md) | [**apiLinkingSessionsSessionIdSubmitPost**](doc/LinkingApi.md#apilinkingsessionssessionidsubmitpost) | **POST** /api/linking/sessions/{sessionId}/submit | 
+[*McpApi*](doc/McpApi.md) | [**apiMcpAuthorizationDecisionPost**](doc/McpApi.md#apimcpauthorizationdecisionpost) | **POST** /api/mcp/authorization-decision | 
+[*McpApi*](doc/McpApi.md) | [**apiMcpAuthorizationRequestPost**](doc/McpApi.md#apimcpauthorizationrequestpost) | **POST** /api/mcp/authorization-request | 
+[*McpApi*](doc/McpApi.md) | [**apiMcpConnectionsGet**](doc/McpApi.md#apimcpconnectionsget) | **GET** /api/mcp/connections | 
+[*McpApi*](doc/McpApi.md) | [**apiMcpConnectionsIdActivityGet**](doc/McpApi.md#apimcpconnectionsidactivityget) | **GET** /api/mcp/connections/{id}/activity | 
+[*McpApi*](doc/McpApi.md) | [**apiMcpConnectionsIdDelete**](doc/McpApi.md#apimcpconnectionsiddelete) | **DELETE** /api/mcp/connections/{id} | 
+[*McpApi*](doc/McpApi.md) | [**apiMcpConnectionsIdPermissionsPut**](doc/McpApi.md#apimcpconnectionsidpermissionsput) | **PUT** /api/mcp/connections/{id}/permissions | 
+[*McpApi*](doc/McpApi.md) | [**apiMcpKeysGet**](doc/McpApi.md#apimcpkeysget) | **GET** /api/mcp/keys | 
+[*McpApi*](doc/McpApi.md) | [**apiMcpKeysIdActivityGet**](doc/McpApi.md#apimcpkeysidactivityget) | **GET** /api/mcp/keys/{id}/activity | 
+[*McpApi*](doc/McpApi.md) | [**apiMcpKeysIdDelete**](doc/McpApi.md#apimcpkeysiddelete) | **DELETE** /api/mcp/keys/{id} | 
+[*McpApi*](doc/McpApi.md) | [**apiMcpKeysIdPermissionsPut**](doc/McpApi.md#apimcpkeysidpermissionsput) | **PUT** /api/mcp/keys/{id}/permissions | 
+[*McpApi*](doc/McpApi.md) | [**apiMcpKeysPost**](doc/McpApi.md#apimcpkeyspost) | **POST** /api/mcp/keys | 
 [*MeApi*](doc/MeApi.md) | [**apiMeAvatarDelete**](doc/MeApi.md#apimeavatardelete) | **DELETE** /api/me/avatar | 
 [*MeApi*](doc/MeApi.md) | [**apiMeAvatarPut**](doc/MeApi.md#apimeavatarput) | **PUT** /api/me/avatar | 
 [*MeApi*](doc/MeApi.md) | [**apiMeGradesIdDelete**](doc/MeApi.md#apimegradesiddelete) | **DELETE** /api/me/grades/{id} | 
@@ -142,56 +132,19 @@ Class | Method | HTTP request | Description
 [*NotificationsApi*](doc/NotificationsApi.md) | [**apiNotificationsPreferencesPut**](doc/NotificationsApi.md#apinotificationspreferencesput) | **PUT** /api/notifications/preferences | 
 [*NotificationsApi*](doc/NotificationsApi.md) | [**apiNotificationsTestPost**](doc/NotificationsApi.md#apinotificationstestpost) | **POST** /api/notifications/test | 
 [*OdaorgStatelessApi*](doc/OdaorgStatelessApi.md) | [**apiPluginsOdaorgStatelessDataPost**](doc/OdaorgStatelessApi.md#apipluginsodaorgstatelessdatapost) | **POST** /api/plugins/odaorg/stateless/data | 
-[*PluginsApi*](doc/PluginsApi.md) | [**apiPluginsGet**](doc/PluginsApi.md#apipluginsget) | **GET** /api/Plugins | 
-[*PluginsApi*](doc/PluginsApi.md) | [**apiPluginsInstallPost**](doc/PluginsApi.md#apipluginsinstallpost) | **POST** /api/Plugins/install | 
-[*PluginsApi*](doc/PluginsApi.md) | [**apiPluginsNameDelete**](doc/PluginsApi.md#apipluginsnamedelete) | **DELETE** /api/Plugins/{name} | 
-[*PluginsApi*](doc/PluginsApi.md) | [**apiPluginsNameUpdatePost**](doc/PluginsApi.md#apipluginsnameupdatepost) | **POST** /api/Plugins/{name}/update | 
-[*PluginsApi*](doc/PluginsApi.md) | [**apiPluginsRegistryGet**](doc/PluginsApi.md#apipluginsregistryget) | **GET** /api/Plugins/registry | 
-[*PluginsApi*](doc/PluginsApi.md) | [**apiPluginsSchedulerGet**](doc/PluginsApi.md#apipluginsschedulerget) | **GET** /api/Plugins/scheduler | 
-[*PushApi*](doc/PushApi.md) | [**apiPluginsSchulwarePushAccountIdPost**](doc/PushApi.md#apipluginsschulwarepushaccountidpost) | **POST** /api/plugins/schulware/push/{accountId} | 
-[*SchoolSystemsApi*](doc/SchoolSystemsApi.md) | [**apiSchoolSystemsGet**](doc/SchoolSystemsApi.md#apischoolsystemsget) | **GET** /api/SchoolSystems | 
-[*SchoolSystemsApi*](doc/SchoolSystemsApi.md) | [**apiSchoolSystemsIdDelete**](doc/SchoolSystemsApi.md#apischoolsystemsiddelete) | **DELETE** /api/SchoolSystems/{id} | 
-[*SchoolSystemsApi*](doc/SchoolSystemsApi.md) | [**apiSchoolSystemsIdGet**](doc/SchoolSystemsApi.md#apischoolsystemsidget) | **GET** /api/SchoolSystems/{id} | 
-[*SchoolSystemsApi*](doc/SchoolSystemsApi.md) | [**apiSchoolSystemsPost**](doc/SchoolSystemsApi.md#apischoolsystemspost) | **POST** /api/SchoolSystems | 
-[*SchoolSystemsApi*](doc/SchoolSystemsApi.md) | [**apiSchoolSystemsPut**](doc/SchoolSystemsApi.md#apischoolsystemsput) | **PUT** /api/SchoolSystems | 
 [*SchoolUsersApi*](doc/SchoolUsersApi.md) | [**apiSchoolUsersGet**](doc/SchoolUsersApi.md#apischoolusersget) | **GET** /api/SchoolUsers | 
-[*SchoolUsersApi*](doc/SchoolUsersApi.md) | [**apiSchoolUsersIdDelete**](doc/SchoolUsersApi.md#apischoolusersiddelete) | **DELETE** /api/SchoolUsers/{id} | 
 [*SchoolUsersApi*](doc/SchoolUsersApi.md) | [**apiSchoolUsersIdGet**](doc/SchoolUsersApi.md#apischoolusersidget) | **GET** /api/SchoolUsers/{id} | 
-[*SchoolUsersApi*](doc/SchoolUsersApi.md) | [**apiSchoolUsersPost**](doc/SchoolUsersApi.md#apischooluserspost) | **POST** /api/SchoolUsers | 
-[*SchoolUsersApi*](doc/SchoolUsersApi.md) | [**apiSchoolUsersPut**](doc/SchoolUsersApi.md#apischoolusersput) | **PUT** /api/SchoolUsers | 
-[*SchoolsApi*](doc/SchoolsApi.md) | [**apiSchoolsGet**](doc/SchoolsApi.md#apischoolsget) | **GET** /api/Schools | 
-[*SchoolsApi*](doc/SchoolsApi.md) | [**apiSchoolsIdDelete**](doc/SchoolsApi.md#apischoolsiddelete) | **DELETE** /api/Schools/{id} | 
 [*SchoolsApi*](doc/SchoolsApi.md) | [**apiSchoolsIdGet**](doc/SchoolsApi.md#apischoolsidget) | **GET** /api/Schools/{id} | 
 [*SchoolsApi*](doc/SchoolsApi.md) | [**apiSchoolsMySchoolsGet**](doc/SchoolsApi.md#apischoolsmyschoolsget) | **GET** /api/Schools/my-schools | 
-[*SchoolsApi*](doc/SchoolsApi.md) | [**apiSchoolsPost**](doc/SchoolsApi.md#apischoolspost) | **POST** /api/Schools | 
-[*SchoolsApi*](doc/SchoolsApi.md) | [**apiSchoolsPut**](doc/SchoolsApi.md#apischoolsput) | **PUT** /api/Schools | 
-[*SchulyAPIApi*](doc/SchulyAPIApi.md) | [**apiPluginsExampleVaultDemoGet**](doc/SchulyAPIApi.md#apipluginsexamplevaultdemoget) | **GET** /api/plugins/example/vault-demo | 
 [*SemesterReportsApi*](doc/SemesterReportsApi.md) | [**apiSemesterReportsGet**](doc/SemesterReportsApi.md#apisemesterreportsget) | **GET** /api/SemesterReports | 
-[*StatelessAuthApi*](doc/StatelessAuthApi.md) | [**apiPluginsSchulwareStatelessLoginMethodGet**](doc/StatelessAuthApi.md#apipluginsschulwarestatelessloginmethodget) | **GET** /api/plugins/schulware/stateless/login-method | 
-[*StatelessAuthApi*](doc/StatelessAuthApi.md) | [**apiPluginsSchulwareStatelessLoginPost**](doc/StatelessAuthApi.md#apipluginsschulwarestatelessloginpost) | **POST** /api/plugins/schulware/stateless/login | 
-[*StatelessAuthApi*](doc/StatelessAuthApi.md) | [**apiPluginsSchulwareStatelessRefreshPost**](doc/StatelessAuthApi.md#apipluginsschulwarestatelessrefreshpost) | **POST** /api/plugins/schulware/stateless/refresh | 
-[*StatelessDataApi*](doc/StatelessDataApi.md) | [**apiPluginsSchulwareStatelessAbsencesGet**](doc/StatelessDataApi.md#apipluginsschulwarestatelessabsencesget) | **GET** /api/plugins/schulware/stateless/absences | 
-[*StatelessDataApi*](doc/StatelessDataApi.md) | [**apiPluginsSchulwareStatelessAgendaGet**](doc/StatelessDataApi.md#apipluginsschulwarestatelessagendaget) | **GET** /api/plugins/schulware/stateless/agenda | 
-[*StatelessDataApi*](doc/StatelessDataApi.md) | [**apiPluginsSchulwareStatelessExamsGet**](doc/StatelessDataApi.md#apipluginsschulwarestatelessexamsget) | **GET** /api/plugins/schulware/stateless/exams | 
-[*StatelessDataApi*](doc/StatelessDataApi.md) | [**apiPluginsSchulwareStatelessGradesGet**](doc/StatelessDataApi.md#apipluginsschulwarestatelessgradesget) | **GET** /api/plugins/schulware/stateless/grades | 
-[*StatelessDataApi*](doc/StatelessDataApi.md) | [**apiPluginsSchulwareStatelessUserinfoGet**](doc/StatelessDataApi.md#apipluginsschulwarestatelessuserinfoget) | **GET** /api/plugins/schulware/stateless/userinfo | 
-[*StatelessLinkApi*](doc/StatelessLinkApi.md) | [**apiPluginsMicrosoftStatelessLinkCompletePost**](doc/StatelessLinkApi.md#apipluginsmicrosoftstatelesslinkcompletepost) | **POST** /api/plugins/microsoft/stateless/link/complete | 
-[*StatelessLinkApi*](doc/StatelessLinkApi.md) | [**apiPluginsMicrosoftStatelessLinkStartPost**](doc/StatelessLinkApi.md#apipluginsmicrosoftstatelesslinkstartpost) | **POST** /api/plugins/microsoft/stateless/link/start | 
 [*StatusApi*](doc/StatusApi.md) | [**apiPluginsOdaorgStatusGet**](doc/StatusApi.md#apipluginsodaorgstatusget) | **GET** /api/plugins/odaorg/status | 
-[*StatusApi*](doc/StatusApi.md) | [**apiPluginsSchulwareStatusGet**](doc/StatusApi.md#apipluginsschulwarestatusget) | **GET** /api/plugins/schulware/status | 
 [*StudentDocumentsApi*](doc/StudentDocumentsApi.md) | [**apiDocumentsDocumentIdGet**](doc/StudentDocumentsApi.md#apidocumentsdocumentidget) | **GET** /api/documents/{documentId} | 
 [*StudentDocumentsApi*](doc/StudentDocumentsApi.md) | [**apiDocumentsGet**](doc/StudentDocumentsApi.md#apidocumentsget) | **GET** /api/documents | 
-[*StudentDocumentsApi*](doc/StudentDocumentsApi.md) | [**apiDocumentsReencryptPost**](doc/StudentDocumentsApi.md#apidocumentsreencryptpost) | **POST** /api/documents/reencrypt | 
 [*StudentDocumentsApi*](doc/StudentDocumentsApi.md) | [**apiStudentsSchoolUserIdDocumentsPost**](doc/StudentDocumentsApi.md#apistudentsschooluseriddocumentspost) | **POST** /api/students/{schoolUserId}/documents | 
 [*SyncApi*](doc/SyncApi.md) | [**apiPluginsOdaorgAccountsAccountIdSyncGet**](doc/SyncApi.md#apipluginsodaorgaccountsaccountidsyncget) | **GET** /api/plugins/odaorg/accounts/{accountId}/sync | 
 [*SyncApi*](doc/SyncApi.md) | [**apiPluginsOdaorgAccountsAccountIdSyncPost**](doc/SyncApi.md#apipluginsodaorgaccountsaccountidsyncpost) | **POST** /api/plugins/odaorg/accounts/{accountId}/sync | 
-[*SyncApi*](doc/SyncApi.md) | [**apiPluginsSchulwareAccountsAccountIdSyncGet**](doc/SyncApi.md#apipluginsschulwareaccountsaccountidsyncget) | **GET** /api/plugins/schulware/accounts/{accountId}/sync | 
-[*SyncApi*](doc/SyncApi.md) | [**apiPluginsSchulwareAccountsAccountIdSyncPost**](doc/SyncApi.md#apipluginsschulwareaccountsaccountidsyncpost) | **POST** /api/plugins/schulware/accounts/{accountId}/sync | 
 [*TeachersApi*](doc/TeachersApi.md) | [**apiTeachersGet**](doc/TeachersApi.md#apiteachersget) | **GET** /api/Teachers | 
-[*TeachersApi*](doc/TeachersApi.md) | [**apiTeachersIdDelete**](doc/TeachersApi.md#apiteachersiddelete) | **DELETE** /api/Teachers/{id} | 
 [*TeachersApi*](doc/TeachersApi.md) | [**apiTeachersIdGet**](doc/TeachersApi.md#apiteachersidget) | **GET** /api/Teachers/{id} | 
-[*TeachersApi*](doc/TeachersApi.md) | [**apiTeachersPost**](doc/TeachersApi.md#apiteacherspost) | **POST** /api/Teachers | 
-[*TeachersApi*](doc/TeachersApi.md) | [**apiTeachersPut**](doc/TeachersApi.md#apiteachersput) | **PUT** /api/Teachers | 
 [*TrustedDevicesApi*](doc/TrustedDevicesApi.md) | [**toamaisutaaRevokeAllTrustedDevices**](doc/TrustedDevicesApi.md#toamaisutaarevokealltrusteddevices) | **DELETE** /auth/devices | Revokes every device this user has trusted.
 [*TrustedDevicesApi*](doc/TrustedDevicesApi.md) | [**toamaisutaaRevokeTrustedDevice**](doc/TrustedDevicesApi.md#toamaisutaarevoketrusteddevice) | **DELETE** /auth/devices/{id} | Revokes one device by its id.
 [*TrustedDevicesApi*](doc/TrustedDevicesApi.md) | [**toamaisutaaTrustedDevices**](doc/TrustedDevicesApi.md#toamaisutaatrusteddevices) | **GET** /auth/devices | Lists the devices this user has trusted.
@@ -210,7 +163,6 @@ Class | Method | HTTP request | Description
  - [AbsenceDto](doc/AbsenceDto.md)
  - [AbsenceType](doc/AbsenceType.md)
  - [AccountExportDto](doc/AccountExportDto.md)
- - [AddGradeToExamCommand](doc/AddGradeToExamCommand.md)
  - [AddMyGradeCommand](doc/AddMyGradeCommand.md)
  - [AgendaEntryDto](doc/AgendaEntryDto.md)
  - [AgendaEntryType](doc/AgendaEntryType.md)
@@ -221,38 +173,52 @@ Class | Method | HTTP request | Description
  - [ChangePasswordRequest](doc/ChangePasswordRequest.md)
  - [ClassDto](doc/ClassDto.md)
  - [ClassMemberDto](doc/ClassMemberDto.md)
- - [CompleteRequest](doc/CompleteRequest.md)
  - [ConfirmTwoFactorRequest](doc/ConfirmTwoFactorRequest.md)
- - [Cookie](doc/Cookie.md)
  - [CreateAbsenceCommand](doc/CreateAbsenceCommand.md)
  - [CreateAgendaEntryCommand](doc/CreateAgendaEntryCommand.md)
- - [CreateApplicationUserCommand](doc/CreateApplicationUserCommand.md)
- - [CreateClassCommand](doc/CreateClassCommand.md)
- - [CreateExamCommand](doc/CreateExamCommand.md)
+ - [CreateMcpApiKeyCommand](doc/CreateMcpApiKeyCommand.md)
  - [CreateMySchoolCommand](doc/CreateMySchoolCommand.md)
- - [CreateSchoolCommand](doc/CreateSchoolCommand.md)
- - [CreateSchoolSystemCommand](doc/CreateSchoolSystemCommand.md)
- - [CreateSchoolUserCommand](doc/CreateSchoolUserCommand.md)
- - [CreateTeacherCommand](doc/CreateTeacherCommand.md)
+ - [CreatedMcpApiKeyDto](doc/CreatedMcpApiKeyDto.md)
+ - [DecideMcpAuthorizationCommand](doc/DecideMcpAuthorizationCommand.md)
  - [DisableTwoFactorRequest](doc/DisableTwoFactorRequest.md)
- - [EnrolStudentCommand](doc/EnrolStudentCommand.md)
  - [ErrorResponse](doc/ErrorResponse.md)
  - [ExamDto](doc/ExamDto.md)
  - [ExamType](doc/ExamType.md)
- - [ExternalLinkResponse](doc/ExternalLinkResponse.md)
- - [ExternalLoginExchangeRequest](doc/ExternalLoginExchangeRequest.md)
- - [ExternalLoginResponse](doc/ExternalLoginResponse.md)
- - [ExternalProviderResponse](doc/ExternalProviderResponse.md)
  - [ForgotPasswordRequest](doc/ForgotPasswordRequest.md)
  - [GradeDto](doc/GradeDto.md)
- - [InstallPluginRequest](doc/InstallPluginRequest.md)
- - [LinkExternalLoginRequest](doc/LinkExternalLoginRequest.md)
+ - [LinkActionDto](doc/LinkActionDto.md)
+ - [LinkCapabilityDto](doc/LinkCapabilityDto.md)
+ - [LinkDeviceCodeDto](doc/LinkDeviceCodeDto.md)
+ - [LinkDoneDto](doc/LinkDoneDto.md)
+ - [LinkErrorDto](doc/LinkErrorDto.md)
+ - [LinkFieldDto](doc/LinkFieldDto.md)
+ - [LinkFieldTypeDto](doc/LinkFieldTypeDto.md)
+ - [LinkFlowDto](doc/LinkFlowDto.md)
+ - [LinkIconDto](doc/LinkIconDto.md)
+ - [LinkOptionDto](doc/LinkOptionDto.md)
+ - [LinkOtpDto](doc/LinkOtpDto.md)
+ - [LinkProviderAccountDto](doc/LinkProviderAccountDto.md)
+ - [LinkProviderDto](doc/LinkProviderDto.md)
+ - [LinkPushCodeDto](doc/LinkPushCodeDto.md)
+ - [LinkRedirectDto](doc/LinkRedirectDto.md)
+ - [LinkRedirectModeDto](doc/LinkRedirectModeDto.md)
+ - [LinkSessionDto](doc/LinkSessionDto.md)
+ - [LinkSessionStatus](doc/LinkSessionStatus.md)
+ - [LinkStepDto](doc/LinkStepDto.md)
+ - [LinkStepKindDto](doc/LinkStepKindDto.md)
  - [LinkedAccountDto](doc/LinkedAccountDto.md)
+ - [LinkedAccountStatusDto](doc/LinkedAccountStatusDto.md)
+ - [LoginFieldSuggestionDto](doc/LoginFieldSuggestionDto.md)
  - [LoginRequest](doc/LoginRequest.md)
  - [LogoutRequest](doc/LogoutRequest.md)
- - [MicrosoftCalendarAccount](doc/MicrosoftCalendarAccount.md)
- - [MicrosoftCalendarEvent](doc/MicrosoftCalendarEvent.md)
- - [MicrosoftCalendarFeed](doc/MicrosoftCalendarFeed.md)
+ - [McpAccessLevel](doc/McpAccessLevel.md)
+ - [McpActivityDto](doc/McpActivityDto.md)
+ - [McpApiKeyDto](doc/McpApiKeyDto.md)
+ - [McpAuthorizationDecisionDto](doc/McpAuthorizationDecisionDto.md)
+ - [McpAuthorizationParameters](doc/McpAuthorizationParameters.md)
+ - [McpAuthorizationRequestDto](doc/McpAuthorizationRequestDto.md)
+ - [McpConnectionDto](doc/McpConnectionDto.md)
+ - [McpPermissionSet](doc/McpPermissionSet.md)
  - [MySchoolDto](doc/MySchoolDto.md)
  - [NotificationPreferencesDto](doc/NotificationPreferencesDto.md)
  - [OdaorgStatelessAgendaEvent](doc/OdaorgStatelessAgendaEvent.md)
@@ -261,11 +227,8 @@ Class | Method | HTTP request | Description
  - [OdaorgStatelessGrade](doc/OdaorgStatelessGrade.md)
  - [OdaorgStatelessRequest](doc/OdaorgStatelessRequest.md)
  - [OdaorgStatelessUserInfo](doc/OdaorgStatelessUserInfo.md)
- - [PluginDto](doc/PluginDto.md)
- - [PluginTaskStatus](doc/PluginTaskStatus.md)
  - [ProblemDetails](doc/ProblemDetails.md)
  - [PushResult](doc/PushResult.md)
- - [ReencryptStudentDocumentsResult](doc/ReencryptStudentDocumentsResult.md)
  - [RefreshRequest](doc/RefreshRequest.md)
  - [RegenerateRecoveryCodesRequest](doc/RegenerateRecoveryCodesRequest.md)
  - [RegisterDeviceTokenCommand](doc/RegisterDeviceTokenCommand.md)
@@ -279,32 +242,23 @@ Class | Method | HTTP request | Description
  - [SchoolUserSummaryDto](doc/SchoolUserSummaryDto.md)
  - [SemesterReportDto](doc/SemesterReportDto.md)
  - [SemesterSubjectGradeDto](doc/SemesterSubjectGradeDto.md)
- - [StatelessLoginRequest](doc/StatelessLoginRequest.md)
- - [StatelessRefreshRequest](doc/StatelessRefreshRequest.md)
+ - [StartLinkRequest](doc/StartLinkRequest.md)
  - [StepUpChallengeResponse](doc/StepUpChallengeResponse.md)
  - [StepUpResponse](doc/StepUpResponse.md)
  - [StepUpVerifyRequest](doc/StepUpVerifyRequest.md)
  - [StudentDocumentDto](doc/StudentDocumentDto.md)
+ - [SubmitLinkRequest](doc/SubmitLinkRequest.md)
  - [TeacherDto](doc/TeacherDto.md)
  - [TokenResponse](doc/TokenResponse.md)
  - [TrustedDeviceSummary](doc/TrustedDeviceSummary.md)
- - [TwoFactorChallengeResponse](doc/TwoFactorChallengeResponse.md)
  - [TwoFactorEnrolmentCompleted](doc/TwoFactorEnrolmentCompleted.md)
  - [TwoFactorEnrolmentStarted](doc/TwoFactorEnrolmentStarted.md)
  - [TwoFactorStatus](doc/TwoFactorStatus.md)
  - [UnifiedLoginRequest](doc/UnifiedLoginRequest.md)
- - [UnlinkExternalLoginRequest](doc/UnlinkExternalLoginRequest.md)
  - [UpdateAbsenceCommand](doc/UpdateAbsenceCommand.md)
  - [UpdateAgendaEntryCommand](doc/UpdateAgendaEntryCommand.md)
- - [UpdateApplicationUserCommand](doc/UpdateApplicationUserCommand.md)
- - [UpdateClassCommand](doc/UpdateClassCommand.md)
- - [UpdateExamCommand](doc/UpdateExamCommand.md)
  - [UpdateMyGradeCommand](doc/UpdateMyGradeCommand.md)
  - [UpdateNotificationPreferencesCommand](doc/UpdateNotificationPreferencesCommand.md)
- - [UpdateSchoolCommand](doc/UpdateSchoolCommand.md)
- - [UpdateSchoolSystemCommand](doc/UpdateSchoolSystemCommand.md)
- - [UpdateSchoolUserCommand](doc/UpdateSchoolUserCommand.md)
- - [UpdateTeacherCommand](doc/UpdateTeacherCommand.md)
  - [UserClassDto](doc/UserClassDto.md)
  - [UserState](doc/UserState.md)
  - [ValidationErrorResponse](doc/ValidationErrorResponse.md)

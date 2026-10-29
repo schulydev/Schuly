@@ -13,7 +13,7 @@ Method | HTTP request | Description
 
 
 # **apiSemesterReportsGet**
-> BuiltList<SemesterReportDto> apiSemesterReportsGet(schoolUserId)
+> BuiltList<SemesterReportDto> apiSemesterReportsGet()
 
 
 
@@ -22,10 +22,9 @@ Method | HTTP request | Description
 import 'package:schuly_api/api.dart';
 
 final api = SchulyApi().getSemesterReportsApi();
-final String schoolUserId = 38400000-8cf0-11bd-b23e-10b96e4ef00d; // String | 
 
 try {
-    final response = api.apiSemesterReportsGet(schoolUserId);
+    final response = api.apiSemesterReportsGet();
     print(response);
 } catch on DioException (e) {
     print('Exception when calling SemesterReportsApi->apiSemesterReportsGet: $e\n');
@@ -33,10 +32,7 @@ try {
 ```
 
 ### Parameters
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **schoolUserId** | **String**|  | [optional] 
+This endpoint does not need any parameter.
 
 ### Return type
 

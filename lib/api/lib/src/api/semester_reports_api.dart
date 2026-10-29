@@ -9,7 +9,6 @@ import 'package:built_value/serializer.dart';
 import 'package:dio/dio.dart';
 
 import 'package:built_collection/built_collection.dart';
-import 'package:schuly_api/src/api_util.dart';
 import 'package:schuly_api/src/model/problem_details.dart';
 import 'package:schuly_api/src/model/semester_report_dto.dart';
 
@@ -25,7 +24,6 @@ class SemesterReportsApi {
   /// 
   ///
   /// Parameters:
-  /// * [schoolUserId] 
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -36,7 +34,6 @@ class SemesterReportsApi {
   /// Returns a [Future] containing a [Response] with a [BuiltList<SemesterReportDto>] as data
   /// Throws [DioException] if API call or serialization fails
   Future<Response<BuiltList<SemesterReportDto>>> apiSemesterReportsGet({ 
-    String? schoolUserId,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
     Map<String, dynamic>? extra,
@@ -63,14 +60,9 @@ class SemesterReportsApi {
       validateStatus: validateStatus,
     );
 
-    final _queryParameters = <String, dynamic>{
-      if (schoolUserId != null) r'schoolUserId': encodeQueryParameter(_serializers, schoolUserId, const FullType(String)),
-    };
-
     final _response = await _dio.request<Object>(
       _path,
       options: _options,
-      queryParameters: _queryParameters,
       cancelToken: cancelToken,
       onSendProgress: onSendProgress,
       onReceiveProgress: onReceiveProgress,

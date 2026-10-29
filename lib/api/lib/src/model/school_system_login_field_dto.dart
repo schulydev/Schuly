@@ -3,6 +3,8 @@
 //
 
 // ignore_for_file: unused_element
+import 'package:built_collection/built_collection.dart';
+import 'package:schuly_api/src/model/login_field_suggestion_dto.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
@@ -18,6 +20,7 @@ part 'school_system_login_field_dto.g.dart';
 /// * [defaultValue] 
 /// * [required_] 
 /// * [replacedByLinkedAccount] 
+/// * [suggestions] 
 @BuiltValue()
 abstract class SchoolSystemLoginFieldDto implements Built<SchoolSystemLoginFieldDto, SchoolSystemLoginFieldDtoBuilder> {
   @BuiltValueField(wireName: r'key')
@@ -40,6 +43,9 @@ abstract class SchoolSystemLoginFieldDto implements Built<SchoolSystemLoginField
 
   @BuiltValueField(wireName: r'replacedByLinkedAccount')
   bool? get replacedByLinkedAccount;
+
+  @BuiltValueField(wireName: r'suggestions')
+  BuiltList<LoginFieldSuggestionDto>? get suggestions;
 
   SchoolSystemLoginFieldDto._();
 
@@ -105,6 +111,13 @@ class _$SchoolSystemLoginFieldDtoSerializer implements PrimitiveSerializer<Schoo
       yield serializers.serialize(
         object.replacedByLinkedAccount,
         specifiedType: const FullType(bool),
+      );
+    }
+    if (object.suggestions != null) {
+      yield r'suggestions';
+      yield serializers.serialize(
+        object.suggestions,
+        specifiedType: const FullType(BuiltList, [FullType(LoginFieldSuggestionDto)]),
       );
     }
   }
@@ -180,6 +193,13 @@ class _$SchoolSystemLoginFieldDtoSerializer implements PrimitiveSerializer<Schoo
             specifiedType: const FullType(bool),
           ) as bool;
           result.replacedByLinkedAccount = valueDes;
+          break;
+        case r'suggestions':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType(BuiltList, [FullType(LoginFieldSuggestionDto)]),
+          ) as BuiltList<LoginFieldSuggestionDto>;
+          result.suggestions.replace(valueDes);
           break;
         default:
           unhandled.add(key);

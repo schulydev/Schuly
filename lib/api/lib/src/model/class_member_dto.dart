@@ -42,7 +42,7 @@ abstract class ClassMemberDto implements Built<ClassMemberDto, ClassMemberDtoBui
 
   @BuiltValueField(wireName: r'role')
   Roles get role;
-  // enum roleEnum {  Student,  Teacher,  Administrator,  };
+  // enum roleEnum {  Student,  Teacher,  };
 
   @BuiltValueField(wireName: r'absences')
   BuiltList<AbsenceDto>? get absences;

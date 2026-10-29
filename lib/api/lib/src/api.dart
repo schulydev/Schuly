@@ -13,30 +13,20 @@ import 'package:schuly_api/src/api/absences_api.dart';
 import 'package:schuly_api/src/api/accounts_api.dart';
 import 'package:schuly_api/src/api/agendas_api.dart';
 import 'package:schuly_api/src/api/app_api.dart';
-import 'package:schuly_api/src/api/application_users_api.dart';
 import 'package:schuly_api/src/api/auth_api.dart';
 import 'package:schuly_api/src/api/authentication_api.dart';
 import 'package:schuly_api/src/api/avatars_api.dart';
-import 'package:schuly_api/src/api/calendar_api.dart';
 import 'package:schuly_api/src/api/class_api.dart';
-import 'package:schuly_api/src/api/example_plugin_api.dart';
 import 'package:schuly_api/src/api/exams_api.dart';
-import 'package:schuly_api/src/api/external_login_api.dart';
-import 'package:schuly_api/src/api/link_api.dart';
 import 'package:schuly_api/src/api/linked_accounts_api.dart';
+import 'package:schuly_api/src/api/linking_api.dart';
+import 'package:schuly_api/src/api/mcp_api.dart';
 import 'package:schuly_api/src/api/me_api.dart';
 import 'package:schuly_api/src/api/notifications_api.dart';
 import 'package:schuly_api/src/api/odaorg_stateless_api.dart';
-import 'package:schuly_api/src/api/plugins_api.dart';
-import 'package:schuly_api/src/api/push_api.dart';
-import 'package:schuly_api/src/api/school_systems_api.dart';
 import 'package:schuly_api/src/api/school_users_api.dart';
 import 'package:schuly_api/src/api/schools_api.dart';
-import 'package:schuly_api/src/api/schuly_api_api.dart';
 import 'package:schuly_api/src/api/semester_reports_api.dart';
-import 'package:schuly_api/src/api/stateless_auth_api.dart';
-import 'package:schuly_api/src/api/stateless_data_api.dart';
-import 'package:schuly_api/src/api/stateless_link_api.dart';
 import 'package:schuly_api/src/api/status_api.dart';
 import 'package:schuly_api/src/api/student_documents_api.dart';
 import 'package:schuly_api/src/api/sync_api.dart';
@@ -122,12 +112,6 @@ class SchulyApi {
     return AppApi(dio, serializers);
   }
 
-  /// Get ApplicationUsersApi instance, base route and serializer can be overridden by a given but be careful,
-  /// by doing that all interceptors will not be executed
-  ApplicationUsersApi getApplicationUsersApi() {
-    return ApplicationUsersApi(dio, serializers);
-  }
-
   /// Get AuthApi instance, base route and serializer can be overridden by a given but be careful,
   /// by doing that all interceptors will not be executed
   AuthApi getAuthApi() {
@@ -146,22 +130,10 @@ class SchulyApi {
     return AvatarsApi(dio, serializers);
   }
 
-  /// Get CalendarApi instance, base route and serializer can be overridden by a given but be careful,
-  /// by doing that all interceptors will not be executed
-  CalendarApi getCalendarApi() {
-    return CalendarApi(dio, serializers);
-  }
-
   /// Get ClassApi instance, base route and serializer can be overridden by a given but be careful,
   /// by doing that all interceptors will not be executed
   ClassApi getClassApi() {
     return ClassApi(dio, serializers);
-  }
-
-  /// Get ExamplePluginApi instance, base route and serializer can be overridden by a given but be careful,
-  /// by doing that all interceptors will not be executed
-  ExamplePluginApi getExamplePluginApi() {
-    return ExamplePluginApi(dio, serializers);
   }
 
   /// Get ExamsApi instance, base route and serializer can be overridden by a given but be careful,
@@ -170,22 +142,22 @@ class SchulyApi {
     return ExamsApi(dio, serializers);
   }
 
-  /// Get ExternalLoginApi instance, base route and serializer can be overridden by a given but be careful,
-  /// by doing that all interceptors will not be executed
-  ExternalLoginApi getExternalLoginApi() {
-    return ExternalLoginApi(dio, serializers);
-  }
-
-  /// Get LinkApi instance, base route and serializer can be overridden by a given but be careful,
-  /// by doing that all interceptors will not be executed
-  LinkApi getLinkApi() {
-    return LinkApi(dio, serializers);
-  }
-
   /// Get LinkedAccountsApi instance, base route and serializer can be overridden by a given but be careful,
   /// by doing that all interceptors will not be executed
   LinkedAccountsApi getLinkedAccountsApi() {
     return LinkedAccountsApi(dio, serializers);
+  }
+
+  /// Get LinkingApi instance, base route and serializer can be overridden by a given but be careful,
+  /// by doing that all interceptors will not be executed
+  LinkingApi getLinkingApi() {
+    return LinkingApi(dio, serializers);
+  }
+
+  /// Get McpApi instance, base route and serializer can be overridden by a given but be careful,
+  /// by doing that all interceptors will not be executed
+  McpApi getMcpApi() {
+    return McpApi(dio, serializers);
   }
 
   /// Get MeApi instance, base route and serializer can be overridden by a given but be careful,
@@ -206,24 +178,6 @@ class SchulyApi {
     return OdaorgStatelessApi(dio, serializers);
   }
 
-  /// Get PluginsApi instance, base route and serializer can be overridden by a given but be careful,
-  /// by doing that all interceptors will not be executed
-  PluginsApi getPluginsApi() {
-    return PluginsApi(dio, serializers);
-  }
-
-  /// Get PushApi instance, base route and serializer can be overridden by a given but be careful,
-  /// by doing that all interceptors will not be executed
-  PushApi getPushApi() {
-    return PushApi(dio, serializers);
-  }
-
-  /// Get SchoolSystemsApi instance, base route and serializer can be overridden by a given but be careful,
-  /// by doing that all interceptors will not be executed
-  SchoolSystemsApi getSchoolSystemsApi() {
-    return SchoolSystemsApi(dio, serializers);
-  }
-
   /// Get SchoolUsersApi instance, base route and serializer can be overridden by a given but be careful,
   /// by doing that all interceptors will not be executed
   SchoolUsersApi getSchoolUsersApi() {
@@ -236,34 +190,10 @@ class SchulyApi {
     return SchoolsApi(dio, serializers);
   }
 
-  /// Get SchulyAPIApi instance, base route and serializer can be overridden by a given but be careful,
-  /// by doing that all interceptors will not be executed
-  SchulyAPIApi getSchulyAPIApi() {
-    return SchulyAPIApi(dio, serializers);
-  }
-
   /// Get SemesterReportsApi instance, base route and serializer can be overridden by a given but be careful,
   /// by doing that all interceptors will not be executed
   SemesterReportsApi getSemesterReportsApi() {
     return SemesterReportsApi(dio, serializers);
-  }
-
-  /// Get StatelessAuthApi instance, base route and serializer can be overridden by a given but be careful,
-  /// by doing that all interceptors will not be executed
-  StatelessAuthApi getStatelessAuthApi() {
-    return StatelessAuthApi(dio, serializers);
-  }
-
-  /// Get StatelessDataApi instance, base route and serializer can be overridden by a given but be careful,
-  /// by doing that all interceptors will not be executed
-  StatelessDataApi getStatelessDataApi() {
-    return StatelessDataApi(dio, serializers);
-  }
-
-  /// Get StatelessLinkApi instance, base route and serializer can be overridden by a given but be careful,
-  /// by doing that all interceptors will not be executed
-  StatelessLinkApi getStatelessLinkApi() {
-    return StatelessLinkApi(dio, serializers);
   }
 
   /// Get StatusApi instance, base route and serializer can be overridden by a given but be careful,
