@@ -151,7 +151,7 @@ void (empty response body)
 
 Signs in with a password, or asks for a second factor.
 
-**Two success shapes, both 200.** Usually a token pair. For a user with a confirmed second factor it is instead a challenge and no tokens:  ```json { \"two_factor_required\": true, \"challenge\": \"No1CXq9-...\", \"expires_in\": 300 } ```  Branch on `two_factor_required`, which is absent from the token shape. Present the challenge with a code to `/auth/2fa/verify` to finish signing in.
+**Two success shapes, both 200.** Usually a token pair. For a user with a confirmed second factor it is instead a challenge and no tokens:  ```json { \"two_factor_required\": true, \"challenge\": \"No1CXq9-...\", \"expires_in\": 300 } ```  Branch on `two_factor_required`, which is absent from the token shape. Present the challenge with a code to `/auth/2fa/verify` to finish signing in.  With `LocalLogin:RequireVerifiedEmailForSignIn` on, an account whose address was never confirmed gets a third: `{ \"email_verification_required\": true, \"challenge\": \"...\", \"method\": \"code\", ... }`, answered at `/auth/email/verify-code`.
 
 ### Example
 ```dart
@@ -279,7 +279,7 @@ Name | Type | Description  | Notes
 
 Creates a local account and signs it in.
 
-Mapped only when `LocalLogin:AllowSelfRegistration` is true.
+Mapped only when `LocalLogin:AllowSelfRegistration` is true. With `LocalLogin:RequireVerifiedEmailForSignIn` on, `email` is required and the 201 carries an email-verification challenge instead of tokens; a code has been mailed to the address.
 
 ### Example
 ```dart

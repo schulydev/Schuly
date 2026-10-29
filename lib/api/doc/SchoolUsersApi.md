@@ -10,14 +10,11 @@ All URIs are relative to *http://localhost:5033*
 Method | HTTP request | Description
 ------------- | ------------- | -------------
 [**apiSchoolUsersGet**](SchoolUsersApi.md#apischoolusersget) | **GET** /api/SchoolUsers | 
-[**apiSchoolUsersIdDelete**](SchoolUsersApi.md#apischoolusersiddelete) | **DELETE** /api/SchoolUsers/{id} | 
 [**apiSchoolUsersIdGet**](SchoolUsersApi.md#apischoolusersidget) | **GET** /api/SchoolUsers/{id} | 
-[**apiSchoolUsersPost**](SchoolUsersApi.md#apischooluserspost) | **POST** /api/SchoolUsers | 
-[**apiSchoolUsersPut**](SchoolUsersApi.md#apischoolusersput) | **PUT** /api/SchoolUsers | 
 
 
 # **apiSchoolUsersGet**
-> BuiltList<SchoolUserDto> apiSchoolUsersGet(applicationUserId)
+> BuiltList<SchoolUserDto> apiSchoolUsersGet()
 
 
 
@@ -26,10 +23,9 @@ Method | HTTP request | Description
 import 'package:schuly_api/api.dart';
 
 final api = SchulyApi().getSchoolUsersApi();
-final String applicationUserId = 38400000-8cf0-11bd-b23e-10b96e4ef00d; // String | 
 
 try {
-    final response = api.apiSchoolUsersGet(applicationUserId);
+    final response = api.apiSchoolUsersGet();
     print(response);
 } catch on DioException (e) {
     print('Exception when calling SchoolUsersApi->apiSchoolUsersGet: $e\n');
@@ -37,54 +33,11 @@ try {
 ```
 
 ### Parameters
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **applicationUserId** | **String**|  | [optional] 
+This endpoint does not need any parameter.
 
 ### Return type
 
 [**BuiltList&lt;SchoolUserDto&gt;**](SchoolUserDto.md)
-
-### Authorization
-
-[Bearer](../README.md#Bearer)
-
-### HTTP request headers
-
- - **Content-Type**: Not defined
- - **Accept**: text/plain, application/json, text/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-# **apiSchoolUsersIdDelete**
-> apiSchoolUsersIdDelete(id)
-
-
-
-### Example
-```dart
-import 'package:schuly_api/api.dart';
-
-final api = SchulyApi().getSchoolUsersApi();
-final String id = 38400000-8cf0-11bd-b23e-10b96e4ef00d; // String | 
-
-try {
-    api.apiSchoolUsersIdDelete(id);
-} catch on DioException (e) {
-    print('Exception when calling SchoolUsersApi->apiSchoolUsersIdDelete: $e\n');
-}
-```
-
-### Parameters
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **id** | **String**|  | 
-
-### Return type
-
-void (empty response body)
 
 ### Authorization
 
@@ -134,87 +87,6 @@ Name | Type | Description  | Notes
 ### HTTP request headers
 
  - **Content-Type**: Not defined
- - **Accept**: text/plain, application/json, text/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-# **apiSchoolUsersPost**
-> String apiSchoolUsersPost(createSchoolUserCommand)
-
-
-
-### Example
-```dart
-import 'package:schuly_api/api.dart';
-
-final api = SchulyApi().getSchoolUsersApi();
-final CreateSchoolUserCommand createSchoolUserCommand = ; // CreateSchoolUserCommand | 
-
-try {
-    final response = api.apiSchoolUsersPost(createSchoolUserCommand);
-    print(response);
-} catch on DioException (e) {
-    print('Exception when calling SchoolUsersApi->apiSchoolUsersPost: $e\n');
-}
-```
-
-### Parameters
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **createSchoolUserCommand** | [**CreateSchoolUserCommand**](CreateSchoolUserCommand.md)|  | 
-
-### Return type
-
-**String**
-
-### Authorization
-
-[Bearer](../README.md#Bearer)
-
-### HTTP request headers
-
- - **Content-Type**: application/json, text/json, application/*+json
- - **Accept**: text/plain, application/json, text/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-# **apiSchoolUsersPut**
-> apiSchoolUsersPut(updateSchoolUserCommand)
-
-
-
-### Example
-```dart
-import 'package:schuly_api/api.dart';
-
-final api = SchulyApi().getSchoolUsersApi();
-final UpdateSchoolUserCommand updateSchoolUserCommand = ; // UpdateSchoolUserCommand | 
-
-try {
-    api.apiSchoolUsersPut(updateSchoolUserCommand);
-} catch on DioException (e) {
-    print('Exception when calling SchoolUsersApi->apiSchoolUsersPut: $e\n');
-}
-```
-
-### Parameters
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **updateSchoolUserCommand** | [**UpdateSchoolUserCommand**](UpdateSchoolUserCommand.md)|  | 
-
-### Return type
-
-void (empty response body)
-
-### Authorization
-
-[Bearer](../README.md#Bearer)
-
-### HTTP request headers
-
- - **Content-Type**: application/json, text/json, application/*+json
  - **Accept**: text/plain, application/json, text/json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)

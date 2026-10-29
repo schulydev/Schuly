@@ -13,7 +13,7 @@ class SchoolSystem {
   final String? pluginBasePath;
 
   /// Anonymous endpoint answering, for the entered school URL, whether to sign
-  /// in with a linked account (`{ "linkedProvider": "microsoft" }`) instead of
+  /// in with a linked account (`{ "linkedProvider": "<provider id>" }`) instead of
   /// the fields marked [SchoolSystemLoginField.replacedByLinkedAccount].
   final String? loginMethodPath;
 

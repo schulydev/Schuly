@@ -96,7 +96,7 @@ class ActiveAccountService extends ChangeNotifier {
       if (appUserId == null) return const {};
 
       final usersRes =
-          await api.getSchoolUsersApi().apiSchoolUsersGet(applicationUserId: appUserId);
+          await api.getSchoolUsersApi().apiSchoolUsersGet();
       final schoolIdByUser = <String, String>{
         for (final u in (usersRes.data ?? const <SchoolUserDto>[]))
           if (u.id != null && u.schoolId != null) u.id!: u.schoolId!,

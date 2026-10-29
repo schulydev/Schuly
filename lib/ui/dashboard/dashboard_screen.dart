@@ -18,7 +18,9 @@ import '../home/home_page.dart';
 import '../timetable/timetable_page.dart';
 import 'tab_requests.dart';
 import 'widgets/accounts_sidebar.dart';
-import 'widgets/add_school_modal.dart';
+import '../linking/add_account_flow.dart';
+import '../linking/schools_accounts_screen.dart';
+import '../../services/linked_accounts_controller.dart';
 
 class DashboardScreen extends StatefulWidget {
   final VoidCallback onSignOut;
@@ -116,6 +118,7 @@ class _DashboardScreenState extends State<DashboardScreen> with WidgetsBindingOb
     }
 
     await _loadProfile();
+    unawaited(LinkedAccountsController.instance.load());
 
     final svc = ActiveAccountService.instance;
     await svc.refresh();
@@ -133,13 +136,7 @@ class _DashboardScreenState extends State<DashboardScreen> with WidgetsBindingOb
   }
 
   Future<void> _addSchool() async {
-    final svc = ActiveAccountService.instance;
-    final before = svc.schools.map((s) => s.id).toSet();
-    final connected = await runAddSchoolFlow(context, Navigator.of(context));
-    if (connected == null) return;
-    await svc.refresh();
-    final added = svc.schools.where((s) => !before.contains(s.id));
-    if (added.isNotEmpty) await svc.setActive(added.first.id);
+    await runAddAccountFlow(context);
   }
 
   void _openSidebar() {
@@ -160,6 +157,7 @@ class _DashboardScreenState extends State<DashboardScreen> with WidgetsBindingOb
       animation: Listenable.merge([
         ActiveAccountService.instance,
         SchoolDataService.instance,
+        LinkedAccountsController.instance,
       ]),
       builder: (context, _) {
         final account = ActiveAccountService.instance;
@@ -180,6 +178,12 @@ class _DashboardScreenState extends State<DashboardScreen> with WidgetsBindingOb
         ];
 
         Widget body = IndexedStack(index: _index, children: pages);
+        if (!AppModeService.instance.isPrivate && LinkedAccountsController.instance.syncing) {
+          body = Column(children: [
+            const Padding(padding: EdgeInsets.fromLTRB(16, 12, 16, 0), child: SyncingBanner()),
+            Expanded(child: body),
+          ]);
+        }
         if (data.error != null && data.me == null) {
           body = Stack(children: [
             body,

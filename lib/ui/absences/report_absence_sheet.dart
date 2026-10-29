@@ -9,7 +9,7 @@ import '../../services/toast_service.dart';
 String absenceReportErrorText(AppLocalizations t, AbsenceReportException e) {
   final server = e.serverMessage;
   return switch (e.kind) {
-    AbsenceReportErrorKind.schulnetzRejected => server ?? t.absenceErrRejected,
+    AbsenceReportErrorKind.schoolRejected => server ?? t.absenceErrRejected,
     AbsenceReportErrorKind.invalidRequest => server ?? t.absenceErrInvalid,
     AbsenceReportErrorKind.notWithdrawable => t.absenceErrNotWithdrawable,
     AbsenceReportErrorKind.notAllowed => t.absenceErrNotAllowed,

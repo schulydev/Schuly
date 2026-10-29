@@ -21,6 +21,8 @@ class _$SchoolSystemLoginFieldDto extends SchoolSystemLoginFieldDto {
   final bool? required_;
   @override
   final bool? replacedByLinkedAccount;
+  @override
+  final BuiltList<LoginFieldSuggestionDto>? suggestions;
 
   factory _$SchoolSystemLoginFieldDto([
     void Function(SchoolSystemLoginFieldDtoBuilder)? updates,
@@ -34,6 +36,7 @@ class _$SchoolSystemLoginFieldDto extends SchoolSystemLoginFieldDto {
     this.defaultValue,
     this.required_,
     this.replacedByLinkedAccount,
+    this.suggestions,
   }) : super._();
   @override
   SchoolSystemLoginFieldDto rebuild(
@@ -54,7 +57,8 @@ class _$SchoolSystemLoginFieldDto extends SchoolSystemLoginFieldDto {
         placeholder == other.placeholder &&
         defaultValue == other.defaultValue &&
         required_ == other.required_ &&
-        replacedByLinkedAccount == other.replacedByLinkedAccount;
+        replacedByLinkedAccount == other.replacedByLinkedAccount &&
+        suggestions == other.suggestions;
   }
 
   @override
@@ -67,6 +71,7 @@ class _$SchoolSystemLoginFieldDto extends SchoolSystemLoginFieldDto {
     _$hash = $jc(_$hash, defaultValue.hashCode);
     _$hash = $jc(_$hash, required_.hashCode);
     _$hash = $jc(_$hash, replacedByLinkedAccount.hashCode);
+    _$hash = $jc(_$hash, suggestions.hashCode);
     _$hash = $jf(_$hash);
     return _$hash;
   }
@@ -80,7 +85,8 @@ class _$SchoolSystemLoginFieldDto extends SchoolSystemLoginFieldDto {
           ..add('placeholder', placeholder)
           ..add('defaultValue', defaultValue)
           ..add('required_', required_)
-          ..add('replacedByLinkedAccount', replacedByLinkedAccount))
+          ..add('replacedByLinkedAccount', replacedByLinkedAccount)
+          ..add('suggestions', suggestions))
         .toString();
   }
 }
@@ -119,6 +125,12 @@ class SchoolSystemLoginFieldDtoBuilder
   set replacedByLinkedAccount(bool? replacedByLinkedAccount) =>
       _$this._replacedByLinkedAccount = replacedByLinkedAccount;
 
+  ListBuilder<LoginFieldSuggestionDto>? _suggestions;
+  ListBuilder<LoginFieldSuggestionDto> get suggestions =>
+      _$this._suggestions ??= ListBuilder<LoginFieldSuggestionDto>();
+  set suggestions(ListBuilder<LoginFieldSuggestionDto>? suggestions) =>
+      _$this._suggestions = suggestions;
+
   SchoolSystemLoginFieldDtoBuilder() {
     SchoolSystemLoginFieldDto._defaults(this);
   }
@@ -133,6 +145,7 @@ class SchoolSystemLoginFieldDtoBuilder
       _defaultValue = $v.defaultValue;
       _required_ = $v.required_;
       _replacedByLinkedAccount = $v.replacedByLinkedAccount;
+      _suggestions = $v.suggestions?.toBuilder();
       _$v = null;
     }
     return this;
@@ -152,29 +165,46 @@ class SchoolSystemLoginFieldDtoBuilder
   SchoolSystemLoginFieldDto build() => _build();
 
   _$SchoolSystemLoginFieldDto _build() {
-    final _$result =
-        _$v ??
-        _$SchoolSystemLoginFieldDto._(
-          key: BuiltValueNullFieldError.checkNotNull(
-            key,
-            r'SchoolSystemLoginFieldDto',
-            'key',
-          ),
-          label: BuiltValueNullFieldError.checkNotNull(
-            label,
-            r'SchoolSystemLoginFieldDto',
-            'label',
-          ),
-          type: BuiltValueNullFieldError.checkNotNull(
-            type,
-            r'SchoolSystemLoginFieldDto',
-            'type',
-          ),
-          placeholder: placeholder,
-          defaultValue: defaultValue,
-          required_: required_,
-          replacedByLinkedAccount: replacedByLinkedAccount,
+    _$SchoolSystemLoginFieldDto _$result;
+    try {
+      _$result =
+          _$v ??
+          _$SchoolSystemLoginFieldDto._(
+            key: BuiltValueNullFieldError.checkNotNull(
+              key,
+              r'SchoolSystemLoginFieldDto',
+              'key',
+            ),
+            label: BuiltValueNullFieldError.checkNotNull(
+              label,
+              r'SchoolSystemLoginFieldDto',
+              'label',
+            ),
+            type: BuiltValueNullFieldError.checkNotNull(
+              type,
+              r'SchoolSystemLoginFieldDto',
+              'type',
+            ),
+            placeholder: placeholder,
+            defaultValue: defaultValue,
+            required_: required_,
+            replacedByLinkedAccount: replacedByLinkedAccount,
+            suggestions: _suggestions?.build(),
+          );
+    } catch (_) {
+      late String _$failedField;
+      try {
+        _$failedField = 'suggestions';
+        _suggestions?.build();
+      } catch (e) {
+        throw BuiltValueNestedFieldError(
+          r'SchoolSystemLoginFieldDto',
+          _$failedField,
+          e.toString(),
         );
+      }
+      rethrow;
+    }
     replace(_$result);
     return _$result;
   }

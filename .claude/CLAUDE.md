@@ -40,6 +40,8 @@ Both modes render the system picker + login forms from the backend catalog
 paths are **never hardcoded** in the client. The private connect flow is one generic
 screen that branches on the catalog `privateAuthStrategy` (`token` / `scrape`).
 
+Account mode links accounts through the generic `/api/linking` flow (`LinkedAccountsController`, `LinkFlowScreen`): providers, steps and capabilities come from the server, and no provider is named in the app.
+
 See `docs/architecture-modes.md` for the full diagram.
 
 ## Tasks (preferred)

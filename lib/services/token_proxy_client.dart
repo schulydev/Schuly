@@ -6,7 +6,7 @@ import 'package:dio/dio.dart';
 import '../domain/private_data.dart';
 import 'backend_dio.dart';
 import 'private_account_store.dart';
-import 'private_microsoft_store.dart';
+import 'private_linked_account_store.dart';
 import 'totp_service.dart';
 
 /// Client for the backend's stateless **token-strategy** proxy used in private
@@ -138,7 +138,7 @@ class TokenProxyClient {
   /// back to a full credential re-login from the vaulted email/password/seed -
   /// Schuly regenerates the OTP itself, so the user is never prompted.
   Future<PrivateAccount?> _refreshAccount(PrivateAccount a) async {
-    final link = a.linkedAccountId == null ? null : await PrivateMicrosoftStore.instance.get(a.linkedAccountId!);
+    final link = a.linkedAccountId == null ? null : await PrivateLinkedAccountStore.instance.get(a.linkedAccountId!);
     for (final session in {a.contextState, link?.sessionCookies}.whereType<String>()) {
       try {
         final r = await refresh(
@@ -148,7 +148,7 @@ class TokenProxyClient {
           contextState: session,
         );
         if (r.success && r.accessToken != null) {
-          if (link != null && r.contextState != null) await PrivateMicrosoftStore.instance.updateSession(link.id, r.contextState!);
+          if (link != null && r.contextState != null) await PrivateLinkedAccountStore.instance.updateSession(link.id, r.contextState!);
           return _applied(a, r);
         }
       } on DioException {
@@ -210,7 +210,7 @@ class TokenProxyClient {
   }
 
   /// Calls any stateless endpoint with the account's headers. When the token is refused (401) or the
-  /// school sign-in has expired (409 `schulnetz_signin_expired`) it refreshes once, persists the
+  /// school sign-in has expired (409 `signin_expired`, or the older code that stateless endpoints may still send) it refreshes once, persists the
   /// rotated session and retries.
   Future<Response<T>> send<T>(PrivateAccount a, String method, String path, {Object? data, Map<String, dynamic>? query}) async {
     Future<Response<T>> call(PrivateAccount acc) => _dio.request<T>(path, data: data, queryParameters: query, options: Options(method: method, headers: _headers(acc)));
@@ -218,7 +218,7 @@ class TokenProxyClient {
       return await call(a);
     } on DioException catch (e) {
       final body = e.response?.data;
-      final expired = e.response?.statusCode == 401 || (e.response?.statusCode == 409 && body is Map && body['code'] == 'schulnetz_signin_expired');
+      final expired = e.response?.statusCode == 401 || (e.response?.statusCode == 409 && body is Map && (body['code'] == 'signin_expired' || body['code'] == 'schulnetz_signin_expired'));
       if (!expired) rethrow;
       final refreshed = await _refreshAccount(a);
       if (refreshed == null) rethrow;

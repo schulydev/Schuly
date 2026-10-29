@@ -4,23 +4,6 @@ import 'package:forui/forui.dart';
 import '../../../config/backend_config.dart';
 import '../../../domain/school_system.dart';
 import '../../../services/school_systems_service.dart';
-import '../../account/unified_connect_screen.dart';
-
-Future<String?> runAddSchoolFlow(
-  BuildContext context,
-  NavigatorState navigator,
-) async {
-  final systems = await fetchSystemsOrShowError(context);
-  if (systems == null || !context.mounted) return null;
-
-  final systemKey = await showAddSchoolModal(context, systems);
-  if (systemKey == null) return null;
-
-  final system = systems.firstWhere((s) => s.key == systemKey);
-  return navigator.push<String>(
-    MaterialPageRoute(builder: (_) => UnifiedConnectScreen(system: system)),
-  );
-}
 
 Future<List<SchoolSystem>?> fetchSystemsOrShowError(BuildContext context) async {
   List<SchoolSystem> systems;

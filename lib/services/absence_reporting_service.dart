@@ -1,14 +1,11 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 
-import '../domain/my_school.dart';
 import 'active_account_service.dart';
 import 'api_client.dart';
+import 'linked_accounts_controller.dart';
 import 'private_account_store.dart';
 import 'token_proxy_client.dart';
-
-/// Catalog key of the school system whose absences can be reported to the school.
-const schulnetzSystemKey = 'schulnetz';
 
 /// Longest reason or comment the school accepts.
 const absenceTextLimit = 500;
@@ -88,13 +85,13 @@ class ReportedAbsence {
       );
 }
 
-enum AbsenceReportErrorKind { invalidRequest, schulnetzRejected, notWithdrawable, notAllowed, signInExpired, schoolUnavailable, notAvailable, network, other }
+enum AbsenceReportErrorKind { invalidRequest, schoolRejected, notWithdrawable, notAllowed, signInExpired, schoolUnavailable, notAvailable, network, other }
 
 /// A failed call to the school-reporting endpoints, reduced to something the UI can word.
 class AbsenceReportException implements Exception {
   final AbsenceReportErrorKind kind;
 
-  /// The message the server sent; for [AbsenceReportErrorKind.schulnetzRejected] this is the school's own wording.
+  /// The message the server sent; for [AbsenceReportErrorKind.schoolRejected] this is the school's own wording.
   final String? serverMessage;
 
   const AbsenceReportException(this.kind, [this.serverMessage]);
@@ -109,11 +106,11 @@ class AbsenceReportException implements Exception {
     if (status == null) return const AbsenceReportException(AbsenceReportErrorKind.network);
     final kind = switch (code) {
       'invalid_request' => AbsenceReportErrorKind.invalidRequest,
-      'schulnetz_rejected' => AbsenceReportErrorKind.schulnetzRejected,
+      'school_rejected' => AbsenceReportErrorKind.schoolRejected,
       'not_withdrawable' => AbsenceReportErrorKind.notWithdrawable,
       'absence_reporting_not_allowed' => AbsenceReportErrorKind.notAllowed,
-      'schulnetz_signin_expired' => AbsenceReportErrorKind.signInExpired,
-      'schulnetz_unavailable' => AbsenceReportErrorKind.schoolUnavailable,
+      'signin_expired' => AbsenceReportErrorKind.signInExpired,
+      'school_unavailable' => AbsenceReportErrorKind.schoolUnavailable,
       _ => switch (status) {
           404 => AbsenceReportErrorKind.notAvailable,
           502 || 503 || 504 => AbsenceReportErrorKind.schoolUnavailable,
@@ -129,11 +126,11 @@ class AbsenceReportException implements Exception {
 
 /// Where absence reports for the current school connection go.
 class AbsenceReportTarget {
-  /// Account mode: the plugin base path and the connected account.
+  /// Account mode: the capability base path and the connected account.
   final String? basePath;
   final String? accountId;
 
-  /// Private mode: the device-held Schulnetz account.
+  /// Private mode: the device-held school account.
   final PrivateAccount? privateAccount;
 
   const AbsenceReportTarget.account({required String this.basePath, required String this.accountId}) : privateAccount = null;
@@ -144,10 +141,10 @@ class AbsenceReportTarget {
   bool get isPrivate => privateAccount != null;
 
   /// Path of the absences collection, relative to the backend.
-  String get absencesPath => isPrivate ? '${privateAccount!.statelessBasePath}/absences' : '$basePath/accounts/$accountId/absences';
+  String get absencesPath => isPrivate ? '${privateAccount!.statelessBasePath}/absences' : '$basePath/$accountId/absences';
 }
 
-/// Reports absences to the school (Schulnetz) and lists the reports it has not processed yet.
+/// Reports absences to the school and lists the reports it has not processed yet.
 class AbsenceReportingService {
   AbsenceReportingService._() : _fetcher = null;
   static final AbsenceReportingService instance = AbsenceReportingService._();
@@ -158,21 +155,25 @@ class AbsenceReportingService {
   final Future<Object?> Function(AbsenceReportTarget target)? _fetcher;
   final Map<String, List<String>> _reasonCache = {};
 
-  static bool isSchulnetz(MySchool school) => school.provider == schulnetzSystemKey || school.schoolSystemKey == schulnetzSystemKey;
-
-  /// The Schulnetz connection of the current mode, or null when there is none (then absences stay in Schuly only).
-  Future<AbsenceReportTarget?> resolveTarget({required bool isPrivate}) async {
+  /// The account of the current mode that reports to the school, or null when there is none (then absences stay in Schuly only).
+  /// Account mode: an account whose provider has the `absence_reporting` capability, preferring the active school's own account;
+  /// the path comes from the capability's base path. Private mode: the device-held token account (the endpoints answer 404
+  /// when the school cannot take reports, which the page treats as "not available").
+  Future<AbsenceReportTarget?> resolveTarget({required bool isPrivate, LinkedAccountsController? accounts}) async {
     if (isPrivate) {
       final account = await PrivateAccountStore.instance.load();
-      if (account == null || account.systemKey != schulnetzSystemKey) return null;
-      if (account.accessToken == null || account.statelessBasePath.isEmpty) return null;
+      if (account == null || account.accessToken == null || account.statelessBasePath.isEmpty) return null;
       return AbsenceReportTarget.private(account);
     }
-    final school = ActiveAccountService.instance.active;
-    if (school == null || !isSchulnetz(school)) return null;
-    final target = await ActiveAccountService.instance.resolvePluginTarget(school);
-    if (target == null) return null;
-    return AbsenceReportTarget.account(basePath: target.basePath, accountId: target.accountId);
+    final controller = accounts ?? LinkedAccountsController.instance;
+    if (!controller.loaded) await controller.load();
+    final candidates = controller.withCapability(absenceReportingCapability);
+    if (candidates.isEmpty) return null;
+    final activeAccountId = ActiveAccountService.instance.active?.pluginAccountId;
+    final account = candidates.firstWhere((a) => a.id == activeAccountId, orElse: () => candidates.first);
+    final basePath = account.capability(absenceReportingCapability)?.basePath;
+    if (basePath == null || basePath.isEmpty) return null;
+    return AbsenceReportTarget.account(basePath: basePath, accountId: account.id);
   }
 
   Future<List<ReportedAbsence>> reported(AbsenceReportTarget target) async {
