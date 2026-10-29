@@ -30,10 +30,6 @@ void main() {
       expect(AbsenceDraft(dateFrom: day, dateTo: day).validate(), isNull);
     });
 
-    test('offers the six Schulnetz reasons', () {
-      expect(absenceReasons, ['Krankheit', 'Unfall', 'Militär', 'gültiges Arztzeugnis für Sport', 'Andere Absenz', 'Urlaubsgesuch']);
-    });
-
     test('accepts a valid draft', () {
       expect(AbsenceDraft(dateFrom: day, dateTo: day).validate(), isNull);
       expect(AbsenceDraft(dateFrom: day, dateTo: day, hourFrom: '08:00', hourTo: '09:30').validate(), isNull);
@@ -120,6 +116,40 @@ void main() {
       expect(r.hourFrom, isNull);
       expect(r.reportedAt, isNull);
       expect(r.dateTo, DateTime(2026, 11, 9));
+    });
+  });
+
+  group('reasons', () {
+    const target = AbsenceReportTarget.account(basePath: '/api/plugins/schulware', accountId: 'acc1');
+
+    test('parses the string array in server order and drops junk', () {
+      expect(AbsenceReportingService.parseReasons(['Krankheit', ' Unfall ', '', 3, null, 'Urlaubsgesuch']), ['Krankheit', 'Unfall', 'Urlaubsgesuch']);
+      expect(AbsenceReportingService.parseReasons('nope'), isEmpty);
+      expect(AbsenceReportingService.parseReasons(null), isEmpty);
+    });
+
+    test('caches a successful load per connection', () async {
+      var calls = 0;
+      final service = AbsenceReportingService.withFetcher((_) async {
+        calls++;
+        return ['Krankheit', 'Unfall'];
+      });
+      expect(await service.reasons(target), ['Krankheit', 'Unfall']);
+      expect(await service.reasons(target), ['Krankheit', 'Unfall']);
+      expect(calls, 1);
+      await service.reasons(const AbsenceReportTarget.account(basePath: '/api/plugins/schulware', accountId: 'acc2'));
+      expect(calls, 2);
+    });
+
+    test('falls back to no reasons on error and retries next time', () async {
+      var calls = 0;
+      final service = AbsenceReportingService.withFetcher((_) async {
+        calls++;
+        if (calls == 1) throw const AbsenceReportException(AbsenceReportErrorKind.notAvailable);
+        return ['Krankheit'];
+      });
+      expect(await service.reasons(target), isEmpty);
+      expect(await service.reasons(target), ['Krankheit']);
     });
   });
 
