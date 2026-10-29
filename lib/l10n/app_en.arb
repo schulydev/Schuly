@@ -274,5 +274,75 @@
   "absenceWholeDay": "Whole day",
   "@absenceWholeDay": {
     "description": "Absence reporting: absenceWholeDay"
+  },
+  "verifyEmailTitle": "Confirm your email",
+  "@verifyEmailTitle": {
+    "description": "Email confirmation step: verifyEmailTitle"
+  },
+  "verifyEmailBody": "We sent a 6-digit code to {email}. Enter it to finish.",
+  "@verifyEmailBody": {
+    "description": "Email confirmation step: verifyEmailBody",
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "verifyEmailLinkBody": "Check your email to confirm your address.",
+  "@verifyEmailLinkBody": {
+    "description": "Email confirmation step: verifyEmailLinkBody"
+  },
+  "verifyEmailCodeLabel": "Confirmation code",
+  "@verifyEmailCodeLabel": {
+    "description": "Email confirmation step: verifyEmailCodeLabel"
+  },
+  "verifyEmailVerify": "Verify",
+  "@verifyEmailVerify": {
+    "description": "Email confirmation step: verifyEmailVerify"
+  },
+  "verifyEmailResend": "Resend code",
+  "@verifyEmailResend": {
+    "description": "Email confirmation step: verifyEmailResend"
+  },
+  "verifyEmailResendIn": "Resend code in {seconds} s",
+  "@verifyEmailResendIn": {
+    "description": "Email confirmation step: verifyEmailResendIn",
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "verifyEmailResent": "A new code is on its way.",
+  "@verifyEmailResent": {
+    "description": "Email confirmation step: verifyEmailResent"
+  },
+  "verifyEmailBack": "Back to sign in",
+  "@verifyEmailBack": {
+    "description": "Email confirmation step: verifyEmailBack"
+  },
+  "verifyEmailInvalidCode": "That code isn't right. Check it and try again.",
+  "@verifyEmailInvalidCode": {
+    "description": "Email confirmation step: verifyEmailInvalidCode"
+  },
+  "verifyEmailExpired": "That code has expired. Request a new one.",
+  "@verifyEmailExpired": {
+    "description": "Email confirmation step: verifyEmailExpired"
+  },
+  "verifyEmailGone": "This confirmation is no longer valid. Sign in again.",
+  "@verifyEmailGone": {
+    "description": "Email confirmation step: verifyEmailGone"
+  },
+  "verifyEmailRateLimited": "Too many attempts. Wait a moment and try again.",
+  "@verifyEmailRateLimited": {
+    "description": "Email confirmation step: verifyEmailRateLimited"
+  },
+  "verifyEmailSendFailed": "We couldn't send the email. Try again in a moment.",
+  "@verifyEmailSendFailed": {
+    "description": "Email confirmation step: verifyEmailSendFailed"
+  },
+  "verifyEmailGeneric": "Something went wrong. Try again in a moment.",
+  "@verifyEmailGeneric": {
+    "description": "Email confirmation step: verifyEmailGeneric"
   }
 }

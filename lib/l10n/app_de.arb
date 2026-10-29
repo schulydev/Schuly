@@ -76,5 +76,20 @@
   "absenceWithdrawBody": "Deine Schule sieht diese Meldung nicht mehr.",
   "absenceWithdrawnToast": "Meldung zurückgezogen",
   "absenceCancel": "Abbrechen",
-  "absenceWholeDay": "Ganzer Tag"
+  "absenceWholeDay": "Ganzer Tag",
+  "verifyEmailTitle": "E-Mail bestätigen",
+  "verifyEmailBody": "Wir haben einen 6-stelligen Code an {email} gesendet. Gib ihn ein, um abzuschliessen.",
+  "verifyEmailLinkBody": "Prüfe dein E-Mail-Postfach, um deine Adresse zu bestätigen.",
+  "verifyEmailCodeLabel": "Bestätigungscode",
+  "verifyEmailVerify": "Bestätigen",
+  "verifyEmailResend": "Code erneut senden",
+  "verifyEmailResendIn": "Code erneut senden in {seconds} s",
+  "verifyEmailResent": "Ein neuer Code ist unterwegs.",
+  "verifyEmailBack": "Zurück zur Anmeldung",
+  "verifyEmailInvalidCode": "Dieser Code stimmt nicht. Prüfe ihn und versuche es erneut.",
+  "verifyEmailExpired": "Dieser Code ist abgelaufen. Fordere einen neuen an.",
+  "verifyEmailGone": "Diese Bestätigung ist nicht mehr gültig. Melde dich erneut an.",
+  "verifyEmailRateLimited": "Zu viele Versuche. Warte einen Moment und versuche es erneut.",
+  "verifyEmailSendFailed": "Die E-Mail konnte nicht gesendet werden. Versuche es gleich noch einmal.",
+  "verifyEmailGeneric": "Etwas ist schiefgelaufen. Versuche es gleich noch einmal."
 }
