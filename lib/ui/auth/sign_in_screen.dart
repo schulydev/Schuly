@@ -1,9 +1,13 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:forui/forui.dart';
 
+import '../../l10n/app_localizations.dart';
 import '../../services/auth_service.dart';
 
-enum _Step { signIn, register, code, forgot }
+enum _Step { signIn, register, code, verifyEmail, forgot }
 
 /// Native sign-in against the Schuly server: sign in, create an account, the
 /// two-factor code step and a password reset request. Pops with true once signed in.
@@ -24,6 +28,10 @@ class _SignInScreenState extends State<SignInScreen> {
   final _password = TextEditingController();
   final _code = TextEditingController();
   TwoFactorChallenge? _challenge;
+  EmailVerificationChallenge? _emailChallenge;
+  Timer? _resendTimer;
+  int _resendLeft = 0;
+  String? _emailNotice;
   bool _rememberDevice = true;
   bool _usingRecoveryCode = false;
   bool _busy = false;
@@ -41,18 +49,138 @@ class _SignInScreenState extends State<SignInScreen> {
 
   @override
   void dispose() {
+    _resendTimer?.cancel();
     for (final c in [_identifier, _userName, _email, _password, _code]) {
       c.dispose();
     }
     super.dispose();
   }
 
-  void _go(_Step step) => setState(() {
-        _step = step;
-        _error = null;
-        _notice = null;
+  void _go(_Step step) {
+    if (step != _Step.verifyEmail) _stopResendTimer();
+    setState(() {
+      _step = step;
+      _error = null;
+      _notice = null;
+      _emailNotice = null;
+      _code.clear();
+    });
+  }
+
+  void _stopResendTimer() {
+    _resendTimer?.cancel();
+    _resendTimer = null;
+    _resendLeft = 0;
+  }
+
+  void _startResendCountdown(Duration wait) {
+    _resendTimer?.cancel();
+    setState(() => _resendLeft = wait.inSeconds);
+    _resendTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (!mounted || _resendLeft <= 1) {
+        timer.cancel();
+        if (mounted) setState(() => _resendLeft = 0);
+        return;
+      }
+      setState(() => _resendLeft--);
+    });
+  }
+
+  void _enterEmailVerification(EmailVerificationChallenge pending) {
+    _emailChallenge = pending;
+    _code.clear();
+    _error = null;
+    _emailNotice = null;
+    _step = _Step.verifyEmail;
+    _startResendCountdown(const Duration(seconds: 60));
+  }
+
+  /// Continues after a sign-in step: done, a two-factor code, or an email code.
+  void _continue(AuthNext? next) {
+    if (next == null) {
+      if (mounted) Navigator.of(context).pop(true);
+      return;
+    }
+    setState(() {
+      final verification = next.emailVerification;
+      if (verification != null) {
+        _enterEmailVerification(verification);
+      } else {
+        _stopResendTimer();
+        _challenge = next.twoFactor;
         _code.clear();
+        _step = _Step.code;
+      }
+    });
+  }
+
+  String _emailErrorText(AppLocalizations l, EmailCodeException e) => switch (e.kind) {
+        EmailCodeErrorKind.invalidCode => l.verifyEmailInvalidCode,
+        EmailCodeErrorKind.codeExpired => l.verifyEmailExpired,
+        EmailCodeErrorKind.invalidGrant => l.verifyEmailGone,
+        EmailCodeErrorKind.rateLimited => l.verifyEmailRateLimited,
+        EmailCodeErrorKind.notificationFailed => l.verifyEmailSendFailed,
+        EmailCodeErrorKind.other => l.verifyEmailGeneric,
+      };
+
+  Future<void> _verifyEmail() async {
+    final l = AppLocalizations.of(context)!;
+    final pending = _emailChallenge!;
+    setState(() {
+      _busy = true;
+      _error = null;
+      _emailNotice = null;
+    });
+    try {
+      final next = await AuthService.verifyEmailCode(pending, _code.text.trim());
+      _continue(next);
+    } on EmailCodeException catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _error = _emailErrorText(l, e);
+        if (e.kind == EmailCodeErrorKind.invalidCode || e.kind == EmailCodeErrorKind.codeExpired) _code.clear();
       });
+      if (e.kind == EmailCodeErrorKind.invalidGrant) {
+        _stopResendTimer();
+        setState(() {
+          _step = _Step.signIn;
+          _error = _emailErrorText(l, e);
+        });
+      }
+      if (e.kind == EmailCodeErrorKind.rateLimited && e.retryAfter != null) _startResendCountdown(e.retryAfter!);
+    } catch (_) {
+      if (mounted) setState(() => _error = l.verifyEmailGeneric);
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  Future<void> _resendEmail() async {
+    final l = AppLocalizations.of(context)!;
+    setState(() {
+      _busy = true;
+      _error = null;
+      _emailNotice = null;
+    });
+    try {
+      await AuthService.resendEmailCode(_emailChallenge!);
+      if (!mounted) return;
+      setState(() => _emailNotice = l.verifyEmailResent);
+      _startResendCountdown(const Duration(seconds: 60));
+    } on EmailCodeException catch (e) {
+      if (!mounted) return;
+      setState(() => _error = _emailErrorText(l, e));
+      if (e.kind == EmailCodeErrorKind.rateLimited) _startResendCountdown(e.retryAfter ?? const Duration(seconds: 60));
+      if (e.kind == EmailCodeErrorKind.invalidGrant) {
+        _stopResendTimer();
+        setState(() => _step = _Step.signIn);
+      }
+    } catch (_) {
+      if (mounted) setState(() => _error = l.verifyEmailGeneric);
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
 
   Future<void> _run(Future<void> Function() action) async {
     setState(() {
@@ -74,16 +202,10 @@ class _SignInScreenState extends State<SignInScreen> {
     switch (_step) {
       case _Step.signIn:
         await _run(() async {
-          final challenge = await AuthService.signIn(_identifier.text.trim(), _password.text);
-          if (challenge == null) {
-            if (mounted) Navigator.of(context).pop(true);
-            return;
-          }
-          setState(() {
-            _challenge = challenge;
-            _step = _Step.code;
-          });
+          _continue(await AuthService.signIn(_identifier.text.trim(), _password.text));
         });
+      case _Step.verifyEmail:
+        await _verifyEmail();
       case _Step.code:
         await _run(() async {
           try {
@@ -97,8 +219,12 @@ class _SignInScreenState extends State<SignInScreen> {
         });
       case _Step.register:
         await _run(() async {
-          await AuthService.register(_userName.text.trim(), _email.text.trim(), _password.text);
-          if (mounted) Navigator.of(context).pop(true);
+          final pending = await AuthService.register(_userName.text.trim(), _email.text.trim(), _password.text);
+          if (pending != null) {
+            setState(() => _enterEmailVerification(pending));
+          } else if (mounted) {
+            Navigator.of(context).pop(true);
+          }
         });
       case _Step.forgot:
         await _run(() async {
@@ -109,21 +235,14 @@ class _SignInScreenState extends State<SignInScreen> {
   }
 
   Future<void> _signInWith(SignInProvider provider) => _run(() async {
-        final challenge = await AuthService.signInWithProvider(provider.key);
-        if (challenge == null) {
-          if (mounted) Navigator.of(context).pop(true);
-          return;
-        }
-        setState(() {
-          _challenge = challenge;
-          _step = _Step.code;
-        });
+        _continue(await AuthService.signInWithProvider(provider.key));
       });
 
   String get _title => switch (_step) {
         _Step.signIn => 'Welcome back',
         _Step.register => 'Create your account',
         _Step.code => 'One more step',
+        _Step.verifyEmail => AppLocalizations.of(context)!.verifyEmailTitle,
         _Step.forgot => 'Forgot your password?',
       };
 
@@ -131,6 +250,7 @@ class _SignInScreenState extends State<SignInScreen> {
         _Step.signIn => 'Sign in with your Schuly account.',
         _Step.register => 'We send a link to confirm your email.',
         _Step.code => _usingRecoveryCode ? 'Enter one of the recovery codes you saved when you set up two-factor.' : 'Enter the 6-digit code from your authenticator app.',
+        _Step.verifyEmail => _emailChallenge!.isCode ? AppLocalizations.of(context)!.verifyEmailBody(_emailChallenge!.email) : AppLocalizations.of(context)!.verifyEmailLinkBody,
         _Step.forgot => 'We email you a link to choose a new one.',
       };
 
@@ -138,6 +258,7 @@ class _SignInScreenState extends State<SignInScreen> {
         _Step.signIn => 'Continue',
         _Step.register => 'Create account',
         _Step.code => 'Verify',
+        _Step.verifyEmail => AppLocalizations.of(context)!.verifyEmailVerify,
         _Step.forgot => 'Send reset link',
       };
 
@@ -147,7 +268,7 @@ class _SignInScreenState extends State<SignInScreen> {
     return FScaffold(
       header: FHeader.nested(
         title: const Text('Schuly'),
-        prefixes: [FHeaderAction.back(onPress: () => _step == _Step.code || _step == _Step.forgot ? _go(_Step.signIn) : Navigator.of(context).pop(false))],
+        prefixes: [FHeaderAction.back(onPress: () => _step == _Step.code || _step == _Step.verifyEmail || _step == _Step.forgot ? _go(_Step.signIn) : Navigator.of(context).pop(false))],
       ),
       child: SafeArea(
         child: ListView(
@@ -220,6 +341,22 @@ class _SignInScreenState extends State<SignInScreen> {
                       onChange: (value) => setState(() => _rememberDevice = value),
                     ),
                   ],
+                  if (_step == _Step.verifyEmail && _emailChallenge!.isCode)
+                    FTextField(
+                      control: FTextFieldControl.managed(
+                        controller: _code,
+                        onChange: (value) {
+                          if (value.text.length == 6 && !_busy) _verifyEmail();
+                        },
+                      ),
+                      label: Text(AppLocalizations.of(context)!.verifyEmailCodeLabel),
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [FilteringTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(6)],
+                      autofillHints: const [AutofillHints.oneTimeCode],
+                      autocorrect: false,
+                      autofocus: true,
+                      onSubmit: (_) => _busy ? null : _verifyEmail(),
+                    ),
                   if (_step == _Step.forgot)
                     FTextField(
                       control: FTextFieldControl.managed(controller: _email),
@@ -229,9 +366,10 @@ class _SignInScreenState extends State<SignInScreen> {
                       autocorrect: false,
                     ),
                   if (_error != null) Text(_error!, style: theme.typography.sm.copyWith(color: theme.colors.destructive)),
+                  if (_emailNotice != null) Text(_emailNotice!, style: theme.typography.sm.copyWith(color: theme.colors.foreground)),
                   if (_notice != null) Text(_notice!, style: theme.typography.sm.copyWith(color: theme.colors.foreground)),
                   FButton(
-                    onPress: _busy ? null : _submit,
+                    onPress: _busy || (_step == _Step.verifyEmail && !_emailChallenge!.isCode) ? null : _submit,
                     child: _busy ? const SizedBox(width: 16, height: 16, child: FCircularProgress()) : Text(_action),
                   ),
                   if (_step == _Step.signIn) ...[
@@ -246,6 +384,14 @@ class _SignInScreenState extends State<SignInScreen> {
                     FButton(style: FButtonStyle.outline(), onPress: () => _go(_Step.register), child: const Text('Create an account')),
                   ],
                   if (_step == _Step.register) FButton(style: FButtonStyle.ghost(), onPress: () => _go(_Step.signIn), child: const Text('I already have an account')),
+                  if (_step == _Step.verifyEmail) ...[
+                    FButton(
+                      style: FButtonStyle.outline(),
+                      onPress: _busy || _resendLeft > 0 ? null : _resendEmail,
+                      child: Text(_resendLeft > 0 ? AppLocalizations.of(context)!.verifyEmailResendIn(_resendLeft) : AppLocalizations.of(context)!.verifyEmailResend),
+                    ),
+                    FButton(style: FButtonStyle.ghost(), onPress: () => _go(_Step.signIn), child: Text(AppLocalizations.of(context)!.verifyEmailBack)),
+                  ],
                   if (_step == _Step.code)
                     FButton(
                       style: FButtonStyle.ghost(),
