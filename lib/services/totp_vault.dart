@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'secure_store.dart';
 
 import 'totp_service.dart';
 
@@ -50,13 +50,10 @@ class TotpVault {
   TotpVault._();
   static final TotpVault instance = TotpVault._();
 
-  static const _storage = FlutterSecureStorage(
-    aOptions: AndroidOptions(encryptedSharedPreferences: true),
-  );
   static const _key = 'authenticator.entries';
 
   Future<List<TotpEntry>> load() async {
-    final raw = await _storage.read(key: _key);
+    final raw = await SecureStore.read(_key);
     if (raw == null) return [];
     try {
       final list = jsonDecode(raw) as List<dynamic>;
@@ -67,7 +64,7 @@ class TotpVault {
   }
 
   Future<void> _saveAll(List<TotpEntry> entries) =>
-      _storage.write(key: _key, value: jsonEncode(entries.map((e) => e.toJson()).toList()));
+      SecureStore.write(_key, jsonEncode(entries.map((e) => e.toJson()).toList()));
 
   Future<TotpEntry> add(TotpEntry entry) async {
     final entries = await load();
