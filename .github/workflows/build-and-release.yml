@@ -179,6 +179,8 @@ jobs:
 
   upload-to-release:
     needs: [build-android, build-ios]
+    permissions:
+      contents: write
     runs-on: ubuntu-latest
     if: github.event_name == 'release'
     steps:
