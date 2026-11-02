@@ -10,7 +10,9 @@ import 'services/firebase_push.dart';
 import 'services/school_data_service.dart';
 import 'services/theme_service.dart';
 import 'services/toast_service.dart';
+import 'services/update/update_service.dart';
 import 'ui/core/ui/root_screen.dart';
+import 'ui/update/update_dialog.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,7 +20,13 @@ Future<void> main() async {
   await AppModeService.instance.load();
   await ThemeService.instance.load();
   await SchoolDataService.instance.loadCached();
+  await UpdateService.instance.load();
+  UpdateService.instance.presenter = showUpdateDialog;
   runApp(const SchulyApp());
+  // Update check runs after the first frame so it never delays startup or races the navigator.
+  WidgetsBinding.instance.addPostFrameCallback(
+    (_) => UpdateService.instance.start(),
+  );
   // Firebase touches disk and the network, so it starts after the first frame
   // and never delays startup.
   unawaited(startPush());
@@ -49,7 +57,8 @@ class SchulyApp extends StatelessWidget {
             final mode = ThemeService.instance.mode;
             final platformDark =
                 MediaQuery.platformBrightnessOf(ctx) == Brightness.dark;
-            final isDark = mode == ThemeMode.dark ||
+            final isDark =
+                mode == ThemeMode.dark ||
                 (mode == ThemeMode.system && platformDark);
             final theme = isDark ? FThemes.zinc.dark : FThemes.zinc.light;
             return FAnimatedTheme(

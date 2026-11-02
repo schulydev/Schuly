@@ -108,6 +108,8 @@ jobs:
           mkdir -p artifacts
           cp build/app/outputs/flutter-apk/app-prod-release.apk artifacts/schuly-${{ github.ref_name }}.apk
           cp build/app/outputs/bundle/prodRelease/app-prod-release.aab artifacts/schuly-${{ github.ref_name }}.aab
+          # The in-app updater verifies the downloaded APK against this checksum.
+          (cd artifacts && sha256sum schuly-${{ github.ref_name }}.apk > schuly-${{ github.ref_name }}.apk.sha256)
 
       - name: Upload Android artifacts
         uses: actions/upload-artifact@v4
@@ -189,6 +191,7 @@ jobs:
           files: |
             android-build/schuly-${{ github.ref_name }}.apk
             android-build/schuly-${{ github.ref_name }}.aab
+            android-build/schuly-${{ github.ref_name }}.apk.sha256
             ios-build/schuly-${{ github.ref_name }}.ipa
           append_body: false
         env:

@@ -14,6 +14,7 @@ import '../linking/schools_accounts_screen.dart';
 import '../../services/theme_service.dart';
 import 'notification_settings_section.dart';
 import 'privacy_settings_section.dart';
+import 'update_settings_section.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -116,6 +117,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
           const SizedBox(height: 12),
           const PrivacySettingsSection(),
+          const UpdateSettingsSection(),
           const _SectionLabel('About'),
           FTile(
             prefix: const Icon(FIcons.fileText),
