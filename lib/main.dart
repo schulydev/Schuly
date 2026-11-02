@@ -16,11 +16,13 @@ import 'ui/update/update_dialog.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await BackendConfig.load();
-  await AppModeService.instance.load();
-  await ThemeService.instance.load();
-  await SchoolDataService.instance.loadCached();
-  await UpdateService.instance.load();
+  // Nothing before runApp may keep the app on its splash screen: each step is
+  // bounded and a failed step keeps its defaults.
+  await _startupStep('backend config', BackendConfig.load);
+  await _startupStep('app mode', AppModeService.instance.load);
+  await _startupStep('theme', ThemeService.instance.load);
+  await _startupStep('cached school data', SchoolDataService.instance.loadCached);
+  await _startupStep('updates', UpdateService.instance.load);
   UpdateService.instance.presenter = showUpdateDialog;
   runApp(const SchulyApp());
   // Update check runs after the first frame so it never delays startup or races the navigator.
@@ -30,6 +32,14 @@ Future<void> main() async {
   // Firebase touches disk and the network, so it starts after the first frame
   // and never delays startup.
   unawaited(startPush());
+}
+
+Future<void> _startupStep(String name, Future<void> Function() step) async {
+  try {
+    await step().timeout(const Duration(seconds: 5));
+  } catch (e) {
+    debugPrint('Startup: $name skipped ($e)');
+  }
 }
 
 class SchulyApp extends StatelessWidget {

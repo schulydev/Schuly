@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'secure_store.dart';
 
 class PrivateAccount {
   final String systemKey;
@@ -81,13 +81,10 @@ class PrivateAccountStore {
   PrivateAccountStore._();
   static final PrivateAccountStore instance = PrivateAccountStore._();
 
-  static const _storage = FlutterSecureStorage(
-    aOptions: AndroidOptions(encryptedSharedPreferences: true),
-  );
   static const _key = 'private.account';
 
   Future<PrivateAccount?> load() async {
-    final raw = await _storage.read(key: _key);
+    final raw = await SecureStore.read(_key);
     if (raw == null) return null;
     try {
       return PrivateAccount.fromJson(jsonDecode(raw) as Map<String, dynamic>);
@@ -97,7 +94,7 @@ class PrivateAccountStore {
   }
 
   Future<void> save(PrivateAccount account) =>
-      _storage.write(key: _key, value: jsonEncode(account.toJson()));
+      SecureStore.write(_key, jsonEncode(account.toJson()));
 
-  Future<void> clear() => _storage.delete(key: _key);
+  Future<void> clear() => SecureStore.delete(_key);
 }

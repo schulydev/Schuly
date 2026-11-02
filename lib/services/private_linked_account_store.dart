@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'secure_store.dart';
 
 /// An account linked in private mode: its sign-in session stays on this device.
 class PrivateLinkedAccount {
@@ -28,11 +28,10 @@ class PrivateLinkedAccountStore {
   PrivateLinkedAccountStore._();
   static final PrivateLinkedAccountStore instance = PrivateLinkedAccountStore._();
 
-  static const _storage = FlutterSecureStorage(aOptions: AndroidOptions(encryptedSharedPreferences: true));
   static const _key = 'private.microsoft';
 
   Future<List<PrivateLinkedAccount>> list() async {
-    final raw = await _storage.read(key: _key);
+    final raw = await SecureStore.read(_key);
     if (raw == null) return [];
     try {
       return (jsonDecode(raw) as List<dynamic>).map((e) => PrivateLinkedAccount.fromJson(e as Map<String, dynamic>)).toList();
@@ -61,7 +60,7 @@ class PrivateLinkedAccountStore {
 
   Future<void> remove(String id) async => _write((await list()).where((l) => l.id != id).toList());
 
-  Future<void> clear() => _storage.delete(key: _key);
+  Future<void> clear() => SecureStore.delete(_key);
 
-  Future<void> _write(List<PrivateLinkedAccount> links) => _storage.write(key: _key, value: jsonEncode(links.map((l) => l.toJson()).toList()));
+  Future<void> _write(List<PrivateLinkedAccount> links) => SecureStore.write(_key, jsonEncode(links.map((l) => l.toJson()).toList()));
 }

@@ -13,10 +13,12 @@ import '../../../services/private_account_store.dart';
 import '../../../services/private_linked_account_store.dart';
 import '../../../services/push_service.dart';
 import '../../../services/school_data_service.dart';
+import '../../../services/secure_store.dart';
 import '../../auth/sign_in_screen.dart';
 import '../../dashboard/dashboard_screen.dart';
 import '../../onboarding/onboarding_screen.dart';
 import '../../private/private_connect_flow.dart';
+import '../../update/check_for_updates.dart';
 
 /// Full sign-out: clears tokens, the active school, cached school data, and
 /// any on-disk private-mode credentials, then drops the app back to account
@@ -41,6 +43,10 @@ Future<void> signOutAndClear() async {
 class RootScreen extends StatefulWidget {
   const RootScreen({super.key});
 
+  /// The longest the startup session check may take. After that the app shows
+  /// the sign-in screen instead of a spinner, whatever is still pending.
+  static Duration bootstrapTimeout = const Duration(seconds: 15);
+
   @override
   State<RootScreen> createState() => _RootScreenState();
 }
@@ -50,6 +56,9 @@ class _RootScreenState extends State<RootScreen> {
   bool _onboarded = true; // assume seen until loaded, to avoid a flash
   bool _busy = false;
   String? _error;
+
+  /// Shown above the sign-in buttons when startup had to give up on the stored session.
+  String? _notice;
 
   @override
   void initState() {
@@ -69,24 +78,55 @@ class _RootScreenState extends State<RootScreen> {
     super.dispose();
   }
 
+  /// Decides between the dashboard and the sign-in screen. Bounded by
+  /// [RootScreen.bootstrapTimeout]: a keystore or plugin that never answers
+  /// ends on the sign-in screen with a notice, never on an endless spinner.
   Future<void> _refresh() async {
+    bool ready;
+    try {
+      ready = await _resolveSession().timeout(RootScreen.bootstrapTimeout);
+    } catch (e) {
+      debugPrint('RootScreen: startup session check failed ($e)');
+      ready = false;
+      SecureStore.wasReset.value = true;
+    }
+    if (!mounted) return;
+    // Say it once: the next sign-out is an ordinary one.
+    final lostSession = !ready && SecureStore.wasReset.value;
+    SecureStore.wasReset.value = false;
+    setState(() {
+      _ready = ready;
+      _notice = lostSession ? 'Please sign in again.' : null;
+    });
+    if (ready && !AppModeService.instance.isPrivate) unawaited(_announceSignedIn());
+  }
+
+  /// Reads only the device: no network call decides whether the app starts.
+  Future<bool> _resolveSession() async {
     if (AppModeService.instance.isPrivate) {
       final account = await PrivateAccountStore.instance.load();
       if (account == null) SchoolDataService.instance.clear();
-      if (mounted) setState(() => _ready = account != null);
-      return;
+      return account != null;
     }
-    final token = await AuthService.getAccessToken();
-    // A refresh that failed on the network still leaves a usable session - the
-    // dashboard shows its own offline state. Only a session that is really gone
-    // drops the active school and goes back to the sign-in screen.
-    final signedIn = token != null || await AuthService.hasSession();
+    // A stored refresh token is a session even while the server is out of
+    // reach - the dashboard shows its own offline state, and a session the
+    // server ended comes back as a 401 that signs out. Without one, only a
+    // still-valid cached access token counts (that lookup needs no network).
+    final signedIn = await AuthService.hasSession() || await AuthService.getAccessToken() != null;
     if (!signedIn) {
       await ActiveAccountService.instance.clear();
       SchoolDataService.instance.clear();
     }
-    if (mounted) setState(() => _ready = signedIn);
-    if (token != null) unawaited(PushService.instance.onSignedIn());
+    return signedIn;
+  }
+
+  Future<void> _announceSignedIn() async {
+    try {
+      final token = await AuthService.getAccessToken();
+      if (token != null) await PushService.instance.onSignedIn();
+    } catch (e) {
+      debugPrint('RootScreen: push registration skipped ($e)');
+    }
   }
 
   Future<void> _signIn({bool register = false}) async {
@@ -154,6 +194,12 @@ class _RootScreenState extends State<RootScreen> {
           mainAxisSize: MainAxisSize.min,
           spacing: 16,
           children: [
+            if (_notice != null)
+              Text(
+                _notice!,
+                textAlign: TextAlign.center,
+                style: context.theme.typography.sm.copyWith(color: colors.mutedForeground),
+              ),
             if (isPrivate) ...[
               const Text(
                 'Private mode - no account, nothing stored on a server.',
@@ -186,6 +232,7 @@ class _RootScreenState extends State<RootScreen> {
             if (_error != null)
               SelectableText(_error!,
                   style: TextStyle(color: colors.destructive)),
+            const CheckForUpdatesLink(),
           ],
         ),
       ),

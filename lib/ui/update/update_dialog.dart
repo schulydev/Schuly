@@ -152,7 +152,11 @@ class _UpdateDialogState extends State<UpdateDialog> {
           child: SingleChildScrollView(
             child: release.notes.isEmpty
                 ? Text('No release notes were provided.', style: typography.sm.copyWith(color: colors.mutedForeground))
-                : MarkdownText(release.notes),
+                : DefaultTextStyle.merge(
+                    // FDialog centres its body; notes with lists read better left-aligned.
+                    textAlign: TextAlign.start,
+                    child: MarkdownText(release.notes),
+                  ),
           ),
         ),
     };

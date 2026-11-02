@@ -6,7 +6,7 @@ import 'package:crypto/crypto.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'secure_store.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../config/backend_config.dart';
@@ -80,10 +80,6 @@ class AuthService {
   static const _kDeviceTokenKey = 'auth.device_token';
   static const _kLegacyKeys = ['auth.access_token', 'auth.id_token'];
 
-  static const _storage = FlutterSecureStorage(
-    aOptions: AndroidOptions(encryptedSharedPreferences: true),
-  );
-
   static String? _accessToken;
   static DateTime? _accessTokenExpiry;
 
@@ -119,7 +115,7 @@ class AuthService {
   /// Signs in with a username or email and a password. Returns null when the
   /// account is signed in, or a [TwoFactorChallenge] when a code is needed.
   static Future<AuthNext?> signIn(String identifier, String password) async {
-    final deviceToken = await _storage.read(key: _kDeviceTokenKey);
+    final deviceToken = await SecureStore.read(_kDeviceTokenKey);
     final response = await _post('/auth/login', {'identifier': identifier, 'password': password, 'deviceToken': ?deviceToken});
     if (response.statusCode != 200) throw _refusal(response, "That didn't match. Check your username and password.");
     final body = jsonDecode(response.body) as Map<String, dynamic>;
@@ -256,25 +252,45 @@ class AuthService {
     final expiresIn = (body['expires_in'] as num?)?.toInt() ?? 900;
     _accessToken = accessToken;
     _accessTokenExpiry = DateTime.now().add(Duration(seconds: expiresIn));
-    await _storage.write(key: _kAccessTokenKey, value: accessToken);
-    await _storage.write(key: _kAccessTokenExpiryKey, value: _accessTokenExpiry!.toIso8601String());
     final refreshToken = body['refresh_token'] as String?;
-    if (refreshToken != null) await _storage.write(key: _kRefreshTokenKey, value: refreshToken);
     final deviceToken = body['device_token'] as String?;
-    if (deviceToken != null) await _storage.write(key: _kDeviceTokenKey, value: deviceToken);
+    // A keystore that refuses the write must not undo a sign-in that worked:
+    // the tokens stay in memory and the user signs in again next launch.
+    try {
+      await SecureStore.write(_kAccessTokenKey, accessToken);
+      await SecureStore.write(_kAccessTokenExpiryKey, _accessTokenExpiry!.toIso8601String());
+      if (refreshToken != null) await SecureStore.write(_kRefreshTokenKey, refreshToken);
+      if (deviceToken != null) await SecureStore.write(_kDeviceTokenKey, deviceToken);
+    } catch (e) {
+      debugPrint('AuthService: could not store the session ($e)');
+    }
     sessionEpoch.value++;
     return accessToken;
   }
 
+  /// Test-only: forgets the in-memory session so each test starts cold.
+  @visibleForTesting
+  static void resetForTest() {
+    _accessToken = null;
+    _accessTokenExpiry = null;
+    _restore = null;
+    _refreshing = null;
+    _signingOut = null;
+  }
+
   static Future<void>? _restore;
-  static Future<void> _ensureRestored() => _restore ??= _restoreAccessToken();
+  static Future<void> _ensureRestored() => _restore ??= _restoreAccessToken().catchError((Object e) {
+        // Never memoise a failure: the next caller tries again instead of failing forever.
+        _restore = null;
+        debugPrint('AuthService: restoring the session failed ($e)');
+      });
 
   static Future<void> _restoreAccessToken() async {
     for (final key in _kLegacyKeys) {
-      await _storage.delete(key: key);
+      await SecureStore.delete(key);
     }
-    final token = await _storage.read(key: _kAccessTokenKey);
-    final expiry = DateTime.tryParse(await _storage.read(key: _kAccessTokenExpiryKey) ?? '');
+    final token = await SecureStore.read(_kAccessTokenKey);
+    final expiry = DateTime.tryParse(await SecureStore.read(_kAccessTokenExpiryKey) ?? '');
     if (token != null && expiry != null && _accessToken == null) {
       _accessToken = token;
       _accessTokenExpiry = expiry;
@@ -295,14 +311,14 @@ class AuthService {
 
   /// Whether a refresh token is stored - the app has a session it can re-mint an
   /// access token from, even while it can't reach the server.
-  static Future<bool> hasSession() async => await _storage.read(key: _kRefreshTokenKey) != null;
+  static Future<bool> hasSession() async => await SecureStore.read(_kRefreshTokenKey) != null;
 
   static Future<AuthRefresh>? _refreshing;
 
   static Future<AuthRefresh> refreshAccessToken() => _refreshing ??= _refresh().whenComplete(() => _refreshing = null);
 
   static Future<AuthRefresh> _refresh() async {
-    final refreshToken = await _storage.read(key: _kRefreshTokenKey);
+    final refreshToken = await SecureStore.read(_kRefreshTokenKey);
     if (refreshToken == null) return const AuthRefresh.failed(AuthFailure.auth);
     try {
       final response = await _post('/auth/refresh', {'refreshToken': refreshToken});
@@ -325,7 +341,7 @@ class AuthService {
   }
 
   static Future<bool> _signOut() async {
-    final refreshToken = await _storage.read(key: _kRefreshTokenKey);
+    final refreshToken = await SecureStore.read(_kRefreshTokenKey);
     final hadSession = refreshToken != null || _accessToken != null;
     if (refreshToken != null) {
       try {
@@ -334,9 +350,9 @@ class AuthService {
     }
     _accessToken = null;
     _accessTokenExpiry = null;
-    await _storage.delete(key: _kRefreshTokenKey);
-    await _storage.delete(key: _kAccessTokenKey);
-    await _storage.delete(key: _kAccessTokenExpiryKey);
+    await SecureStore.delete(_kRefreshTokenKey);
+    await SecureStore.delete(_kAccessTokenKey);
+    await SecureStore.delete(_kAccessTokenExpiryKey);
     final prefs = await SharedPreferences.getInstance();
     for (final key in [..._kLegacyKeys, _kRefreshTokenKey]) {
       await prefs.remove(key);

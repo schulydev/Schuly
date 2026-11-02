@@ -108,7 +108,7 @@ class UpdateService extends ChangeNotifier with WidgetsBindingObserver {
     final last = prefs.getInt(_lastCheckKey);
     _lastCheck = last == null ? null : DateTime.fromMillisecondsSinceEpoch(last);
     try {
-      final info = await PackageInfo.fromPlatform();
+      final info = await PackageInfo.fromPlatform().timeout(const Duration(seconds: 3));
       _installedVersion = info.version;
     } catch (_) {
       _installedVersion = '';
@@ -235,7 +235,8 @@ class UpdateService extends ChangeNotifier with WidgetsBindingObserver {
         apk.url.toString(),
         file.path,
         cancelToken: cancelToken,
-        options: Options(followRedirects: true, maxRedirects: 5),
+        // A stalled connection fails instead of leaving the progress bar frozen.
+        options: Options(followRedirects: true, maxRedirects: 5, receiveTimeout: const Duration(seconds: 30)),
         onReceiveProgress: (received, total) {
           final denominator = total > 0 ? total : apk.size;
           if (denominator > 0) onProgress?.call((received / denominator).clamp(0.0, 1.0));

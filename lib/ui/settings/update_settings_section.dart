@@ -1,8 +1,8 @@
 import 'package:flutter/widgets.dart';
 import 'package:forui/forui.dart';
 
-import '../../services/toast_service.dart';
 import '../../services/update/update_service.dart';
+import '../update/check_for_updates.dart';
 
 /// "Updates" section of Settings: manual check with the installed version, and the auto-check toggle.
 class UpdateSettingsSection extends StatelessWidget {
@@ -12,17 +12,7 @@ class UpdateSettingsSection extends StatelessWidget {
 
   UpdateService get _service => service ?? UpdateService.instance;
 
-  Future<void> _check() async {
-    final result = await _service.check();
-    switch (result) {
-      case UpdateAvailable(:final release):
-        await _service.present(release);
-      case UpToDate():
-        ToastService.success('Schuly is up to date');
-      case UpdateCheckFailed():
-        ToastService.error("Couldn't check for updates");
-    }
-  }
+  Future<void> _check() => checkForUpdatesNow(_service);
 
   @override
   Widget build(BuildContext context) {
