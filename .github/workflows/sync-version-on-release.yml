@@ -55,10 +55,12 @@ jobs:
           git commit -m "Bumped version to $TAG_VERSION for release"
           git push origin "$BRANCH"
 
+          gh label create skip-changelog --description "Left out of release notes" --color ededed 2>/dev/null || true
           PR_URL=$(gh pr create \
             --base main \
             --head "$BRANCH" \
             --title "Bumped version to $TAG_VERSION for release" \
             --body "Bumped version to $TAG_VERSION for release" \
-            --label CI/CD)
+            --label CI/CD \
+            --label skip-changelog)
           gh pr merge "$PR_URL" --admin --squash --delete-branch
