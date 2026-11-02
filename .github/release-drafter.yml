@@ -1,12 +1,11 @@
-# Release Drafter config for schuly
 name-template: 'v$RESOLVED_VERSION'
 tag-template: 'v$RESOLVED_VERSION'
 
 version-resolver:
   major:
     labels:
-      - 'major'
       - 'breaking'
+      - 'breaking-change'
   minor:
     labels:
       - 'feature'
@@ -22,34 +21,53 @@ version-resolver:
   default: patch
 
 categories:
-  - title: '🚀 Features'
+  - title: 'New'
     labels:
       - 'feature'
-  - title: '✨ Enhancements'
+  - title: 'Improved'
     labels:
       - 'enhancement'
-  - title: '🛠️ Refactors'
-    labels:
-      - 'refactor'
-  - title: '🐛 Bug Fixes'
+  - title: 'Fixed'
     labels:
       - 'bug'
+  - title: 'Security'
+    labels:
+      - 'security'
+  - title: 'Breaking changes'
+    labels:
+      - 'breaking'
+      - 'breaking-change'
+  - title: 'Under the hood'
+    collapse-after: 5
+    labels:
+      - 'refactor'
+  - title: 'Documentation'
+    collapse-after: 5
+    labels:
+      - 'documentation'
+  - title: 'CI / build'
+    collapse-after: 5
+    labels:
+      - 'CI/CD'
+  - title: 'Dependencies'
+    collapse-after: 5
+    labels:
+      - 'dependencies'
 
-change-template: '- $TITLE @$AUTHOR (#$NUMBER)'
+change-template: '- $TITLE (#$NUMBER)'
 change-title-escapes: '\<*_&`'
+
+# Version-bump PRs opened by the release workflow carry skip-changelog, so they never show up in notes.
+exclude-labels:
+  - 'skip-changelog'
 
 no-changes-template: 'No changes in this release.'
 
+# Before publishing, add a short "## Highlights" section above the groups by hand.
 template: |
-  ## What's Changed
-
   $CHANGES
 
   **Full Changelog**: https://github.com/$OWNER/$REPOSITORY/compare/$PREVIOUS_TAG...v$RESOLVED_VERSION
-
-exclude-labels:
-  - 'skip-changelog'
-  - 'dependencies'
 
 autolabeler:
   - label: 'feature'
