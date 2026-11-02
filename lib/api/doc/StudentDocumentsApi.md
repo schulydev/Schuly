@@ -11,7 +11,6 @@ Method | HTTP request | Description
 ------------- | ------------- | -------------
 [**apiDocumentsDocumentIdGet**](StudentDocumentsApi.md#apidocumentsdocumentidget) | **GET** /api/documents/{documentId} | 
 [**apiDocumentsGet**](StudentDocumentsApi.md#apidocumentsget) | **GET** /api/documents | 
-[**apiDocumentsReencryptPost**](StudentDocumentsApi.md#apidocumentsreencryptpost) | **POST** /api/documents/reencrypt | 
 [**apiStudentsSchoolUserIdDocumentsPost**](StudentDocumentsApi.md#apistudentsschooluseriddocumentspost) | **POST** /api/students/{schoolUserId}/documents | 
 
 
@@ -56,7 +55,7 @@ void (empty response body)
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **apiDocumentsGet**
-> BuiltList<StudentDocumentDto> apiDocumentsGet(schoolUserId)
+> BuiltList<StudentDocumentDto> apiDocumentsGet()
 
 
 
@@ -65,53 +64,12 @@ void (empty response body)
 import 'package:schuly_api/api.dart';
 
 final api = SchulyApi().getStudentDocumentsApi();
-final String schoolUserId = 38400000-8cf0-11bd-b23e-10b96e4ef00d; // String | 
 
 try {
-    final response = api.apiDocumentsGet(schoolUserId);
+    final response = api.apiDocumentsGet();
     print(response);
 } catch on DioException (e) {
     print('Exception when calling StudentDocumentsApi->apiDocumentsGet: $e\n');
-}
-```
-
-### Parameters
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **schoolUserId** | **String**|  | [optional] 
-
-### Return type
-
-[**BuiltList&lt;StudentDocumentDto&gt;**](StudentDocumentDto.md)
-
-### Authorization
-
-[Bearer](../README.md#Bearer)
-
-### HTTP request headers
-
- - **Content-Type**: Not defined
- - **Accept**: text/plain, application/json, text/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-# **apiDocumentsReencryptPost**
-> ReencryptStudentDocumentsResult apiDocumentsReencryptPost()
-
-
-
-### Example
-```dart
-import 'package:schuly_api/api.dart';
-
-final api = SchulyApi().getStudentDocumentsApi();
-
-try {
-    final response = api.apiDocumentsReencryptPost();
-    print(response);
-} catch on DioException (e) {
-    print('Exception when calling StudentDocumentsApi->apiDocumentsReencryptPost: $e\n');
 }
 ```
 
@@ -120,7 +78,7 @@ This endpoint does not need any parameter.
 
 ### Return type
 
-[**ReencryptStudentDocumentsResult**](ReencryptStudentDocumentsResult.md)
+[**BuiltList&lt;StudentDocumentDto&gt;**](StudentDocumentDto.md)
 
 ### Authorization
 

@@ -11,7 +11,6 @@ Serializers _$serializers =
           ..add(AbsenceDto.serializer)
           ..add(AbsenceType.serializer)
           ..add(AccountExportDto.serializer)
-          ..add(AddGradeToExamCommand.serializer)
           ..add(AddMyGradeCommand.serializer)
           ..add(AgendaEntryDto.serializer)
           ..add(AgendaEntryType.serializer)
@@ -22,38 +21,52 @@ Serializers _$serializers =
           ..add(ChangePasswordRequest.serializer)
           ..add(ClassDto.serializer)
           ..add(ClassMemberDto.serializer)
-          ..add(CompleteRequest.serializer)
           ..add(ConfirmTwoFactorRequest.serializer)
-          ..add(Cookie.serializer)
           ..add(CreateAbsenceCommand.serializer)
           ..add(CreateAgendaEntryCommand.serializer)
-          ..add(CreateApplicationUserCommand.serializer)
-          ..add(CreateClassCommand.serializer)
-          ..add(CreateExamCommand.serializer)
+          ..add(CreateMcpApiKeyCommand.serializer)
           ..add(CreateMySchoolCommand.serializer)
-          ..add(CreateSchoolCommand.serializer)
-          ..add(CreateSchoolSystemCommand.serializer)
-          ..add(CreateSchoolUserCommand.serializer)
-          ..add(CreateTeacherCommand.serializer)
+          ..add(CreatedMcpApiKeyDto.serializer)
+          ..add(DecideMcpAuthorizationCommand.serializer)
           ..add(DisableTwoFactorRequest.serializer)
-          ..add(EnrolStudentCommand.serializer)
           ..add(ErrorResponse.serializer)
           ..add(ExamDto.serializer)
           ..add(ExamType.serializer)
-          ..add(ExternalLinkResponse.serializer)
-          ..add(ExternalLoginExchangeRequest.serializer)
-          ..add(ExternalLoginResponse.serializer)
-          ..add(ExternalProviderResponse.serializer)
           ..add(ForgotPasswordRequest.serializer)
           ..add(GradeDto.serializer)
-          ..add(InstallPluginRequest.serializer)
-          ..add(LinkExternalLoginRequest.serializer)
+          ..add(LinkActionDto.serializer)
+          ..add(LinkCapabilityDto.serializer)
+          ..add(LinkDeviceCodeDto.serializer)
+          ..add(LinkDoneDto.serializer)
+          ..add(LinkErrorDto.serializer)
+          ..add(LinkFieldDto.serializer)
+          ..add(LinkFieldTypeDto.serializer)
+          ..add(LinkFlowDto.serializer)
+          ..add(LinkIconDto.serializer)
+          ..add(LinkOptionDto.serializer)
+          ..add(LinkOtpDto.serializer)
+          ..add(LinkProviderAccountDto.serializer)
+          ..add(LinkProviderDto.serializer)
+          ..add(LinkPushCodeDto.serializer)
+          ..add(LinkRedirectDto.serializer)
+          ..add(LinkRedirectModeDto.serializer)
+          ..add(LinkSessionDto.serializer)
+          ..add(LinkSessionStatus.serializer)
+          ..add(LinkStepDto.serializer)
+          ..add(LinkStepKindDto.serializer)
           ..add(LinkedAccountDto.serializer)
+          ..add(LinkedAccountStatusDto.serializer)
+          ..add(LoginFieldSuggestionDto.serializer)
           ..add(LoginRequest.serializer)
           ..add(LogoutRequest.serializer)
-          ..add(MicrosoftCalendarAccount.serializer)
-          ..add(MicrosoftCalendarEvent.serializer)
-          ..add(MicrosoftCalendarFeed.serializer)
+          ..add(McpAccessLevel.serializer)
+          ..add(McpActivityDto.serializer)
+          ..add(McpApiKeyDto.serializer)
+          ..add(McpAuthorizationDecisionDto.serializer)
+          ..add(McpAuthorizationParameters.serializer)
+          ..add(McpAuthorizationRequestDto.serializer)
+          ..add(McpConnectionDto.serializer)
+          ..add(McpPermissionSet.serializer)
           ..add(MySchoolDto.serializer)
           ..add(NotificationPreferencesDto.serializer)
           ..add(OdaorgStatelessAgendaEvent.serializer)
@@ -62,11 +75,8 @@ Serializers _$serializers =
           ..add(OdaorgStatelessGrade.serializer)
           ..add(OdaorgStatelessRequest.serializer)
           ..add(OdaorgStatelessUserInfo.serializer)
-          ..add(PluginDto.serializer)
-          ..add(PluginTaskStatus.serializer)
           ..add(ProblemDetails.serializer)
           ..add(PushResult.serializer)
-          ..add(ReencryptStudentDocumentsResult.serializer)
           ..add(RefreshRequest.serializer)
           ..add(RegenerateRecoveryCodesRequest.serializer)
           ..add(RegisterDeviceTokenCommand.serializer)
@@ -80,32 +90,23 @@ Serializers _$serializers =
           ..add(SchoolUserSummaryDto.serializer)
           ..add(SemesterReportDto.serializer)
           ..add(SemesterSubjectGradeDto.serializer)
-          ..add(StatelessLoginRequest.serializer)
-          ..add(StatelessRefreshRequest.serializer)
+          ..add(StartLinkRequest.serializer)
           ..add(StepUpChallengeResponse.serializer)
           ..add(StepUpResponse.serializer)
           ..add(StepUpVerifyRequest.serializer)
           ..add(StudentDocumentDto.serializer)
+          ..add(SubmitLinkRequest.serializer)
           ..add(TeacherDto.serializer)
           ..add(TokenResponse.serializer)
           ..add(TrustedDeviceSummary.serializer)
-          ..add(TwoFactorChallengeResponse.serializer)
           ..add(TwoFactorEnrolmentCompleted.serializer)
           ..add(TwoFactorEnrolmentStarted.serializer)
           ..add(TwoFactorStatus.serializer)
           ..add(UnifiedLoginRequest.serializer)
-          ..add(UnlinkExternalLoginRequest.serializer)
           ..add(UpdateAbsenceCommand.serializer)
           ..add(UpdateAgendaEntryCommand.serializer)
-          ..add(UpdateApplicationUserCommand.serializer)
-          ..add(UpdateClassCommand.serializer)
-          ..add(UpdateExamCommand.serializer)
           ..add(UpdateMyGradeCommand.serializer)
           ..add(UpdateNotificationPreferencesCommand.serializer)
-          ..add(UpdateSchoolCommand.serializer)
-          ..add(UpdateSchoolSystemCommand.serializer)
-          ..add(UpdateSchoolUserCommand.serializer)
-          ..add(UpdateTeacherCommand.serializer)
           ..add(UserClassDto.serializer)
           ..add(UserState.serializer)
           ..add(ValidationErrorResponse.serializer)
@@ -144,24 +145,46 @@ Serializers _$serializers =
             () => ListBuilder<ExamDto>(),
           )
           ..addBuilderFactory(
-            const FullType(BuiltList, const [const FullType(Cookie)]),
-            () => ListBuilder<Cookie>(),
-          )
-          ..addBuilderFactory(
             const FullType(BuiltList, const [const FullType(GradeDto)]),
             () => ListBuilder<GradeDto>(),
           )
           ..addBuilderFactory(
             const FullType(BuiltList, const [
-              const FullType(MicrosoftCalendarAccount),
+              const FullType(LinkCapabilityDto),
             ]),
-            () => ListBuilder<MicrosoftCalendarAccount>(),
+            () => ListBuilder<LinkCapabilityDto>(),
           )
           ..addBuilderFactory(
             const FullType(BuiltList, const [
-              const FullType(MicrosoftCalendarEvent),
+              const FullType(LinkCapabilityDto),
             ]),
-            () => ListBuilder<MicrosoftCalendarEvent>(),
+            () => ListBuilder<LinkCapabilityDto>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, const [const FullType(LinkFlowDto)]),
+            () => ListBuilder<LinkFlowDto>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, const [const FullType(LinkFieldDto)]),
+            () => ListBuilder<LinkFieldDto>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, const [const FullType(LinkOptionDto)]),
+            () => ListBuilder<LinkOptionDto>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, const [const FullType(LinkActionDto)]),
+            () => ListBuilder<LinkActionDto>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, const [const FullType(LinkOptionDto)]),
+            () => ListBuilder<LinkOptionDto>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, const [
+              const FullType(LoginFieldSuggestionDto),
+            ]),
+            () => ListBuilder<LoginFieldSuggestionDto>(),
           )
           ..addBuilderFactory(
             const FullType(BuiltList, const [
@@ -180,18 +203,6 @@ Serializers _$serializers =
               const FullType(OdaorgStatelessAgendaEvent),
             ]),
             () => ListBuilder<OdaorgStatelessAgendaEvent>(),
-          )
-          ..addBuilderFactory(
-            const FullType(BuiltList, const [
-              const FullType(SchoolSystemLoginFieldDto),
-            ]),
-            () => ListBuilder<SchoolSystemLoginFieldDto>(),
-          )
-          ..addBuilderFactory(
-            const FullType(BuiltList, const [
-              const FullType(SchoolSystemLoginFieldDto),
-            ]),
-            () => ListBuilder<SchoolSystemLoginFieldDto>(),
           )
           ..addBuilderFactory(
             const FullType(BuiltList, const [
@@ -250,6 +261,32 @@ Serializers _$serializers =
           ..addBuilderFactory(
             const FullType(BuiltList, const [const FullType(String)]),
             () => ListBuilder<String>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, const [const FullType(String)]),
+            () => ListBuilder<String>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, const [const FullType(String)]),
+            () => ListBuilder<String>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltMap, const [
+              const FullType(String),
+              const FullType(McpAccessLevel),
+            ]),
+            () => MapBuilder<String, McpAccessLevel>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, const [const FullType(String)]),
+            () => ListBuilder<String>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltMap, const [
+              const FullType(String),
+              const FullType(String),
+            ]),
+            () => MapBuilder<String, String>(),
           )
           ..addBuilderFactory(
             const FullType(BuiltMap, const [

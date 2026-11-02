@@ -15,8 +15,6 @@ class Roles extends EnumClass {
   static const Roles student = _$student;
   @BuiltValueEnumConst(wireName: r'Teacher')
   static const Roles teacher = _$teacher;
-  @BuiltValueEnumConst(wireName: r'Administrator')
-  static const Roles administrator = _$administrator;
 
   static Serializer<Roles> get serializer => _$rolesSerializer;
 

@@ -1,13 +1,15 @@
 import 'dart:async';
 
+import 'package:flutter/material.dart' show SelectableText;
 import 'package:flutter/widgets.dart';
 import 'package:forui/forui.dart';
 
 import '../../domain/school_system.dart';
 import '../../services/backend_dio.dart';
-import '../../services/microsoft_service.dart';
-import '../../services/toast_service.dart';
-import '../microsoft/microsoft_link_flow.dart';
+import '../../services/api_error.dart';
+import '../../services/private_link_service.dart';
+import '../../services/private_linked_account_store.dart';
+import '../private/private_link_flow.dart';
 
 /// Asks the catalog's [SchoolSystem.loginMethodPath], once a school URL is entered, whether that
 /// school signs in with a linked account instead of the fields marked
@@ -75,19 +77,24 @@ class LoginMethodController extends ChangeNotifier {
   }
 }
 
-/// The Microsoft accounts linked in Settings to pick from, plus a shortcut to link one here.
-class LinkedMicrosoftAccountPicker extends StatefulWidget {
+/// Private mode: the accounts kept on this device that the school can sign in with, plus a
+/// shortcut to link another one. [provider] is the id the school's login-method answer named.
+/// A newly linked account is merged into the list straight from the link result, and a failure is
+/// shown with its real reason; nothing is ever turned into an empty list.
+class PrivateLinkedAccountPicker extends StatefulWidget {
+  final String provider;
   final String? selectedId;
   final ValueChanged<String?> onChanged;
 
-  const LinkedMicrosoftAccountPicker({required this.selectedId, required this.onChanged, super.key});
+  const PrivateLinkedAccountPicker({required this.provider, required this.selectedId, required this.onChanged, super.key});
 
   @override
-  State<LinkedMicrosoftAccountPicker> createState() => _LinkedMicrosoftAccountPickerState();
+  State<PrivateLinkedAccountPicker> createState() => _PrivateLinkedAccountPickerState();
 }
 
-class _LinkedMicrosoftAccountPickerState extends State<LinkedMicrosoftAccountPicker> {
-  List<MicrosoftAccount>? _accounts;
+class _PrivateLinkedAccountPickerState extends State<PrivateLinkedAccountPicker> {
+  List<PrivateLinkedAccount>? _accounts;
+  String? _error;
 
   @override
   void initState() {
@@ -95,26 +102,32 @@ class _LinkedMicrosoftAccountPickerState extends State<LinkedMicrosoftAccountPic
     _load();
   }
 
-  Future<void> _load({String? select}) async {
-    List<MicrosoftAccount> accounts;
+  Future<void> _load() async {
     try {
-      accounts = await MicrosoftService.instance.accounts();
-    } catch (_) {
-      accounts = const [];
+      final accounts = await PrivateLinkService.instance.accounts();
+      if (!mounted) return;
+      setState(() {
+        _accounts = accounts;
+        _error = null;
+      });
+      final next = accounts.any((a) => a.id == widget.selectedId) ? widget.selectedId : (accounts.length == 1 ? accounts.first.id : null);
+      if (next != widget.selectedId) widget.onChanged(next);
+    } catch (e) {
+      if (mounted) setState(() => _error = ApiError.describe(e));
     }
-    if (!mounted) return;
-    setState(() => _accounts = accounts);
-    final keep = select ?? widget.selectedId;
-    final next = accounts.any((a) => a.id == keep) ? keep : (accounts.length == 1 ? accounts.first.id : null);
-    if (next != widget.selectedId) widget.onChanged(next);
   }
 
   Future<void> _link() async {
     try {
-      final account = await linkMicrosoftAccount(context);
-      if (account != null) await _load(select: account.id);
-    } catch (_) {
-      if (mounted) ToastService.error('Microsoft sign-in failed');
+      final account = await linkPrivateAccount(context, widget.provider);
+      if (account == null || !mounted) return;
+      setState(() {
+        _error = null;
+        _accounts = [...?_accounts?.where((a) => a.id != account.id), account];
+      });
+      widget.onChanged(account.id);
+    } catch (e) {
+      if (mounted) setState(() => _error = ApiError.describe(e));
     }
   }
 
@@ -127,11 +140,11 @@ class _LinkedMicrosoftAccountPickerState extends State<LinkedMicrosoftAccountPic
       crossAxisAlignment: CrossAxisAlignment.stretch,
       spacing: 8,
       children: [
-        Text('This school signs in with Microsoft. Choose the Microsoft account to use.', style: typography.sm.copyWith(color: colors.mutedForeground)),
-        if (accounts == null)
+        Text('This school signs in with a linked account. Choose the account to use.', style: typography.sm.copyWith(color: colors.mutedForeground)),
+        if (accounts == null && _error == null)
           const Center(child: FCircularProgress())
         else
-          for (final account in accounts)
+          for (final account in accounts ?? const <PrivateLinkedAccount>[])
             FTile(
               prefix: const Icon(FIcons.mail),
               title: Text(account.email),
@@ -139,11 +152,8 @@ class _LinkedMicrosoftAccountPickerState extends State<LinkedMicrosoftAccountPic
               suffix: account.id == widget.selectedId ? Icon(FIcons.check, color: colors.primary) : null,
               onPress: () => widget.onChanged(account.id),
             ),
-        FTile(
-          prefix: const Icon(FIcons.plus),
-          title: const Text('Link a Microsoft account'),
-          onPress: _link,
-        ),
+        FTile(prefix: const Icon(FIcons.plus), title: const Text('Link a new account'), onPress: _link),
+        if (_error != null) SelectableText(_error!, style: typography.sm.copyWith(color: colors.destructive)),
       ],
     );
   }

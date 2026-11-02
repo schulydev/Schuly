@@ -8,7 +8,6 @@ part of 'roles.dart';
 
 const Roles _$student = const Roles._('student');
 const Roles _$teacher = const Roles._('teacher');
-const Roles _$administrator = const Roles._('administrator');
 
 Roles _$valueOf(String name) {
   switch (name) {
@@ -16,8 +15,6 @@ Roles _$valueOf(String name) {
       return _$student;
     case 'teacher':
       return _$teacher;
-    case 'administrator':
-      return _$administrator;
     default:
       throw ArgumentError(name);
   }
@@ -26,14 +23,12 @@ Roles _$valueOf(String name) {
 final BuiltSet<Roles> _$values = BuiltSet<Roles>(const <Roles>[
   _$student,
   _$teacher,
-  _$administrator,
 ]);
 
 class _$RolesMeta {
   const _$RolesMeta();
   Roles get student => _$student;
   Roles get teacher => _$teacher;
-  Roles get administrator => _$administrator;
   Roles valueOf(String name) => _$valueOf(name);
   BuiltSet<Roles> get values => _$values;
 }
@@ -49,12 +44,10 @@ class _$RolesSerializer implements PrimitiveSerializer<Roles> {
   static const Map<String, Object> _toWire = const <String, Object>{
     'student': 'Student',
     'teacher': 'Teacher',
-    'administrator': 'Administrator',
   };
   static const Map<Object, String> _fromWire = const <Object, String>{
     'Student': 'student',
     'Teacher': 'teacher',
-    'Administrator': 'administrator',
   };
 
   @override

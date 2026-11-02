@@ -93,7 +93,7 @@ abstract class SchoolUserDto implements Built<SchoolUserDto, SchoolUserDtoBuilde
 
   @BuiltValueField(wireName: r'role')
   Roles get role;
-  // enum roleEnum {  Student,  Teacher,  Administrator,  };
+  // enum roleEnum {  Student,  Teacher,  };
 
   @BuiltValueField(wireName: r'state')
   UserState? get state;

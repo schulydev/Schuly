@@ -7,9 +7,10 @@ import '../../../l10n/app_localizations.dart';
 import '../../../services/active_account_service.dart';
 import '../../../services/app_mode_service.dart';
 import '../../../services/auth_service.dart';
+import '../../../services/linked_accounts_controller.dart';
 import '../../../services/onboarding_service.dart';
 import '../../../services/private_account_store.dart';
-import '../../../services/private_microsoft_store.dart';
+import '../../../services/private_linked_account_store.dart';
 import '../../../services/push_service.dart';
 import '../../../services/school_data_service.dart';
 import '../../auth/sign_in_screen.dart';
@@ -23,7 +24,7 @@ import '../../private/private_connect_flow.dart';
 Future<void> signOutAndClear() async {
   if (AppModeService.instance.isPrivate) {
     await PrivateAccountStore.instance.clear();
-    await PrivateMicrosoftStore.instance.clear();
+    await PrivateLinkedAccountStore.instance.clear();
     await AppModeService.instance.setMode(AppMode.account);
   } else {
     // Delete the device on the backend before signing out, while the access
@@ -31,6 +32,7 @@ Future<void> signOutAndClear() async {
     await PushService.instance.onSignOut();
     await AuthService.signOut();
     await ActiveAccountService.instance.clear();
+    LinkedAccountsController.instance.clear();
   }
   SchoolDataService.instance.clear();
   await SchoolDataService.instance.clearCache();

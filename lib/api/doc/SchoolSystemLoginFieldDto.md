@@ -15,6 +15,7 @@ Name | Type | Description | Notes
 **defaultValue** | **String** |  | [optional] 
 **required_** | **bool** |  | [optional] 
 **replacedByLinkedAccount** | **bool** |  | [optional] 
+**suggestions** | [**BuiltList&lt;LoginFieldSuggestionDto&gt;**](LoginFieldSuggestionDto.md) |  | [optional] 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
 

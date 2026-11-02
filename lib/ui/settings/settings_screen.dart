@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart' show showLicensePage, ThemeMode;
+import 'package:flutter/material.dart' show MaterialPageRoute, showLicensePage, ThemeMode;
 import 'package:flutter/widgets.dart';
 import 'package:forui/forui.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -10,9 +10,7 @@ import '../../services/auth_service.dart';
 import '../../services/private_account_store.dart';
 import '../../services/profile_refresh_requests.dart';
 import '../../services/school_data_service.dart';
-import '../../services/toast_service.dart';
-import '../../services/microsoft_service.dart';
-import '../microsoft/microsoft_link_flow.dart';
+import '../linking/schools_accounts_screen.dart';
 import '../../services/theme_service.dart';
 import 'notification_settings_section.dart';
 import 'privacy_settings_section.dart';
@@ -25,21 +23,6 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  List<MicrosoftAccount> _microsoftAccounts = const [];
-
-  @override
-  void initState() {
-    super.initState();
-    _loadMicrosoftAccounts();
-  }
-
-  Future<void> _loadMicrosoftAccounts() async {
-    try {
-      final accounts = await MicrosoftService.instance.accounts();
-      if (mounted) setState(() => _microsoftAccounts = accounts);
-    } catch (_) {}
-  }
-
   @override
   Widget build(BuildContext context) {
     final server = BackendConfig.isCustom ? BackendConfig.url : 'Schuly Cloud';
@@ -78,28 +61,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
             const SizedBox(height: 12),
           ],
-          const _SectionLabel('Connections'),
-          for (final account in _microsoftAccounts)
+          if (!AppModeService.instance.isPrivate) ...[
+            const _SectionLabel('Connections'),
             Padding(
               padding: const EdgeInsets.only(bottom: 8),
               child: FTile(
-                prefix: const Icon(FIcons.mail),
-                title: Text(account.email),
-                subtitle: const Text('Microsoft account'),
-                suffix: const Icon(FIcons.trash2),
-                onPress: () => _unlinkMicrosoft(account),
+                prefix: const Icon(FIcons.link),
+                title: const Text('Schools & accounts'),
+                subtitle: const Text('Link, re-sign-in and unlink your accounts'),
+                suffix: const Icon(FIcons.chevronRight),
+                onPress: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const SchoolsAccountsScreen())),
               ),
             ),
-          Padding(
-            padding: const EdgeInsets.only(bottom: 8),
-            child: FTile(
-              prefix: const Icon(FIcons.mail),
-              title: const Text('Link a Microsoft account'),
-              subtitle: const Text('Microsoft 365, and sign-in for schools that use Microsoft'),
-              suffix: const Icon(FIcons.plus),
-              onPress: _connectMicrosoft,
-            ),
-          ),
+          ],
           const SizedBox(height: 12),
           const _SectionLabel('Appearance'),
           AnimatedBuilder(
@@ -163,39 +137,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
       if (mounted) {
         showFToast(context: context, title: const Text("Couldn't open the account page"));
       }
-    }
-  }
-
-  Future<void> _connectMicrosoft() async {
-    try {
-      final account = await linkMicrosoftAccount(context);
-      if (!mounted || account == null) return;
-      ToastService.success('Connected', account.email);
-      await _loadMicrosoftAccounts();
-    } catch (_) {
-      if (mounted) ToastService.error('Microsoft sign-in failed');
-    }
-  }
-
-  Future<void> _unlinkMicrosoft(MicrosoftAccount account) async {
-    final confirmed = await showFDialog<bool>(
-      context: context,
-      builder: (ctx, style, animation) => FDialog(
-        animation: animation,
-        title: const Text('Unlink Microsoft account?'),
-        body: Text('${account.email} will be removed. Schools that sign in with it will need it linked again.'),
-        actions: [
-          FButton(style: FButtonStyle.outline(), onPress: () => Navigator.of(ctx).pop(false), child: const Text('Cancel')),
-          FButton(onPress: () => Navigator.of(ctx).pop(true), child: const Text('Unlink')),
-        ],
-      ),
-    );
-    if (confirmed != true) return;
-    try {
-      await MicrosoftService.instance.unlink(account.id);
-      await _loadMicrosoftAccounts();
-    } catch (_) {
-      if (mounted) ToastService.error("Couldn't unlink the account");
     }
   }
 

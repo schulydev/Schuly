@@ -8,7 +8,9 @@ import '../../../services/school_data_service.dart';
 import '../../../services/toast_service.dart';
 import '../../authenticator/authenticator_vault_screen.dart';
 import '../../settings/settings_screen.dart';
-import 'add_school_modal.dart';
+import '../../../services/linked_accounts_controller.dart';
+import '../../linking/add_account_flow.dart';
+import '../../linking/schools_accounts_screen.dart';
 
 class AccountsSidebar extends StatelessWidget {
   final NavigatorState parentNavigator;
@@ -47,21 +49,25 @@ class AccountsSidebar extends StatelessWidget {
     );
     if (confirmed != true) return;
     try {
-      await ActiveAccountService.instance.removeSchool(school);
-      await SchoolDataService.instance.clearCache();
+      final controller = LinkedAccountsController.instance;
+      if (!controller.loaded) await controller.load();
+      final matches = controller.accounts.where((a) => a.id == school.pluginAccountId);
+      if (matches.isNotEmpty) {
+        await controller.unlink(matches.first);
+      } else {
+        await ActiveAccountService.instance.removeSchool(school);
+        await SchoolDataService.instance.clearCache();
+        await controller.reloadAccounts();
+        await SchoolDataService.instance.refresh();
+      }
     } catch (e) {
       ToastService.error('Disconnect failed', e);
     }
   }
 
   Future<void> _add(BuildContext context) async {
-    final svc = ActiveAccountService.instance;
-    final before = svc.schools.map((s) => s.id).toSet();
-    final connected = await runAddSchoolFlow(context, parentNavigator);
-    if (connected == null) return;
-    await svc.refresh();
-    final added = svc.schools.where((s) => !before.contains(s.id));
-    if (added.isNotEmpty) await svc.setActive(added.first.id);
+    final result = await runAddAccountFlow(context);
+    if (result == null) return;
     if (context.mounted) Navigator.of(context).maybePop();
   }
 
@@ -158,6 +164,17 @@ class AccountsSidebar extends StatelessWidget {
                           prefix: const Icon(FIcons.plus),
                           title: const Text('Add school account'),
                           onPress: () => _add(context),
+                        ),
+                        const SizedBox(height: 4),
+                      ],
+                      if (!isPrivate) ...[
+                        FTile(
+                          prefix: const Icon(FIcons.link),
+                          title: const Text('Schools & accounts'),
+                          onPress: () {
+                            Navigator.of(context).maybePop();
+                            parentNavigator.push(MaterialPageRoute(builder: (_) => const SchoolsAccountsScreen()));
+                          },
                         ),
                         const SizedBox(height: 4),
                       ],
