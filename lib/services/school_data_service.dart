@@ -241,8 +241,10 @@ class SchoolDataService extends ChangeNotifier {
       List<AbsenceDto> absences;
       List<AgendaEntryDto> agenda;
       List<ClassDto> classes;
+      var complete = true;
       if (account.accessToken != null) {
         final d = await TokenProxyClient.instance.fetchAll(account);
+        complete = d.failedSections == 0;
         mine = PrivateDataAdapter.schoolUser(d.userInfo, d.grades, d.absences, d.exams);
         exams = PrivateDataAdapter.exams(d.exams, d.grades);
         absences = PrivateDataAdapter.absencesList(d.absences);
@@ -266,9 +268,14 @@ class SchoolDataService extends ChangeNotifier {
       _reports = const [];
       _teachers = const [];
       _documents = const [];
-      await SchoolDataSnapshotStore.instance.save(
-          'private',
-          SchoolDataSnapshot(me: _me, exams: _exams, agenda: _agenda, absences: _absences, classes: _classes, reports: _reports, teachers: _teachers, documents: _documents));
+      // A partial answer is shown, but the last complete snapshot stays on disk for the next launch.
+      if (complete) {
+        await SchoolDataSnapshotStore.instance.save(
+            'private',
+            SchoolDataSnapshot(me: _me, exams: _exams, agenda: _agenda, absences: _absences, classes: _classes, reports: _reports, teachers: _teachers, documents: _documents));
+      } else {
+        ToastService.error('Some data could not be refreshed', 'Your school did not answer every request. Pull down to try again.');
+      }
       _hasLoaded = true;
     } catch (e) {
       if (gen != _generation) return;
