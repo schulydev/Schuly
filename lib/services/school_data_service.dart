@@ -46,6 +46,18 @@ class SchoolDataService extends ChangeNotifier {
   Object? get error => _error;
   bool get hasLoaded => _hasLoaded;
 
+  /// Test-only: sets the data directly and notifies, as a finished refresh does.
+  @visibleForTesting
+  void setForTest({SchoolUserDto? me, List<ExamDto> exams = const [], List<AgendaEntryDto> agenda = const [], List<AbsenceDto> absences = const [], List<ClassDto> classes = const []}) {
+    _me = me;
+    _exams = exams;
+    _agenda = agenda;
+    _absences = absences;
+    _classes = classes;
+    _hasLoaded = true;
+    notifyListeners();
+  }
+
   Map<String, String> get classNameById {
     final out = <String, String>{};
     for (final c in _classes) {

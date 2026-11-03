@@ -22,6 +22,21 @@ class _GradesView extends StatefulWidget {
 class _GradesViewState extends State<_GradesView> {
   int? _selectedKey;
 
+  // This page is const in the dashboard, so its parent rebuilding does not reach it.
+  @override
+  void initState() {
+    super.initState();
+    SchoolDataService.instance.addListener(_onDataChanged);
+  }
+
+  @override
+  void dispose() {
+    SchoolDataService.instance.removeListener(_onDataChanged);
+    super.dispose();
+  }
+
+  void _onDataChanged() => setState(() {});
+
   static int _semesterKey(Date? d) {
     if (d == null) return 0;
     if (d.month >= 8) return d.year * 10 + 1;

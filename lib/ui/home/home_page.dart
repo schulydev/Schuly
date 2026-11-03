@@ -12,8 +12,11 @@ import '../timetable/lesson_tile.dart';
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
+  // This page is const in the dashboard, so its parent rebuilding does not reach it.
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) => ListenableBuilder(listenable: SchoolDataService.instance, builder: (context, _) => _content(context));
+
+  Widget _content(BuildContext context) {
     final svc = SchoolDataService.instance;
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
