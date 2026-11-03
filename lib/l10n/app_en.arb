@@ -350,5 +350,13 @@
     "description": "Email confirmation step: verifyEmailGeneric"
   },
   "notifyDetails": "Show details",
-  "notifyDetailsSubtitle": "Put the subject, title and date in the notification. They pass through Google's push service."
+  "notifyDetailsSubtitle": "Put the subject, title and date in the notification. They pass through Google's push service.",
+  "privacySignUpNotice": "Your Schuly account stores the school data you sync on the Schuly server: grades, timetable, agenda, and absences including their reasons. Absence reasons can reveal health information. You can export or delete your data in Settings at any time.",
+  "privacyPrivateNotice": "In private mode your login stays on this device. Your requests, and the school data they return, pass through the Schuly server without being stored. That data includes absence reasons, which can reveal health information.",
+  "privacyPolicyLink": "Read the Privacy Policy",
+  "swissSchoolConfirmation": "I attend a school in Switzerland.",
+  "privacyNoticeTitle": "Before you continue",
+  "privacyNoticeContinue": "Continue",
+  "privacyNoticeSignOut": "Sign out",
+  "privacyNoticeFailed": "That did not work. Try again."
 }

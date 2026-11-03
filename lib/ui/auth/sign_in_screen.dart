@@ -7,6 +7,7 @@ import 'package:forui/forui.dart';
 import '../../l10n/app_localizations.dart';
 import '../../services/auth_service.dart';
 import '../update/check_for_updates.dart';
+import '../privacy/privacy_notice_screen.dart';
 
 enum _Step { signIn, register, code, verifyEmail, forgot }
 
@@ -384,6 +385,7 @@ class _SignInScreenState extends State<SignInScreen> {
                     FButton(style: FButtonStyle.ghost(), onPress: () => _go(_Step.forgot), child: const Text('Forgot password?')),
                     FButton(style: FButtonStyle.outline(), onPress: () => _go(_Step.register), child: const Text('Create an account')),
                   ],
+                  if (_step == _Step.register) const PrivacyNoticeText(),
                   if (_step == _Step.register) FButton(style: FButtonStyle.ghost(), onPress: () => _go(_Step.signIn), child: const Text('I already have an account')),
                   if (_step == _Step.signIn || _step == _Step.register) const CheckForUpdatesLink(),
                   if (_step == _Step.verifyEmail) ...[

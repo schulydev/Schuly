@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+import '../../l10n/app_localizations.dart';
+import '../../services/privacy_notice_service.dart';
 
 import '../../config/backend_config.dart';
 
@@ -459,12 +463,19 @@ class _ModeChoicePage extends StatelessWidget {
               if (selected == _Mode.account) ...[
                 const SizedBox(height: 16),
                 Text(
-                  'In account mode your school data - grades, timetable, '
-                  'agenda, and absences including their reasons - is synced to '
-                  'and stored on the Schuly server, so it is available on the '
-                  'web and across your devices.',
+                  AppLocalizations.of(context)!.privacySignUpNotice,
                   textAlign: TextAlign.center,
                   style: typography.xs.copyWith(color: colors.mutedForeground),
+                ),
+                const SizedBox(height: 4),
+                GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: () => launchUrl(Uri.parse(kPrivacyPolicyUrl), mode: LaunchMode.externalApplication),
+                  child: Text(
+                    AppLocalizations.of(context)!.privacyPolicyLink,
+                    textAlign: TextAlign.center,
+                    style: typography.xs.copyWith(color: colors.foreground, decoration: TextDecoration.underline),
+                  ),
                 ),
               ],
               const SizedBox(height: 16),

@@ -94,5 +94,13 @@
   "verifyEmailSendFailed": "Die E-Mail konnte nicht gesendet werden. Versuche es gleich noch einmal.",
   "verifyEmailGeneric": "Etwas ist schiefgelaufen. Versuche es gleich noch einmal.",
   "notifyDetails": "Details anzeigen",
-  "notifyDetailsSubtitle": "Fach, Titel und Datum in die Mitteilung schreiben. Sie gehen über den Push-Dienst von Google."
+  "notifyDetailsSubtitle": "Fach, Titel und Datum in die Mitteilung schreiben. Sie gehen über den Push-Dienst von Google.",
+  "privacySignUpNotice": "Dein Schuly-Konto speichert die Schuldaten, die du synchronisierst, auf dem Schuly-Server: Noten, Stundenplan, Agenda und Absenzen samt Begründung. Absenzgründe können Gesundheitsdaten verraten. Du kannst deine Daten jederzeit in den Einstellungen exportieren oder löschen.",
+  "privacyPrivateNotice": "Im privaten Modus bleibt dein Login auf diesem Gerät. Deine Anfragen und die Schuldaten, die zurückkommen, laufen über den Schuly-Server, ohne gespeichert zu werden. Dazu gehören Absenzgründe, die Gesundheitsdaten verraten können.",
+  "privacyPolicyLink": "Datenschutzerklärung lesen",
+  "swissSchoolConfirmation": "Ich besuche eine Schule in der Schweiz.",
+  "privacyNoticeTitle": "Bevor es weitergeht",
+  "privacyNoticeContinue": "Weiter",
+  "privacyNoticeSignOut": "Abmelden",
+  "privacyNoticeFailed": "Das hat nicht geklappt. Versuche es nochmals."
 }
