@@ -243,17 +243,17 @@ class SchoolDataService extends ChangeNotifier {
       List<ClassDto> classes;
       if (account.accessToken != null) {
         final d = await TokenProxyClient.instance.fetchAll(account);
-        mine = PrivateDataAdapter.schoolUser(d.userInfo, d.grades, d.absences);
-        exams = PrivateDataAdapter.exams(d.exams);
+        mine = PrivateDataAdapter.schoolUser(d.userInfo, d.grades, d.absences, d.exams);
+        exams = PrivateDataAdapter.exams(d.exams, d.grades);
         absences = PrivateDataAdapter.absencesList(d.absences);
-        agenda = PrivateDataAdapter.agenda(d.agenda);
+        agenda = PrivateDataAdapter.agenda(d.agenda, exams: d.exams, grades: d.grades);
         classes = PrivateDataAdapter.classes(d.grades, d.exams);
       } else {
         final d = await ScrapeProxyClient.instance.data(account);
-        mine = PrivateDataAdapter.schoolUser(d.userInfo, d.grades, const []);
-        exams = PrivateDataAdapter.exams(d.exams);
+        mine = PrivateDataAdapter.schoolUser(d.userInfo, d.grades, const [], d.exams);
+        exams = PrivateDataAdapter.exams(d.exams, d.grades);
         absences = const [];
-        agenda = PrivateDataAdapter.agenda(d.agenda);
+        agenda = PrivateDataAdapter.agenda(d.agenda, exams: d.exams, grades: d.grades);
         classes = PrivateDataAdapter.classes(d.grades, d.exams);
       }
 

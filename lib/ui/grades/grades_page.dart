@@ -187,7 +187,7 @@ class _ClassSection extends StatelessWidget {
               title: Text(e.name),
               subtitle: Text([
                 if ((myGrades[e.id]?.weighting ?? 1) != 1) 'weight ${formatGrade(myGrades[e.id]!.weighting ?? 1)}',
-                'class ⌀ ${formatGrade(e.classAverage)}',
+                if (isGraded(e.classAverage)) 'class ⌀ ${formatGrade(e.classAverage)}',
               ].join(' · ')),
               suffix: GradePill(myGrades[e.id]?.score),
               onPress: () => _showExamDetail(context, e, myGrades[e.id]),
