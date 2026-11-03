@@ -70,16 +70,11 @@ jobs:
 
       - name: Build Android APK
         working-directory: .
-        env:
-          SENTRY_DSN: ${{ vars.SENTRY_URL }}
         run: |
           flutter build apk --release --flavor prod \
             --build-name="${{ github.ref_name }}" \
             --build-number="${{ github.run_number }}" \
             --dart-define=BACKEND_BASE_URL="${{ vars.BACKEND_BASE_URL || 'https://api.schuly.dev' }}" \
-            --dart-define=SENTRY_DSN="$SENTRY_DSN" \
-            --dart-define=SENTRY_RELEASE="${{ github.ref_name }}" \
-            --dart-define=SENTRY_ENVIRONMENT="production" \
             --dart-define=FIREBASE_API_KEY="${{ vars.FIREBASE_API_KEY }}" \
             --dart-define=FIREBASE_APP_ID="${{ vars.FIREBASE_APP_ID }}" \
             --dart-define=FIREBASE_SENDER_ID="${{ vars.FIREBASE_SENDER_ID }}" \
@@ -87,16 +82,11 @@ jobs:
 
       - name: Build Android AAB (App Bundle)
         working-directory: .
-        env:
-          SENTRY_DSN: ${{ vars.SENTRY_URL }}
         run: |
           flutter build appbundle --release --flavor prod \
             --build-name="${{ github.ref_name }}" \
             --build-number="${{ github.run_number }}" \
             --dart-define=BACKEND_BASE_URL="${{ vars.BACKEND_BASE_URL || 'https://api.schuly.dev' }}" \
-            --dart-define=SENTRY_DSN="$SENTRY_DSN" \
-            --dart-define=SENTRY_RELEASE="${{ github.ref_name }}" \
-            --dart-define=SENTRY_ENVIRONMENT="production" \
             --dart-define=FIREBASE_API_KEY="${{ vars.FIREBASE_API_KEY }}" \
             --dart-define=FIREBASE_APP_ID="${{ vars.FIREBASE_APP_ID }}" \
             --dart-define=FIREBASE_SENDER_ID="${{ vars.FIREBASE_SENDER_ID }}" \
@@ -140,16 +130,11 @@ jobs:
 
       - name: Build iOS (unsigned)
         working-directory: .
-        env:
-          SENTRY_DSN: ${{ vars.SENTRY_URL }}
         run: |
           flutter build ios --release --no-codesign \
             --build-name="${{ github.ref_name }}" \
             --build-number="${{ github.run_number }}" \
             --dart-define=BACKEND_BASE_URL="${{ vars.BACKEND_BASE_URL || 'https://api.schuly.dev' }}" \
-            --dart-define=SENTRY_DSN="$SENTRY_DSN" \
-            --dart-define=SENTRY_RELEASE="${{ github.ref_name }}" \
-            --dart-define=SENTRY_ENVIRONMENT="production" \
             --dart-define=FIREBASE_API_KEY="${{ vars.FIREBASE_API_KEY }}" \
             --dart-define=FIREBASE_APP_ID="${{ vars.FIREBASE_APP_ID }}" \
             --dart-define=FIREBASE_SENDER_ID="${{ vars.FIREBASE_SENDER_ID }}" \
