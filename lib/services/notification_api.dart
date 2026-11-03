@@ -17,7 +17,8 @@ class NotificationApi {
       ..grades = true
       ..absences = true
       ..agenda = true
-      ..includeGradeValue = false,
+      ..includeGradeValue = false
+      ..includeDetails = false,
   );
 
   Future<void> registerDevice({required String token, required String platform, required String locale}) async {
@@ -47,7 +48,8 @@ class NotificationApi {
         ..grades = preferences.grades
         ..absences = preferences.absences
         ..agenda = preferences.agenda
-        ..includeGradeValue = preferences.includeGradeValue),
+        ..includeGradeValue = preferences.includeGradeValue
+        ..includeDetails = preferences.includeDetails),
       extra: _handled,
     );
   }

@@ -9,6 +9,7 @@ import '../../../services/app_mode_service.dart';
 import '../../../services/auth_service.dart';
 import '../../../services/linked_accounts_controller.dart';
 import '../../../services/onboarding_service.dart';
+import '../../../services/privacy_notice_service.dart';
 import '../../../services/private_account_store.dart';
 import '../../../services/private_linked_account_store.dart';
 import '../../../services/push_service.dart';
@@ -17,6 +18,7 @@ import '../../../services/secure_store.dart';
 import '../../auth/sign_in_screen.dart';
 import '../../dashboard/dashboard_screen.dart';
 import '../../onboarding/onboarding_screen.dart';
+import '../../privacy/privacy_notice_screen.dart';
 import '../../private/private_connect_flow.dart';
 import '../../update/check_for_updates.dart';
 
@@ -27,6 +29,7 @@ Future<void> signOutAndClear() async {
   if (AppModeService.instance.isPrivate) {
     await PrivateAccountStore.instance.clear();
     await PrivateLinkedAccountStore.instance.clear();
+    await PrivacyNoticeService.clearDeviceRecord();
     await AppModeService.instance.setMode(AppMode.account);
   } else {
     // Delete the device on the backend before signing out, while the access
@@ -56,6 +59,9 @@ class _RootScreenState extends State<RootScreen> {
   bool _onboarded = true; // assume seen until loaded, to avoid a flash
   bool _busy = false;
   String? _error;
+
+  /// The privacy notice still to confirm. Checked in the background, so no network call decides whether the app starts.
+  PrivacyNoticeInfo? _openNotice;
 
   /// Shown above the sign-in buttons when startup had to give up on the stored session.
   String? _notice;
@@ -99,6 +105,11 @@ class _RootScreenState extends State<RootScreen> {
       _notice = lostSession ? 'Please sign in again.' : null;
     });
     if (ready && !AppModeService.instance.isPrivate) unawaited(_announceSignedIn());
+    if (ready) {
+      unawaited(_checkPrivacyNotice());
+    } else if (_openNotice != null) {
+      setState(() => _openNotice = null);
+    }
   }
 
   /// Reads only the device: no network call decides whether the app starts.
@@ -118,6 +129,11 @@ class _RootScreenState extends State<RootScreen> {
       SchoolDataService.instance.clear();
     }
     return signedIn;
+  }
+
+  Future<void> _checkPrivacyNotice() async {
+    final open = await PrivacyNoticeService.instance.pending();
+    if (mounted) setState(() => _openNotice = open);
   }
 
   Future<void> _announceSignedIn() async {
@@ -175,6 +191,14 @@ class _RootScreenState extends State<RootScreen> {
       return const FScaffold(child: Center(child: FCircularProgress()));
     }
     if (ready) {
+      final notice = _openNotice;
+      if (notice != null) {
+        return PrivacyNoticeScreen(
+          info: notice,
+          onAccepted: () => setState(() => _openNotice = null),
+          onSignOut: _signOut,
+        );
+      }
       return DashboardScreen(onSignOut: _signOut);
     }
     if (!_onboarded) {

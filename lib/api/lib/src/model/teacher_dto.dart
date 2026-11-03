@@ -17,7 +17,6 @@ part 'teacher_dto.g.dart';
 /// * [firstName] 
 /// * [lastName] 
 /// * [code] 
-/// * [email] 
 @BuiltValue()
 abstract class TeacherDto implements Built<TeacherDto, TeacherDtoBuilder> {
   @BuiltValueField(wireName: r'id')
@@ -37,9 +36,6 @@ abstract class TeacherDto implements Built<TeacherDto, TeacherDtoBuilder> {
 
   @BuiltValueField(wireName: r'code')
   String get code;
-
-  @BuiltValueField(wireName: r'email')
-  String? get email;
 
   TeacherDto._();
 
@@ -100,13 +96,6 @@ class _$TeacherDtoSerializer implements PrimitiveSerializer<TeacherDto> {
       object.code,
       specifiedType: const FullType(String),
     );
-    if (object.email != null) {
-      yield r'email';
-      yield serializers.serialize(
-        object.email,
-        specifiedType: const FullType.nullable(String),
-      );
-    }
   }
 
   @override
@@ -172,14 +161,6 @@ class _$TeacherDtoSerializer implements PrimitiveSerializer<TeacherDto> {
             specifiedType: const FullType(String),
           ) as String;
           result.code = valueDes;
-          break;
-        case r'email':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
-          if (valueDes == null) continue;
-          result.email = valueDes;
           break;
         default:
           unhandled.add(key);

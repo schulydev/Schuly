@@ -13,6 +13,8 @@ class _$CreateMcpApiKeyCommand extends CreateMcpApiKeyCommand {
   final McpPermissionSet? permissions;
   @override
   final DateTime? expiresAt;
+  @override
+  final bool? aiAppSharingConfirmed;
 
   factory _$CreateMcpApiKeyCommand([
     void Function(CreateMcpApiKeyCommandBuilder)? updates,
@@ -22,6 +24,7 @@ class _$CreateMcpApiKeyCommand extends CreateMcpApiKeyCommand {
     required this.name,
     this.permissions,
     this.expiresAt,
+    this.aiAppSharingConfirmed,
   }) : super._();
   @override
   CreateMcpApiKeyCommand rebuild(
@@ -38,7 +41,8 @@ class _$CreateMcpApiKeyCommand extends CreateMcpApiKeyCommand {
     return other is CreateMcpApiKeyCommand &&
         name == other.name &&
         permissions == other.permissions &&
-        expiresAt == other.expiresAt;
+        expiresAt == other.expiresAt &&
+        aiAppSharingConfirmed == other.aiAppSharingConfirmed;
   }
 
   @override
@@ -47,6 +51,7 @@ class _$CreateMcpApiKeyCommand extends CreateMcpApiKeyCommand {
     _$hash = $jc(_$hash, name.hashCode);
     _$hash = $jc(_$hash, permissions.hashCode);
     _$hash = $jc(_$hash, expiresAt.hashCode);
+    _$hash = $jc(_$hash, aiAppSharingConfirmed.hashCode);
     _$hash = $jf(_$hash);
     return _$hash;
   }
@@ -56,7 +61,8 @@ class _$CreateMcpApiKeyCommand extends CreateMcpApiKeyCommand {
     return (newBuiltValueToStringHelper(r'CreateMcpApiKeyCommand')
           ..add('name', name)
           ..add('permissions', permissions)
-          ..add('expiresAt', expiresAt))
+          ..add('expiresAt', expiresAt)
+          ..add('aiAppSharingConfirmed', aiAppSharingConfirmed))
         .toString();
   }
 }
@@ -79,6 +85,11 @@ class CreateMcpApiKeyCommandBuilder
   DateTime? get expiresAt => _$this._expiresAt;
   set expiresAt(DateTime? expiresAt) => _$this._expiresAt = expiresAt;
 
+  bool? _aiAppSharingConfirmed;
+  bool? get aiAppSharingConfirmed => _$this._aiAppSharingConfirmed;
+  set aiAppSharingConfirmed(bool? aiAppSharingConfirmed) =>
+      _$this._aiAppSharingConfirmed = aiAppSharingConfirmed;
+
   CreateMcpApiKeyCommandBuilder() {
     CreateMcpApiKeyCommand._defaults(this);
   }
@@ -89,6 +100,7 @@ class CreateMcpApiKeyCommandBuilder
       _name = $v.name;
       _permissions = $v.permissions?.toBuilder();
       _expiresAt = $v.expiresAt;
+      _aiAppSharingConfirmed = $v.aiAppSharingConfirmed;
       _$v = null;
     }
     return this;
@@ -120,6 +132,7 @@ class CreateMcpApiKeyCommandBuilder
             ),
             permissions: _permissions?.build(),
             expiresAt: expiresAt,
+            aiAppSharingConfirmed: aiAppSharingConfirmed,
           );
     } catch (_) {
       late String _$failedField;

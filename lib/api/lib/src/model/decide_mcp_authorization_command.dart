@@ -16,6 +16,7 @@ part 'decide_mcp_authorization_command.g.dart';
 /// * [parameters] 
 /// * [approve] 
 /// * [permissions] 
+/// * [aiAppSharingConfirmed] 
 @BuiltValue()
 abstract class DecideMcpAuthorizationCommand implements Built<DecideMcpAuthorizationCommand, DecideMcpAuthorizationCommandBuilder> {
   @BuiltValueField(wireName: r'parameters')
@@ -27,12 +28,16 @@ abstract class DecideMcpAuthorizationCommand implements Built<DecideMcpAuthoriza
   @BuiltValueField(wireName: r'permissions')
   McpPermissionSet? get permissions;
 
+  @BuiltValueField(wireName: r'aiAppSharingConfirmed')
+  bool? get aiAppSharingConfirmed;
+
   DecideMcpAuthorizationCommand._();
 
   factory DecideMcpAuthorizationCommand([void updates(DecideMcpAuthorizationCommandBuilder b)]) = _$DecideMcpAuthorizationCommand;
 
   @BuiltValueHook(initializeBuilder: true)
-  static void _defaults(DecideMcpAuthorizationCommandBuilder b) => b;
+  static void _defaults(DecideMcpAuthorizationCommandBuilder b) => b
+      ..aiAppSharingConfirmed = false;
 
   @BuiltValueSerializer(custom: true)
   static Serializer<DecideMcpAuthorizationCommand> get serializer => _$DecideMcpAuthorizationCommandSerializer();
@@ -65,6 +70,13 @@ class _$DecideMcpAuthorizationCommandSerializer implements PrimitiveSerializer<D
       object.permissions,
       specifiedType: const FullType.nullable(McpPermissionSet),
     );
+    if (object.aiAppSharingConfirmed != null) {
+      yield r'aiAppSharingConfirmed';
+      yield serializers.serialize(
+        object.aiAppSharingConfirmed,
+        specifiedType: const FullType(bool),
+      );
+    }
   }
 
   @override
@@ -109,6 +121,13 @@ class _$DecideMcpAuthorizationCommandSerializer implements PrimitiveSerializer<D
           ) as McpPermissionSet?;
           if (valueDes == null) continue;
           result.permissions.replace(valueDes);
+          break;
+        case r'aiAppSharingConfirmed':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType(bool),
+          ) as bool;
+          result.aiAppSharingConfirmed = valueDes;
           break;
         default:
           unhandled.add(key);

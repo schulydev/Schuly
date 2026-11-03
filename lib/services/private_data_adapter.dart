@@ -61,7 +61,6 @@ class PrivateDataAdapter {
         ..firstName = info?.firstName ?? ''
         ..lastName = info?.lastName ?? ''
         ..email = info?.email ?? ''
-        ..birthday = _dateOnly(info?.birthday)
         ..entryDate = _dateOnly(info?.entryDate)
         ..role = Roles.student
         ..grades = ListBuilder<GradeDto>(grades.map(grade))

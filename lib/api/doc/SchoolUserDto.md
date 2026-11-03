@@ -15,13 +15,7 @@ Name | Type | Description | Notes
 **firstName** | **String** |  | 
 **lastName** | **String** |  | 
 **email** | **String** |  | 
-**privateEmail** | **String** |  | [optional] 
-**phoneNumber** | **String** |  | [optional] 
 **profilePictureUrl** | **String** |  | [optional] 
-**street** | **String** |  | [optional] 
-**city** | **String** |  | [optional] 
-**zip** | **String** |  | [optional] 
-**birthday** | [**Date**](Date.md) |  | [optional] 
 **entryDate** | [**Date**](Date.md) |  | [optional] 
 **leaveDate** | [**Date**](Date.md) |  | [optional] 
 **role** | [**Roles**](Roles.md) |  | 

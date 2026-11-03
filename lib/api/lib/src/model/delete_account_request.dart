@@ -40,13 +40,11 @@ class _$DeleteAccountRequestSerializer implements PrimitiveSerializer<DeleteAcco
     DeleteAccountRequest object, {
     FullType specifiedType = FullType.unspecified,
   }) sync* {
-    if (object.password != null) {
-      yield r'password';
-      yield serializers.serialize(
-        object.password,
-        specifiedType: const FullType.nullable(String),
-      );
-    }
+    yield r'password';
+    yield object.password == null ? null : serializers.serialize(
+      object.password,
+      specifiedType: const FullType.nullable(String),
+    );
   }
 
   @override

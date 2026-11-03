@@ -13,6 +13,8 @@ Method | HTTP request | Description
 [**apiAuthMeDelete**](AuthApi.md#apiauthmedelete) | **DELETE** /api/Auth/me | 
 [**apiAuthMeExportGet**](AuthApi.md#apiauthmeexportget) | **GET** /api/Auth/me/export | 
 [**apiAuthMeGet**](AuthApi.md#apiauthmeget) | **GET** /api/Auth/me | 
+[**apiAuthMePrivacyNoticeGet**](AuthApi.md#apiauthmeprivacynoticeget) | **GET** /api/Auth/me/privacy-notice | 
+[**apiAuthMePrivacyNoticePost**](AuthApi.md#apiauthmeprivacynoticepost) | **POST** /api/Auth/me/privacy-notice | 
 [**apiAuthSyncGet**](AuthApi.md#apiauthsyncget) | **GET** /api/Auth/sync | 
 
 
@@ -57,7 +59,7 @@ void (empty response body)
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **apiAuthMeDelete**
-> apiAuthMeDelete()
+> apiAuthMeDelete(deleteAccountRequest)
 
 
 
@@ -66,16 +68,20 @@ void (empty response body)
 import 'package:schuly_api/api.dart';
 
 final api = SchulyApi().getAuthApi();
+final DeleteAccountRequest deleteAccountRequest = ; // DeleteAccountRequest | 
 
 try {
-    api.apiAuthMeDelete();
+    api.apiAuthMeDelete(deleteAccountRequest);
 } catch on DioException (e) {
     print('Exception when calling AuthApi->apiAuthMeDelete: $e\n');
 }
 ```
 
 ### Parameters
-This endpoint does not need any parameter.
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **deleteAccountRequest** | [**DeleteAccountRequest**](DeleteAccountRequest.md)|  | [optional] 
 
 ### Return type
 
@@ -87,7 +93,7 @@ void (empty response body)
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
+ - **Content-Type**: application/json, text/json, application/*+json
  - **Accept**: text/plain, application/json, text/json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
@@ -162,6 +168,84 @@ This endpoint does not need any parameter.
 ### HTTP request headers
 
  - **Content-Type**: Not defined
+ - **Accept**: text/plain, application/json, text/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **apiAuthMePrivacyNoticeGet**
+> PrivacyNoticeStatusDto apiAuthMePrivacyNoticeGet()
+
+
+
+### Example
+```dart
+import 'package:schuly_api/api.dart';
+
+final api = SchulyApi().getAuthApi();
+
+try {
+    final response = api.apiAuthMePrivacyNoticeGet();
+    print(response);
+} catch on DioException (e) {
+    print('Exception when calling AuthApi->apiAuthMePrivacyNoticeGet: $e\n');
+}
+```
+
+### Parameters
+This endpoint does not need any parameter.
+
+### Return type
+
+[**PrivacyNoticeStatusDto**](PrivacyNoticeStatusDto.md)
+
+### Authorization
+
+[Bearer](../README.md#Bearer)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: text/plain, application/json, text/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **apiAuthMePrivacyNoticePost**
+> PrivacyNoticeStatusDto apiAuthMePrivacyNoticePost(acceptPrivacyNoticeCommand)
+
+
+
+### Example
+```dart
+import 'package:schuly_api/api.dart';
+
+final api = SchulyApi().getAuthApi();
+final AcceptPrivacyNoticeCommand acceptPrivacyNoticeCommand = ; // AcceptPrivacyNoticeCommand | 
+
+try {
+    final response = api.apiAuthMePrivacyNoticePost(acceptPrivacyNoticeCommand);
+    print(response);
+} catch on DioException (e) {
+    print('Exception when calling AuthApi->apiAuthMePrivacyNoticePost: $e\n');
+}
+```
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **acceptPrivacyNoticeCommand** | [**AcceptPrivacyNoticeCommand**](AcceptPrivacyNoticeCommand.md)|  | 
+
+### Return type
+
+[**PrivacyNoticeStatusDto**](PrivacyNoticeStatusDto.md)
+
+### Authorization
+
+[Bearer](../README.md#Bearer)
+
+### HTTP request headers
+
+ - **Content-Type**: application/json, text/json, application/*+json
  - **Accept**: text/plain, application/json, text/json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)

@@ -31,7 +31,7 @@
   "deleteAccountCancel": "Abbrechen",
   "deleteAccountConfirm": "Konto löschen",
   "privacyPrivateModeTitle": "Nichts wird auf unseren Servern gespeichert",
-  "privacyPrivateModeSubtitle": "Der private Modus speichert deine Daten nur auf diesem Gerät. Verwende „Abmelden“, um die Verbindung zu trennen und die Daten zu entfernen.",
+  "privacyPrivateModeSubtitle": "Der private Modus speichert deine Daten auf diesem Gerät. Anfragen laufen über den Schuly-Server, ohne gespeichert zu werden. Verwende „Abmelden“, um die Verbindung zu trennen und die Daten zu entfernen.",
   "lessonFrom": "von",
   "lessonUntil": "bis",
   "breakDuration": "Pause ({minutes} min)",
@@ -92,5 +92,15 @@
   "verifyEmailGone": "Diese Bestätigung ist nicht mehr gültig. Melde dich erneut an.",
   "verifyEmailRateLimited": "Zu viele Versuche. Warte einen Moment und versuche es erneut.",
   "verifyEmailSendFailed": "Die E-Mail konnte nicht gesendet werden. Versuche es gleich noch einmal.",
-  "verifyEmailGeneric": "Etwas ist schiefgelaufen. Versuche es gleich noch einmal."
+  "verifyEmailGeneric": "Etwas ist schiefgelaufen. Versuche es gleich noch einmal.",
+  "notifyDetails": "Details anzeigen",
+  "notifyDetailsSubtitle": "Fach, Titel und Datum in die Mitteilung schreiben. Sie gehen über den Push-Dienst von Google.",
+  "privacySignUpNotice": "Dein Schuly-Konto speichert die Schuldaten, die du synchronisierst, auf dem Schuly-Server: Noten, Stundenplan, Agenda und Absenzen samt Begründung. Absenzgründe können Gesundheitsdaten verraten. Du kannst deine Daten jederzeit in den Einstellungen exportieren oder löschen.",
+  "privacyPrivateNotice": "Im privaten Modus bleibt dein Login auf diesem Gerät. Deine Anfragen und die Schuldaten, die zurückkommen, laufen über den Schuly-Server, ohne gespeichert zu werden. Dazu gehören Absenzgründe, die Gesundheitsdaten verraten können.",
+  "privacyPolicyLink": "Datenschutzerklärung lesen",
+  "swissSchoolConfirmation": "Ich besuche eine Schule in der Schweiz.",
+  "privacyNoticeTitle": "Bevor es weitergeht",
+  "privacyNoticeContinue": "Weiter",
+  "privacyNoticeSignOut": "Abmelden",
+  "privacyNoticeFailed": "Das hat nicht geklappt. Versuche es nochmals."
 }

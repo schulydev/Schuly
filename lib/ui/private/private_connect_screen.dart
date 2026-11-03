@@ -201,8 +201,8 @@ class _PrivateConnectScreenState extends State<PrivateConnectScreen> {
           spacing: 16,
           children: [
             const Text(
-              'Private mode keeps everything on this device - no account, '
-              'nothing stored on a server.',
+              'Private mode keeps your login and data on this device. There is no '
+              'account, and requests pass through the Schuly server without being stored.',
             ),
             DynamicLoginForm(controller: _form, hidden: _method.hiddenKeys),
             if (_method.usesLinkedAccount)

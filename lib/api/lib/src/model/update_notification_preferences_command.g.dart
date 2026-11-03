@@ -16,6 +16,8 @@ class _$UpdateNotificationPreferencesCommand
   final bool agenda;
   @override
   final bool includeGradeValue;
+  @override
+  final bool? includeDetails;
 
   factory _$UpdateNotificationPreferencesCommand([
     void Function(UpdateNotificationPreferencesCommandBuilder)? updates,
@@ -27,6 +29,7 @@ class _$UpdateNotificationPreferencesCommand
     required this.absences,
     required this.agenda,
     required this.includeGradeValue,
+    this.includeDetails,
   }) : super._();
   @override
   UpdateNotificationPreferencesCommand rebuild(
@@ -44,7 +47,8 @@ class _$UpdateNotificationPreferencesCommand
         grades == other.grades &&
         absences == other.absences &&
         agenda == other.agenda &&
-        includeGradeValue == other.includeGradeValue;
+        includeGradeValue == other.includeGradeValue &&
+        includeDetails == other.includeDetails;
   }
 
   @override
@@ -54,6 +58,7 @@ class _$UpdateNotificationPreferencesCommand
     _$hash = $jc(_$hash, absences.hashCode);
     _$hash = $jc(_$hash, agenda.hashCode);
     _$hash = $jc(_$hash, includeGradeValue.hashCode);
+    _$hash = $jc(_$hash, includeDetails.hashCode);
     _$hash = $jf(_$hash);
     return _$hash;
   }
@@ -64,7 +69,8 @@ class _$UpdateNotificationPreferencesCommand
           ..add('grades', grades)
           ..add('absences', absences)
           ..add('agenda', agenda)
-          ..add('includeGradeValue', includeGradeValue))
+          ..add('includeGradeValue', includeGradeValue)
+          ..add('includeDetails', includeDetails))
         .toString();
   }
 }
@@ -94,6 +100,11 @@ class UpdateNotificationPreferencesCommandBuilder
   set includeGradeValue(bool? includeGradeValue) =>
       _$this._includeGradeValue = includeGradeValue;
 
+  bool? _includeDetails;
+  bool? get includeDetails => _$this._includeDetails;
+  set includeDetails(bool? includeDetails) =>
+      _$this._includeDetails = includeDetails;
+
   UpdateNotificationPreferencesCommandBuilder() {
     UpdateNotificationPreferencesCommand._defaults(this);
   }
@@ -105,6 +116,7 @@ class UpdateNotificationPreferencesCommandBuilder
       _absences = $v.absences;
       _agenda = $v.agenda;
       _includeGradeValue = $v.includeGradeValue;
+      _includeDetails = $v.includeDetails;
       _$v = null;
     }
     return this;
@@ -149,6 +161,7 @@ class UpdateNotificationPreferencesCommandBuilder
             r'UpdateNotificationPreferencesCommand',
             'includeGradeValue',
           ),
+          includeDetails: includeDetails,
         );
     replace(_$result);
     return _$result;

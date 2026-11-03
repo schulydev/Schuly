@@ -31,6 +31,10 @@ flowchart LR
 | Backend role | Stores data and syncs in the background | Live stateless proxy, stores nothing |
 | Provider selection | Per connected account | Catalog `privateAuthStrategy` (`token` or `scrape`) |
 
+## The privacy notice
+
+Both modes show the privacy notice once, and again when `Privacy:PolicyVersion` changes on the server. On a server with `SignUp:SwitzerlandOnly`, the user also confirms "I attend a school in Switzerland." Account mode records this on the server. Private mode has no server record, so it stores the version and time on the device and forgets them on sign-out. If the check fails, the app starts anyway.
+
 ## What private mode does on the device
 
 - The app writes the school login to the device keystore. The login leaves the device only when the

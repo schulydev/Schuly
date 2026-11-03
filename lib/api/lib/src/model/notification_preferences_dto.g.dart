@@ -15,6 +15,8 @@ class _$NotificationPreferencesDto extends NotificationPreferencesDto {
   final bool agenda;
   @override
   final bool includeGradeValue;
+  @override
+  final bool includeDetails;
 
   factory _$NotificationPreferencesDto([
     void Function(NotificationPreferencesDtoBuilder)? updates,
@@ -25,6 +27,7 @@ class _$NotificationPreferencesDto extends NotificationPreferencesDto {
     required this.absences,
     required this.agenda,
     required this.includeGradeValue,
+    required this.includeDetails,
   }) : super._();
   @override
   NotificationPreferencesDto rebuild(
@@ -42,7 +45,8 @@ class _$NotificationPreferencesDto extends NotificationPreferencesDto {
         grades == other.grades &&
         absences == other.absences &&
         agenda == other.agenda &&
-        includeGradeValue == other.includeGradeValue;
+        includeGradeValue == other.includeGradeValue &&
+        includeDetails == other.includeDetails;
   }
 
   @override
@@ -52,6 +56,7 @@ class _$NotificationPreferencesDto extends NotificationPreferencesDto {
     _$hash = $jc(_$hash, absences.hashCode);
     _$hash = $jc(_$hash, agenda.hashCode);
     _$hash = $jc(_$hash, includeGradeValue.hashCode);
+    _$hash = $jc(_$hash, includeDetails.hashCode);
     _$hash = $jf(_$hash);
     return _$hash;
   }
@@ -62,7 +67,8 @@ class _$NotificationPreferencesDto extends NotificationPreferencesDto {
           ..add('grades', grades)
           ..add('absences', absences)
           ..add('agenda', agenda)
-          ..add('includeGradeValue', includeGradeValue))
+          ..add('includeGradeValue', includeGradeValue)
+          ..add('includeDetails', includeDetails))
         .toString();
   }
 }
@@ -89,6 +95,11 @@ class NotificationPreferencesDtoBuilder
   set includeGradeValue(bool? includeGradeValue) =>
       _$this._includeGradeValue = includeGradeValue;
 
+  bool? _includeDetails;
+  bool? get includeDetails => _$this._includeDetails;
+  set includeDetails(bool? includeDetails) =>
+      _$this._includeDetails = includeDetails;
+
   NotificationPreferencesDtoBuilder() {
     NotificationPreferencesDto._defaults(this);
   }
@@ -100,6 +111,7 @@ class NotificationPreferencesDtoBuilder
       _absences = $v.absences;
       _agenda = $v.agenda;
       _includeGradeValue = $v.includeGradeValue;
+      _includeDetails = $v.includeDetails;
       _$v = null;
     }
     return this;
@@ -141,6 +153,11 @@ class NotificationPreferencesDtoBuilder
             includeGradeValue,
             r'NotificationPreferencesDto',
             'includeGradeValue',
+          ),
+          includeDetails: BuiltValueNullFieldError.checkNotNull(
+            includeDetails,
+            r'NotificationPreferencesDto',
+            'includeDetails',
           ),
         );
     replace(_$result);

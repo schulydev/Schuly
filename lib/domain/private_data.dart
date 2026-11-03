@@ -142,13 +142,11 @@ class PrivateUserInfo {
   final String? firstName;
   final String? lastName;
   final String? email;
-  final String? birthday;
   final String? entryDate;
   const PrivateUserInfo({
     this.firstName,
     this.lastName,
     this.email,
-    this.birthday,
     this.entryDate,
   });
 
@@ -156,7 +154,6 @@ class PrivateUserInfo {
         firstName: j['firstName'] as String?,
         lastName: j['lastName'] as String?,
         email: j['email'] as String?,
-        birthday: j['birthday'] as String?,
         entryDate: j['entryDate'] as String?,
       );
 }

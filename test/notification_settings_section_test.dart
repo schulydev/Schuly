@@ -56,6 +56,8 @@ void main() {
       expect(find.text('Absences'), findsOneWidget);
       expect(find.text('Agenda'), findsOneWidget);
       expect(find.text('Show the grade'), findsOneWidget);
+      expect(find.text('Show details'), findsOneWidget);
+      expect(service.preferences.includeDetails, isFalse);
     });
 
     testWidgets('tapping the grades switch calls putPreferences with grades: false', (tester) async {

@@ -16,10 +16,6 @@ void main() {
         ..schoolId = 's-1'
         ..schoolName = 'School'
         ..applicationUserId = 'au-1'
-        ..street = 'Main St'
-        ..city = 'City'
-        ..zip = '1234'
-        ..birthday = Date(2000, 1, 1)
         ..entryDate = Date(2015, 9, 1)
         ..role = Roles.student
         ..state = UserState.active
@@ -162,8 +158,7 @@ void main() {
           ..schoolName = 'School'
           ..firstName = 'John'
           ..lastName = 'Doe'
-          ..code = 'JD'
-          ..email = 'jd@example.com'),
+          ..code = 'JD'),
       ];
 
       final documents = [
@@ -195,7 +190,6 @@ void main() {
       expect(restored.me?.lastName, 'Byron');
       expect(restored.me?.role, Roles.student);
       expect(restored.me?.state, UserState.active);
-      expect(restored.me?.birthday, Date(2000, 1, 1));
       expect(restored.me?.grades?.single.score, 5.5);
       expect(restored.me?.classes?.single.classId, 'c-1');
       expect(restored.exams.length, 2);

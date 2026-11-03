@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 import 'package:schuly_api/schuly_api.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../../config/backend_config.dart';
 import '../../services/active_account_service.dart';
@@ -163,7 +162,6 @@ class _AccountPageState extends State<AccountPage> {
     final me = SchoolDataService.instance.me;
     final classes = me?.classes ?? const <UserClassDto>[];
 
-    String fmtDate(Date? d) => d == null ? '-' : '${d.day}.${d.month}.${d.year}';
     final fullName = me == null
         ? (widget.userName ?? '-')
         : '${me.firstName} ${me.lastName}'.trim();
@@ -208,15 +206,6 @@ class _AccountPageState extends State<AccountPage> {
         const SizedBox(height: 20),
         _SectionLabel('Profile'),
         _InfoTile(icon: FIcons.mail, label: 'Email', value: me?.email),
-        _InfoTile(icon: FIcons.phone, label: 'Phone', value: me?.phoneNumber),
-        _InfoTile(
-          icon: FIcons.mapPin,
-          label: 'Address',
-          value: [me?.street, [me?.zip, me?.city].where((s) => (s ?? '').isNotEmpty).join(' ')]
-              .where((s) => (s ?? '').isNotEmpty)
-              .join(', '),
-        ),
-        _InfoTile(icon: FIcons.cake, label: 'Birthday', value: fmtDate(me?.birthday)),
         const SizedBox(height: 20),
         if (classes.isNotEmpty) ...[
           _SectionLabel('My classes'),
@@ -246,10 +235,6 @@ class _AccountPageState extends State<AccountPage> {
                 prefix: const Icon(FIcons.user),
                 title: Text('${t.firstName} ${t.lastName}'.trim()),
                 subtitle: t.code.isNotEmpty ? Text(t.code) : null,
-                suffix: (t.email?.isNotEmpty ?? false) ? const Icon(FIcons.mail) : null,
-                onPress: (t.email?.isNotEmpty ?? false)
-                    ? () => launchUrl(Uri(scheme: 'mailto', path: t.email))
-                    : null,
               ),
             ),
           const SizedBox(height: 12),
