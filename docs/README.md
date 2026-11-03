@@ -1,26 +1,30 @@
 # Schuly documentation
 
-Schuly is a Flutter mobile app for accessing school data (grades, exams, agenda,
-absences) from Schulnetz-based systems. It runs in two modes - an **account mode**
-backed by [SchulyServer](https://github.com/schulydev/SchulyServer) with a Schuly account, and
-a **private / secure mode** that keeps credentials on-device and talks only to
-anonymous stateless proxy endpoints. The UI is built with [Forui](https://forui.dev).
+Use these pages to run, build, and change the Schuly mobile app. Schuly is a Flutter app for Android
+and iOS that shows grades, exams, agenda, and absences from school systems. The UI uses
+[Forui](https://forui.dev).
 
-## Contents
+The app runs in two modes:
 
-| Doc | What it covers |
-| --- | --- |
-| [Architecture: app modes](architecture-modes.md) | Account vs private mode, where data lives, the connect flow |
-| [Development setup](setup/development.md) | Flutter SDK, bun task runner, running the dev/prod flavors, analyze/test/format |
-| [Build & release](setup/build-and-release.md) | Release APKs, iOS build, adb install, app-icon regeneration |
-| [API client](api-client.md) | How `lib/api/` is generated and how to regenerate it |
-| [Contributing](contributing.md) | The enforced issue → branch → PR workflow and label taxonomy |
+- **Account mode:** uses a Schuly account on [SchulyServer](https://github.com/schulydev/SchulyServer).
+- **Private mode** (also called secure mode): keeps credentials on the device and calls anonymous,
+  stateless proxy endpoints.
 
 ## Quick start
 
 ```sh
 bun run clean   # flutter clean && flutter pub get
-bun run dev     # run the dev flavor on a connected device/emulator
+bun run dev     # run the dev flavor on a connected device or emulator
 ```
 
-See [Development setup](setup/development.md) for prerequisites.
+[Development setup](setup/development.md) lists the prerequisites.
+
+## Pages
+
+| Page | What it covers |
+| --- | --- |
+| [App modes](architecture-modes.md) | Account and private mode, where data lives, the connect flow |
+| [Development setup](setup/development.md) | Prerequisites, bun tasks, flavors, local backend, quality checks |
+| [Build and release](setup/build-and-release.md) | Local builds, adb install, app icons, the release workflow |
+| [API client](api-client.md) | How `lib/api/` is generated and how to regenerate it |
+| [Contributing](contributing.md) | This repo's rules and checks |
