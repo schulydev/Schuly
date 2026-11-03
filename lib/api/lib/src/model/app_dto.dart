@@ -13,6 +13,9 @@ part 'app_dto.g.dart';
 /// Properties:
 /// * [version] 
 /// * [registrationEnabled] 
+/// * [policyVersion] 
+/// * [policyUrl] 
+/// * [swissSchoolConfirmationRequired] 
 @BuiltValue()
 abstract class AppDto implements Built<AppDto, AppDtoBuilder> {
   @BuiltValueField(wireName: r'version')
@@ -20,6 +23,15 @@ abstract class AppDto implements Built<AppDto, AppDtoBuilder> {
 
   @BuiltValueField(wireName: r'registrationEnabled')
   bool get registrationEnabled;
+
+  @BuiltValueField(wireName: r'policyVersion')
+  String get policyVersion;
+
+  @BuiltValueField(wireName: r'policyUrl')
+  String get policyUrl;
+
+  @BuiltValueField(wireName: r'swissSchoolConfirmationRequired')
+  bool get swissSchoolConfirmationRequired;
 
   AppDto._();
 
@@ -52,6 +64,21 @@ class _$AppDtoSerializer implements PrimitiveSerializer<AppDto> {
     yield r'registrationEnabled';
     yield serializers.serialize(
       object.registrationEnabled,
+      specifiedType: const FullType(bool),
+    );
+    yield r'policyVersion';
+    yield serializers.serialize(
+      object.policyVersion,
+      specifiedType: const FullType(String),
+    );
+    yield r'policyUrl';
+    yield serializers.serialize(
+      object.policyUrl,
+      specifiedType: const FullType(String),
+    );
+    yield r'swissSchoolConfirmationRequired';
+    yield serializers.serialize(
+      object.swissSchoolConfirmationRequired,
       specifiedType: const FullType(bool),
     );
   }
@@ -90,6 +117,27 @@ class _$AppDtoSerializer implements PrimitiveSerializer<AppDto> {
             specifiedType: const FullType(bool),
           ) as bool;
           result.registrationEnabled = valueDes;
+          break;
+        case r'policyVersion':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType(String),
+          ) as String;
+          result.policyVersion = valueDes;
+          break;
+        case r'policyUrl':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType(String),
+          ) as String;
+          result.policyUrl = valueDes;
+          break;
+        case r'swissSchoolConfirmationRequired':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType(bool),
+          ) as bool;
+          result.swissSchoolConfirmationRequired = valueDes;
           break;
         default:
           unhandled.add(key);

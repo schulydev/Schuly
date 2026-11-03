@@ -15,6 +15,7 @@ part 'update_notification_preferences_command.g.dart';
 /// * [absences] 
 /// * [agenda] 
 /// * [includeGradeValue] 
+/// * [includeDetails] 
 @BuiltValue()
 abstract class UpdateNotificationPreferencesCommand implements Built<UpdateNotificationPreferencesCommand, UpdateNotificationPreferencesCommandBuilder> {
   @BuiltValueField(wireName: r'grades')
@@ -29,12 +30,16 @@ abstract class UpdateNotificationPreferencesCommand implements Built<UpdateNotif
   @BuiltValueField(wireName: r'includeGradeValue')
   bool get includeGradeValue;
 
+  @BuiltValueField(wireName: r'includeDetails')
+  bool? get includeDetails;
+
   UpdateNotificationPreferencesCommand._();
 
   factory UpdateNotificationPreferencesCommand([void updates(UpdateNotificationPreferencesCommandBuilder b)]) = _$UpdateNotificationPreferencesCommand;
 
   @BuiltValueHook(initializeBuilder: true)
-  static void _defaults(UpdateNotificationPreferencesCommandBuilder b) => b;
+  static void _defaults(UpdateNotificationPreferencesCommandBuilder b) => b
+      ..includeDetails = false;
 
   @BuiltValueSerializer(custom: true)
   static Serializer<UpdateNotificationPreferencesCommand> get serializer => _$UpdateNotificationPreferencesCommandSerializer();
@@ -72,6 +77,13 @@ class _$UpdateNotificationPreferencesCommandSerializer implements PrimitiveSeria
       object.includeGradeValue,
       specifiedType: const FullType(bool),
     );
+    if (object.includeDetails != null) {
+      yield r'includeDetails';
+      yield serializers.serialize(
+        object.includeDetails,
+        specifiedType: const FullType(bool),
+      );
+    }
   }
 
   @override
@@ -122,6 +134,13 @@ class _$UpdateNotificationPreferencesCommandSerializer implements PrimitiveSeria
             specifiedType: const FullType(bool),
           ) as bool;
           result.includeGradeValue = valueDes;
+          break;
+        case r'includeDetails':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType(bool),
+          ) as bool;
+          result.includeDetails = valueDes;
           break;
         default:
           unhandled.add(key);

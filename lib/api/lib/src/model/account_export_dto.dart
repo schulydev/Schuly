@@ -4,7 +4,13 @@
 
 // ignore_for_file: unused_element
 import 'package:schuly_api/src/model/application_user_dto.dart';
+import 'package:schuly_api/src/model/export_privacy_notice_dto.dart';
+import 'package:schuly_api/src/model/export_sign_in_dto.dart';
+import 'package:schuly_api/src/model/export_helply_dto.dart';
+import 'package:schuly_api/src/model/export_ai_apps_dto.dart';
+import 'package:schuly_api/src/model/export_connected_account_dto.dart';
 import 'package:built_collection/built_collection.dart';
+import 'package:schuly_api/src/model/export_notifications_dto.dart';
 import 'package:schuly_api/src/model/student_document_dto.dart';
 import 'package:schuly_api/src/model/agenda_entry_dto.dart';
 import 'package:schuly_api/src/model/school_user_dto.dart';
@@ -25,6 +31,13 @@ part 'account_export_dto.g.dart';
 /// * [semesterReports] 
 /// * [documents] 
 /// * [linkedAccounts] 
+/// * [privacyNotice] 
+/// * [signIn] 
+/// * [connectedAccounts] 
+/// * [helply] 
+/// * [aiApps] 
+/// * [notifications] 
+/// * [notIncluded] 
 @BuiltValue()
 abstract class AccountExportDto implements Built<AccountExportDto, AccountExportDtoBuilder> {
   @BuiltValueField(wireName: r'exportedAt')
@@ -47,6 +60,27 @@ abstract class AccountExportDto implements Built<AccountExportDto, AccountExport
 
   @BuiltValueField(wireName: r'linkedAccounts')
   BuiltList<LinkedAccountDto>? get linkedAccounts;
+
+  @BuiltValueField(wireName: r'privacyNotice')
+  ExportPrivacyNoticeDto? get privacyNotice;
+
+  @BuiltValueField(wireName: r'signIn')
+  ExportSignInDto? get signIn;
+
+  @BuiltValueField(wireName: r'connectedAccounts')
+  BuiltList<ExportConnectedAccountDto>? get connectedAccounts;
+
+  @BuiltValueField(wireName: r'helply')
+  ExportHelplyDto? get helply;
+
+  @BuiltValueField(wireName: r'aiApps')
+  ExportAiAppsDto? get aiApps;
+
+  @BuiltValueField(wireName: r'notifications')
+  ExportNotificationsDto? get notifications;
+
+  @BuiltValueField(wireName: r'notIncluded')
+  BuiltList<String>? get notIncluded;
 
   AccountExportDto._();
 
@@ -116,6 +150,55 @@ class _$AccountExportDtoSerializer implements PrimitiveSerializer<AccountExportD
       yield serializers.serialize(
         object.linkedAccounts,
         specifiedType: const FullType(BuiltList, [FullType(LinkedAccountDto)]),
+      );
+    }
+    if (object.privacyNotice != null) {
+      yield r'privacyNotice';
+      yield serializers.serialize(
+        object.privacyNotice,
+        specifiedType: const FullType.nullable(ExportPrivacyNoticeDto),
+      );
+    }
+    if (object.signIn != null) {
+      yield r'signIn';
+      yield serializers.serialize(
+        object.signIn,
+        specifiedType: const FullType.nullable(ExportSignInDto),
+      );
+    }
+    if (object.connectedAccounts != null) {
+      yield r'connectedAccounts';
+      yield serializers.serialize(
+        object.connectedAccounts,
+        specifiedType: const FullType(BuiltList, [FullType(ExportConnectedAccountDto)]),
+      );
+    }
+    if (object.helply != null) {
+      yield r'helply';
+      yield serializers.serialize(
+        object.helply,
+        specifiedType: const FullType.nullable(ExportHelplyDto),
+      );
+    }
+    if (object.aiApps != null) {
+      yield r'aiApps';
+      yield serializers.serialize(
+        object.aiApps,
+        specifiedType: const FullType.nullable(ExportAiAppsDto),
+      );
+    }
+    if (object.notifications != null) {
+      yield r'notifications';
+      yield serializers.serialize(
+        object.notifications,
+        specifiedType: const FullType.nullable(ExportNotificationsDto),
+      );
+    }
+    if (object.notIncluded != null) {
+      yield r'notIncluded';
+      yield serializers.serialize(
+        object.notIncluded,
+        specifiedType: const FullType(BuiltList, [FullType(String)]),
       );
     }
   }
@@ -189,6 +272,60 @@ class _$AccountExportDtoSerializer implements PrimitiveSerializer<AccountExportD
             specifiedType: const FullType(BuiltList, [FullType(LinkedAccountDto)]),
           ) as BuiltList<LinkedAccountDto>;
           result.linkedAccounts.replace(valueDes);
+          break;
+        case r'privacyNotice':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType.nullable(ExportPrivacyNoticeDto),
+          ) as ExportPrivacyNoticeDto?;
+          if (valueDes == null) continue;
+          result.privacyNotice.replace(valueDes);
+          break;
+        case r'signIn':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType.nullable(ExportSignInDto),
+          ) as ExportSignInDto?;
+          if (valueDes == null) continue;
+          result.signIn.replace(valueDes);
+          break;
+        case r'connectedAccounts':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType(BuiltList, [FullType(ExportConnectedAccountDto)]),
+          ) as BuiltList<ExportConnectedAccountDto>;
+          result.connectedAccounts.replace(valueDes);
+          break;
+        case r'helply':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType.nullable(ExportHelplyDto),
+          ) as ExportHelplyDto?;
+          if (valueDes == null) continue;
+          result.helply.replace(valueDes);
+          break;
+        case r'aiApps':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType.nullable(ExportAiAppsDto),
+          ) as ExportAiAppsDto?;
+          if (valueDes == null) continue;
+          result.aiApps.replace(valueDes);
+          break;
+        case r'notifications':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType.nullable(ExportNotificationsDto),
+          ) as ExportNotificationsDto?;
+          if (valueDes == null) continue;
+          result.notifications.replace(valueDes);
+          break;
+        case r'notIncluded':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType(BuiltList, [FullType(String)]),
+          ) as BuiltList<String>;
+          result.notIncluded.replace(valueDes);
           break;
         default:
           unhandled.add(key);

@@ -11,6 +11,7 @@ Name | Type | Description | Notes
 **name** | **String** |  | 
 **permissions** | [**McpPermissionSet**](McpPermissionSet.md) |  | 
 **expiresAt** | [**DateTime**](DateTime.md) |  | 
+**aiAppSharingConfirmed** | **bool** |  | [optional] [default to false]
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
 

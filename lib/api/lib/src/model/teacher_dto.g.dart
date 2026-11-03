@@ -19,8 +19,6 @@ class _$TeacherDto extends TeacherDto {
   final String lastName;
   @override
   final String code;
-  @override
-  final String? email;
 
   factory _$TeacherDto([void Function(TeacherDtoBuilder)? updates]) =>
       (TeacherDtoBuilder()..update(updates))._build();
@@ -32,7 +30,6 @@ class _$TeacherDto extends TeacherDto {
     required this.firstName,
     required this.lastName,
     required this.code,
-    this.email,
   }) : super._();
   @override
   TeacherDto rebuild(void Function(TeacherDtoBuilder) updates) =>
@@ -50,8 +47,7 @@ class _$TeacherDto extends TeacherDto {
         schoolName == other.schoolName &&
         firstName == other.firstName &&
         lastName == other.lastName &&
-        code == other.code &&
-        email == other.email;
+        code == other.code;
   }
 
   @override
@@ -63,7 +59,6 @@ class _$TeacherDto extends TeacherDto {
     _$hash = $jc(_$hash, firstName.hashCode);
     _$hash = $jc(_$hash, lastName.hashCode);
     _$hash = $jc(_$hash, code.hashCode);
-    _$hash = $jc(_$hash, email.hashCode);
     _$hash = $jf(_$hash);
     return _$hash;
   }
@@ -76,8 +71,7 @@ class _$TeacherDto extends TeacherDto {
           ..add('schoolName', schoolName)
           ..add('firstName', firstName)
           ..add('lastName', lastName)
-          ..add('code', code)
-          ..add('email', email))
+          ..add('code', code))
         .toString();
   }
 }
@@ -109,10 +103,6 @@ class TeacherDtoBuilder implements Builder<TeacherDto, TeacherDtoBuilder> {
   String? get code => _$this._code;
   set code(String? code) => _$this._code = code;
 
-  String? _email;
-  String? get email => _$this._email;
-  set email(String? email) => _$this._email = email;
-
   TeacherDtoBuilder() {
     TeacherDto._defaults(this);
   }
@@ -126,7 +116,6 @@ class TeacherDtoBuilder implements Builder<TeacherDto, TeacherDtoBuilder> {
       _firstName = $v.firstName;
       _lastName = $v.lastName;
       _code = $v.code;
-      _email = $v.email;
       _$v = null;
     }
     return this;
@@ -167,7 +156,6 @@ class TeacherDtoBuilder implements Builder<TeacherDto, TeacherDtoBuilder> {
             r'TeacherDto',
             'code',
           ),
-          email: email,
         );
     replace(_$result);
     return _$result;

@@ -12,6 +12,7 @@ Name | Type | Description | Notes
 **absences** | **bool** |  | 
 **agenda** | **bool** |  | 
 **includeGradeValue** | **bool** |  | 
+**includeDetails** | **bool** |  | [optional] [default to false]
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
 

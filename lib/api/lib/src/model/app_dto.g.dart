@@ -11,12 +11,23 @@ class _$AppDto extends AppDto {
   final String version;
   @override
   final bool registrationEnabled;
+  @override
+  final String policyVersion;
+  @override
+  final String policyUrl;
+  @override
+  final bool swissSchoolConfirmationRequired;
 
   factory _$AppDto([void Function(AppDtoBuilder)? updates]) =>
       (AppDtoBuilder()..update(updates))._build();
 
-  _$AppDto._({required this.version, required this.registrationEnabled})
-    : super._();
+  _$AppDto._({
+    required this.version,
+    required this.registrationEnabled,
+    required this.policyVersion,
+    required this.policyUrl,
+    required this.swissSchoolConfirmationRequired,
+  }) : super._();
   @override
   AppDto rebuild(void Function(AppDtoBuilder) updates) =>
       (toBuilder()..update(updates)).build();
@@ -29,7 +40,11 @@ class _$AppDto extends AppDto {
     if (identical(other, this)) return true;
     return other is AppDto &&
         version == other.version &&
-        registrationEnabled == other.registrationEnabled;
+        registrationEnabled == other.registrationEnabled &&
+        policyVersion == other.policyVersion &&
+        policyUrl == other.policyUrl &&
+        swissSchoolConfirmationRequired ==
+            other.swissSchoolConfirmationRequired;
   }
 
   @override
@@ -37,6 +52,9 @@ class _$AppDto extends AppDto {
     var _$hash = 0;
     _$hash = $jc(_$hash, version.hashCode);
     _$hash = $jc(_$hash, registrationEnabled.hashCode);
+    _$hash = $jc(_$hash, policyVersion.hashCode);
+    _$hash = $jc(_$hash, policyUrl.hashCode);
+    _$hash = $jc(_$hash, swissSchoolConfirmationRequired.hashCode);
     _$hash = $jf(_$hash);
     return _$hash;
   }
@@ -45,7 +63,13 @@ class _$AppDto extends AppDto {
   String toString() {
     return (newBuiltValueToStringHelper(r'AppDto')
           ..add('version', version)
-          ..add('registrationEnabled', registrationEnabled))
+          ..add('registrationEnabled', registrationEnabled)
+          ..add('policyVersion', policyVersion)
+          ..add('policyUrl', policyUrl)
+          ..add(
+            'swissSchoolConfirmationRequired',
+            swissSchoolConfirmationRequired,
+          ))
         .toString();
   }
 }
@@ -62,6 +86,21 @@ class AppDtoBuilder implements Builder<AppDto, AppDtoBuilder> {
   set registrationEnabled(bool? registrationEnabled) =>
       _$this._registrationEnabled = registrationEnabled;
 
+  String? _policyVersion;
+  String? get policyVersion => _$this._policyVersion;
+  set policyVersion(String? policyVersion) =>
+      _$this._policyVersion = policyVersion;
+
+  String? _policyUrl;
+  String? get policyUrl => _$this._policyUrl;
+  set policyUrl(String? policyUrl) => _$this._policyUrl = policyUrl;
+
+  bool? _swissSchoolConfirmationRequired;
+  bool? get swissSchoolConfirmationRequired =>
+      _$this._swissSchoolConfirmationRequired;
+  set swissSchoolConfirmationRequired(bool? swissSchoolConfirmationRequired) =>
+      _$this._swissSchoolConfirmationRequired = swissSchoolConfirmationRequired;
+
   AppDtoBuilder() {
     AppDto._defaults(this);
   }
@@ -71,6 +110,9 @@ class AppDtoBuilder implements Builder<AppDto, AppDtoBuilder> {
     if ($v != null) {
       _version = $v.version;
       _registrationEnabled = $v.registrationEnabled;
+      _policyVersion = $v.policyVersion;
+      _policyUrl = $v.policyUrl;
+      _swissSchoolConfirmationRequired = $v.swissSchoolConfirmationRequired;
       _$v = null;
     }
     return this;
@@ -103,6 +145,22 @@ class AppDtoBuilder implements Builder<AppDto, AppDtoBuilder> {
             r'AppDto',
             'registrationEnabled',
           ),
+          policyVersion: BuiltValueNullFieldError.checkNotNull(
+            policyVersion,
+            r'AppDto',
+            'policyVersion',
+          ),
+          policyUrl: BuiltValueNullFieldError.checkNotNull(
+            policyUrl,
+            r'AppDto',
+            'policyUrl',
+          ),
+          swissSchoolConfirmationRequired:
+              BuiltValueNullFieldError.checkNotNull(
+                swissSchoolConfirmationRequired,
+                r'AppDto',
+                'swissSchoolConfirmationRequired',
+              ),
         );
     replace(_$result);
     return _$result;

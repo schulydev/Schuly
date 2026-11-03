@@ -15,6 +15,13 @@ Name | Type | Description | Notes
 **semesterReports** | [**BuiltList&lt;SemesterReportDto&gt;**](SemesterReportDto.md) |  | [optional] 
 **documents** | [**BuiltList&lt;StudentDocumentDto&gt;**](StudentDocumentDto.md) |  | [optional] 
 **linkedAccounts** | [**BuiltList&lt;LinkedAccountDto&gt;**](LinkedAccountDto.md) |  | [optional] 
+**privacyNotice** | [**ExportPrivacyNoticeDto**](ExportPrivacyNoticeDto.md) |  | [optional] 
+**signIn** | [**ExportSignInDto**](ExportSignInDto.md) |  | [optional] 
+**connectedAccounts** | [**BuiltList&lt;ExportConnectedAccountDto&gt;**](ExportConnectedAccountDto.md) |  | [optional] 
+**helply** | [**ExportHelplyDto**](ExportHelplyDto.md) |  | [optional] 
+**aiApps** | [**ExportAiAppsDto**](ExportAiAppsDto.md) |  | [optional] 
+**notifications** | [**ExportNotificationsDto**](ExportNotificationsDto.md) |  | [optional] 
+**notIncluded** | **BuiltList&lt;String&gt;** |  | [optional] 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
 

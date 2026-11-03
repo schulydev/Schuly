@@ -69,8 +69,6 @@ Class | Method | HTTP request | Description
 [*AbsencesApi*](doc/AbsencesApi.md) | [**apiAbsencesPost**](doc/AbsencesApi.md#apiabsencespost) | **POST** /api/Absences | 
 [*AbsencesApi*](doc/AbsencesApi.md) | [**apiAbsencesPut**](doc/AbsencesApi.md#apiabsencesput) | **PUT** /api/Absences | 
 [*AbsencesApi*](doc/AbsencesApi.md) | [**apiAbsencesSearchGet**](doc/AbsencesApi.md#apiabsencessearchget) | **GET** /api/Absences/search | 
-[*AccountsApi*](doc/AccountsApi.md) | [**apiPluginsOdaorgAccountsAccountIdDelete**](doc/AccountsApi.md#apipluginsodaorgaccountsaccountiddelete) | **DELETE** /api/plugins/odaorg/accounts/{accountId} | 
-[*AccountsApi*](doc/AccountsApi.md) | [**apiPluginsOdaorgAccountsGet**](doc/AccountsApi.md#apipluginsodaorgaccountsget) | **GET** /api/plugins/odaorg/accounts | 
 [*AgendasApi*](doc/AgendasApi.md) | [**apiAgendasGet**](doc/AgendasApi.md#apiagendasget) | **GET** /api/Agendas | 
 [*AgendasApi*](doc/AgendasApi.md) | [**apiAgendasIdDelete**](doc/AgendasApi.md#apiagendasiddelete) | **DELETE** /api/Agendas/{id} | 
 [*AgendasApi*](doc/AgendasApi.md) | [**apiAgendasPost**](doc/AgendasApi.md#apiagendaspost) | **POST** /api/Agendas | 
@@ -82,6 +80,8 @@ Class | Method | HTTP request | Description
 [*AuthApi*](doc/AuthApi.md) | [**apiAuthMeDelete**](doc/AuthApi.md#apiauthmedelete) | **DELETE** /api/Auth/me | 
 [*AuthApi*](doc/AuthApi.md) | [**apiAuthMeExportGet**](doc/AuthApi.md#apiauthmeexportget) | **GET** /api/Auth/me/export | 
 [*AuthApi*](doc/AuthApi.md) | [**apiAuthMeGet**](doc/AuthApi.md#apiauthmeget) | **GET** /api/Auth/me | 
+[*AuthApi*](doc/AuthApi.md) | [**apiAuthMePrivacyNoticeGet**](doc/AuthApi.md#apiauthmeprivacynoticeget) | **GET** /api/Auth/me/privacy-notice | 
+[*AuthApi*](doc/AuthApi.md) | [**apiAuthMePrivacyNoticePost**](doc/AuthApi.md#apiauthmeprivacynoticepost) | **POST** /api/Auth/me/privacy-notice | 
 [*AuthApi*](doc/AuthApi.md) | [**apiAuthSyncGet**](doc/AuthApi.md#apiauthsyncget) | **GET** /api/Auth/sync | 
 [*AuthenticationApi*](doc/AuthenticationApi.md) | [**toamaisutaaChangeEmail**](doc/AuthenticationApi.md#toamaisutaachangeemail) | **POST** /auth/email | Sends a verification link to an address, and changes nothing yet.
 [*AuthenticationApi*](doc/AuthenticationApi.md) | [**toamaisutaaChangePassword**](doc/AuthenticationApi.md#toamaisutaachangepassword) | **POST** /auth/password | Sets a first password or changes an existing one.
@@ -98,6 +98,22 @@ Class | Method | HTTP request | Description
 [*ClassApi*](doc/ClassApi.md) | [**apiClassSearchGet**](doc/ClassApi.md#apiclasssearchget) | **GET** /api/Class/search | 
 [*ExamsApi*](doc/ExamsApi.md) | [**apiExamsGet**](doc/ExamsApi.md#apiexamsget) | **GET** /api/Exams | 
 [*ExamsApi*](doc/ExamsApi.md) | [**apiExamsSearchGet**](doc/ExamsApi.md#apiexamssearchget) | **GET** /api/Exams/search | 
+[*HelplyApi*](doc/HelplyApi.md) | [**apiHelplyConversationsDelete**](doc/HelplyApi.md#apihelplyconversationsdelete) | **DELETE** /api/helply/conversations | 
+[*HelplyApi*](doc/HelplyApi.md) | [**apiHelplyConversationsGet**](doc/HelplyApi.md#apihelplyconversationsget) | **GET** /api/helply/conversations | 
+[*HelplyApi*](doc/HelplyApi.md) | [**apiHelplyConversationsIdApprovalsPost**](doc/HelplyApi.md#apihelplyconversationsidapprovalspost) | **POST** /api/helply/conversations/{id}/approvals | 
+[*HelplyApi*](doc/HelplyApi.md) | [**apiHelplyConversationsIdAttachmentsAttachmentIdDelete**](doc/HelplyApi.md#apihelplyconversationsidattachmentsattachmentiddelete) | **DELETE** /api/helply/conversations/{id}/attachments/{attachmentId} | 
+[*HelplyApi*](doc/HelplyApi.md) | [**apiHelplyConversationsIdAttachmentsAttachmentIdGet**](doc/HelplyApi.md#apihelplyconversationsidattachmentsattachmentidget) | **GET** /api/helply/conversations/{id}/attachments/{attachmentId} | 
+[*HelplyApi*](doc/HelplyApi.md) | [**apiHelplyConversationsIdAttachmentsPost**](doc/HelplyApi.md#apihelplyconversationsidattachmentspost) | **POST** /api/helply/conversations/{id}/attachments | 
+[*HelplyApi*](doc/HelplyApi.md) | [**apiHelplyConversationsIdDelete**](doc/HelplyApi.md#apihelplyconversationsiddelete) | **DELETE** /api/helply/conversations/{id} | 
+[*HelplyApi*](doc/HelplyApi.md) | [**apiHelplyConversationsIdGet**](doc/HelplyApi.md#apihelplyconversationsidget) | **GET** /api/helply/conversations/{id} | 
+[*HelplyApi*](doc/HelplyApi.md) | [**apiHelplyConversationsIdMessagesPost**](doc/HelplyApi.md#apihelplyconversationsidmessagespost) | **POST** /api/helply/conversations/{id}/messages | 
+[*HelplyApi*](doc/HelplyApi.md) | [**apiHelplyConversationsIdPatch**](doc/HelplyApi.md#apihelplyconversationsidpatch) | **PATCH** /api/helply/conversations/{id} | 
+[*HelplyApi*](doc/HelplyApi.md) | [**apiHelplyConversationsIdRetryPost**](doc/HelplyApi.md#apihelplyconversationsidretrypost) | **POST** /api/helply/conversations/{id}/retry | 
+[*HelplyApi*](doc/HelplyApi.md) | [**apiHelplyConversationsPost**](doc/HelplyApi.md#apihelplyconversationspost) | **POST** /api/helply/conversations | 
+[*HelplyApi*](doc/HelplyApi.md) | [**apiHelplySettingsGet**](doc/HelplyApi.md#apihelplysettingsget) | **GET** /api/helply/settings | 
+[*HelplyApi*](doc/HelplyApi.md) | [**apiHelplySettingsPermissionsPut**](doc/HelplyApi.md#apihelplysettingspermissionsput) | **PUT** /api/helply/settings/permissions | 
+[*HelplyApi*](doc/HelplyApi.md) | [**apiHelplySettingsWorkspacePut**](doc/HelplyApi.md#apihelplysettingsworkspaceput) | **PUT** /api/helply/settings/workspace | 
+[*HelplyApi*](doc/HelplyApi.md) | [**apiHelplyStatusGet**](doc/HelplyApi.md#apihelplystatusget) | **GET** /api/helply/status | 
 [*LinkedAccountsApi*](doc/LinkedAccountsApi.md) | [**apiMeLinkedAccountsGet**](doc/LinkedAccountsApi.md#apimelinkedaccountsget) | **GET** /api/me/linked-accounts | 
 [*LinkedAccountsApi*](doc/LinkedAccountsApi.md) | [**apiMeLinkedAccountsIdDelete**](doc/LinkedAccountsApi.md#apimelinkedaccountsiddelete) | **DELETE** /api/me/linked-accounts/{id} | 
 [*LinkingApi*](doc/LinkingApi.md) | [**apiLinkingAccountsGet**](doc/LinkingApi.md#apilinkingaccountsget) | **GET** /api/linking/accounts | 
@@ -131,18 +147,15 @@ Class | Method | HTTP request | Description
 [*NotificationsApi*](doc/NotificationsApi.md) | [**apiNotificationsPreferencesGet**](doc/NotificationsApi.md#apinotificationspreferencesget) | **GET** /api/notifications/preferences | 
 [*NotificationsApi*](doc/NotificationsApi.md) | [**apiNotificationsPreferencesPut**](doc/NotificationsApi.md#apinotificationspreferencesput) | **PUT** /api/notifications/preferences | 
 [*NotificationsApi*](doc/NotificationsApi.md) | [**apiNotificationsTestPost**](doc/NotificationsApi.md#apinotificationstestpost) | **POST** /api/notifications/test | 
-[*OdaorgStatelessApi*](doc/OdaorgStatelessApi.md) | [**apiPluginsOdaorgStatelessDataPost**](doc/OdaorgStatelessApi.md#apipluginsodaorgstatelessdatapost) | **POST** /api/plugins/odaorg/stateless/data | 
 [*SchoolUsersApi*](doc/SchoolUsersApi.md) | [**apiSchoolUsersGet**](doc/SchoolUsersApi.md#apischoolusersget) | **GET** /api/SchoolUsers | 
 [*SchoolUsersApi*](doc/SchoolUsersApi.md) | [**apiSchoolUsersIdGet**](doc/SchoolUsersApi.md#apischoolusersidget) | **GET** /api/SchoolUsers/{id} | 
 [*SchoolsApi*](doc/SchoolsApi.md) | [**apiSchoolsIdGet**](doc/SchoolsApi.md#apischoolsidget) | **GET** /api/Schools/{id} | 
+[*SchoolsApi*](doc/SchoolsApi.md) | [**apiSchoolsIdLogoGet**](doc/SchoolsApi.md#apischoolsidlogoget) | **GET** /api/Schools/{id}/logo | 
 [*SchoolsApi*](doc/SchoolsApi.md) | [**apiSchoolsMySchoolsGet**](doc/SchoolsApi.md#apischoolsmyschoolsget) | **GET** /api/Schools/my-schools | 
 [*SemesterReportsApi*](doc/SemesterReportsApi.md) | [**apiSemesterReportsGet**](doc/SemesterReportsApi.md#apisemesterreportsget) | **GET** /api/SemesterReports | 
-[*StatusApi*](doc/StatusApi.md) | [**apiPluginsOdaorgStatusGet**](doc/StatusApi.md#apipluginsodaorgstatusget) | **GET** /api/plugins/odaorg/status | 
 [*StudentDocumentsApi*](doc/StudentDocumentsApi.md) | [**apiDocumentsDocumentIdGet**](doc/StudentDocumentsApi.md#apidocumentsdocumentidget) | **GET** /api/documents/{documentId} | 
 [*StudentDocumentsApi*](doc/StudentDocumentsApi.md) | [**apiDocumentsGet**](doc/StudentDocumentsApi.md#apidocumentsget) | **GET** /api/documents | 
 [*StudentDocumentsApi*](doc/StudentDocumentsApi.md) | [**apiStudentsSchoolUserIdDocumentsPost**](doc/StudentDocumentsApi.md#apistudentsschooluseriddocumentspost) | **POST** /api/students/{schoolUserId}/documents | 
-[*SyncApi*](doc/SyncApi.md) | [**apiPluginsOdaorgAccountsAccountIdSyncGet**](doc/SyncApi.md#apipluginsodaorgaccountsaccountidsyncget) | **GET** /api/plugins/odaorg/accounts/{accountId}/sync | 
-[*SyncApi*](doc/SyncApi.md) | [**apiPluginsOdaorgAccountsAccountIdSyncPost**](doc/SyncApi.md#apipluginsodaorgaccountsaccountidsyncpost) | **POST** /api/plugins/odaorg/accounts/{accountId}/sync | 
 [*TeachersApi*](doc/TeachersApi.md) | [**apiTeachersGet**](doc/TeachersApi.md#apiteachersget) | **GET** /api/Teachers | 
 [*TeachersApi*](doc/TeachersApi.md) | [**apiTeachersIdGet**](doc/TeachersApi.md#apiteachersidget) | **GET** /api/Teachers/{id} | 
 [*TrustedDevicesApi*](doc/TrustedDevicesApi.md) | [**toamaisutaaRevokeAllTrustedDevices**](doc/TrustedDevicesApi.md#toamaisutaarevokealltrusteddevices) | **DELETE** /auth/devices | Revokes every device this user has trusted.
@@ -162,10 +175,12 @@ Class | Method | HTTP request | Description
 
  - [AbsenceDto](doc/AbsenceDto.md)
  - [AbsenceType](doc/AbsenceType.md)
+ - [AcceptPrivacyNoticeCommand](doc/AcceptPrivacyNoticeCommand.md)
  - [AccountExportDto](doc/AccountExportDto.md)
  - [AddMyGradeCommand](doc/AddMyGradeCommand.md)
  - [AgendaEntryDto](doc/AgendaEntryDto.md)
  - [AgendaEntryType](doc/AgendaEntryType.md)
+ - [AnswerHelplyApprovalsRequest](doc/AnswerHelplyApprovalsRequest.md)
  - [AppDto](doc/AppDto.md)
  - [ApplicationUserDto](doc/ApplicationUserDto.md)
  - [BeginTwoFactorRequest](doc/BeginTwoFactorRequest.md)
@@ -177,16 +192,46 @@ Class | Method | HTTP request | Description
  - [ConfirmTwoFactorRequest](doc/ConfirmTwoFactorRequest.md)
  - [CreateAbsenceCommand](doc/CreateAbsenceCommand.md)
  - [CreateAgendaEntryCommand](doc/CreateAgendaEntryCommand.md)
+ - [CreateHelplyConversationRequest](doc/CreateHelplyConversationRequest.md)
  - [CreateMcpApiKeyCommand](doc/CreateMcpApiKeyCommand.md)
  - [CreateMySchoolCommand](doc/CreateMySchoolCommand.md)
  - [CreatedMcpApiKeyDto](doc/CreatedMcpApiKeyDto.md)
  - [DecideMcpAuthorizationCommand](doc/DecideMcpAuthorizationCommand.md)
  - [DisableTwoFactorRequest](doc/DisableTwoFactorRequest.md)
+ - [EntityTagHeaderValue](doc/EntityTagHeaderValue.md)
  - [ErrorResponse](doc/ErrorResponse.md)
  - [ExamDto](doc/ExamDto.md)
  - [ExamType](doc/ExamType.md)
+ - [ExportAiAppActivityDto](doc/ExportAiAppActivityDto.md)
+ - [ExportAiAppConnectionDto](doc/ExportAiAppConnectionDto.md)
+ - [ExportAiAppKeyDto](doc/ExportAiAppKeyDto.md)
+ - [ExportAiAppsDto](doc/ExportAiAppsDto.md)
+ - [ExportConnectedAccountDto](doc/ExportConnectedAccountDto.md)
+ - [ExportDeviceDto](doc/ExportDeviceDto.md)
+ - [ExportExternalLoginDto](doc/ExportExternalLoginDto.md)
+ - [ExportHelplyAttachmentDto](doc/ExportHelplyAttachmentDto.md)
+ - [ExportHelplyConversationDto](doc/ExportHelplyConversationDto.md)
+ - [ExportHelplyDto](doc/ExportHelplyDto.md)
+ - [ExportNotificationsDto](doc/ExportNotificationsDto.md)
+ - [ExportPasskeyDto](doc/ExportPasskeyDto.md)
+ - [ExportPrivacyNoticeDto](doc/ExportPrivacyNoticeDto.md)
+ - [ExportQueuedNotificationDto](doc/ExportQueuedNotificationDto.md)
+ - [ExportSessionDto](doc/ExportSessionDto.md)
+ - [ExportSignInDto](doc/ExportSignInDto.md)
+ - [FileContentResult](doc/FileContentResult.md)
  - [ForgotPasswordRequest](doc/ForgotPasswordRequest.md)
  - [GradeDto](doc/GradeDto.md)
+ - [HelplyApprovalDetailDto](doc/HelplyApprovalDetailDto.md)
+ - [HelplyApprovalRequestDto](doc/HelplyApprovalRequestDto.md)
+ - [HelplyAttachmentDto](doc/HelplyAttachmentDto.md)
+ - [HelplyCodeRunDto](doc/HelplyCodeRunDto.md)
+ - [HelplyConversationDto](doc/HelplyConversationDto.md)
+ - [HelplyConversationSummaryDto](doc/HelplyConversationSummaryDto.md)
+ - [HelplyDecisionRequest](doc/HelplyDecisionRequest.md)
+ - [HelplyMessageDto](doc/HelplyMessageDto.md)
+ - [HelplySettingsDto](doc/HelplySettingsDto.md)
+ - [HelplyStatusDto](doc/HelplyStatusDto.md)
+ - [HelplyToolActivityDto](doc/HelplyToolActivityDto.md)
  - [LinkActionDto](doc/LinkActionDto.md)
  - [LinkCapabilityDto](doc/LinkCapabilityDto.md)
  - [LinkDeviceCodeDto](doc/LinkDeviceCodeDto.md)
@@ -222,18 +267,14 @@ Class | Method | HTTP request | Description
  - [McpPermissionSet](doc/McpPermissionSet.md)
  - [MySchoolDto](doc/MySchoolDto.md)
  - [NotificationPreferencesDto](doc/NotificationPreferencesDto.md)
- - [OdaorgStatelessAgendaEvent](doc/OdaorgStatelessAgendaEvent.md)
- - [OdaorgStatelessData](doc/OdaorgStatelessData.md)
- - [OdaorgStatelessExam](doc/OdaorgStatelessExam.md)
- - [OdaorgStatelessGrade](doc/OdaorgStatelessGrade.md)
- - [OdaorgStatelessRequest](doc/OdaorgStatelessRequest.md)
- - [OdaorgStatelessUserInfo](doc/OdaorgStatelessUserInfo.md)
+ - [PrivacyNoticeStatusDto](doc/PrivacyNoticeStatusDto.md)
  - [ProblemDetails](doc/ProblemDetails.md)
  - [PushResult](doc/PushResult.md)
  - [RefreshRequest](doc/RefreshRequest.md)
  - [RegenerateRecoveryCodesRequest](doc/RegenerateRecoveryCodesRequest.md)
  - [RegisterDeviceTokenCommand](doc/RegisterDeviceTokenCommand.md)
  - [RegisterRequest](doc/RegisterRequest.md)
+ - [RenameHelplyConversationRequest](doc/RenameHelplyConversationRequest.md)
  - [ResetPasswordRequest](doc/ResetPasswordRequest.md)
  - [Roles](doc/Roles.md)
  - [SchoolDto](doc/SchoolDto.md)
@@ -243,10 +284,12 @@ Class | Method | HTTP request | Description
  - [SchoolUserSummaryDto](doc/SchoolUserSummaryDto.md)
  - [SemesterReportDto](doc/SemesterReportDto.md)
  - [SemesterSubjectGradeDto](doc/SemesterSubjectGradeDto.md)
+ - [SendHelplyMessageRequest](doc/SendHelplyMessageRequest.md)
  - [StartLinkRequest](doc/StartLinkRequest.md)
  - [StepUpChallengeResponse](doc/StepUpChallengeResponse.md)
  - [StepUpResponse](doc/StepUpResponse.md)
  - [StepUpVerifyRequest](doc/StepUpVerifyRequest.md)
+ - [StringSegment](doc/StringSegment.md)
  - [StudentDocumentDto](doc/StudentDocumentDto.md)
  - [SubmitLinkRequest](doc/SubmitLinkRequest.md)
  - [TeacherDto](doc/TeacherDto.md)
@@ -258,6 +301,7 @@ Class | Method | HTTP request | Description
  - [UnifiedLoginRequest](doc/UnifiedLoginRequest.md)
  - [UpdateAbsenceCommand](doc/UpdateAbsenceCommand.md)
  - [UpdateAgendaEntryCommand](doc/UpdateAgendaEntryCommand.md)
+ - [UpdateHelplyWorkspaceRequest](doc/UpdateHelplyWorkspaceRequest.md)
  - [UpdateMyGradeCommand](doc/UpdateMyGradeCommand.md)
  - [UpdateNotificationPreferencesCommand](doc/UpdateNotificationPreferencesCommand.md)
  - [UserClassDto](doc/UserClassDto.md)

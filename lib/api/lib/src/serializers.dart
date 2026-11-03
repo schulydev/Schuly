@@ -16,10 +16,12 @@ import 'package:schuly_api/src/model/date.dart';
 
 import 'package:schuly_api/src/model/absence_dto.dart';
 import 'package:schuly_api/src/model/absence_type.dart';
+import 'package:schuly_api/src/model/accept_privacy_notice_command.dart';
 import 'package:schuly_api/src/model/account_export_dto.dart';
 import 'package:schuly_api/src/model/add_my_grade_command.dart';
 import 'package:schuly_api/src/model/agenda_entry_dto.dart';
 import 'package:schuly_api/src/model/agenda_entry_type.dart';
+import 'package:schuly_api/src/model/answer_helply_approvals_request.dart';
 import 'package:schuly_api/src/model/app_dto.dart';
 import 'package:schuly_api/src/model/application_user_dto.dart';
 import 'package:schuly_api/src/model/begin_two_factor_request.dart';
@@ -30,16 +32,46 @@ import 'package:schuly_api/src/model/class_member_dto.dart';
 import 'package:schuly_api/src/model/confirm_two_factor_request.dart';
 import 'package:schuly_api/src/model/create_absence_command.dart';
 import 'package:schuly_api/src/model/create_agenda_entry_command.dart';
+import 'package:schuly_api/src/model/create_helply_conversation_request.dart';
 import 'package:schuly_api/src/model/create_mcp_api_key_command.dart';
 import 'package:schuly_api/src/model/create_my_school_command.dart';
 import 'package:schuly_api/src/model/created_mcp_api_key_dto.dart';
 import 'package:schuly_api/src/model/decide_mcp_authorization_command.dart';
 import 'package:schuly_api/src/model/disable_two_factor_request.dart';
+import 'package:schuly_api/src/model/entity_tag_header_value.dart';
 import 'package:schuly_api/src/model/error_response.dart';
 import 'package:schuly_api/src/model/exam_dto.dart';
 import 'package:schuly_api/src/model/exam_type.dart';
+import 'package:schuly_api/src/model/export_ai_app_activity_dto.dart';
+import 'package:schuly_api/src/model/export_ai_app_connection_dto.dart';
+import 'package:schuly_api/src/model/export_ai_app_key_dto.dart';
+import 'package:schuly_api/src/model/export_ai_apps_dto.dart';
+import 'package:schuly_api/src/model/export_connected_account_dto.dart';
+import 'package:schuly_api/src/model/export_device_dto.dart';
+import 'package:schuly_api/src/model/export_external_login_dto.dart';
+import 'package:schuly_api/src/model/export_helply_attachment_dto.dart';
+import 'package:schuly_api/src/model/export_helply_conversation_dto.dart';
+import 'package:schuly_api/src/model/export_helply_dto.dart';
+import 'package:schuly_api/src/model/export_notifications_dto.dart';
+import 'package:schuly_api/src/model/export_passkey_dto.dart';
+import 'package:schuly_api/src/model/export_privacy_notice_dto.dart';
+import 'package:schuly_api/src/model/export_queued_notification_dto.dart';
+import 'package:schuly_api/src/model/export_session_dto.dart';
+import 'package:schuly_api/src/model/export_sign_in_dto.dart';
+import 'package:schuly_api/src/model/file_content_result.dart';
 import 'package:schuly_api/src/model/forgot_password_request.dart';
 import 'package:schuly_api/src/model/grade_dto.dart';
+import 'package:schuly_api/src/model/helply_approval_detail_dto.dart';
+import 'package:schuly_api/src/model/helply_approval_request_dto.dart';
+import 'package:schuly_api/src/model/helply_attachment_dto.dart';
+import 'package:schuly_api/src/model/helply_code_run_dto.dart';
+import 'package:schuly_api/src/model/helply_conversation_dto.dart';
+import 'package:schuly_api/src/model/helply_conversation_summary_dto.dart';
+import 'package:schuly_api/src/model/helply_decision_request.dart';
+import 'package:schuly_api/src/model/helply_message_dto.dart';
+import 'package:schuly_api/src/model/helply_settings_dto.dart';
+import 'package:schuly_api/src/model/helply_status_dto.dart';
+import 'package:schuly_api/src/model/helply_tool_activity_dto.dart';
 import 'package:schuly_api/src/model/link_action_dto.dart';
 import 'package:schuly_api/src/model/link_capability_dto.dart';
 import 'package:schuly_api/src/model/link_device_code_dto.dart';
@@ -75,18 +107,14 @@ import 'package:schuly_api/src/model/mcp_connection_dto.dart';
 import 'package:schuly_api/src/model/mcp_permission_set.dart';
 import 'package:schuly_api/src/model/my_school_dto.dart';
 import 'package:schuly_api/src/model/notification_preferences_dto.dart';
-import 'package:schuly_api/src/model/odaorg_stateless_agenda_event.dart';
-import 'package:schuly_api/src/model/odaorg_stateless_data.dart';
-import 'package:schuly_api/src/model/odaorg_stateless_exam.dart';
-import 'package:schuly_api/src/model/odaorg_stateless_grade.dart';
-import 'package:schuly_api/src/model/odaorg_stateless_request.dart';
-import 'package:schuly_api/src/model/odaorg_stateless_user_info.dart';
+import 'package:schuly_api/src/model/privacy_notice_status_dto.dart';
 import 'package:schuly_api/src/model/problem_details.dart';
 import 'package:schuly_api/src/model/push_result.dart';
 import 'package:schuly_api/src/model/refresh_request.dart';
 import 'package:schuly_api/src/model/regenerate_recovery_codes_request.dart';
 import 'package:schuly_api/src/model/register_device_token_command.dart';
 import 'package:schuly_api/src/model/register_request.dart';
+import 'package:schuly_api/src/model/rename_helply_conversation_request.dart';
 import 'package:schuly_api/src/model/reset_password_request.dart';
 import 'package:schuly_api/src/model/roles.dart';
 import 'package:schuly_api/src/model/school_dto.dart';
@@ -96,10 +124,12 @@ import 'package:schuly_api/src/model/school_user_dto.dart';
 import 'package:schuly_api/src/model/school_user_summary_dto.dart';
 import 'package:schuly_api/src/model/semester_report_dto.dart';
 import 'package:schuly_api/src/model/semester_subject_grade_dto.dart';
+import 'package:schuly_api/src/model/send_helply_message_request.dart';
 import 'package:schuly_api/src/model/start_link_request.dart';
 import 'package:schuly_api/src/model/step_up_challenge_response.dart';
 import 'package:schuly_api/src/model/step_up_response.dart';
 import 'package:schuly_api/src/model/step_up_verify_request.dart';
+import 'package:schuly_api/src/model/string_segment.dart';
 import 'package:schuly_api/src/model/student_document_dto.dart';
 import 'package:schuly_api/src/model/submit_link_request.dart';
 import 'package:schuly_api/src/model/teacher_dto.dart';
@@ -112,6 +142,7 @@ import 'package:schuly_api/src/model/delete_account_request.dart';
 import 'package:schuly_api/src/model/unified_login_request.dart';
 import 'package:schuly_api/src/model/update_absence_command.dart';
 import 'package:schuly_api/src/model/update_agenda_entry_command.dart';
+import 'package:schuly_api/src/model/update_helply_workspace_request.dart';
 import 'package:schuly_api/src/model/update_my_grade_command.dart';
 import 'package:schuly_api/src/model/update_notification_preferences_command.dart';
 import 'package:schuly_api/src/model/user_class_dto.dart';
@@ -125,10 +156,12 @@ part 'serializers.g.dart';
 @SerializersFor([
   AbsenceDto,
   AbsenceType,
+  AcceptPrivacyNoticeCommand,
   AccountExportDto,
   AddMyGradeCommand,
   AgendaEntryDto,
   AgendaEntryType,
+  AnswerHelplyApprovalsRequest,
   AppDto,
   ApplicationUserDto,
   BeginTwoFactorRequest,
@@ -140,16 +173,46 @@ part 'serializers.g.dart';
   ConfirmTwoFactorRequest,
   CreateAbsenceCommand,
   CreateAgendaEntryCommand,
+  CreateHelplyConversationRequest,
   CreateMcpApiKeyCommand,
   CreateMySchoolCommand,
   CreatedMcpApiKeyDto,
   DecideMcpAuthorizationCommand,
   DisableTwoFactorRequest,
+  EntityTagHeaderValue,
   ErrorResponse,
   ExamDto,
   ExamType,
+  ExportAiAppActivityDto,
+  ExportAiAppConnectionDto,
+  ExportAiAppKeyDto,
+  ExportAiAppsDto,
+  ExportConnectedAccountDto,
+  ExportDeviceDto,
+  ExportExternalLoginDto,
+  ExportHelplyAttachmentDto,
+  ExportHelplyConversationDto,
+  ExportHelplyDto,
+  ExportNotificationsDto,
+  ExportPasskeyDto,
+  ExportPrivacyNoticeDto,
+  ExportQueuedNotificationDto,
+  ExportSessionDto,
+  ExportSignInDto,
+  FileContentResult,
   ForgotPasswordRequest,
   GradeDto,
+  HelplyApprovalDetailDto,
+  HelplyApprovalRequestDto,
+  HelplyAttachmentDto,
+  HelplyCodeRunDto,
+  HelplyConversationDto,
+  HelplyConversationSummaryDto,
+  HelplyDecisionRequest,
+  HelplyMessageDto,
+  HelplySettingsDto,
+  HelplyStatusDto,
+  HelplyToolActivityDto,
   LinkActionDto,
   LinkCapabilityDto,
   LinkDeviceCodeDto,
@@ -185,18 +248,14 @@ part 'serializers.g.dart';
   McpPermissionSet,
   MySchoolDto,
   NotificationPreferencesDto,
-  OdaorgStatelessAgendaEvent,
-  OdaorgStatelessData,
-  OdaorgStatelessExam,
-  OdaorgStatelessGrade,
-  OdaorgStatelessRequest,
-  OdaorgStatelessUserInfo,
+  PrivacyNoticeStatusDto,
   ProblemDetails,
   PushResult,
   RefreshRequest,
   RegenerateRecoveryCodesRequest,
   RegisterDeviceTokenCommand,
   RegisterRequest,
+  RenameHelplyConversationRequest,
   ResetPasswordRequest,
   Roles,
   SchoolDto,
@@ -206,10 +265,12 @@ part 'serializers.g.dart';
   SchoolUserSummaryDto,
   SemesterReportDto,
   SemesterSubjectGradeDto,
+  SendHelplyMessageRequest,
   StartLinkRequest,
   StepUpChallengeResponse,
   StepUpResponse,
   StepUpVerifyRequest,
+  StringSegment,
   StudentDocumentDto,
   SubmitLinkRequest,
   TeacherDto,
@@ -221,6 +282,7 @@ part 'serializers.g.dart';
   UnifiedLoginRequest,
   UpdateAbsenceCommand,
   UpdateAgendaEntryCommand,
+  UpdateHelplyWorkspaceRequest,
   UpdateMyGradeCommand,
   UpdateNotificationPreferencesCommand,
   UserClassDto,
@@ -265,6 +327,10 @@ Serializers serializers = (_$serializers.toBuilder()
       ..addBuilderFactory(
         const FullType(BuiltList, [FullType(AbsenceDto)]),
         () => ListBuilder<AbsenceDto>(),
+      )
+      ..addBuilderFactory(
+        const FullType(BuiltList, [FullType(HelplyConversationSummaryDto)]),
+        () => ListBuilder<HelplyConversationSummaryDto>(),
       )
       ..addBuilderFactory(
         const FullType(BuiltList, [FullType(LinkProviderAccountDto)]),

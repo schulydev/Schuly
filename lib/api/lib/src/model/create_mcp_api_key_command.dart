@@ -15,6 +15,7 @@ part 'create_mcp_api_key_command.g.dart';
 /// * [name] 
 /// * [permissions] 
 /// * [expiresAt] 
+/// * [aiAppSharingConfirmed] 
 @BuiltValue()
 abstract class CreateMcpApiKeyCommand implements Built<CreateMcpApiKeyCommand, CreateMcpApiKeyCommandBuilder> {
   @BuiltValueField(wireName: r'name')
@@ -26,12 +27,16 @@ abstract class CreateMcpApiKeyCommand implements Built<CreateMcpApiKeyCommand, C
   @BuiltValueField(wireName: r'expiresAt')
   DateTime? get expiresAt;
 
+  @BuiltValueField(wireName: r'aiAppSharingConfirmed')
+  bool? get aiAppSharingConfirmed;
+
   CreateMcpApiKeyCommand._();
 
   factory CreateMcpApiKeyCommand([void updates(CreateMcpApiKeyCommandBuilder b)]) = _$CreateMcpApiKeyCommand;
 
   @BuiltValueHook(initializeBuilder: true)
-  static void _defaults(CreateMcpApiKeyCommandBuilder b) => b;
+  static void _defaults(CreateMcpApiKeyCommandBuilder b) => b
+      ..aiAppSharingConfirmed = false;
 
   @BuiltValueSerializer(custom: true)
   static Serializer<CreateMcpApiKeyCommand> get serializer => _$CreateMcpApiKeyCommandSerializer();
@@ -64,6 +69,13 @@ class _$CreateMcpApiKeyCommandSerializer implements PrimitiveSerializer<CreateMc
       object.expiresAt,
       specifiedType: const FullType.nullable(DateTime),
     );
+    if (object.aiAppSharingConfirmed != null) {
+      yield r'aiAppSharingConfirmed';
+      yield serializers.serialize(
+        object.aiAppSharingConfirmed,
+        specifiedType: const FullType(bool),
+      );
+    }
   }
 
   @override
@@ -109,6 +121,13 @@ class _$CreateMcpApiKeyCommandSerializer implements PrimitiveSerializer<CreateMc
           ) as DateTime?;
           if (valueDes == null) continue;
           result.expiresAt = valueDes;
+          break;
+        case r'aiAppSharingConfirmed':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType(bool),
+          ) as bool;
+          result.aiAppSharingConfirmed = valueDes;
           break;
         default:
           unhandled.add(key);

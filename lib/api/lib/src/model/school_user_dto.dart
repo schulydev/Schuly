@@ -25,13 +25,7 @@ part 'school_user_dto.g.dart';
 /// * [firstName] 
 /// * [lastName] 
 /// * [email] 
-/// * [privateEmail] 
-/// * [phoneNumber] 
 /// * [profilePictureUrl] 
-/// * [street] 
-/// * [city] 
-/// * [zip] 
-/// * [birthday] 
 /// * [entryDate] 
 /// * [leaveDate] 
 /// * [role] 
@@ -64,26 +58,8 @@ abstract class SchoolUserDto implements Built<SchoolUserDto, SchoolUserDtoBuilde
   @BuiltValueField(wireName: r'email')
   String get email;
 
-  @BuiltValueField(wireName: r'privateEmail')
-  String? get privateEmail;
-
-  @BuiltValueField(wireName: r'phoneNumber')
-  String? get phoneNumber;
-
   @BuiltValueField(wireName: r'profilePictureUrl')
   String? get profilePictureUrl;
-
-  @BuiltValueField(wireName: r'street')
-  String? get street;
-
-  @BuiltValueField(wireName: r'city')
-  String? get city;
-
-  @BuiltValueField(wireName: r'zip')
-  String? get zip;
-
-  @BuiltValueField(wireName: r'birthday')
-  Date? get birthday;
 
   @BuiltValueField(wireName: r'entryDate')
   Date? get entryDate;
@@ -180,53 +156,11 @@ class _$SchoolUserDtoSerializer implements PrimitiveSerializer<SchoolUserDto> {
       object.email,
       specifiedType: const FullType(String),
     );
-    if (object.privateEmail != null) {
-      yield r'privateEmail';
-      yield serializers.serialize(
-        object.privateEmail,
-        specifiedType: const FullType.nullable(String),
-      );
-    }
-    if (object.phoneNumber != null) {
-      yield r'phoneNumber';
-      yield serializers.serialize(
-        object.phoneNumber,
-        specifiedType: const FullType.nullable(String),
-      );
-    }
     if (object.profilePictureUrl != null) {
       yield r'profilePictureUrl';
       yield serializers.serialize(
         object.profilePictureUrl,
         specifiedType: const FullType.nullable(String),
-      );
-    }
-    if (object.street != null) {
-      yield r'street';
-      yield serializers.serialize(
-        object.street,
-        specifiedType: const FullType.nullable(String),
-      );
-    }
-    if (object.city != null) {
-      yield r'city';
-      yield serializers.serialize(
-        object.city,
-        specifiedType: const FullType.nullable(String),
-      );
-    }
-    if (object.zip != null) {
-      yield r'zip';
-      yield serializers.serialize(
-        object.zip,
-        specifiedType: const FullType.nullable(String),
-      );
-    }
-    if (object.birthday != null) {
-      yield r'birthday';
-      yield serializers.serialize(
-        object.birthday,
-        specifiedType: const FullType.nullable(Date),
       );
     }
     if (object.entryDate != null) {
@@ -364,22 +298,6 @@ class _$SchoolUserDtoSerializer implements PrimitiveSerializer<SchoolUserDto> {
           ) as String;
           result.email = valueDes;
           break;
-        case r'privateEmail':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
-          if (valueDes == null) continue;
-          result.privateEmail = valueDes;
-          break;
-        case r'phoneNumber':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
-          if (valueDes == null) continue;
-          result.phoneNumber = valueDes;
-          break;
         case r'profilePictureUrl':
           final valueDes = serializers.deserialize(
             value,
@@ -387,38 +305,6 @@ class _$SchoolUserDtoSerializer implements PrimitiveSerializer<SchoolUserDto> {
           ) as String?;
           if (valueDes == null) continue;
           result.profilePictureUrl = valueDes;
-          break;
-        case r'street':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
-          if (valueDes == null) continue;
-          result.street = valueDes;
-          break;
-        case r'city':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
-          if (valueDes == null) continue;
-          result.city = valueDes;
-          break;
-        case r'zip':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
-          if (valueDes == null) continue;
-          result.zip = valueDes;
-          break;
-        case r'birthday':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(Date),
-          ) as Date?;
-          if (valueDes == null) continue;
-          result.birthday = valueDes;
           break;
         case r'entryDate':
           final valueDes = serializers.deserialize(

@@ -13,6 +13,8 @@ class _$DecideMcpAuthorizationCommand extends DecideMcpAuthorizationCommand {
   final bool approve;
   @override
   final McpPermissionSet? permissions;
+  @override
+  final bool? aiAppSharingConfirmed;
 
   factory _$DecideMcpAuthorizationCommand([
     void Function(DecideMcpAuthorizationCommandBuilder)? updates,
@@ -22,6 +24,7 @@ class _$DecideMcpAuthorizationCommand extends DecideMcpAuthorizationCommand {
     required this.parameters,
     required this.approve,
     this.permissions,
+    this.aiAppSharingConfirmed,
   }) : super._();
   @override
   DecideMcpAuthorizationCommand rebuild(
@@ -38,7 +41,8 @@ class _$DecideMcpAuthorizationCommand extends DecideMcpAuthorizationCommand {
     return other is DecideMcpAuthorizationCommand &&
         parameters == other.parameters &&
         approve == other.approve &&
-        permissions == other.permissions;
+        permissions == other.permissions &&
+        aiAppSharingConfirmed == other.aiAppSharingConfirmed;
   }
 
   @override
@@ -47,6 +51,7 @@ class _$DecideMcpAuthorizationCommand extends DecideMcpAuthorizationCommand {
     _$hash = $jc(_$hash, parameters.hashCode);
     _$hash = $jc(_$hash, approve.hashCode);
     _$hash = $jc(_$hash, permissions.hashCode);
+    _$hash = $jc(_$hash, aiAppSharingConfirmed.hashCode);
     _$hash = $jf(_$hash);
     return _$hash;
   }
@@ -56,7 +61,8 @@ class _$DecideMcpAuthorizationCommand extends DecideMcpAuthorizationCommand {
     return (newBuiltValueToStringHelper(r'DecideMcpAuthorizationCommand')
           ..add('parameters', parameters)
           ..add('approve', approve)
-          ..add('permissions', permissions))
+          ..add('permissions', permissions)
+          ..add('aiAppSharingConfirmed', aiAppSharingConfirmed))
         .toString();
   }
 }
@@ -85,6 +91,11 @@ class DecideMcpAuthorizationCommandBuilder
   set permissions(McpPermissionSetBuilder? permissions) =>
       _$this._permissions = permissions;
 
+  bool? _aiAppSharingConfirmed;
+  bool? get aiAppSharingConfirmed => _$this._aiAppSharingConfirmed;
+  set aiAppSharingConfirmed(bool? aiAppSharingConfirmed) =>
+      _$this._aiAppSharingConfirmed = aiAppSharingConfirmed;
+
   DecideMcpAuthorizationCommandBuilder() {
     DecideMcpAuthorizationCommand._defaults(this);
   }
@@ -95,6 +106,7 @@ class DecideMcpAuthorizationCommandBuilder
       _parameters = $v.parameters.toBuilder();
       _approve = $v.approve;
       _permissions = $v.permissions?.toBuilder();
+      _aiAppSharingConfirmed = $v.aiAppSharingConfirmed;
       _$v = null;
     }
     return this;
@@ -126,6 +138,7 @@ class DecideMcpAuthorizationCommandBuilder
               'approve',
             ),
             permissions: _permissions?.build(),
+            aiAppSharingConfirmed: aiAppSharingConfirmed,
           );
     } catch (_) {
       late String _$failedField;

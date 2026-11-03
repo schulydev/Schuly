@@ -10,10 +10,12 @@ Serializers _$serializers =
     (Serializers().toBuilder()
           ..add(AbsenceDto.serializer)
           ..add(AbsenceType.serializer)
+          ..add(AcceptPrivacyNoticeCommand.serializer)
           ..add(AccountExportDto.serializer)
           ..add(AddMyGradeCommand.serializer)
           ..add(AgendaEntryDto.serializer)
           ..add(AgendaEntryType.serializer)
+          ..add(AnswerHelplyApprovalsRequest.serializer)
           ..add(AppDto.serializer)
           ..add(ApplicationUserDto.serializer)
           ..add(BeginTwoFactorRequest.serializer)
@@ -24,17 +26,47 @@ Serializers _$serializers =
           ..add(ConfirmTwoFactorRequest.serializer)
           ..add(CreateAbsenceCommand.serializer)
           ..add(CreateAgendaEntryCommand.serializer)
+          ..add(CreateHelplyConversationRequest.serializer)
           ..add(CreateMcpApiKeyCommand.serializer)
           ..add(CreateMySchoolCommand.serializer)
           ..add(CreatedMcpApiKeyDto.serializer)
           ..add(DecideMcpAuthorizationCommand.serializer)
           ..add(DeleteAccountRequest.serializer)
           ..add(DisableTwoFactorRequest.serializer)
+          ..add(EntityTagHeaderValue.serializer)
           ..add(ErrorResponse.serializer)
           ..add(ExamDto.serializer)
           ..add(ExamType.serializer)
+          ..add(ExportAiAppActivityDto.serializer)
+          ..add(ExportAiAppConnectionDto.serializer)
+          ..add(ExportAiAppKeyDto.serializer)
+          ..add(ExportAiAppsDto.serializer)
+          ..add(ExportConnectedAccountDto.serializer)
+          ..add(ExportDeviceDto.serializer)
+          ..add(ExportExternalLoginDto.serializer)
+          ..add(ExportHelplyAttachmentDto.serializer)
+          ..add(ExportHelplyConversationDto.serializer)
+          ..add(ExportHelplyDto.serializer)
+          ..add(ExportNotificationsDto.serializer)
+          ..add(ExportPasskeyDto.serializer)
+          ..add(ExportPrivacyNoticeDto.serializer)
+          ..add(ExportQueuedNotificationDto.serializer)
+          ..add(ExportSessionDto.serializer)
+          ..add(ExportSignInDto.serializer)
+          ..add(FileContentResult.serializer)
           ..add(ForgotPasswordRequest.serializer)
           ..add(GradeDto.serializer)
+          ..add(HelplyApprovalDetailDto.serializer)
+          ..add(HelplyApprovalRequestDto.serializer)
+          ..add(HelplyAttachmentDto.serializer)
+          ..add(HelplyCodeRunDto.serializer)
+          ..add(HelplyConversationDto.serializer)
+          ..add(HelplyConversationSummaryDto.serializer)
+          ..add(HelplyDecisionRequest.serializer)
+          ..add(HelplyMessageDto.serializer)
+          ..add(HelplySettingsDto.serializer)
+          ..add(HelplyStatusDto.serializer)
+          ..add(HelplyToolActivityDto.serializer)
           ..add(LinkActionDto.serializer)
           ..add(LinkCapabilityDto.serializer)
           ..add(LinkDeviceCodeDto.serializer)
@@ -70,18 +102,14 @@ Serializers _$serializers =
           ..add(McpPermissionSet.serializer)
           ..add(MySchoolDto.serializer)
           ..add(NotificationPreferencesDto.serializer)
-          ..add(OdaorgStatelessAgendaEvent.serializer)
-          ..add(OdaorgStatelessData.serializer)
-          ..add(OdaorgStatelessExam.serializer)
-          ..add(OdaorgStatelessGrade.serializer)
-          ..add(OdaorgStatelessRequest.serializer)
-          ..add(OdaorgStatelessUserInfo.serializer)
+          ..add(PrivacyNoticeStatusDto.serializer)
           ..add(ProblemDetails.serializer)
           ..add(PushResult.serializer)
           ..add(RefreshRequest.serializer)
           ..add(RegenerateRecoveryCodesRequest.serializer)
           ..add(RegisterDeviceTokenCommand.serializer)
           ..add(RegisterRequest.serializer)
+          ..add(RenameHelplyConversationRequest.serializer)
           ..add(ResetPasswordRequest.serializer)
           ..add(Roles.serializer)
           ..add(SchoolDto.serializer)
@@ -91,10 +119,12 @@ Serializers _$serializers =
           ..add(SchoolUserSummaryDto.serializer)
           ..add(SemesterReportDto.serializer)
           ..add(SemesterSubjectGradeDto.serializer)
+          ..add(SendHelplyMessageRequest.serializer)
           ..add(StartLinkRequest.serializer)
           ..add(StepUpChallengeResponse.serializer)
           ..add(StepUpResponse.serializer)
           ..add(StepUpVerifyRequest.serializer)
+          ..add(StringSegment.serializer)
           ..add(StudentDocumentDto.serializer)
           ..add(SubmitLinkRequest.serializer)
           ..add(TeacherDto.serializer)
@@ -106,6 +136,7 @@ Serializers _$serializers =
           ..add(UnifiedLoginRequest.serializer)
           ..add(UpdateAbsenceCommand.serializer)
           ..add(UpdateAgendaEntryCommand.serializer)
+          ..add(UpdateHelplyWorkspaceRequest.serializer)
           ..add(UpdateMyGradeCommand.serializer)
           ..add(UpdateNotificationPreferencesCommand.serializer)
           ..add(UserClassDto.serializer)
@@ -146,8 +177,110 @@ Serializers _$serializers =
             () => ListBuilder<ExamDto>(),
           )
           ..addBuilderFactory(
+            const FullType(BuiltList, const [
+              const FullType(ExportAiAppConnectionDto),
+            ]),
+            () => ListBuilder<ExportAiAppConnectionDto>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, const [
+              const FullType(ExportAiAppKeyDto),
+            ]),
+            () => ListBuilder<ExportAiAppKeyDto>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, const [
+              const FullType(ExportAiAppActivityDto),
+            ]),
+            () => ListBuilder<ExportAiAppActivityDto>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, const [const FullType(ExportDeviceDto)]),
+            () => ListBuilder<ExportDeviceDto>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, const [
+              const FullType(ExportQueuedNotificationDto),
+            ]),
+            () => ListBuilder<ExportQueuedNotificationDto>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, const [
+              const FullType(ExportExternalLoginDto),
+            ]),
+            () => ListBuilder<ExportExternalLoginDto>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, const [const FullType(ExportPasskeyDto)]),
+            () => ListBuilder<ExportPasskeyDto>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, const [const FullType(ExportSessionDto)]),
+            () => ListBuilder<ExportSessionDto>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, const [const FullType(ExportSessionDto)]),
+            () => ListBuilder<ExportSessionDto>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, const [
+              const FullType(ExportHelplyAttachmentDto),
+            ]),
+            () => ListBuilder<ExportHelplyAttachmentDto>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, const [
+              const FullType(ExportHelplyConversationDto),
+            ]),
+            () => ListBuilder<ExportHelplyConversationDto>(),
+          )
+          ..addBuilderFactory(
             const FullType(BuiltList, const [const FullType(GradeDto)]),
             () => ListBuilder<GradeDto>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, const [
+              const FullType(HelplyApprovalDetailDto),
+            ]),
+            () => ListBuilder<HelplyApprovalDetailDto>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, const [
+              const FullType(HelplyApprovalDetailDto),
+            ]),
+            () => ListBuilder<HelplyApprovalDetailDto>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, const [const FullType(String)]),
+            () => ListBuilder<String>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, const [
+              const FullType(HelplyDecisionRequest),
+            ]),
+            () => ListBuilder<HelplyDecisionRequest>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, const [const FullType(HelplyMessageDto)]),
+            () => ListBuilder<HelplyMessageDto>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, const [
+              const FullType(HelplyApprovalRequestDto),
+            ]),
+            () => ListBuilder<HelplyApprovalRequestDto>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, const [
+              const FullType(HelplyToolActivityDto),
+            ]),
+            () => ListBuilder<HelplyToolActivityDto>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, const [
+              const FullType(HelplyAttachmentDto),
+            ]),
+            () => ListBuilder<HelplyAttachmentDto>(),
           )
           ..addBuilderFactory(
             const FullType(BuiltList, const [
@@ -189,24 +322,6 @@ Serializers _$serializers =
           )
           ..addBuilderFactory(
             const FullType(BuiltList, const [
-              const FullType(OdaorgStatelessGrade),
-            ]),
-            () => ListBuilder<OdaorgStatelessGrade>(),
-          )
-          ..addBuilderFactory(
-            const FullType(BuiltList, const [
-              const FullType(OdaorgStatelessExam),
-            ]),
-            () => ListBuilder<OdaorgStatelessExam>(),
-          )
-          ..addBuilderFactory(
-            const FullType(BuiltList, const [
-              const FullType(OdaorgStatelessAgendaEvent),
-            ]),
-            () => ListBuilder<OdaorgStatelessAgendaEvent>(),
-          )
-          ..addBuilderFactory(
-            const FullType(BuiltList, const [
               const FullType(SchoolSystemLoginFieldDto),
             ]),
             () => ListBuilder<SchoolSystemLoginFieldDto>(),
@@ -237,6 +352,16 @@ Serializers _$serializers =
           )
           ..addBuilderFactory(
             const FullType(BuiltList, const [
+              const FullType(ExportConnectedAccountDto),
+            ]),
+            () => ListBuilder<ExportConnectedAccountDto>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, const [const FullType(String)]),
+            () => ListBuilder<String>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, const [
               const FullType(SchoolUserSummaryDto),
             ]),
             () => ListBuilder<SchoolUserSummaryDto>(),
@@ -246,6 +371,10 @@ Serializers _$serializers =
               const FullType(SemesterSubjectGradeDto),
             ]),
             () => ListBuilder<SemesterSubjectGradeDto>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, const [const FullType(String)]),
+            () => ListBuilder<String>(),
           )
           ..addBuilderFactory(
             const FullType(BuiltList, const [const FullType(String)]),

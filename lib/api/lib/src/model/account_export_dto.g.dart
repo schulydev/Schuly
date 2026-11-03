@@ -21,6 +21,20 @@ class _$AccountExportDto extends AccountExportDto {
   final BuiltList<StudentDocumentDto>? documents;
   @override
   final BuiltList<LinkedAccountDto>? linkedAccounts;
+  @override
+  final ExportPrivacyNoticeDto? privacyNotice;
+  @override
+  final ExportSignInDto? signIn;
+  @override
+  final BuiltList<ExportConnectedAccountDto>? connectedAccounts;
+  @override
+  final ExportHelplyDto? helply;
+  @override
+  final ExportAiAppsDto? aiApps;
+  @override
+  final ExportNotificationsDto? notifications;
+  @override
+  final BuiltList<String>? notIncluded;
 
   factory _$AccountExportDto([
     void Function(AccountExportDtoBuilder)? updates,
@@ -34,6 +48,13 @@ class _$AccountExportDto extends AccountExportDto {
     this.semesterReports,
     this.documents,
     this.linkedAccounts,
+    this.privacyNotice,
+    this.signIn,
+    this.connectedAccounts,
+    this.helply,
+    this.aiApps,
+    this.notifications,
+    this.notIncluded,
   }) : super._();
   @override
   AccountExportDto rebuild(void Function(AccountExportDtoBuilder) updates) =>
@@ -53,7 +74,14 @@ class _$AccountExportDto extends AccountExportDto {
         agendaEntries == other.agendaEntries &&
         semesterReports == other.semesterReports &&
         documents == other.documents &&
-        linkedAccounts == other.linkedAccounts;
+        linkedAccounts == other.linkedAccounts &&
+        privacyNotice == other.privacyNotice &&
+        signIn == other.signIn &&
+        connectedAccounts == other.connectedAccounts &&
+        helply == other.helply &&
+        aiApps == other.aiApps &&
+        notifications == other.notifications &&
+        notIncluded == other.notIncluded;
   }
 
   @override
@@ -66,6 +94,13 @@ class _$AccountExportDto extends AccountExportDto {
     _$hash = $jc(_$hash, semesterReports.hashCode);
     _$hash = $jc(_$hash, documents.hashCode);
     _$hash = $jc(_$hash, linkedAccounts.hashCode);
+    _$hash = $jc(_$hash, privacyNotice.hashCode);
+    _$hash = $jc(_$hash, signIn.hashCode);
+    _$hash = $jc(_$hash, connectedAccounts.hashCode);
+    _$hash = $jc(_$hash, helply.hashCode);
+    _$hash = $jc(_$hash, aiApps.hashCode);
+    _$hash = $jc(_$hash, notifications.hashCode);
+    _$hash = $jc(_$hash, notIncluded.hashCode);
     _$hash = $jf(_$hash);
     return _$hash;
   }
@@ -79,7 +114,14 @@ class _$AccountExportDto extends AccountExportDto {
           ..add('agendaEntries', agendaEntries)
           ..add('semesterReports', semesterReports)
           ..add('documents', documents)
-          ..add('linkedAccounts', linkedAccounts))
+          ..add('linkedAccounts', linkedAccounts)
+          ..add('privacyNotice', privacyNotice)
+          ..add('signIn', signIn)
+          ..add('connectedAccounts', connectedAccounts)
+          ..add('helply', helply)
+          ..add('aiApps', aiApps)
+          ..add('notifications', notifications)
+          ..add('notIncluded', notIncluded))
         .toString();
   }
 }
@@ -127,6 +169,46 @@ class AccountExportDtoBuilder
   set linkedAccounts(ListBuilder<LinkedAccountDto>? linkedAccounts) =>
       _$this._linkedAccounts = linkedAccounts;
 
+  ExportPrivacyNoticeDtoBuilder? _privacyNotice;
+  ExportPrivacyNoticeDtoBuilder get privacyNotice =>
+      _$this._privacyNotice ??= ExportPrivacyNoticeDtoBuilder();
+  set privacyNotice(ExportPrivacyNoticeDtoBuilder? privacyNotice) =>
+      _$this._privacyNotice = privacyNotice;
+
+  ExportSignInDtoBuilder? _signIn;
+  ExportSignInDtoBuilder get signIn =>
+      _$this._signIn ??= ExportSignInDtoBuilder();
+  set signIn(ExportSignInDtoBuilder? signIn) => _$this._signIn = signIn;
+
+  ListBuilder<ExportConnectedAccountDto>? _connectedAccounts;
+  ListBuilder<ExportConnectedAccountDto> get connectedAccounts =>
+      _$this._connectedAccounts ??= ListBuilder<ExportConnectedAccountDto>();
+  set connectedAccounts(
+    ListBuilder<ExportConnectedAccountDto>? connectedAccounts,
+  ) => _$this._connectedAccounts = connectedAccounts;
+
+  ExportHelplyDtoBuilder? _helply;
+  ExportHelplyDtoBuilder get helply =>
+      _$this._helply ??= ExportHelplyDtoBuilder();
+  set helply(ExportHelplyDtoBuilder? helply) => _$this._helply = helply;
+
+  ExportAiAppsDtoBuilder? _aiApps;
+  ExportAiAppsDtoBuilder get aiApps =>
+      _$this._aiApps ??= ExportAiAppsDtoBuilder();
+  set aiApps(ExportAiAppsDtoBuilder? aiApps) => _$this._aiApps = aiApps;
+
+  ExportNotificationsDtoBuilder? _notifications;
+  ExportNotificationsDtoBuilder get notifications =>
+      _$this._notifications ??= ExportNotificationsDtoBuilder();
+  set notifications(ExportNotificationsDtoBuilder? notifications) =>
+      _$this._notifications = notifications;
+
+  ListBuilder<String>? _notIncluded;
+  ListBuilder<String> get notIncluded =>
+      _$this._notIncluded ??= ListBuilder<String>();
+  set notIncluded(ListBuilder<String>? notIncluded) =>
+      _$this._notIncluded = notIncluded;
+
   AccountExportDtoBuilder() {
     AccountExportDto._defaults(this);
   }
@@ -141,6 +223,13 @@ class AccountExportDtoBuilder
       _semesterReports = $v.semesterReports?.toBuilder();
       _documents = $v.documents?.toBuilder();
       _linkedAccounts = $v.linkedAccounts?.toBuilder();
+      _privacyNotice = $v.privacyNotice?.toBuilder();
+      _signIn = $v.signIn?.toBuilder();
+      _connectedAccounts = $v.connectedAccounts?.toBuilder();
+      _helply = $v.helply?.toBuilder();
+      _aiApps = $v.aiApps?.toBuilder();
+      _notifications = $v.notifications?.toBuilder();
+      _notIncluded = $v.notIncluded?.toBuilder();
       _$v = null;
     }
     return this;
@@ -172,6 +261,13 @@ class AccountExportDtoBuilder
             semesterReports: _semesterReports?.build(),
             documents: _documents?.build(),
             linkedAccounts: _linkedAccounts?.build(),
+            privacyNotice: _privacyNotice?.build(),
+            signIn: _signIn?.build(),
+            connectedAccounts: _connectedAccounts?.build(),
+            helply: _helply?.build(),
+            aiApps: _aiApps?.build(),
+            notifications: _notifications?.build(),
+            notIncluded: _notIncluded?.build(),
           );
     } catch (_) {
       late String _$failedField;
@@ -188,6 +284,20 @@ class AccountExportDtoBuilder
         _documents?.build();
         _$failedField = 'linkedAccounts';
         _linkedAccounts?.build();
+        _$failedField = 'privacyNotice';
+        _privacyNotice?.build();
+        _$failedField = 'signIn';
+        _signIn?.build();
+        _$failedField = 'connectedAccounts';
+        _connectedAccounts?.build();
+        _$failedField = 'helply';
+        _helply?.build();
+        _$failedField = 'aiApps';
+        _aiApps?.build();
+        _$failedField = 'notifications';
+        _notifications?.build();
+        _$failedField = 'notIncluded';
+        _notIncluded?.build();
       } catch (e) {
         throw BuiltValueNestedFieldError(
           r'AccountExportDto',

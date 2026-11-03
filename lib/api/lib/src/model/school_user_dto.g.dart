@@ -22,19 +22,7 @@ class _$SchoolUserDto extends SchoolUserDto {
   @override
   final String email;
   @override
-  final String? privateEmail;
-  @override
-  final String? phoneNumber;
-  @override
   final String? profilePictureUrl;
-  @override
-  final String? street;
-  @override
-  final String? city;
-  @override
-  final String? zip;
-  @override
-  final Date? birthday;
   @override
   final Date? entryDate;
   @override
@@ -65,13 +53,7 @@ class _$SchoolUserDto extends SchoolUserDto {
     required this.firstName,
     required this.lastName,
     required this.email,
-    this.privateEmail,
-    this.phoneNumber,
     this.profilePictureUrl,
-    this.street,
-    this.city,
-    this.zip,
-    this.birthday,
     this.entryDate,
     this.leaveDate,
     required this.role,
@@ -100,13 +82,7 @@ class _$SchoolUserDto extends SchoolUserDto {
         firstName == other.firstName &&
         lastName == other.lastName &&
         email == other.email &&
-        privateEmail == other.privateEmail &&
-        phoneNumber == other.phoneNumber &&
         profilePictureUrl == other.profilePictureUrl &&
-        street == other.street &&
-        city == other.city &&
-        zip == other.zip &&
-        birthday == other.birthday &&
         entryDate == other.entryDate &&
         leaveDate == other.leaveDate &&
         role == other.role &&
@@ -128,13 +104,7 @@ class _$SchoolUserDto extends SchoolUserDto {
     _$hash = $jc(_$hash, firstName.hashCode);
     _$hash = $jc(_$hash, lastName.hashCode);
     _$hash = $jc(_$hash, email.hashCode);
-    _$hash = $jc(_$hash, privateEmail.hashCode);
-    _$hash = $jc(_$hash, phoneNumber.hashCode);
     _$hash = $jc(_$hash, profilePictureUrl.hashCode);
-    _$hash = $jc(_$hash, street.hashCode);
-    _$hash = $jc(_$hash, city.hashCode);
-    _$hash = $jc(_$hash, zip.hashCode);
-    _$hash = $jc(_$hash, birthday.hashCode);
     _$hash = $jc(_$hash, entryDate.hashCode);
     _$hash = $jc(_$hash, leaveDate.hashCode);
     _$hash = $jc(_$hash, role.hashCode);
@@ -158,13 +128,7 @@ class _$SchoolUserDto extends SchoolUserDto {
           ..add('firstName', firstName)
           ..add('lastName', lastName)
           ..add('email', email)
-          ..add('privateEmail', privateEmail)
-          ..add('phoneNumber', phoneNumber)
           ..add('profilePictureUrl', profilePictureUrl)
-          ..add('street', street)
-          ..add('city', city)
-          ..add('zip', zip)
-          ..add('birthday', birthday)
           ..add('entryDate', entryDate)
           ..add('leaveDate', leaveDate)
           ..add('role', role)
@@ -211,34 +175,10 @@ class SchoolUserDtoBuilder
   String? get email => _$this._email;
   set email(String? email) => _$this._email = email;
 
-  String? _privateEmail;
-  String? get privateEmail => _$this._privateEmail;
-  set privateEmail(String? privateEmail) => _$this._privateEmail = privateEmail;
-
-  String? _phoneNumber;
-  String? get phoneNumber => _$this._phoneNumber;
-  set phoneNumber(String? phoneNumber) => _$this._phoneNumber = phoneNumber;
-
   String? _profilePictureUrl;
   String? get profilePictureUrl => _$this._profilePictureUrl;
   set profilePictureUrl(String? profilePictureUrl) =>
       _$this._profilePictureUrl = profilePictureUrl;
-
-  String? _street;
-  String? get street => _$this._street;
-  set street(String? street) => _$this._street = street;
-
-  String? _city;
-  String? get city => _$this._city;
-  set city(String? city) => _$this._city = city;
-
-  String? _zip;
-  String? get zip => _$this._zip;
-  set zip(String? zip) => _$this._zip = zip;
-
-  Date? _birthday;
-  Date? get birthday => _$this._birthday;
-  set birthday(Date? birthday) => _$this._birthday = birthday;
 
   Date? _entryDate;
   Date? get entryDate => _$this._entryDate;
@@ -294,13 +234,7 @@ class SchoolUserDtoBuilder
       _firstName = $v.firstName;
       _lastName = $v.lastName;
       _email = $v.email;
-      _privateEmail = $v.privateEmail;
-      _phoneNumber = $v.phoneNumber;
       _profilePictureUrl = $v.profilePictureUrl;
-      _street = $v.street;
-      _city = $v.city;
-      _zip = $v.zip;
-      _birthday = $v.birthday;
       _entryDate = $v.entryDate;
       _leaveDate = $v.leaveDate;
       _role = $v.role;
@@ -353,13 +287,7 @@ class SchoolUserDtoBuilder
               r'SchoolUserDto',
               'email',
             ),
-            privateEmail: privateEmail,
-            phoneNumber: phoneNumber,
             profilePictureUrl: profilePictureUrl,
-            street: street,
-            city: city,
-            zip: zip,
-            birthday: birthday,
             entryDate: entryDate,
             leaveDate: leaveDate,
             role: BuiltValueNullFieldError.checkNotNull(

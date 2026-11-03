@@ -15,6 +15,7 @@ part 'notification_preferences_dto.g.dart';
 /// * [absences] 
 /// * [agenda] 
 /// * [includeGradeValue] 
+/// * [includeDetails] 
 @BuiltValue()
 abstract class NotificationPreferencesDto implements Built<NotificationPreferencesDto, NotificationPreferencesDtoBuilder> {
   @BuiltValueField(wireName: r'grades')
@@ -28,6 +29,9 @@ abstract class NotificationPreferencesDto implements Built<NotificationPreferenc
 
   @BuiltValueField(wireName: r'includeGradeValue')
   bool get includeGradeValue;
+
+  @BuiltValueField(wireName: r'includeDetails')
+  bool get includeDetails;
 
   NotificationPreferencesDto._();
 
@@ -70,6 +74,11 @@ class _$NotificationPreferencesDtoSerializer implements PrimitiveSerializer<Noti
     yield r'includeGradeValue';
     yield serializers.serialize(
       object.includeGradeValue,
+      specifiedType: const FullType(bool),
+    );
+    yield r'includeDetails';
+    yield serializers.serialize(
+      object.includeDetails,
       specifiedType: const FullType(bool),
     );
   }
@@ -122,6 +131,13 @@ class _$NotificationPreferencesDtoSerializer implements PrimitiveSerializer<Noti
             specifiedType: const FullType(bool),
           ) as bool;
           result.includeGradeValue = valueDes;
+          break;
+        case r'includeDetails':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType(bool),
+          ) as bool;
+          result.includeDetails = valueDes;
           break;
         default:
           unhandled.add(key);
