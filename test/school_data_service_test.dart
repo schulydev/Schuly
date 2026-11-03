@@ -158,8 +158,7 @@ void main() {
           ..schoolName = 'School'
           ..firstName = 'John'
           ..lastName = 'Doe'
-          ..code = 'JD'
-          ..email = 'jd@example.com'),
+          ..code = 'JD'),
       ];
 
       final documents = [

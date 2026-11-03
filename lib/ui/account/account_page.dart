@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:schuly_api/schuly_api.dart';
 
 import '../../config/backend_config.dart';
@@ -163,7 +162,6 @@ class _AccountPageState extends State<AccountPage> {
     final me = SchoolDataService.instance.me;
     final classes = me?.classes ?? const <UserClassDto>[];
 
-    String fmtDate(Date? d) => d == null ? '-' : '${d.day}.${d.month}.${d.year}';
     final fullName = me == null
         ? (widget.userName ?? '-')
         : '${me.firstName} ${me.lastName}'.trim();
@@ -237,10 +235,6 @@ class _AccountPageState extends State<AccountPage> {
                 prefix: const Icon(FIcons.user),
                 title: Text('${t.firstName} ${t.lastName}'.trim()),
                 subtitle: t.code.isNotEmpty ? Text(t.code) : null,
-                suffix: (t.email?.isNotEmpty ?? false) ? const Icon(FIcons.mail) : null,
-                onPress: (t.email?.isNotEmpty ?? false)
-                    ? () => launchUrl(Uri(scheme: 'mailto', path: t.email))
-                    : null,
               ),
             ),
           const SizedBox(height: 12),
