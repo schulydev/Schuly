@@ -59,7 +59,7 @@ void (empty response body)
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **apiAuthMeDelete**
-> apiAuthMeDelete()
+> apiAuthMeDelete(deleteAccountRequest)
 
 
 
@@ -68,16 +68,20 @@ void (empty response body)
 import 'package:schuly_api/api.dart';
 
 final api = SchulyApi().getAuthApi();
+final DeleteAccountRequest deleteAccountRequest = ; // DeleteAccountRequest | 
 
 try {
-    api.apiAuthMeDelete();
+    api.apiAuthMeDelete(deleteAccountRequest);
 } catch on DioException (e) {
     print('Exception when calling AuthApi->apiAuthMeDelete: $e\n');
 }
 ```
 
 ### Parameters
-This endpoint does not need any parameter.
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **deleteAccountRequest** | [**DeleteAccountRequest**](DeleteAccountRequest.md)|  | [optional] 
 
 ### Return type
 
@@ -89,7 +93,7 @@ void (empty response body)
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
+ - **Content-Type**: application/json, text/json, application/*+json
  - **Accept**: text/plain, application/json, text/json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)

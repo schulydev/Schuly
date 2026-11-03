@@ -25,6 +25,8 @@ class _$ExportSignInDto extends ExportSignInDto {
   final BuiltList<ExportSessionDto> sessions;
   @override
   final BuiltList<ExportSessionDto> trustedDevices;
+  @override
+  final BuiltList<ExportSecurityEventDto> securityEvents;
 
   factory _$ExportSignInDto([void Function(ExportSignInDtoBuilder)? updates]) =>
       (ExportSignInDtoBuilder()..update(updates))._build();
@@ -39,6 +41,7 @@ class _$ExportSignInDto extends ExportSignInDto {
     required this.passkeys,
     required this.sessions,
     required this.trustedDevices,
+    required this.securityEvents,
   }) : super._();
   @override
   ExportSignInDto rebuild(void Function(ExportSignInDtoBuilder) updates) =>
@@ -59,7 +62,8 @@ class _$ExportSignInDto extends ExportSignInDto {
         externalLogins == other.externalLogins &&
         passkeys == other.passkeys &&
         sessions == other.sessions &&
-        trustedDevices == other.trustedDevices;
+        trustedDevices == other.trustedDevices &&
+        securityEvents == other.securityEvents;
   }
 
   @override
@@ -74,6 +78,7 @@ class _$ExportSignInDto extends ExportSignInDto {
     _$hash = $jc(_$hash, passkeys.hashCode);
     _$hash = $jc(_$hash, sessions.hashCode);
     _$hash = $jc(_$hash, trustedDevices.hashCode);
+    _$hash = $jc(_$hash, securityEvents.hashCode);
     _$hash = $jf(_$hash);
     return _$hash;
   }
@@ -89,7 +94,8 @@ class _$ExportSignInDto extends ExportSignInDto {
           ..add('externalLogins', externalLogins)
           ..add('passkeys', passkeys)
           ..add('sessions', sessions)
-          ..add('trustedDevices', trustedDevices))
+          ..add('trustedDevices', trustedDevices)
+          ..add('securityEvents', securityEvents))
         .toString();
   }
 }
@@ -144,6 +150,12 @@ class ExportSignInDtoBuilder
   set trustedDevices(ListBuilder<ExportSessionDto>? trustedDevices) =>
       _$this._trustedDevices = trustedDevices;
 
+  ListBuilder<ExportSecurityEventDto>? _securityEvents;
+  ListBuilder<ExportSecurityEventDto> get securityEvents =>
+      _$this._securityEvents ??= ListBuilder<ExportSecurityEventDto>();
+  set securityEvents(ListBuilder<ExportSecurityEventDto>? securityEvents) =>
+      _$this._securityEvents = securityEvents;
+
   ExportSignInDtoBuilder() {
     ExportSignInDto._defaults(this);
   }
@@ -160,6 +172,7 @@ class ExportSignInDtoBuilder
       _passkeys = $v.passkeys.toBuilder();
       _sessions = $v.sessions.toBuilder();
       _trustedDevices = $v.trustedDevices.toBuilder();
+      _securityEvents = $v.securityEvents.toBuilder();
       _$v = null;
     }
     return this;
@@ -197,6 +210,7 @@ class ExportSignInDtoBuilder
             passkeys: passkeys.build(),
             sessions: sessions.build(),
             trustedDevices: trustedDevices.build(),
+            securityEvents: securityEvents.build(),
           );
     } catch (_) {
       late String _$failedField;
@@ -209,6 +223,8 @@ class ExportSignInDtoBuilder
         sessions.build();
         _$failedField = 'trustedDevices';
         trustedDevices.build();
+        _$failedField = 'securityEvents';
+        securityEvents.build();
       } catch (e) {
         throw BuiltValueNestedFieldError(
           r'ExportSignInDto',

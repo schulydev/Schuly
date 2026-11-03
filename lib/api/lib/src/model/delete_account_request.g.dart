@@ -27,8 +27,7 @@ class _$DeleteAccountRequest extends DeleteAccountRequest {
   @override
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
-    return other is DeleteAccountRequest &&
-        password == other.password;
+    return other is DeleteAccountRequest && password == other.password;
   }
 
   @override
@@ -53,8 +52,7 @@ class DeleteAccountRequestBuilder
 
   String? _password;
   String? get password => _$this._password;
-  set password(String? password) =>
-      _$this._password = password;
+  set password(String? password) => _$this._password = password;
 
   DeleteAccountRequestBuilder() {
     DeleteAccountRequest._defaults(this);
@@ -83,8 +81,7 @@ class DeleteAccountRequestBuilder
   DeleteAccountRequest build() => _build();
 
   _$DeleteAccountRequest _build() {
-    final _$result =
-        _$v ?? _$DeleteAccountRequest._(password: password);
+    final _$result = _$v ?? _$DeleteAccountRequest._(password: password);
     replace(_$result);
     return _$result;
   }

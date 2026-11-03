@@ -3,6 +3,7 @@
 //
 
 // ignore_for_file: unused_element
+import 'package:schuly_api/src/model/export_security_event_dto.dart';
 import 'package:built_collection/built_collection.dart';
 import 'package:schuly_api/src/model/export_external_login_dto.dart';
 import 'package:schuly_api/src/model/export_passkey_dto.dart';
@@ -24,6 +25,7 @@ part 'export_sign_in_dto.g.dart';
 /// * [passkeys] 
 /// * [sessions] 
 /// * [trustedDevices] 
+/// * [securityEvents] 
 @BuiltValue()
 abstract class ExportSignInDto implements Built<ExportSignInDto, ExportSignInDtoBuilder> {
   @BuiltValueField(wireName: r'userName')
@@ -52,6 +54,9 @@ abstract class ExportSignInDto implements Built<ExportSignInDto, ExportSignInDto
 
   @BuiltValueField(wireName: r'trustedDevices')
   BuiltList<ExportSessionDto> get trustedDevices;
+
+  @BuiltValueField(wireName: r'securityEvents')
+  BuiltList<ExportSecurityEventDto> get securityEvents;
 
   ExportSignInDto._();
 
@@ -120,6 +125,11 @@ class _$ExportSignInDtoSerializer implements PrimitiveSerializer<ExportSignInDto
     yield serializers.serialize(
       object.trustedDevices,
       specifiedType: const FullType(BuiltList, [FullType(ExportSessionDto)]),
+    );
+    yield r'securityEvents';
+    yield serializers.serialize(
+      object.securityEvents,
+      specifiedType: const FullType(BuiltList, [FullType(ExportSecurityEventDto)]),
     );
   }
 
@@ -210,6 +220,13 @@ class _$ExportSignInDtoSerializer implements PrimitiveSerializer<ExportSignInDto
             specifiedType: const FullType(BuiltList, [FullType(ExportSessionDto)]),
           ) as BuiltList<ExportSessionDto>;
           result.trustedDevices.replace(valueDes);
+          break;
+        case r'securityEvents':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType(BuiltList, [FullType(ExportSecurityEventDto)]),
+          ) as BuiltList<ExportSecurityEventDto>;
+          result.securityEvents.replace(valueDes);
           break;
         default:
           unhandled.add(key);

@@ -51,6 +51,7 @@ Serializers _$serializers =
           ..add(ExportPasskeyDto.serializer)
           ..add(ExportPrivacyNoticeDto.serializer)
           ..add(ExportQueuedNotificationDto.serializer)
+          ..add(ExportSecurityEventDto.serializer)
           ..add(ExportSessionDto.serializer)
           ..add(ExportSignInDto.serializer)
           ..add(FileContentResult.serializer)
@@ -120,6 +121,7 @@ Serializers _$serializers =
           ..add(SemesterReportDto.serializer)
           ..add(SemesterSubjectGradeDto.serializer)
           ..add(SendHelplyMessageRequest.serializer)
+          ..add(SessionSummary.serializer)
           ..add(StartLinkRequest.serializer)
           ..add(StepUpChallengeResponse.serializer)
           ..add(StepUpResponse.serializer)
@@ -221,6 +223,12 @@ Serializers _$serializers =
           ..addBuilderFactory(
             const FullType(BuiltList, const [const FullType(ExportSessionDto)]),
             () => ListBuilder<ExportSessionDto>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, const [
+              const FullType(ExportSecurityEventDto),
+            ]),
+            () => ListBuilder<ExportSecurityEventDto>(),
           )
           ..addBuilderFactory(
             const FullType(BuiltList, const [
@@ -371,6 +379,10 @@ Serializers _$serializers =
               const FullType(SemesterSubjectGradeDto),
             ]),
             () => ListBuilder<SemesterSubjectGradeDto>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, const [const FullType(String)]),
+            () => ListBuilder<String>(),
           )
           ..addBuilderFactory(
             const FullType(BuiltList, const [const FullType(String)]),

@@ -26,6 +26,7 @@ import 'package:schuly_api/src/api/notifications_api.dart';
 import 'package:schuly_api/src/api/school_users_api.dart';
 import 'package:schuly_api/src/api/schools_api.dart';
 import 'package:schuly_api/src/api/semester_reports_api.dart';
+import 'package:schuly_api/src/api/sessions_api.dart';
 import 'package:schuly_api/src/api/student_documents_api.dart';
 import 'package:schuly_api/src/api/teachers_api.dart';
 import 'package:schuly_api/src/api/trusted_devices_api.dart';
@@ -185,6 +186,12 @@ class SchulyApi {
   /// by doing that all interceptors will not be executed
   SemesterReportsApi getSemesterReportsApi() {
     return SemesterReportsApi(dio, serializers);
+  }
+
+  /// Get SessionsApi instance, base route and serializer can be overridden by a given but be careful,
+  /// by doing that all interceptors will not be executed
+  SessionsApi getSessionsApi() {
+    return SessionsApi(dio, serializers);
   }
 
   /// Get StudentDocumentsApi instance, base route and serializer can be overridden by a given but be careful,

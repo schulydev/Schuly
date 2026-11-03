@@ -153,6 +153,9 @@ Class | Method | HTTP request | Description
 [*SchoolsApi*](doc/SchoolsApi.md) | [**apiSchoolsIdLogoGet**](doc/SchoolsApi.md#apischoolsidlogoget) | **GET** /api/Schools/{id}/logo | 
 [*SchoolsApi*](doc/SchoolsApi.md) | [**apiSchoolsMySchoolsGet**](doc/SchoolsApi.md#apischoolsmyschoolsget) | **GET** /api/Schools/my-schools | 
 [*SemesterReportsApi*](doc/SemesterReportsApi.md) | [**apiSemesterReportsGet**](doc/SemesterReportsApi.md#apisemesterreportsget) | **GET** /api/SemesterReports | 
+[*SessionsApi*](doc/SessionsApi.md) | [**toamaisutaaRevokeOtherSessions**](doc/SessionsApi.md#toamaisutaarevokeothersessions) | **DELETE** /auth/sessions | Signs out everywhere else, keeping the calling session.
+[*SessionsApi*](doc/SessionsApi.md) | [**toamaisutaaRevokeSession**](doc/SessionsApi.md#toamaisutaarevokesession) | **DELETE** /auth/sessions/{sessionId} | Revokes one session by its id.
+[*SessionsApi*](doc/SessionsApi.md) | [**toamaisutaaSessions**](doc/SessionsApi.md#toamaisutaasessions) | **GET** /auth/sessions | Lists the sessions this user has open.
 [*StudentDocumentsApi*](doc/StudentDocumentsApi.md) | [**apiDocumentsDocumentIdGet**](doc/StudentDocumentsApi.md#apidocumentsdocumentidget) | **GET** /api/documents/{documentId} | 
 [*StudentDocumentsApi*](doc/StudentDocumentsApi.md) | [**apiDocumentsGet**](doc/StudentDocumentsApi.md#apidocumentsget) | **GET** /api/documents | 
 [*StudentDocumentsApi*](doc/StudentDocumentsApi.md) | [**apiStudentsSchoolUserIdDocumentsPost**](doc/StudentDocumentsApi.md#apistudentsschooluseriddocumentspost) | **POST** /api/students/{schoolUserId}/documents | 
@@ -184,7 +187,6 @@ Class | Method | HTTP request | Description
  - [AppDto](doc/AppDto.md)
  - [ApplicationUserDto](doc/ApplicationUserDto.md)
  - [BeginTwoFactorRequest](doc/BeginTwoFactorRequest.md)
- - [DeleteAccountRequest](doc/DeleteAccountRequest.md)
  - [ChangeEmailRequest](doc/ChangeEmailRequest.md)
  - [ChangePasswordRequest](doc/ChangePasswordRequest.md)
  - [ClassDto](doc/ClassDto.md)
@@ -197,6 +199,7 @@ Class | Method | HTTP request | Description
  - [CreateMySchoolCommand](doc/CreateMySchoolCommand.md)
  - [CreatedMcpApiKeyDto](doc/CreatedMcpApiKeyDto.md)
  - [DecideMcpAuthorizationCommand](doc/DecideMcpAuthorizationCommand.md)
+ - [DeleteAccountRequest](doc/DeleteAccountRequest.md)
  - [DisableTwoFactorRequest](doc/DisableTwoFactorRequest.md)
  - [EntityTagHeaderValue](doc/EntityTagHeaderValue.md)
  - [ErrorResponse](doc/ErrorResponse.md)
@@ -216,6 +219,7 @@ Class | Method | HTTP request | Description
  - [ExportPasskeyDto](doc/ExportPasskeyDto.md)
  - [ExportPrivacyNoticeDto](doc/ExportPrivacyNoticeDto.md)
  - [ExportQueuedNotificationDto](doc/ExportQueuedNotificationDto.md)
+ - [ExportSecurityEventDto](doc/ExportSecurityEventDto.md)
  - [ExportSessionDto](doc/ExportSessionDto.md)
  - [ExportSignInDto](doc/ExportSignInDto.md)
  - [FileContentResult](doc/FileContentResult.md)
@@ -285,6 +289,7 @@ Class | Method | HTTP request | Description
  - [SemesterReportDto](doc/SemesterReportDto.md)
  - [SemesterSubjectGradeDto](doc/SemesterSubjectGradeDto.md)
  - [SendHelplyMessageRequest](doc/SendHelplyMessageRequest.md)
+ - [SessionSummary](doc/SessionSummary.md)
  - [StartLinkRequest](doc/StartLinkRequest.md)
  - [StepUpChallengeResponse](doc/StepUpChallengeResponse.md)
  - [StepUpResponse](doc/StepUpResponse.md)

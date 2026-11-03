@@ -17,6 +17,7 @@ Name | Type | Description | Notes
 **passkeys** | [**BuiltList&lt;ExportPasskeyDto&gt;**](ExportPasskeyDto.md) |  | 
 **sessions** | [**BuiltList&lt;ExportSessionDto&gt;**](ExportSessionDto.md) |  | 
 **trustedDevices** | [**BuiltList&lt;ExportSessionDto&gt;**](ExportSessionDto.md) |  | 
+**securityEvents** | [**BuiltList&lt;ExportSecurityEventDto&gt;**](ExportSecurityEventDto.md) |  | 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
 
