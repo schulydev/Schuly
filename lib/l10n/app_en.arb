@@ -348,5 +348,7 @@
   "verifyEmailGeneric": "Something went wrong. Try again in a moment.",
   "@verifyEmailGeneric": {
     "description": "Email confirmation step: verifyEmailGeneric"
-  }
+  },
+  "notifyDetails": "Show details",
+  "notifyDetailsSubtitle": "Put the subject, title and date in the notification. They pass through Google's push service."
 }

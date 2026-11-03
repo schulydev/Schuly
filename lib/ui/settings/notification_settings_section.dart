@@ -80,6 +80,14 @@ class _NotificationSettingsSectionState extends State<NotificationSettingsSectio
                 onChange: (v) =>
                     _service.setPreferences(_service.preferences.rebuild((b) => b..includeGradeValue = v)),
               ),
+              _PreferenceTile(
+                icon: FIcons.fileText,
+                title: t.notifyDetails,
+                subtitle: t.notifyDetailsSubtitle,
+                value: _service.preferences.includeDetails,
+                onChange: (v) =>
+                    _service.setPreferences(_service.preferences.rebuild((b) => b..includeDetails = v)),
+              ),
             ],
             const SizedBox(height: 20),
           ],

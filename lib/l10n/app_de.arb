@@ -92,5 +92,7 @@
   "verifyEmailGone": "Diese Bestätigung ist nicht mehr gültig. Melde dich erneut an.",
   "verifyEmailRateLimited": "Zu viele Versuche. Warte einen Moment und versuche es erneut.",
   "verifyEmailSendFailed": "Die E-Mail konnte nicht gesendet werden. Versuche es gleich noch einmal.",
-  "verifyEmailGeneric": "Etwas ist schiefgelaufen. Versuche es gleich noch einmal."
+  "verifyEmailGeneric": "Etwas ist schiefgelaufen. Versuche es gleich noch einmal.",
+  "notifyDetails": "Details anzeigen",
+  "notifyDetailsSubtitle": "Fach, Titel und Datum in die Mitteilung schreiben. Sie gehen über den Push-Dienst von Google."
 }

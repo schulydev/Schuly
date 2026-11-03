@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:schuly/services/notification_api.dart';
 import 'package:schuly/services/push_messaging.dart';
 import 'package:schuly/services/push_service.dart';
 import 'package:schuly/ui/dashboard/tab_requests.dart';
@@ -7,6 +8,10 @@ import 'package:schuly_api/schuly_api.dart';
 import 'fakes/push_fakes.dart';
 
 void main() {
+  test('details in push text are off by default', () {
+    expect(NotificationApi.defaults.includeDetails, isFalse);
+  });
+
   // A failed preferences save toasts, and ToastService reaches for the root
   // navigator's context - which needs a binding even in a pure unit test.
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -23,7 +28,8 @@ void main() {
           ..grades = false
           ..absences = true
           ..agenda = true
-          ..includeGradeValue = false);
+          ..includeGradeValue = false
+          ..includeDetails = false);
       final service = PushService.forTest(messaging: messaging, api: api);
 
       await service.attach(messaging);
