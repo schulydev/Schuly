@@ -76,7 +76,7 @@
   "@privacyPrivateModeTitle": {
     "description": "Explanatory tile title shown in private mode instead of export/delete"
   },
-  "privacyPrivateModeSubtitle": "Private mode keeps your data on this device only. Use Sign out to disconnect and remove it.",
+  "privacyPrivateModeSubtitle": "Private mode keeps your data on this device. Requests pass through the Schuly server without being stored. Use Sign out to disconnect and remove it.",
   "@privacyPrivateModeSubtitle": {
     "description": "Explanatory tile subtitle shown in private mode, pointing at the disconnect (sign out) action"
   },

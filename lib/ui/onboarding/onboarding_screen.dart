@@ -450,7 +450,8 @@ class _ModeChoicePage extends StatelessWidget {
               _ModeCard(
                 icon: FIcons.shieldCheck,
                 title: 'Private mode',
-                body: 'No account - everything stays on your device. '
+                body: 'No account. Your login and data stay on your device, and '
+                    'requests pass through the Schuly server without being stored. '
                     'No notifications, web, or sync.',
                 selected: selected == _Mode.private,
                 onTap: () => onSelect(_Mode.private),

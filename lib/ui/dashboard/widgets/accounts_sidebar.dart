@@ -121,7 +121,7 @@ class AccountsSidebar extends StatelessWidget {
                           child: Padding(
                             padding: const EdgeInsets.all(24),
                             child: Text(
-                              'Private mode - your data stays on this device.',
+                              'Private mode - your data is kept on this device. Requests pass through the Schuly server without being stored.',
                               textAlign: TextAlign.center,
                               style: typography.sm
                                   .copyWith(color: colors.mutedForeground),
