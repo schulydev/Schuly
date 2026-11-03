@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
-import 'package:schuly_api/schuly_api.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:schuly_api/schuly_api.dart';
 
 import '../../config/backend_config.dart';
 import '../../services/active_account_service.dart';
@@ -208,15 +208,6 @@ class _AccountPageState extends State<AccountPage> {
         const SizedBox(height: 20),
         _SectionLabel('Profile'),
         _InfoTile(icon: FIcons.mail, label: 'Email', value: me?.email),
-        _InfoTile(icon: FIcons.phone, label: 'Phone', value: me?.phoneNumber),
-        _InfoTile(
-          icon: FIcons.mapPin,
-          label: 'Address',
-          value: [me?.street, [me?.zip, me?.city].where((s) => (s ?? '').isNotEmpty).join(' ')]
-              .where((s) => (s ?? '').isNotEmpty)
-              .join(', '),
-        ),
-        _InfoTile(icon: FIcons.cake, label: 'Birthday', value: fmtDate(me?.birthday)),
         const SizedBox(height: 20),
         if (classes.isNotEmpty) ...[
           _SectionLabel('My classes'),
