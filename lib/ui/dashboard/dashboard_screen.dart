@@ -12,6 +12,7 @@ import '../../services/private_account_store.dart';
 import '../../services/profile_refresh_requests.dart';
 import '../../services/school_data_service.dart';
 import '../absences/absences_page.dart';
+import '../core/ui/load_state.dart';
 import '../account/account_page.dart';
 import '../grades/grades_page.dart';
 import '../home/home_page.dart';
@@ -135,6 +136,12 @@ class _DashboardScreenState extends State<DashboardScreen> with WidgetsBindingOb
     }
   }
 
+  /// Starts the load over. The school data has to be asked for as well: an unchanged active school does not refresh it.
+  Future<void> _retryLoad() async {
+    await _bootstrap();
+    if (mounted && !AppModeService.instance.isPrivate && ActiveAccountService.instance.schools.isNotEmpty) await SchoolDataService.instance.refresh();
+  }
+
   Future<void> _addSchool() async {
     await runAddAccountFlow(context);
   }
@@ -190,13 +197,7 @@ class _DashboardScreenState extends State<DashboardScreen> with WidgetsBindingOb
             Positioned.fill(
               child: ColoredBox(
                 color: colors.background,
-                child: Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(24),
-                    child: SelectableText('Failed to load: ${data.error}',
-                        style: TextStyle(color: colors.destructive)),
-                  ),
-                ),
+                child: LoadFailure(error: data.error!, onRetry: _retryLoad),
               ),
             ),
           ]);
@@ -206,7 +207,7 @@ class _DashboardScreenState extends State<DashboardScreen> with WidgetsBindingOb
             Positioned.fill(
               child: ColoredBox(
                 color: colors.background,
-                child: const Center(child: FCircularProgress()),
+                child: LoadingWithRetry(onRetry: _retryLoad),
               ),
             ),
           ]);
