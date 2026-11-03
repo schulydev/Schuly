@@ -28,6 +28,7 @@ Serializers _$serializers =
           ..add(CreateMySchoolCommand.serializer)
           ..add(CreatedMcpApiKeyDto.serializer)
           ..add(DecideMcpAuthorizationCommand.serializer)
+          ..add(DeleteAccountRequest.serializer)
           ..add(DisableTwoFactorRequest.serializer)
           ..add(ErrorResponse.serializer)
           ..add(ExamDto.serializer)

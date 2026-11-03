@@ -100,4 +100,3 @@ them to a release only when a published release starts it.
 | `KEYSTORE_PASSWORD`, `KEY_PASSWORD` | Secret | Passwords for the keystore and key. |
 | `BACKEND_BASE_URL` | Variable | Backend URL compiled into the app. Defaults to `https://api.schuly.dev`. |
 | `FIREBASE_API_KEY`, `FIREBASE_APP_ID`, `FIREBASE_SENDER_ID`, `FIREBASE_PROJECT_ID` | Variable | Firebase project for push notifications. |
-| `SENTRY_URL` | Variable | Passed as `SENTRY_DSN`. `pubspec.yaml` has no Sentry package, so the app doesn't use it. |

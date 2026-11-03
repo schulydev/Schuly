@@ -108,6 +108,7 @@ import 'package:schuly_api/src/model/trusted_device_summary.dart';
 import 'package:schuly_api/src/model/two_factor_enrolment_completed.dart';
 import 'package:schuly_api/src/model/two_factor_enrolment_started.dart';
 import 'package:schuly_api/src/model/two_factor_status.dart';
+import 'package:schuly_api/src/model/delete_account_request.dart';
 import 'package:schuly_api/src/model/unified_login_request.dart';
 import 'package:schuly_api/src/model/update_absence_command.dart';
 import 'package:schuly_api/src/model/update_agenda_entry_command.dart';
@@ -131,6 +132,7 @@ part 'serializers.g.dart';
   AppDto,
   ApplicationUserDto,
   BeginTwoFactorRequest,
+  DeleteAccountRequest,
   ChangeEmailRequest,
   ChangePasswordRequest,
   ClassDto,

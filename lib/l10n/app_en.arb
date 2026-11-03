@@ -60,6 +60,10 @@
   "@deleteAccountConfirmLabel": {
     "description": "Label for the text field that must contain DELETE to enable the destructive button"
   },
+  "deleteAccountPasswordLabel": "Your password (leave empty if you only use single sign-on)",
+  "@deleteAccountPasswordLabel": {
+    "description": "Label of the password field in the account deletion dialog"
+  },
   "deleteAccountCancel": "Cancel",
   "@deleteAccountCancel": {
     "description": "Cancel button in the account deletion dialog"
