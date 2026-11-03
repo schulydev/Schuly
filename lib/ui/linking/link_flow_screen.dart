@@ -102,9 +102,6 @@ class _LinkFlowScreenState extends State<LinkFlowScreen> {
       _launchedRedirect = true;
       WidgetsBinding.instance.addPostFrameCallback((_) => _openRedirect());
     }
-    if (s.status == LinkSessionStatus.failed || s.status == LinkSessionStatus.expired) {
-      // The step carries the reason; nothing more can be submitted.
-    }
   }
 
   bool _polling = false;

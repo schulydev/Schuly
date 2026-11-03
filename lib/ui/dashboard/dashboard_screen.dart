@@ -65,16 +65,12 @@ class _DashboardScreenState extends State<DashboardScreen> with WidgetsBindingOb
     final stale = _lastClaimsRead == null ||
         DateTime.now().difference(_lastClaimsRead!) > const Duration(seconds: 60);
     if (!requested && !stale) return;
-    unawaited(_refreshProfile(bustCache: requested));
-  }
-
-  /// Re-reads the signed-in account's name, email and picture. Called on resume
-  /// so a picture changed in the web app shows up without an app restart.
-  Future<void> _refreshProfile({required bool bustCache}) async {
     ProfileRefreshRequests.clear();
-    await _loadProfile();
+    unawaited(_loadProfile());
   }
 
+  /// Reads the signed-in account's name, email and picture; again on resume, so
+  /// a picture changed in the web app shows up without an app restart.
   Future<void> _loadProfile() async {
     _lastClaimsRead = DateTime.now();
     try {
@@ -132,7 +128,7 @@ class _DashboardScreenState extends State<DashboardScreen> with WidgetsBindingOb
         return;
       }
       await SchoolDataService.instance.refresh();
-      await _addSchool();
+      if (mounted) await runAddAccountFlow(context);
     }
   }
 
@@ -140,10 +136,6 @@ class _DashboardScreenState extends State<DashboardScreen> with WidgetsBindingOb
   Future<void> _retryLoad() async {
     await _bootstrap();
     if (mounted && !AppModeService.instance.isPrivate && ActiveAccountService.instance.schools.isNotEmpty) await SchoolDataService.instance.refresh();
-  }
-
-  Future<void> _addSchool() async {
-    await runAddAccountFlow(context);
   }
 
   void _openSidebar() {

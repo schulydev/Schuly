@@ -58,7 +58,6 @@ class _RootScreenState extends State<RootScreen> {
   bool? _ready; // signed in (account) or connected (private)
   bool _onboarded = true; // assume seen until loaded, to avoid a flash
   bool _busy = false;
-  String? _error;
 
   /// The privacy notice still to confirm. Checked in the background, so no network call decides whether the app starts.
   PrivacyNoticeInfo? _openNotice;
@@ -146,10 +145,7 @@ class _RootScreenState extends State<RootScreen> {
   }
 
   Future<void> _signIn({bool register = false}) async {
-    setState(() {
-      _busy = true;
-      _error = null;
-    });
+    setState(() => _busy = true);
     try {
       final signedIn = await Navigator.of(context).push<bool>(MaterialPageRoute(builder: (_) => SignInScreen(register: register)));
       if (signedIn == true) await _refresh();
@@ -253,9 +249,6 @@ class _RootScreenState extends State<RootScreen> {
                 child: const Text('Use without an account'),
               ),
             ],
-            if (_error != null)
-              SelectableText(_error!,
-                  style: TextStyle(color: colors.destructive)),
             const CheckForUpdatesLink(),
           ],
         ),
