@@ -129,6 +129,7 @@ export 'package:schuly_api/src/model/trusted_device_summary.dart';
 export 'package:schuly_api/src/model/two_factor_enrolment_completed.dart';
 export 'package:schuly_api/src/model/two_factor_enrolment_started.dart';
 export 'package:schuly_api/src/model/two_factor_status.dart';
+export 'package:schuly_api/src/model/delete_account_request.dart';
 export 'package:schuly_api/src/model/unified_login_request.dart';
 export 'package:schuly_api/src/model/update_absence_command.dart';
 export 'package:schuly_api/src/model/update_agenda_entry_command.dart';

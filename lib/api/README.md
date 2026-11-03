@@ -169,6 +169,7 @@ Class | Method | HTTP request | Description
  - [AppDto](doc/AppDto.md)
  - [ApplicationUserDto](doc/ApplicationUserDto.md)
  - [BeginTwoFactorRequest](doc/BeginTwoFactorRequest.md)
+ - [DeleteAccountRequest](doc/DeleteAccountRequest.md)
  - [ChangeEmailRequest](doc/ChangeEmailRequest.md)
  - [ChangePasswordRequest](doc/ChangePasswordRequest.md)
  - [ClassDto](doc/ClassDto.md)

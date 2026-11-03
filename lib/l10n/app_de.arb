@@ -27,6 +27,7 @@
   "deleteAccountDialogTitle": "Konto löschen?",
   "deleteAccountDialogBody": "Dies löscht dein Konto und alle Daten auf dem Server dauerhaft. Dies kann nicht rückgängig gemacht werden.",
   "deleteAccountConfirmLabel": "Gib DELETE ein, um zu bestätigen",
+  "deleteAccountPasswordLabel": "Dein Passwort (leer lassen, wenn du nur Single Sign-on nutzt)",
   "deleteAccountCancel": "Abbrechen",
   "deleteAccountConfirm": "Konto löschen",
   "privacyPrivateModeTitle": "Nichts wird auf unseren Servern gespeichert",

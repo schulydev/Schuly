@@ -17,6 +17,7 @@ doc/AuthApi.md
 doc/AuthenticationApi.md
 doc/AvatarsApi.md
 doc/BeginTwoFactorRequest.md
+doc/DeleteAccountRequest.md
 doc/ChangeEmailRequest.md
 doc/ChangePasswordRequest.md
 doc/ClassApi.md
@@ -257,6 +258,7 @@ lib/src/model/trusted_device_summary.dart
 lib/src/model/two_factor_enrolment_completed.dart
 lib/src/model/two_factor_enrolment_started.dart
 lib/src/model/two_factor_status.dart
+lib/src/model/delete_account_request.dart
 lib/src/model/unified_login_request.dart
 lib/src/model/update_absence_command.dart
 lib/src/model/update_agenda_entry_command.dart

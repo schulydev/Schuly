@@ -33,6 +33,17 @@ void main() {
     expect(find.text('Nothing stored on our servers'), findsNothing);
   });
 
+  testWidgets('the delete dialog asks for the password', (tester) async {
+    await AppModeService.instance.setMode(AppMode.account);
+    await tester.pumpWidget(_wrap(const PrivacySettingsSection()));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Delete account'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Your password (leave empty if you only use single sign-on)'), findsOneWidget);
+  });
+
   testWidgets('private mode shows a single explanatory tile', (tester) async {
     await AppModeService.instance.setMode(AppMode.private);
     await tester.pumpWidget(_wrap(const PrivacySettingsSection()));

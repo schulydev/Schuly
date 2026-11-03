@@ -51,13 +51,13 @@ class _PrivacySettingsSectionState extends State<PrivacySettingsSection> {
   }
 
   Future<void> _delete() async {
-    final confirmed = await showFDialog<bool>(
+    final password = await showFDialog<String>(
       context: context,
       builder: (ctx, style, animation) => _DeleteAccountDialog(animation: animation),
     );
-    if (confirmed != true || !mounted) return;
+    if (password == null || !mounted) return;
     try {
-      await ApiClient.instance.api.getAuthApi().apiAuthMeDelete(extra: _handled);
+      await ApiClient.instance.api.getAuthApi().apiAuthMeDelete(deleteAccountRequest: DeleteAccountRequest((b) => b.password = password.isEmpty ? null : password), extra: _handled);
       await signOutAndClear();
       if (mounted) Navigator.of(context).popUntil((route) => route.isFirst);
     } catch (e) {
@@ -125,6 +125,7 @@ class _DeleteAccountDialog extends StatefulWidget {
 
 class _DeleteAccountDialogState extends State<_DeleteAccountDialog> {
   late final _ctrl = TextEditingController();
+  late final _password = TextEditingController();
 
   @override
   void initState() {
@@ -135,6 +136,7 @@ class _DeleteAccountDialogState extends State<_DeleteAccountDialog> {
   @override
   void dispose() {
     _ctrl.dispose();
+    _password.dispose();
     super.dispose();
   }
 
@@ -158,17 +160,24 @@ class _DeleteAccountDialogState extends State<_DeleteAccountDialog> {
             hint: 'DELETE',
             autocorrect: false,
           ),
+          const SizedBox(height: 12),
+          FTextField(
+            control: FTextFieldControl.managed(controller: _password),
+            label: Text(t.deleteAccountPasswordLabel),
+            obscureText: true,
+            autocorrect: false,
+          ),
         ],
       ),
       actions: [
         FButton(
           style: FButtonStyle.outline(),
-          onPress: () => Navigator.of(context).pop(false),
+          onPress: () => Navigator.of(context).pop(),
           child: Text(t.deleteAccountCancel),
         ),
         FButton(
           style: FButtonStyle.destructive(),
-          onPress: confirmed ? () => Navigator.of(context).pop(true) : null,
+          onPress: confirmed ? () => Navigator.of(context).pop(_password.text) : null,
           child: Text(t.deleteAccountConfirm),
         ),
       ],

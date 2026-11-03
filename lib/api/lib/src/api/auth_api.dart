@@ -10,6 +10,7 @@ import 'package:dio/dio.dart';
 
 import 'package:schuly_api/src/model/account_export_dto.dart';
 import 'package:schuly_api/src/model/application_user_dto.dart';
+import 'package:schuly_api/src/model/delete_account_request.dart';
 import 'package:schuly_api/src/model/problem_details.dart';
 import 'package:schuly_api/src/model/unified_login_request.dart';
 
@@ -98,6 +99,7 @@ class AuthApi {
   /// 
   ///
   /// Parameters:
+  /// * [deleteAccountRequest]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -108,6 +110,7 @@ class AuthApi {
   /// Returns a [Future]
   /// Throws [DioException] if API call or serialization fails
   Future<Response<void>> apiAuthMeDelete({ 
+    DeleteAccountRequest? deleteAccountRequest,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
     Map<String, dynamic>? extra,
@@ -131,11 +134,31 @@ class AuthApi {
         ],
         ...?extra,
       },
+      contentType: 'application/json',
       validateStatus: validateStatus,
     );
 
+    dynamic _bodyData;
+
+    try {
+      const _type = FullType(DeleteAccountRequest);
+      _bodyData = deleteAccountRequest == null ? null : _serializers.serialize(deleteAccountRequest, specifiedType: _type);
+
+    } catch(error, stackTrace) {
+      throw DioException(
+         requestOptions: _options.compose(
+          _dio.options,
+          _path,
+        ),
+        type: DioExceptionType.unknown,
+        error: error,
+        stackTrace: stackTrace,
+      );
+    }
+
     final _response = await _dio.request<Object>(
       _path,
+      data: _bodyData,
       options: _options,
       cancelToken: cancelToken,
       onSendProgress: onSendProgress,
