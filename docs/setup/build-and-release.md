@@ -1,74 +1,103 @@
-# Build & release
+# Build and release
 
-Producing installable artifacts for the Schuly app. All commands are `package.json`
-scripts run via bun - see [Development setup](development.md) for prerequisites and a
-flavor overview.
+Use this page to build installable apps on your machine and to publish a release. Local commands are
+`package.json` scripts. See [Development setup](development.md) for prerequisites and flavors.
 
-## Release APKs
+## Build release APKs
 
 ```sh
-bun run build:apk:dev    # flutter build apk --flavor dev  --release
+bun run build:apk:dev    # flutter build apk --flavor dev --release
 bun run build:apk:prod   # flutter build apk --flavor prod --release
 ```
 
-| Flavor | Application ID | Display name |
-| --- | --- | --- |
-| `dev` | `com.schuly.app.dev` (version name suffix `-DEV`) | **Schuly DEV** |
-| `prod` | `com.schuly.app` | **Schuly** |
+The `prod` scripts set `BACKEND_BASE_URL=https://api.schuly.dev`. All build scripts pass the Firebase
+values listed in [Development setup](development.md#enable-push-notifications).
 
-The two flavors install side by side, so a dev build never overwrites a prod build
-on the same device.
+Release builds use the signing key from `android/key.properties`. Without that file, they use the
+debug key.
 
-### Pointing a dev build at a custom backend
+### Point a dev build at a custom backend
 
 ```sh
 BACKEND_BASE_URL=https://example.test bun run build:apk:dev:url
 ```
 
-`build:apk:dev:url` forwards `$BACKEND_BASE_URL` through `--dart-define=BACKEND_BASE_URL`.
+`build:apk:dev:url` passes `$BACKEND_BASE_URL` through `--dart-define=BACKEND_BASE_URL`.
 
-## iOS build
+## Build for iOS
 
 ```sh
 bun run build:ios   # flutter build ios --flavor prod --no-codesign
 ```
 
-Builds the `prod` flavor without code signing (sign separately in Xcode / your
-signing pipeline).
+This builds the `prod` flavor without code signing. Sign it separately, in Xcode or your signing
+pipeline.
 
 ## Install over adb
 
-Build and install the release APK onto the currently connected adb target:
+These scripts build a release APK and install it on the connected adb target:
 
 ```sh
-bun run install:dev    # build dev  APK, then flutter install --flavor dev
-bun run install:prod   # build prod APK, then flutter install --flavor prod
+bun run install:dev    # build the dev APK, then flutter install --flavor dev
+bun run install:prod   # build the prod APK, then flutter install --flavor prod
 ```
 
-When running against a locally hosted backend over USB, reverse the backend port
-first so the device can reach `localhost:5033`:
+To use a backend on your machine over USB, reverse the port so the device can reach `localhost:5033`:
 
 ```sh
-bun run adb:reverse        # adb reverse tcp:5033 tcp:5033
-bun run install:dev:usb    # adb:reverse + install:dev
+bun run adb:reverse       # adb reverse tcp:5033 tcp:5033
+bun run install:dev:usb   # adb:reverse, then install:dev
 ```
 
-To install a dev build pointed at a custom backend URL:
+To install a dev build with a custom backend URL:
 
 ```sh
 BACKEND_BASE_URL=https://example.test bun run install:dev:url
 ```
 
-## App icons
+## Regenerate app icons
 
-The launcher icon is generated from `assets/app_icon.png` via `flutter_launcher_icons`
-(Android + iOS, configured in `pubspec.yaml`). After changing the source image:
+`flutter_launcher_icons` generates the Android and iOS launcher icons from `assets/app_icon.png`. The
+settings are in `pubspec.yaml`. After you change the image, run:
 
 ```sh
 bun run icons   # dart run flutter_launcher_icons
 ```
 
-## Related
+The release workflow regenerates the icons on every build.
 
-- [Development setup](development.md) - SDK versions, running the app.
-- [API client](../api-client.md) - regenerating the generated client before a build.
+## Publish a release
+
+Release Drafter keeps a draft release up to date from merged pull requests. To release, publish the
+draft. Publishing starts two workflows:
+
+- **`build-and-release.yml`** builds the apps and attaches them to the release.
+- **`sync-version-on-release.yml`** compares the tag, without its `v`, to `application.properties`. If
+  they differ, it updates `application.properties` and the version in `pubspec.yaml`, keeping the build
+  number, then squash-merges a `release-sync/<version>` pull request into `main`.
+
+`version-bump.yml` is a manual alternative. You choose patch, minor, major, or a custom version. It
+commits the new version to `pubspec.yaml`, pushes a `v<version>` tag, and creates the release.
+
+### What the build workflow produces
+
+| Asset | Built from |
+| --- | --- |
+| `schuly-<tag>.apk` | `flutter build apk --release --flavor prod` |
+| `schuly-<tag>.aab` | `flutter build appbundle --release --flavor prod` |
+| `schuly-<tag>.apk.sha256` | `sha256sum` of the APK. The in-app updater checks the download against it. |
+| `schuly-<tag>.ipa` | `flutter build ios --release --no-codesign`, then an unsigned `xcodebuild` archive |
+
+The workflow sets the build name to the tag and the build number to the run number. You can also start
+it by hand with `workflow_dispatch`, but it then only keeps the files as workflow artifacts. It attaches
+them to a release only when a published release starts it.
+
+### Workflow configuration
+
+| Name | Kind | Purpose |
+| --- | --- | --- |
+| `KEYSTORE_BASE64` | Secret | The Android release keystore. Without it, the workflow generates a new keystore for that run. |
+| `KEYSTORE_PASSWORD`, `KEY_PASSWORD` | Secret | Passwords for the keystore and key. |
+| `BACKEND_BASE_URL` | Variable | Backend URL compiled into the app. Defaults to `https://api.schuly.dev`. |
+| `FIREBASE_API_KEY`, `FIREBASE_APP_ID`, `FIREBASE_SENDER_ID`, `FIREBASE_PROJECT_ID` | Variable | Firebase project for push notifications. |
+| `SENTRY_URL` | Variable | Passed as `SENTRY_DSN`. `pubspec.yaml` has no Sentry package, so the app doesn't use it. |

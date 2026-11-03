@@ -1,12 +1,8 @@
 # App modes
 
-Schuly runs in one of two modes, chosen at the gate. Both read the same school
-systems from the same backend catalog; the difference is **who signs the user in**
-and **where the data ends up**. No school system is hardcoded in the app - every one
-of them comes from the catalog.
-
-Both modes end up reading the same school system. What differs is where your login is
-kept and whether any of the data comes to rest on a server.
+Use this page to see how the two app modes differ. You choose a mode at the gate. Both modes read
+the same school systems from the same backend catalog. They differ in who signs you in, where your
+login is kept, and whether data rests on a server. The app hardcodes no school system.
 
 ```mermaid
 flowchart LR
@@ -27,23 +23,22 @@ flowchart LR
   PB -->|"reads live, stores nothing"| School
 ```
 
+| | Account mode | Private mode |
+| --- | --- | --- |
+| Auth to Schuly | Schuly account bearer token | None |
+| HTTP client | `ApiClient` (auth interceptor) | Clean `Dio`, anonymous endpoints only |
+| Where data lives | Server side, in Postgres | On the device only |
+| Backend role | Stores data and syncs in the background | Live stateless proxy, stores nothing |
+| Provider selection | Per connected account | Catalog `privateAuthStrategy` (`token` or `scrape`) |
+
 ## What private mode does on the device
 
-- The school login is written to the **device keystore** and never leaves it, apart from
-  being sent to the school system through the backend's anonymous proxy endpoints.
-- The connect screen is generic: it renders whatever login fields the catalog lists for
-  your school, and follows the `privateAuthStrategy` it declares - `token` (a headless
-  login mints a bearer token and a refreshable session) or `scrape` (the credentials are
-  replayed on each fetch).
-- If your school uses a one-time code, its seed is vaulted with the rest, and the
-  **Authenticator** screen generates codes on the device.
-- When a session expires, the app re-connects silently from the keystore, so you are not
-  asked to sign in again.
-
-|                     | Account mode                | Private / secure mode                          |
-| ------------------- | ------------------------------ | ------------------------------------------------- |
-| Auth to Schuly      | Schuly account bearer token   | **none**                                          |
-| HTTP client         | `ApiClient` (auth interceptor) | clean `Dio`, anonymous endpoints only             |
-| Where data lives    | server-side in Postgres        | **on-device only**                                |
-| Backend role        | stores + background-syncs      | live stateless proxy, stores nothing              |
-| Provider selection  | per connected account          | catalog `privateAuthStrategy` (`token` / `scrape`) |
+- The app writes the school login to the device keystore. The login leaves the device only when the
+  app sends it to the school system through the backend's anonymous proxy endpoints.
+- The connect screen is generic. It renders the login fields the catalog lists for your school and
+  follows the catalog's `privateAuthStrategy`:
+  - `token`: a headless login creates a bearer token and a refreshable session.
+  - `scrape`: the app sends the credentials again on each fetch.
+- If your school uses a one-time code, the app stores its seed with the login. The **Authenticator**
+  screen generates codes on the device.
+- When a session expires, the app reconnects from the keystore without asking you to sign in.
