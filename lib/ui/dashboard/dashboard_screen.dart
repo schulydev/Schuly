@@ -12,6 +12,7 @@ import '../../services/private_account_store.dart';
 import '../../services/profile_refresh_requests.dart';
 import '../../services/school_data_service.dart';
 import '../absences/absences_page.dart';
+import '../core/ui/load_state.dart';
 import '../account/account_page.dart';
 import '../grades/grades_page.dart';
 import '../home/home_page.dart';
@@ -64,16 +65,12 @@ class _DashboardScreenState extends State<DashboardScreen> with WidgetsBindingOb
     final stale = _lastClaimsRead == null ||
         DateTime.now().difference(_lastClaimsRead!) > const Duration(seconds: 60);
     if (!requested && !stale) return;
-    unawaited(_refreshProfile(bustCache: requested));
-  }
-
-  /// Re-reads the signed-in account's name, email and picture. Called on resume
-  /// so a picture changed in the web app shows up without an app restart.
-  Future<void> _refreshProfile({required bool bustCache}) async {
     ProfileRefreshRequests.clear();
-    await _loadProfile();
+    unawaited(_loadProfile());
   }
 
+  /// Reads the signed-in account's name, email and picture; again on resume, so
+  /// a picture changed in the web app shows up without an app restart.
   Future<void> _loadProfile() async {
     _lastClaimsRead = DateTime.now();
     try {
@@ -131,12 +128,14 @@ class _DashboardScreenState extends State<DashboardScreen> with WidgetsBindingOb
         return;
       }
       await SchoolDataService.instance.refresh();
-      await _addSchool();
+      if (mounted) await runAddAccountFlow(context);
     }
   }
 
-  Future<void> _addSchool() async {
-    await runAddAccountFlow(context);
+  /// Starts the load over. The school data has to be asked for as well: an unchanged active school does not refresh it.
+  Future<void> _retryLoad() async {
+    await _bootstrap();
+    if (mounted && !AppModeService.instance.isPrivate && ActiveAccountService.instance.schools.isNotEmpty) await SchoolDataService.instance.refresh();
   }
 
   void _openSidebar() {
@@ -190,13 +189,7 @@ class _DashboardScreenState extends State<DashboardScreen> with WidgetsBindingOb
             Positioned.fill(
               child: ColoredBox(
                 color: colors.background,
-                child: Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(24),
-                    child: SelectableText('Failed to load: ${data.error}',
-                        style: TextStyle(color: colors.destructive)),
-                  ),
-                ),
+                child: LoadFailure(error: data.error!, onRetry: _retryLoad),
               ),
             ),
           ]);
@@ -206,7 +199,7 @@ class _DashboardScreenState extends State<DashboardScreen> with WidgetsBindingOb
             Positioned.fill(
               child: ColoredBox(
                 color: colors.background,
-                child: const Center(child: FCircularProgress()),
+                child: LoadingWithRetry(onRetry: _retryLoad),
               ),
             ),
           ]);

@@ -7,6 +7,7 @@ import 'package:forui/forui.dart';
 import '../../l10n/app_localizations.dart';
 import '../../services/auth_service.dart';
 import '../update/check_for_updates.dart';
+import '../widgets/remote_icon.dart';
 import '../privacy/privacy_notice_screen.dart';
 
 enum _Step { signIn, register, code, verifyEmail, forgot }
@@ -379,7 +380,7 @@ class _SignInScreenState extends State<SignInScreen> {
                       FButton(
                         style: FButtonStyle.outline(),
                         onPress: _busy ? null : () => _signInWith(provider),
-                        prefix: provider.iconUrl == null ? null : Image.network(provider.iconUrl!, width: 18, height: 18, errorBuilder: (_, _, _) => const SizedBox.shrink()),
+                        prefix: provider.iconUrl == null ? null : RemoteIcon(provider.iconUrl!, size: 18),
                         child: Text('Continue with ${provider.displayName}'),
                       ),
                     FButton(style: FButtonStyle.ghost(), onPress: () => _go(_Step.forgot), child: const Text('Forgot password?')),

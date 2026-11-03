@@ -21,22 +21,25 @@ class _TimetablePageState extends State<TimetablePage> {
   @override
   void initState() {
     super.initState();
-    SchoolDataService.instance.addListener(_autoAnchor);
+    SchoolDataService.instance.addListener(_onDataChanged);
     _autoAnchor();
   }
 
   @override
   void dispose() {
-    SchoolDataService.instance.removeListener(_autoAnchor);
+    SchoolDataService.instance.removeListener(_onDataChanged);
     super.dispose();
   }
+
+  // This page is const in the dashboard, so its parent rebuilding does not reach it.
+  void _onDataChanged() => setState(_autoAnchor);
 
   void _autoAnchor() {
     if (_userPicked || _selected != null) return;
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     final day = _nearestEntryDay(SchoolDataService.instance.agenda, today);
-    if (day != null && mounted) setState(() => _selected = day);
+    if (day != null) _selected = day;
   }
 
   static DateTime? _nearestEntryDay(List<dynamic> agenda, DateTime today) {

@@ -46,6 +46,18 @@ class SchoolDataService extends ChangeNotifier {
   Object? get error => _error;
   bool get hasLoaded => _hasLoaded;
 
+  /// Test-only: sets the data directly and notifies, as a finished refresh does.
+  @visibleForTesting
+  void setForTest({SchoolUserDto? me, List<ExamDto> exams = const [], List<AgendaEntryDto> agenda = const [], List<AbsenceDto> absences = const [], List<ClassDto> classes = const []}) {
+    _me = me;
+    _exams = exams;
+    _agenda = agenda;
+    _absences = absences;
+    _classes = classes;
+    _hasLoaded = true;
+    notifyListeners();
+  }
+
   Map<String, String> get classNameById {
     final out = <String, String>{};
     for (final c in _classes) {
@@ -229,19 +241,21 @@ class SchoolDataService extends ChangeNotifier {
       List<AbsenceDto> absences;
       List<AgendaEntryDto> agenda;
       List<ClassDto> classes;
+      var complete = true;
       if (account.accessToken != null) {
         final d = await TokenProxyClient.instance.fetchAll(account);
-        mine = PrivateDataAdapter.schoolUser(d.userInfo, d.grades, d.absences);
-        exams = PrivateDataAdapter.exams(d.exams);
+        complete = d.failedSections == 0;
+        mine = PrivateDataAdapter.schoolUser(d.userInfo, d.grades, d.absences, d.exams);
+        exams = PrivateDataAdapter.exams(d.exams, d.grades);
         absences = PrivateDataAdapter.absencesList(d.absences);
-        agenda = PrivateDataAdapter.agenda(d.agenda);
+        agenda = PrivateDataAdapter.agenda(d.agenda, exams: d.exams, grades: d.grades);
         classes = PrivateDataAdapter.classes(d.grades, d.exams);
       } else {
         final d = await ScrapeProxyClient.instance.data(account);
-        mine = PrivateDataAdapter.schoolUser(d.userInfo, d.grades, const []);
-        exams = PrivateDataAdapter.exams(d.exams);
+        mine = PrivateDataAdapter.schoolUser(d.userInfo, d.grades, const [], d.exams);
+        exams = PrivateDataAdapter.exams(d.exams, d.grades);
         absences = const [];
-        agenda = PrivateDataAdapter.agenda(d.agenda);
+        agenda = PrivateDataAdapter.agenda(d.agenda, exams: d.exams, grades: d.grades);
         classes = PrivateDataAdapter.classes(d.grades, d.exams);
       }
 
@@ -254,9 +268,14 @@ class SchoolDataService extends ChangeNotifier {
       _reports = const [];
       _teachers = const [];
       _documents = const [];
-      await SchoolDataSnapshotStore.instance.save(
-          'private',
-          SchoolDataSnapshot(me: _me, exams: _exams, agenda: _agenda, absences: _absences, classes: _classes, reports: _reports, teachers: _teachers, documents: _documents));
+      // A partial answer is shown, but the last complete snapshot stays on disk for the next launch.
+      if (complete) {
+        await SchoolDataSnapshotStore.instance.save(
+            'private',
+            SchoolDataSnapshot(me: _me, exams: _exams, agenda: _agenda, absences: _absences, classes: _classes, reports: _reports, teachers: _teachers, documents: _documents));
+      } else {
+        ToastService.error('Some data could not be refreshed', 'Your school did not answer every request. Pull down to try again.');
+      }
       _hasLoaded = true;
     } catch (e) {
       if (gen != _generation) return;

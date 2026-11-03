@@ -5,6 +5,7 @@ import 'package:schuly_api/schuly_api.dart';
 import '../../config/backend_config.dart';
 import '../../services/api_client.dart';
 import '../../services/api_time.dart';
+import '../core/ui/load_state.dart';
 import '../core/grade_color.dart';
 
 class ClassDetailScreen extends StatefulWidget {
@@ -54,13 +55,7 @@ class _ClassDetailScreenState extends State<ClassDetailScreen> {
     if (_loading) {
       body = const Center(child: FCircularProgress());
     } else if (_error != null) {
-      body = Center(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: SelectableText('Failed to load: $_error',
-              style: TextStyle(color: colors.destructive)),
-        ),
-      );
+      body = LoadFailure(error: _error!, onRetry: _load);
     } else if (c == null) {
       body = Center(child: Text('Not found', style: TextStyle(color: colors.mutedForeground)));
     } else {

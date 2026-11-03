@@ -2,6 +2,7 @@ import 'dart:convert';
 import '../ui/widgets/browser_sign_in.dart';
 
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 
 import '../domain/private_data.dart';
 import 'backend_dio.dart';
@@ -15,13 +16,17 @@ import 'totp_service.dart';
 /// supplies its own credentials (token + context_state) per request; nothing is
 /// stored server-side. The system's stateless route comes from the catalog.
 class TokenProxyClient {
-  TokenProxyClient._();
+  TokenProxyClient._()
+      : _dio = backendDio(
+          connectTimeout: const Duration(seconds: 10),
+          receiveTimeout: const Duration(seconds: 60),
+        );
   static final TokenProxyClient instance = TokenProxyClient._();
 
-  final Dio _dio = backendDio(
-    connectTimeout: const Duration(seconds: 10),
-    receiveTimeout: const Duration(seconds: 60),
-  );
+  @visibleForTesting
+  TokenProxyClient.withDio(this._dio);
+
+  final Dio _dio;
 
   /// Headless credential login (private mode): POST email + password (+ TOTP) to
   /// the stateless `/login` and get back tokens + the rotated context_state.
@@ -117,18 +122,36 @@ class TokenProxyClient {
     }
   }
 
+  /// Fetches every section at once. One section the school fails to answer does not cost the
+  /// others; only a refused token (the caller refreshes it) or a total failure throws.
   Future<TokenPrivateData> _fetchAll(PrivateAccount a) async {
-    final info = await userInfo(a);
-    final g = await grades(a);
-    final e = await exams(a);
-    final ab = await absences(a);
-    final ag = await agenda(a);
+    var failed = 0;
+    DioException? failure;
+    Future<T> section<T>(Future<T> fetch, T fallback) async {
+      try {
+        return await fetch;
+      } on DioException catch (e) {
+        if (e.response?.statusCode == 401) rethrow;
+        failed++;
+        failure ??= e;
+        return fallback;
+      }
+    }
+
+    final info = section<PrivateUserInfo?>(userInfo(a), null);
+    final g = section(grades(a), const <PrivateGrade>[]);
+    final e = section(exams(a), const <PrivateExam>[]);
+    final ab = section(absences(a), const <PrivateAbsence>[]);
+    final ag = section(agenda(a), const <PrivateAgendaEvent>[]);
+    await Future.wait<Object?>([info, g, e, ab, ag]);
+    if (failed == 5) throw failure!;
     return TokenPrivateData(
-      userInfo: info,
-      grades: g,
-      exams: e,
-      absences: ab,
-      agenda: ag,
+      userInfo: await info,
+      grades: await g,
+      exams: await e,
+      absences: await ab,
+      agenda: await ag,
+      failedSections: failed,
     );
   }
 
@@ -239,11 +262,15 @@ class TokenPrivateData {
   final List<PrivateExam> exams;
   final List<PrivateAbsence> absences;
   final List<PrivateAgendaEvent> agenda;
+
+  /// How many sections could not be fetched and are empty here.
+  final int failedSections;
   const TokenPrivateData({
     required this.userInfo,
     required this.grades,
     required this.exams,
     required this.absences,
     required this.agenda,
+    this.failedSections = 0,
   });
 }

@@ -33,6 +33,8 @@ class _AbsencesPageState extends State<AbsencesPage> {
     ActiveAccountService.instance.addListener(_loadReported);
     LinkedAccountsController.instance.addListener(_loadReported);
     AppModeService.instance.addListener(_loadReported);
+    // This page is const in the dashboard, so its parent rebuilding does not reach it.
+    SchoolDataService.instance.addListener(_onDataChanged);
     _loadReported();
   }
 
@@ -41,8 +43,11 @@ class _AbsencesPageState extends State<AbsencesPage> {
     ActiveAccountService.instance.removeListener(_loadReported);
     LinkedAccountsController.instance.removeListener(_loadReported);
     AppModeService.instance.removeListener(_loadReported);
+    SchoolDataService.instance.removeListener(_onDataChanged);
     super.dispose();
   }
+
+  void _onDataChanged() => setState(() {});
 
   Future<void> _loadReported() async {
     final gen = ++_generation;

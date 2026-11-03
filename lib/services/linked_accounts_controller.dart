@@ -76,9 +76,27 @@ class LinkedAccountsController extends ChangeNotifier with WidgetsBindingObserve
     return out;
   }
 
+  Future<void>? _loadInFlight;
+
   /// Providers and accounts, fresh from the server. A failure is kept in [error] and the last
   /// good lists stay on screen.
-  Future<void> load() async {
+  ///
+  /// Listeners may call this while they are being notified, so a call during a load joins it.
+  /// The load counts as running until its last notification is out; otherwise a listener that
+  /// loads when nothing is [loaded] would start over after every failure.
+  Future<void> load() {
+    final running = _loadInFlight;
+    if (running != null) return running;
+    final done = Completer<void>();
+    _loadInFlight = done.future;
+    _load().whenComplete(() {
+      _loadInFlight = null;
+      done.complete();
+    });
+    return done.future;
+  }
+
+  Future<void> _load() async {
     _loading = true;
     _error = null;
     _notify();

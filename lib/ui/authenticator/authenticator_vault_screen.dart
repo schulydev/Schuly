@@ -25,6 +25,9 @@ class AuthenticatorVaultScreen extends StatefulWidget {
   State<AuthenticatorVaultScreen> createState() => _AuthenticatorVaultScreenState();
 }
 
+/// Where a Microsoft account adds an authenticator app.
+const kMicrosoftMfaSetupUrl = 'https://aka.ms/mfasetup';
+
 class _AuthenticatorVaultScreenState extends State<AuthenticatorVaultScreen> {
   Timer? _timer;
   bool _loading = true;
@@ -80,6 +83,10 @@ class _AuthenticatorVaultScreenState extends State<AuthenticatorVaultScreen> {
       Uri.parse('https://docs.schuly.dev/getting-started/authenticator'),
       mode: LaunchMode.externalApplication,
     );
+  }
+
+  Future<void> _openMfaSetup() async {
+    await launchUrl(Uri.parse(kMicrosoftMfaSetupUrl), mode: LaunchMode.externalApplication);
   }
 
   Future<void> _copy(String? code) async {
@@ -164,6 +171,12 @@ class _AuthenticatorVaultScreenState extends State<AuthenticatorVaultScreen> {
               prefix: const Icon(FIcons.bookOpen),
               onPress: _openGuide,
               child: const Text('How do I set this up?'),
+            ),
+            FButton(
+              style: FButtonStyle.ghost(),
+              prefix: const Icon(FIcons.externalLink),
+              onPress: _openMfaSetup,
+              child: const Text('Open Microsoft security settings'),
             ),
           ],
         ),
