@@ -3,7 +3,7 @@
   <img src="https://raw.githubusercontent.com/schulydev/Schuly/main/assets/app_icon.png" width="160" alt="Schuly Logo">
 </p>
 <p align="center">
-  <strong>The better Schulnetz app - Flutter mobile client</strong>
+  <strong>The better alternative to Schulnetz - Flutter mobile client</strong>
 </p>
 <p align="center">
   <a href="https://github.com/schulydev/Schuly/stargazers"><img src="https://img.shields.io/github/stars/schulydev/Schuly?style=flat&color=3da8ff" alt="GitHub stars"/></a>
@@ -12,7 +12,7 @@
   <a href="https://schuly.dev"><img src="https://img.shields.io/badge/site-schuly.dev-3da8ff" alt="Website"/></a>
 </p>
 
-A modern Flutter mobile app providing a superior alternative to the official Schulnetz client. Intuitive interface, multi-user support, and seamless access to grades, timetable, absences, documents & report cards (Zeugnisse), and holidays.
+A modern Flutter mobile app for your school data. Intuitive interface, multi-user support, and seamless access to grades, timetable, absences, documents & report cards (Zeugnisse), and holidays.
 
 > [!IMPORTANT]
 > This project is **NOT** affiliated with, endorsed by, or connected to Schulnetz or Centerboard AG in any way.
