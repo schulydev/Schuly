@@ -102,5 +102,7 @@
   "privacyNoticeTitle": "Bevor es weitergeht",
   "privacyNoticeContinue": "Weiter",
   "privacyNoticeSignOut": "Abmelden",
-  "privacyNoticeFailed": "Das hat nicht geklappt. Versuche es nochmals."
+  "privacyNoticeFailed": "Das hat nicht geklappt. Versuche es nochmals.",
+  "signInWithMicrosoft": "Mit Microsoft anmelden",
+  "trademarkNotice": "Microsoft 365, Microsoft Outlook, Microsoft Teams, Microsoft OneDrive und Microsoft OneNote sind Marken der Microsoft Corporation. Schulnetz ist eine Marke der Centerboard AG. Schuly ist ein unabhängiges Projekt und steht in keiner Verbindung zu Microsoft oder Centerboard."
 }
