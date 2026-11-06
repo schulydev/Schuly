@@ -4,6 +4,7 @@ import 'package:forui/forui.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../config/backend_config.dart';
+import '../../l10n/app_localizations.dart';
 import '../../services/active_account_service.dart';
 import '../../services/app_mode_service.dart';
 import '../../services/auth_service.dart';
@@ -126,6 +127,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
             onPress: () => showLicensePage(
               context: context,
               applicationName: 'Schuly',
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(4, 12, 4, 0),
+            child: Text(
+              AppLocalizations.of(context)!.trademarkNotice,
+              style: context.theme.typography.xs.copyWith(color: context.theme.colors.mutedForeground),
             ),
           ),
         ],
