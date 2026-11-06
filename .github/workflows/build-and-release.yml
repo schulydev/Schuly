@@ -74,7 +74,7 @@ jobs:
           flutter build apk --release --flavor prod \
             --build-name="${{ github.ref_name }}" \
             --build-number="${{ github.run_number }}" \
-            --dart-define=BACKEND_BASE_URL="${{ vars.BACKEND_BASE_URL || 'https://api.schuly.dev' }}" \
+            --dart-define=BACKEND_BASE_URL="${{ vars.BACKEND_BASE_URL || 'https://app.schuly.dev' }}" \
             --dart-define=FIREBASE_API_KEY="${{ vars.FIREBASE_API_KEY }}" \
             --dart-define=FIREBASE_APP_ID="${{ vars.FIREBASE_APP_ID }}" \
             --dart-define=FIREBASE_SENDER_ID="${{ vars.FIREBASE_SENDER_ID }}" \
@@ -86,7 +86,7 @@ jobs:
           flutter build appbundle --release --flavor prod \
             --build-name="${{ github.ref_name }}" \
             --build-number="${{ github.run_number }}" \
-            --dart-define=BACKEND_BASE_URL="${{ vars.BACKEND_BASE_URL || 'https://api.schuly.dev' }}" \
+            --dart-define=BACKEND_BASE_URL="${{ vars.BACKEND_BASE_URL || 'https://app.schuly.dev' }}" \
             --dart-define=FIREBASE_API_KEY="${{ vars.FIREBASE_API_KEY }}" \
             --dart-define=FIREBASE_APP_ID="${{ vars.FIREBASE_APP_ID }}" \
             --dart-define=FIREBASE_SENDER_ID="${{ vars.FIREBASE_SENDER_ID }}" \
@@ -134,7 +134,7 @@ jobs:
           flutter build ios --release --no-codesign \
             --build-name="${{ github.ref_name }}" \
             --build-number="${{ github.run_number }}" \
-            --dart-define=BACKEND_BASE_URL="${{ vars.BACKEND_BASE_URL || 'https://api.schuly.dev' }}" \
+            --dart-define=BACKEND_BASE_URL="${{ vars.BACKEND_BASE_URL || 'https://app.schuly.dev' }}" \
             --dart-define=FIREBASE_API_KEY="${{ vars.FIREBASE_API_KEY }}" \
             --dart-define=FIREBASE_APP_ID="${{ vars.FIREBASE_APP_ID }}" \
             --dart-define=FIREBASE_SENDER_ID="${{ vars.FIREBASE_SENDER_ID }}" \

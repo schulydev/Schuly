@@ -32,7 +32,7 @@ Start an emulator or connect a device, then run a flavor:
 
 ```sh
 bun run dev    # flutter run --flavor dev
-bun run prod   # flutter run --flavor prod, with BACKEND_BASE_URL=https://api.schuly.dev
+bun run prod   # flutter run --flavor prod, with BACKEND_BASE_URL=https://app.schuly.dev
 ```
 
 Use `dev` for daily work and `prod` to check release behavior.

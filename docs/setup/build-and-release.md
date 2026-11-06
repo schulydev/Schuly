@@ -10,7 +10,7 @@ bun run build:apk:dev    # flutter build apk --flavor dev --release
 bun run build:apk:prod   # flutter build apk --flavor prod --release
 ```
 
-The `prod` scripts set `BACKEND_BASE_URL=https://api.schuly.dev`. All build scripts pass the Firebase
+The `prod` scripts set `BACKEND_BASE_URL=https://app.schuly.dev`. All build scripts pass the Firebase
 values listed in [Development setup](development.md#enable-push-notifications).
 
 Release builds use the signing key from `android/key.properties`. Without that file, they use the
@@ -98,5 +98,5 @@ them to a release only when a published release starts it.
 | --- | --- | --- |
 | `KEYSTORE_BASE64` | Secret | The Android release keystore. Without it, the workflow generates a new keystore for that run. |
 | `KEYSTORE_PASSWORD`, `KEY_PASSWORD` | Secret | Passwords for the keystore and key. |
-| `BACKEND_BASE_URL` | Variable | Backend URL compiled into the app. Defaults to `https://api.schuly.dev`. |
+| `BACKEND_BASE_URL` | Variable | Backend URL compiled into the app. Defaults to `https://app.schuly.dev`. |
 | `FIREBASE_API_KEY`, `FIREBASE_APP_ID`, `FIREBASE_SENDER_ID`, `FIREBASE_PROJECT_ID` | Variable | Firebase project for push notifications. |

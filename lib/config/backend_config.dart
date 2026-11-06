@@ -20,6 +20,9 @@ class BackendConfig {
     defaultValue: 'http://localhost:5033',
   );
 
+  /// The old hosted address; a saved copy of it falls back to [hostedUrl].
+  static const retiredHostedUrl = 'https://api.schuly.dev';
+
   static String _url = hostedUrl;
 
   static String get url => _url;
@@ -27,7 +30,12 @@ class BackendConfig {
   static bool get isCustom => _url != hostedUrl;
 
   static Future<void> load() async {
-    final saved = (await SharedPreferences.getInstance()).getString(_key);
+    final prefs = await SharedPreferences.getInstance();
+    final saved = prefs.getString(_key);
+    if (normalise(saved) == retiredHostedUrl) {
+      await prefs.remove(_key);
+      return;
+    }
     if (saved != null && saved.isNotEmpty) _url = saved;
   }
 
