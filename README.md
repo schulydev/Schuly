@@ -53,6 +53,8 @@ bun run dev
 
 You need Flutter and [bun](https://bun.sh). The dev build talks to a server on `http://localhost:5033`. The rest is in [the app docs](https://docs.schuly.dev/Schuly/).
 
+The app screenshots for the website and store listings come from [`tools/store-screenshots`](tools/store-screenshots).
+
 ## License
 
 [PolyForm Noncommercial 1.0.0](LICENSE)
