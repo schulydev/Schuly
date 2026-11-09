@@ -1,13 +1,19 @@
 import 'package:flutter/widgets.dart';
 import 'package:forui/forui.dart';
 
+import '../../l10n/app_localizations.dart';
+import '../../services/active_account_service.dart';
+import '../../services/api_client.dart';
 import '../../services/linked_accounts_controller.dart';
 import '../../services/linking_service.dart';
+import '../../services/school_data_service.dart';
 import '../../services/toast_service.dart';
+import '../core/theme/schuly_theme.dart';
+import '../core/ui/kit.dart';
 import 'add_account_flow.dart';
 
-/// "Schools & accounts": every linked account across all providers with its status, re-sign-in and
-/// unlink, plus the providers the server offers to add. All of it comes from `/api/linking`.
+/// "Schools & accounts": every linked account grouped by provider, with its status, Sync or Sign in, and unlink
+/// behind a tap. All of it comes from `/api/linking`.
 class SchoolsAccountsScreen extends StatefulWidget {
   final LinkedAccountsController? controller;
   const SchoolsAccountsScreen({this.controller, super.key});
@@ -18,6 +24,7 @@ class SchoolsAccountsScreen extends StatefulWidget {
 
 class _SchoolsAccountsScreenState extends State<SchoolsAccountsScreen> {
   LinkedAccountsController get _c => widget.controller ?? LinkedAccountsController.instance;
+  final Set<String> _syncing = {};
 
   @override
   void initState() {
@@ -31,16 +38,42 @@ class _SchoolsAccountsScreenState extends State<SchoolsAccountsScreen> {
     await startProviderFlow(context, provider, reauthAccountId: account.id, controller: _c);
   }
 
+  /// The school a linked account feeds, when it has a plugin sync endpoint.
+  ({String accountId, String basePath})? _syncTarget(LinkedAccount account) {
+    for (final s in ActiveAccountService.instance.schools) {
+      if (s.pluginAccountId == account.id && s.pluginBasePath?.isNotEmpty == true) return (accountId: account.id, basePath: s.pluginBasePath!);
+    }
+    return null;
+  }
+
+  Future<void> _sync(LinkedAccount account) async {
+    final t = AppLocalizations.of(context)!;
+    final target = _syncTarget(account);
+    if (target == null) return;
+    setState(() => _syncing.add(account.key));
+    try {
+      await ApiClient.instance.dio.post<dynamic>('${target.basePath}/accounts/${target.accountId}/sync', options: ApiClient.handled());
+      await SchoolDataService.instance.refresh();
+      await _c.reloadAccounts();
+      ToastService.success(t.accountsSyncDone, t.accountsSyncDoneDetail);
+    } catch (e) {
+      ToastService.error(t.accountsSyncFailed, e);
+    } finally {
+      if (mounted) setState(() => _syncing.remove(account.key));
+    }
+  }
+
   Future<void> _unlink(LinkedAccount account) async {
+    final t = AppLocalizations.of(context)!;
     final confirmed = await showFDialog<bool>(
       context: context,
       builder: (ctx, style, animation) => FDialog(
         animation: animation,
-        title: const Text('Unlink account?'),
-        body: Text('${account.title} will be removed and its data disappears from the app.'),
+        title: Text(t.accountsUnlinkTitle),
+        body: Text(t.accountsUnlinkBody(account.title)),
         actions: [
-          FButton(style: FButtonStyle.outline(), onPress: () => Navigator.of(ctx).pop(false), child: const Text('Cancel')),
-          FButton(onPress: () => Navigator.of(ctx).pop(true), child: const Text('Unlink')),
+          FButton(style: FButtonStyle.outline(), onPress: () => Navigator.of(ctx).pop(false), child: Text(t.cancel)),
+          FButton(style: FButtonStyle.destructive(), onPress: () => Navigator.of(ctx).pop(true), child: Text(t.accountsUnlink)),
         ],
       ),
     );
@@ -48,110 +81,152 @@ class _SchoolsAccountsScreenState extends State<SchoolsAccountsScreen> {
     try {
       await _c.unlink(account);
     } catch (e) {
-      ToastService.error("Couldn't unlink the account", e);
+      ToastService.error(t.accountsUnlinkFailed, e);
     }
   }
 
   Future<void> _manage(LinkedAccount account) async {
+    final t = AppLocalizations.of(context)!;
     final action = await showFDialog<String>(
       context: context,
       builder: (ctx, style, animation) => FDialog(
         animation: animation,
         title: Text(account.title),
-        body: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          spacing: 8,
+        body: FTileGroup(
+          divider: FItemDivider.full,
           children: [
-            if (account.canReauth || account.status == LinkedAccountStatus.expired) FTile(prefix: const Icon(FIcons.refreshCw), title: const Text('Sign in again'), onPress: () => Navigator.of(ctx).pop('reauth')),
-            FTile(prefix: const Icon(FIcons.trash2), title: const Text('Unlink'), onPress: () => Navigator.of(ctx).pop('unlink')),
+            if (account.canReauth || account.status == LinkedAccountStatus.expired) FTile(title: Text(t.accountsSignInAgain), suffix: chevron(), onPress: () => Navigator.of(ctx).pop('reauth')),
+            FTile(title: Text(t.accountsUnlink, style: TextStyle(color: ctx.theme.colors.destructive)), onPress: () => Navigator.of(ctx).pop('unlink')),
           ],
         ),
-        actions: [FButton(style: FButtonStyle.outline(), onPress: () => Navigator.of(ctx).pop(), child: const Text('Close'))],
+        actions: [FButton(style: FButtonStyle.outline(), onPress: () => Navigator.of(ctx).pop(), child: Text(t.close))],
       ),
     );
     if (action == 'reauth') await _reauth(account);
     if (action == 'unlink') await _unlink(account);
   }
 
-  static String _statusText(LinkedAccount a) => switch (a.status) {
-        LinkedAccountStatus.syncing => 'Syncing your data…',
-        LinkedAccountStatus.expired => a.message ?? 'Sign-in expired. Sign in again.',
-        LinkedAccountStatus.error => a.message ?? 'Something is wrong with this account.',
-        LinkedAccountStatus.ok => a.message ?? '',
-      };
+  static String _ago(AppLocalizations t, DateTime when) {
+    final d = DateTime.now().difference(when.toLocal());
+    if (d.inMinutes < 1) return t.agoJustNow;
+    if (d.inMinutes < 60) return t.agoMinutes(d.inMinutes);
+    if (d.inHours < 24) return t.agoHours(d.inHours);
+    final l = when.toLocal();
+    return '${l.day}.${l.month}.${l.year}';
+  }
+
+  Widget? _status(AppLocalizations t, LinkedAccount a) {
+    final tokens = context.tokens;
+    final colors = context.theme.colors;
+    return switch (a.status) {
+      LinkedAccountStatus.syncing => StatusLabel(t.accountsSyncing, color: colors.mutedForeground, dot: tokens.ink),
+      LinkedAccountStatus.expired => StatusLabel(a.message ?? t.accountsExpired, color: tokens.warn),
+      LinkedAccountStatus.error => StatusLabel(a.message ?? t.accountsError, color: tokens.bad),
+      LinkedAccountStatus.ok => a.lastSyncedAt != null
+          ? StatusLabel(t.accountsSynced(_ago(t, a.lastSyncedAt!)), color: colors.mutedForeground, dot: tokens.good)
+          : (a.message?.isNotEmpty == true ? StatusLabel(a.message!, color: colors.mutedForeground, dot: tokens.good) : null),
+    };
+  }
+
+  Widget? _action(AppLocalizations t, LinkedAccount a) {
+    if (a.isProviderError) return null;
+    final needsSignIn = a.status == LinkedAccountStatus.expired || a.status == LinkedAccountStatus.error;
+    if (needsSignIn && (a.canReauth || a.status == LinkedAccountStatus.expired)) {
+      return FButton(style: FButtonStyle.primary(), mainAxisSize: MainAxisSize.min, onPress: () => _reauth(a), child: Text(t.accountsSignIn));
+    }
+    if (_syncTarget(a) != null) {
+      final busy = _syncing.contains(a.key);
+      return FButton(
+        style: FButtonStyle.outline(),
+        mainAxisSize: MainAxisSize.min,
+        onPress: busy || a.status == LinkedAccountStatus.syncing ? null : () => _sync(a),
+        child: Text(busy ? t.accountsSyncingShort : t.accountsSync),
+      );
+    }
+    return null;
+  }
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context)!;
     final colors = context.theme.colors;
-    return FScaffold(
-      header: FHeader.nested(title: const Text('Schools & accounts'), prefixes: [FHeaderAction.back(onPress: () => Navigator.of(context).pop())]),
-      child: ListenableBuilder(
-        listenable: _c,
-        builder: (context, _) {
-          final groups = _c.groupedByProvider();
-          return ListView(
-            padding: EdgeInsets.fromLTRB(0, 8, 0, 24 + MediaQuery.viewPaddingOf(context).bottom),
-            children: [
-              if (_c.syncing) const SyncingBanner(),
-              if (_c.error != null && !_c.loaded)
-                Padding(padding: const EdgeInsets.only(bottom: 12), child: Text("Couldn't load your accounts. ${_c.error}", style: context.theme.typography.sm.copyWith(color: colors.destructive))),
-              if (!_c.loaded && _c.loading) const Padding(padding: EdgeInsets.all(24), child: Center(child: FCircularProgress())),
-              for (final entry in groups.entries) ...[
-                SectionLabel(entry.key),
-                for (final a in entry.value)
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 8),
-                    child: FTile(
-                      prefix: Icon(switch (a.status) {
-                        LinkedAccountStatus.ok => FIcons.circleCheck,
-                        LinkedAccountStatus.syncing => FIcons.refreshCw,
-                        _ => FIcons.circleAlert,
-                      }, color: a.status == LinkedAccountStatus.expired || a.status == LinkedAccountStatus.error ? colors.destructive : null),
-                      title: Text(a.isProviderError ? "Couldn't load ${a.providerName} accounts" : a.title),
-                      subtitle: Text([
-                        if (a.detail != null) a.detail!,
-                        if (_statusText(a).isNotEmpty) _statusText(a),
-                        if (a.capabilities.isNotEmpty) a.capabilities.map((c) => c.label).join(', '),
-                      ].join('\n')),
-                      suffix: a.isProviderError ? null : const Icon(FIcons.ellipsis),
+    final typography = context.theme.typography;
+    return ListenableBuilder(
+      listenable: _c,
+      builder: (context, _) {
+        final groups = _c.groupedByProvider();
+        return SubPage(
+          backLabel: t.tabAccount,
+          title: t.accountsTitle,
+          action: FButton(style: FButtonStyle.outline(), mainAxisSize: MainAxisSize.min, onPress: () => runAddAccountFlow(context, controller: _c), child: Text(t.accountsAdd)),
+          onRefresh: _c.reloadAccounts,
+          children: [
+            if (_c.syncing) const SyncingBanner(),
+            if (_c.error != null && !_c.loaded) Padding(padding: const EdgeInsets.only(bottom: 12), child: Text(t.accountsLoadFailed('${_c.error}'), style: typography.sm.copyWith(color: colors.destructive))),
+            if (!_c.loaded && _c.loading) const Padding(padding: EdgeInsets.all(24), child: Center(child: FCircularProgress())),
+            for (final (i, entry) in groups.entries.indexed) ...[
+              Padding(padding: EdgeInsets.only(top: i == 0 ? 0 : 16, bottom: 8), child: _ProviderHead(name: entry.key, provider: _c.provider(entry.value.first.providerId))),
+              FTileGroup(
+                divider: FItemDivider.full,
+                children: [
+                  for (final a in entry.value)
+                    FTile(
+                      title: Text(a.isProviderError ? t.accountsProviderFailed(a.providerName) : a.title),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          if (a.detail?.isNotEmpty == true) Text(a.detail!),
+                          if (_status(t, a) case final status?) Padding(padding: const EdgeInsets.only(top: 2), child: status),
+                        ],
+                      ),
+                      suffix: _action(t, a),
                       onPress: a.isProviderError ? null : () => _manage(a),
                     ),
-                  ),
-                const SizedBox(height: 12),
-              ],
-              if (_c.loaded && groups.isEmpty) Padding(padding: const EdgeInsets.only(bottom: 16), child: Text('No accounts linked yet.', style: context.theme.typography.sm.copyWith(color: colors.mutedForeground))),
-              const SectionLabel('Add'),
-              for (final p in _c.providers)
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
-                  child: FTile(
-                    prefix: Icon(providerIcon(p)),
-                    title: Text(p.displayName),
-                    subtitle: p.description == null ? null : Text(p.description!),
-                    suffix: const Icon(FIcons.plus),
-                    onPress: () => startProviderFlow(context, p, controller: _c),
-                  ),
-                ),
+                ],
+              ),
             ],
-          );
-        },
-      ),
+            if (_c.loaded && groups.isEmpty) EmptyNote(t.accountsEmpty),
+            Padding(padding: const EdgeInsets.only(top: 12), child: Text(t.accountsNote, style: typography.xs.copyWith(color: colors.mutedForeground))),
+          ],
+        );
+      },
     );
   }
 }
 
-/// Small muted uppercase label above a list.
-class SectionLabel extends StatelessWidget {
-  final String text;
-  const SectionLabel(this.text, {super.key});
+/// A provider's initial, name and what it gives Schuly.
+class _ProviderHead extends StatelessWidget {
+  const _ProviderHead({required this.name, required this.provider});
+
+  final String name;
+  final LinkProvider? provider;
 
   @override
   Widget build(BuildContext context) {
-    final c = context.theme.colors;
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(4, 0, 4, 8),
-      child: Text(text.toUpperCase(), style: context.theme.typography.xs.copyWith(color: c.mutedForeground, fontWeight: FontWeight.w600, letterSpacing: 0.5)),
+    final colors = context.theme.colors;
+    final typography = context.theme.typography;
+    final caps = provider?.capabilities.map((c) => c.label).join(', ');
+    final sub = provider?.description?.isNotEmpty == true ? provider!.description! : caps;
+    return Row(
+      children: [
+        Container(
+          width: 28,
+          height: 28,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(color: colors.muted, borderRadius: BorderRadius.circular(SchulyRadii.md)),
+          child: Text(name.isEmpty ? '?' : name.characters.first.toUpperCase(), style: typography.xs.copyWith(fontWeight: FontWeight.w600)),
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(name, style: typography.base.copyWith(fontWeight: FontWeight.w600)),
+              if (sub?.isNotEmpty == true) Text(sub!, style: typography.xs.copyWith(color: colors.mutedForeground)),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }
@@ -162,9 +237,14 @@ class SyncingBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
-      child: FTile(prefix: const SizedBox(width: 20, height: 20, child: FCircularProgress()), title: const Text('Syncing your data…'), subtitle: const Text('Your school data appears here as soon as it arrives.')),
+      child: FTile(
+        prefix: const SizedBox(width: 20, height: 20, child: FCircularProgress()),
+        title: Text(t.accountsSyncing),
+        subtitle: Text(t.accountsSyncingDetail),
+      ),
     );
   }
 }

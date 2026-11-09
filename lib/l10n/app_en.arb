@@ -366,5 +366,525 @@
   "trademarkNotice": "Microsoft 365, Microsoft Outlook, Microsoft Teams, Microsoft OneDrive and Microsoft OneNote are trademarks of Microsoft Corporation. Schulnetz is a trademark of Centerboard AG. Schuly is an independent project and is not affiliated with Microsoft or Centerboard.",
   "@trademarkNotice": {
     "description": "Trademark notice under About in Settings"
-  }
+  },
+  "tabHome": "Home",
+  "tabTimetable": "Timetable",
+  "done": "Done",
+  "cancel": "Cancel",
+  "close": "Close",
+  "save": "Save",
+  "saving": "Saving…",
+  "delete": "Delete",
+  "signOut": "Sign out",
+  "signOutQuestion": "Sign out?",
+  "signOutBody": "Your data stays on the server. You can sign in again any time.",
+  "signOutPrivateBody": "This disconnects your school and removes its data from this device.",
+  "agoJustNow": "just now",
+  "agoMinutes": "{minutes} min ago",
+  "@agoMinutes": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "agoHours": "{hours} h ago",
+  "@agoHours": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "homeGreetingMorning": "Good morning, {name}",
+  "@homeGreetingMorning": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "homeGreetingAfternoon": "Good afternoon, {name}",
+  "@homeGreetingAfternoon": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "homeGreetingEvening": "Good evening, {name}",
+  "@homeGreetingEvening": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "homeSubtitleTest": "{date} · {test} at {time}",
+  "@homeSubtitleTest": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "test": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "homeSubtitleLessons": "{date} · {count, plural, =1{1 lesson} other{{count} lessons}}",
+  "@homeSubtitleLessons": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "homeToday": "Today",
+  "homeTimetableLink": "Timetable",
+  "homeNoLessons": "No lessons today",
+  "homeNewGrades": "New grades",
+  "homeAllGrades": "All grades",
+  "homeUnexcused": "Unexcused absences",
+  "homeAllAbsences": "All absences",
+  "homeComingUp": "Coming up",
+  "homeNothingComing": "Nothing coming up",
+  "homeInDays": "{days, plural, =1{tomorrow} other{in {days} days}}",
+  "@homeInDays": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "homeHolidayNow": "now",
+  "timelineNow": "Now",
+  "timelineUntil": "until {time}",
+  "@timelineUntil": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "timelineBreak": "Break · {minutes} min",
+  "@timelineBreak": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "timelineLunchBreak": "Lunch break · {minutes} min",
+  "@timelineLunchBreak": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "timetableDay": "Day",
+  "timetableWeek": "Week",
+  "timetableWeekLine": "{month} · week {week}",
+  "@timetableWeekLine": {
+    "placeholders": {
+      "month": {
+        "type": "String"
+      },
+      "week": {
+        "type": "int"
+      }
+    }
+  },
+  "timetableLessons": "{count, plural, =0{No lessons} =1{1 lesson} other{{count} lessons}}",
+  "@timetableLessons": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "timetableAllDayCount": "{count, plural, =1{1 all-day entry} other{{count} all-day entries}}",
+  "@timetableAllDayCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "gradesEmpty": "No grades yet",
+  "gradesSemesterAverage": "Semester average",
+  "gradesYearAverage": "School year average",
+  "gradesOnTrack": "On track",
+  "gradesOnTrackDetail": "Every subject is 4 or better.",
+  "gradesBelowFour": "{count, plural, =1{1 subject below 4} other{{count} subjects below 4}}",
+  "@gradesBelowFour": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "gradesLegendYours": "Your grades",
+  "gradesLegendAverage": "Subject average",
+  "gradesCount": "{count, plural, =1{1 grade} other{{count} grades}}",
+  "@gradesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "gradesClassAverage": "class ⌀ {average}",
+  "@gradesClassAverage": {
+    "placeholders": {
+      "average": {
+        "type": "String"
+      }
+    }
+  },
+  "gradesWeight": "weight {weight}",
+  "@gradesWeight": {
+    "placeholders": {
+      "weight": {
+        "type": "String"
+      }
+    }
+  },
+  "gradesSubjectFallback": "Subject",
+  "periodSemester": "Semester {half} · {years}",
+  "@periodSemester": {
+    "placeholders": {
+      "half": {
+        "type": "int"
+      },
+      "years": {
+        "type": "String"
+      }
+    }
+  },
+  "periodYear": "School year {years}",
+  "@periodYear": {
+    "placeholders": {
+      "years": {
+        "type": "String"
+      }
+    }
+  },
+  "periodUndated": "Undated",
+  "gradeAboveClass": "{diff} above the class",
+  "@gradeAboveClass": {
+    "placeholders": {
+      "diff": {
+        "type": "String"
+      }
+    }
+  },
+  "gradeBelowClass": "{diff} below the class",
+  "@gradeBelowClass": {
+    "placeholders": {
+      "diff": {
+        "type": "String"
+      }
+    }
+  },
+  "gradeNoClassAverage": "No class average yet",
+  "gradeNotGraded": "Not graded yet",
+  "gradeClassAverage": "Class average {average}",
+  "@gradeClassAverage": {
+    "placeholders": {
+      "average": {
+        "type": "String"
+      }
+    }
+  },
+  "gradeYou": "You",
+  "gradeWeight": "Weight",
+  "gradeWeightFull": "Full (1)",
+  "gradeWeightHalf": "Half (0.5)",
+  "gradeWeightOther": "×{weight}",
+  "@gradeWeightOther": {
+    "placeholders": {
+      "weight": {
+        "type": "String"
+      }
+    }
+  },
+  "gradeSubjectNow": "{subject} now",
+  "@gradeSubjectNow": {
+    "placeholders": {
+      "subject": {
+        "type": "String"
+      }
+    }
+  },
+  "gradeOnZeugnis": "{raw} → {grade} on the Zeugnis",
+  "@gradeOnZeugnis": {
+    "placeholders": {
+      "raw": {
+        "type": "String"
+      },
+      "grade": {
+        "type": "String"
+      }
+    }
+  },
+  "gradeWithout": "Without this grade",
+  "gradeArrow": "{raw} → {grade}",
+  "@gradeArrow": {
+    "placeholders": {
+      "raw": {
+        "type": "String"
+      },
+      "grade": {
+        "type": "String"
+      }
+    }
+  },
+  "gradeBelowFourTitle": "Below 4",
+  "gradeBelowFourText": "Without it, {subject} would be {grade} on the Zeugnis.",
+  "@gradeBelowFourText": {
+    "placeholders": {
+      "subject": {
+        "type": "String"
+      },
+      "grade": {
+        "type": "String"
+      }
+    }
+  },
+  "absencesEmpty": "No absences",
+  "absenceFilterAll": "All",
+  "absenceFilterAbsences": "Absences",
+  "absenceFilterDelays": "Delays",
+  "absenceTypeAbsence": "Absence",
+  "absenceTypeDelay": "Delay",
+  "absenceExcused": "Excused",
+  "absenceWaiting": "Waiting",
+  "absenceNeedsExcuse": "Needs an excuse",
+  "absenceNeedsExcuseShort": "Needs excuse",
+  "absenceLessons": "{count, plural, =1{1 lesson} other{{count} lessons}}",
+  "@absenceLessons": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "absenceStatus": "Status",
+  "absenceMissed": "Missed",
+  "absenceLate": "Late",
+  "absenceSteps": "Excuse steps",
+  "absenceStepReported": "Reported",
+  "absenceStepReportedTodo": "Report it in Schuly or Schulnetz.",
+  "absenceStepReportedDone": "Your report is with the school.",
+  "absenceStepSchool": "School",
+  "absenceStepSchoolDetail": "The school excuses it.",
+  "absenceStepDoNext": "do this next",
+  "absenceStepWaiting": "waiting",
+  "absenceStepsNote": "Schuly only sees whether the school has excused it. The steps in between, such as your parents (EAE) or your Lehrbetrieb, show in Schulnetz.",
+  "absenceEdit": "Edit absence",
+  "absenceKeep": "Keep",
+  "absenceWithdrawQuestion": "Withdraw report?",
+  "absenceWithdrawSubtitle": "Your school won't see the report for {date} any more.",
+  "@absenceWithdrawSubtitle": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "absenceReportSubtitle": "Goes to your school, once per class.",
+  "absenceReportFootnote": "You can withdraw it until the school has processed it.",
+  "absenceWholeDayHint": "Off: only some lessons",
+  "absenceCommentHint": "Zeugnis folgt",
+  "accountThisSchool": "This school",
+  "accountSwitch": "Switch",
+  "accountShow": "Show",
+  "accountSchuly": "Schuly account",
+  "accountPrivateMode": "Private mode",
+  "accountDocuments": "Documents",
+  "accountTeachers": "Teachers",
+  "accountEmail": "Email",
+  "accountSince": "Since",
+  "accountPluginVersion": "connection {version}",
+  "@accountPluginVersion": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "teachersEmpty": "No teachers listed",
+  "authenticatorTitle": "Authenticator",
+  "authenticatorCodes": "{count, plural, =1{1 code} other{{count} codes}}",
+  "@authenticatorCodes": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsTitle": "Settings",
+  "accountsTitle": "Schools & accounts",
+  "accountsAdd": "Add",
+  "accountsNeedSignIn": "{count, plural, =1{1 needs a new sign-in} other{{count} need a new sign-in}}",
+  "@accountsNeedSignIn": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "accountsSynced": "Synced {when}",
+  "@accountsSynced": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "accountsNeverSynced": "Never synced",
+  "accountsSyncing": "Syncing your data…",
+  "accountsSyncingDetail": "Your school data appears here as soon as it arrives.",
+  "accountsSyncingShort": "Syncing…",
+  "accountsSync": "Sync",
+  "accountsSyncDone": "Synced",
+  "accountsSyncDoneDetail": "Fetched fresh data from your school.",
+  "accountsSyncFailed": "Sync failed",
+  "accountsSignIn": "Sign in",
+  "accountsSignInAgain": "Sign in again",
+  "accountsExpired": "Sign-in expired",
+  "accountsError": "Something is wrong with this account.",
+  "accountsProviderFailed": "Couldn't load {provider} accounts",
+  "@accountsProviderFailed": {
+    "placeholders": {
+      "provider": {
+        "type": "String"
+      }
+    }
+  },
+  "accountsLoadFailed": "Couldn't load your accounts. {error}",
+  "@accountsLoadFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "accountsEmpty": "No accounts linked yet.",
+  "accountsNote": "Schuly reads these accounts to show your grades, absences and timetable. Unlinking one deletes what Schuly stored from it.",
+  "accountsUnlink": "Unlink",
+  "accountsUnlinkTitle": "Unlink account?",
+  "accountsUnlinkBody": "{account} will be removed and its data disappears from the app.",
+  "@accountsUnlinkBody": {
+    "placeholders": {
+      "account": {
+        "type": "String"
+      }
+    }
+  },
+  "accountsUnlinkFailed": "Couldn't unlink the account",
+  "schoolsTitle": "Schools",
+  "schoolsSubtitle": "Switch which school you're looking at.",
+  "schoolsNote": "Add, re-authenticate or disconnect schools under Account.",
+  "schoolsManage": "Manage schools & accounts",
+  "schoolsPrivateNote": "Private mode: your data is kept on this device. Requests pass through the Schuly server without being stored.",
+  "schoolDisconnect": "Disconnect",
+  "schoolDisconnectTitle": "Disconnect school",
+  "schoolDisconnectBody": "Remove {school}? You can reconnect it later.",
+  "@schoolDisconnectBody": {
+    "placeholders": {
+      "school": {
+        "type": "String"
+      }
+    }
+  },
+  "schoolDisconnectFailed": "Disconnect failed",
+  "studentIdTitle": "Lernendenausweis",
+  "studentIdHint": "Tap the card to turn it over.",
+  "studentIdTurn": "Turn over",
+  "studentIdLastName": "Last name",
+  "studentIdFirstName": "First name",
+  "studentIdSchool": "School",
+  "studentIdEmail": "Email",
+  "studentIdSince": "Since {date}",
+  "@studentIdSince": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "studentIdBackNote": "Only valid with an official ID. Programme, validity and the student number appear once your school connection provides them.",
+  "settingsAppearance": "Appearance",
+  "settingsAppearanceDetail": "Your accent marks what's active.",
+  "settingsAccent": "Accent",
+  "settingsThemeSystem": "System",
+  "settingsThemeLight": "Light",
+  "settingsThemeDark": "Dark",
+  "accentZinc": "Zinc",
+  "accentBlue": "Blue",
+  "accentViolet": "Violet",
+  "accentGreen": "Green",
+  "accentOrange": "Orange",
+  "accentRose": "Rose",
+  "settingsSecurity": "Security",
+  "settingsSecurityDetail": "How you sign in, and where.",
+  "settingsManageAccount": "Manage account",
+  "settingsManageAccountDetail": "Password, two-factor and devices, on the web",
+  "settingsProfilePicture": "Profile picture",
+  "settingsProfilePictureDetail": "Upload or change your picture",
+  "settingsAccountsDetail": "Link, re-sign-in and unlink your accounts",
+  "settingsOpen": "Open",
+  "settingsChange": "Change",
+  "settingsOpenFailed": "Couldn't open the page",
+  "settingsServer": "Server",
+  "settingsBackend": "Backend server",
+  "settingsLicences": "Open-source licences",
+  "settingsDangerZone": "Danger zone",
+  "settingsDangerZoneDetail": "Changes to the account itself.",
+  "exportAction": "Export",
+  "exporting": "Exporting…",
+  "serverCloud": "Schuly Cloud",
+  "serverCloudDetail": "The official Schuly server",
+  "serverSelfHosted": "Self-hosted",
+  "serverSelfHostedDetail": "Your own Schuly backend",
+  "serverUrl": "Backend URL",
+  "serverHttps": "Use https:// (http only works for localhost)",
+  "serverSignsOut": "Changing the server signs you out.",
+  "serverChecking": "Checking…",
+  "serverInvalidUrl": "Enter a valid http(s) URL.",
+  "serverUnreachable": "Couldn't reach a Schuly backend at this URL.",
+  "updatesTitle": "Updates",
+  "updatesCheck": "Check for updates",
+  "updatesChecking": "Checking…",
+  "updatesAvailable": "Version {version} is available (installed {installed})",
+  "@updatesAvailable": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      },
+      "installed": {
+        "type": "String"
+      }
+    }
+  },
+  "updatesInstalled": "Version {version}",
+  "@updatesInstalled": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "updateUnknown": "unknown",
+  "updatesAuto": "Check automatically",
+  "updatesAutoDetail": "On app start, at most every 6 hours",
+  "updatesAutoDev": "Off by default in the dev build"
 }

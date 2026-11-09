@@ -4,6 +4,7 @@ import 'package:forui/forui.dart';
 import '../../l10n/app_localizations.dart';
 import '../../services/app_mode_service.dart';
 import '../../services/push_service.dart';
+import 'settings_card.dart';
 
 class NotificationSettingsSection extends StatefulWidget {
   const NotificationSettingsSection({super.key, this.service});
@@ -28,106 +29,37 @@ class _NotificationSettingsSectionState extends State<NotificationSettingsSectio
         final status = _service.status;
         final disabled = !_service.supported || _service.busy;
 
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        return SettingsCard(
+          title: t.notifications,
           children: [
-            _SectionLabel(t.notifications),
-            Padding(
-              padding: const EdgeInsets.only(bottom: 8),
-              child: FTile(
-                prefix: const Icon(FIcons.bell),
-                title: Text(t.pushNotifications),
-                subtitle: Text(
-                  !_service.supported
-                      ? t.pushUnavailable
-                      : status == PushStatus.denied
-                          ? t.pushDenied
-                          : t.pushNotificationsSubtitle,
-                ),
-                suffix: FSwitch(
-                  value: status == PushStatus.on,
-                  enabled: !disabled,
-                  onChange: disabled
-                      ? null
-                      : (v) => v ? _service.enable() : _service.disable(),
-                ),
+            FTile(
+              title: Text(t.pushNotifications),
+              subtitle: Text(
+                !_service.supported
+                    ? t.pushUnavailable
+                    : status == PushStatus.denied
+                        ? t.pushDenied
+                        : t.pushNotificationsSubtitle,
+              ),
+              suffix: FSwitch(
+                value: status == PushStatus.on,
+                enabled: !disabled,
+                onChange: disabled ? null : (v) => v ? _service.enable() : _service.disable(),
               ),
             ),
             if (status == PushStatus.on) ...[
-              _PreferenceTile(
-                icon: FIcons.chartColumn,
-                title: t.notifyGrades,
-                value: _service.preferences.grades,
-                onChange: (v) => _service.setPreferences(_service.preferences.rebuild((b) => b..grades = v)),
-              ),
-              _PreferenceTile(
-                icon: FIcons.calendarOff,
-                title: t.notifyAbsences,
-                value: _service.preferences.absences,
-                onChange: (v) => _service.setPreferences(_service.preferences.rebuild((b) => b..absences = v)),
-              ),
-              _PreferenceTile(
-                icon: FIcons.calendarDays,
-                title: t.notifyAgenda,
-                value: _service.preferences.agenda,
-                onChange: (v) => _service.setPreferences(_service.preferences.rebuild((b) => b..agenda = v)),
-              ),
-              _PreferenceTile(
-                icon: FIcons.eye,
-                title: t.notifyGradeValue,
-                subtitle: t.notifyGradeValueSubtitle,
-                value: _service.preferences.includeGradeValue,
-                onChange: (v) =>
-                    _service.setPreferences(_service.preferences.rebuild((b) => b..includeGradeValue = v)),
-              ),
-              _PreferenceTile(
-                icon: FIcons.fileText,
-                title: t.notifyDetails,
-                subtitle: t.notifyDetailsSubtitle,
-                value: _service.preferences.includeDetails,
-                onChange: (v) =>
-                    _service.setPreferences(_service.preferences.rebuild((b) => b..includeDetails = v)),
-              ),
+              _preference(t.notifyGrades, null, _service.preferences.grades, (v) => _service.setPreferences(_service.preferences.rebuild((b) => b..grades = v))),
+              _preference(t.notifyAbsences, null, _service.preferences.absences, (v) => _service.setPreferences(_service.preferences.rebuild((b) => b..absences = v))),
+              _preference(t.notifyAgenda, null, _service.preferences.agenda, (v) => _service.setPreferences(_service.preferences.rebuild((b) => b..agenda = v))),
+              _preference(t.notifyGradeValue, t.notifyGradeValueSubtitle, _service.preferences.includeGradeValue, (v) => _service.setPreferences(_service.preferences.rebuild((b) => b..includeGradeValue = v))),
+              _preference(t.notifyDetails, t.notifyDetailsSubtitle, _service.preferences.includeDetails, (v) => _service.setPreferences(_service.preferences.rebuild((b) => b..includeDetails = v))),
             ],
-            const SizedBox(height: 20),
           ],
         );
       },
     );
   }
-}
 
-class _PreferenceTile extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final String? subtitle;
-  final bool value;
-  final ValueChanged<bool> onChange;
-  const _PreferenceTile({required this.icon, required this.title, this.subtitle, required this.value, required this.onChange});
-
-  @override
-  Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.only(bottom: 8),
-        child: FTile(
-          prefix: Icon(icon),
-          title: Text(title),
-          subtitle: subtitle != null ? Text(subtitle!) : null,
-          suffix: FSwitch(value: value, onChange: onChange),
-        ),
-      );
-}
-
-class _SectionLabel extends StatelessWidget {
-  final String text;
-  const _SectionLabel(this.text);
-  @override
-  Widget build(BuildContext context) {
-    final c = context.theme.colors;
-    final t = context.theme.typography;
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(4, 0, 4, 8),
-      child: Text(text.toUpperCase(),
-          style: t.xs.copyWith(color: c.mutedForeground, fontWeight: FontWeight.w600, letterSpacing: 0.5)),
-    );
-  }
+  static FTile _preference(String title, String? subtitle, bool value, ValueChanged<bool> onChange) =>
+      FTile(title: Text(title), subtitle: subtitle != null ? Text(subtitle) : null, suffix: FSwitch(value: value, onChange: onChange));
 }

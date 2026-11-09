@@ -1,26 +1,26 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:forui/forui.dart';
 import 'package:schuly_api/schuly_api.dart';
 
+import '../../domain/grade_math.dart';
+import '../../l10n/app_localizations.dart';
 import '../../services/school_data_service.dart';
-import '../core/grade_color.dart';
+import '../core/dates.dart';
+import '../core/theme/schuly_theme.dart';
+import '../core/ui/kit.dart';
+import '../dashboard/dashboard_scope.dart';
+import 'grade_data.dart';
+import 'grade_detail_sheet.dart';
 
-class GradesPage extends StatelessWidget {
+class GradesPage extends StatefulWidget {
   const GradesPage({super.key});
 
   @override
-  Widget build(BuildContext context) => const _GradesView();
+  State<GradesPage> createState() => _GradesPageState();
 }
 
-class _GradesView extends StatefulWidget {
-  const _GradesView();
-
-  @override
-  State<_GradesView> createState() => _GradesViewState();
-}
-
-class _GradesViewState extends State<_GradesView> {
-  int? _selectedKey;
+class _GradesPageState extends State<GradesPage> {
+  int? _period;
 
   // This page is const in the dashboard, so its parent rebuilding does not reach it.
   @override
@@ -37,263 +37,288 @@ class _GradesViewState extends State<_GradesView> {
 
   void _onDataChanged() => setState(() {});
 
-  static int _semesterKey(Date? d) {
-    if (d == null) return 0;
-    if (d.month >= 8) return d.year * 10 + 1;
-    if (d.month <= 1) return (d.year - 1) * 10 + 1;
-    return (d.year - 1) * 10 + 2;
+  @override
+  Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context)!;
+    final svc = SchoolDataService.instance;
+    final mine = svc.myGradesByExam;
+    final graded = [for (final e in svc.exams) if (e.id != null && mine.containsKey(e.id)) e];
+
+    final periods = periodsFor(graded.map((e) => semesterKey(examDay(e))));
+    final period = (_period != null && periods.contains(_period)) ? _period! : defaultPeriod(periods);
+    final subjects = subjectGrades(svc, include: (e) => inPeriod(period, semesterKey(examDay(e))), unnamed: t.gradesSubjectFallback);
+    final averaged = [for (final s in subjects) if (s.average != null) s.average!];
+    final semAvg = semesterAverage(averaged);
+    final below = subjects.where((s) => s.average != null && s.average!.grade < 4).toList();
+
+    final children = <Widget>[
+      const SchoolHeader(),
+      PageTitle(
+        t.tabGrades,
+        trailing: periods.length > 1
+            ? SizedBox(
+                width: 170,
+                child: FSelect<int>(
+                  control: FSelectControl<int>.lifted(value: period, onChange: (k) => setState(() => _period = k ?? period)),
+                  items: {for (final k in periods) periodLabel(t, k): k},
+                ),
+              )
+            : null,
+      ),
+    ];
+
+    if (graded.isEmpty) {
+      children.add(EmptyNote(t.gradesEmpty));
+    } else {
+      children.addAll([
+        _Summary(average: semAvg, below: below.map((s) => s.name).toList(), label: isYearKey(period) ? t.gradesYearAverage : t.gradesSemesterAverage),
+        Padding(
+          padding: const EdgeInsets.only(top: 12),
+          child: Wrap(
+            spacing: 14,
+            runSpacing: 6,
+            children: [
+              _LegendItem(mark: Container(width: 8, height: 8, decoration: BoxDecoration(color: context.tokens.good, shape: BoxShape.circle)), label: t.gradesLegendYours),
+              _LegendItem(mark: Container(width: 3, height: 11, decoration: BoxDecoration(color: context.tokens.ink, borderRadius: BorderRadius.circular(2))), label: t.gradesLegendAverage),
+            ],
+          ),
+        ),
+        const SizedBox(height: 6),
+        FAccordion(
+          style: (s) => s.copyWith(
+            titlePadding: const EdgeInsets.fromLTRB(0, 13, 0, 12),
+            childPadding: const EdgeInsets.only(bottom: 10),
+            titleTextStyle: FWidgetStateMap.all(context.theme.typography.base),
+          ),
+          children: [
+            for (final s in subjects)
+              FAccordionItem(
+                icon: const SizedBox.shrink(),
+                title: _SubjectHead(subject: s, t: t),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [for (final e in s.exams.reversed) _examItem(context, t, e, mine[e.id])],
+                ),
+              ),
+          ],
+        ),
+      ]);
+    }
+
+    return PageList(onRefresh: svc.refresh, children: children);
   }
 
-  static bool _isYear(int key) => key != 0 && key % 10 == 0;
-
-  static String _periodLabel(int key) {
-    if (key == 0) return 'Undated';
-    final year = key ~/ 10, half = key % 10;
-    final a = (year % 100).toString().padLeft(2, '0');
-    final b = ((year + 1) % 100).toString().padLeft(2, '0');
-    return half == 0 ? '$a/$b' : '$half. $a/$b'; // "25/26" vs "2. 25/26"
+  Widget _examItem(BuildContext context, AppLocalizations t, ExamDto e, GradeDto? g) {
+    final colors = context.theme.colors;
+    final typography = context.theme.typography;
+    final dates = Dates(context);
+    final day = examDay(e);
+    final weight = (g?.weighting ?? 1).toDouble();
+    final parts = [
+      if (day != null) dates.dayMonth(day),
+      if (isGradedScore(e.classAverage)) t.gradesClassAverage(e.classAverage.toStringAsFixed(1)),
+    ];
+    return FItem(
+      style: (s) => s.copyWith(contentStyle: (c) => c.copyWith(padding: const EdgeInsetsDirectional.fromSTEB(0, 7, 0, 7))),
+      title: Text(e.name, style: typography.base.copyWith(fontWeight: FontWeight.w400)),
+      subtitle: Text.rich(TextSpan(children: [
+        TextSpan(text: parts.join(' · ')),
+        if (weight != 1) TextSpan(text: '${parts.isEmpty ? '' : ' · '}${t.gradesWeight(_num(weight))}', style: TextStyle(color: context.tokens.ink, fontWeight: FontWeight.w500)),
+      ]), style: typography.xs.copyWith(color: colors.mutedForeground)),
+      suffix: GradePill(g?.score),
+      onPress: () => showGradeDetail(context, e),
+    );
   }
+
+  static String _num(double w) => w == w.roundToDouble() ? w.toStringAsFixed(0) : w.toString();
+}
+
+class _LegendItem extends StatelessWidget {
+  const _LegendItem({required this.mark, required this.label});
+
+  final Widget mark;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) => Row(mainAxisSize: MainAxisSize.min, children: [mark, const SizedBox(width: 5), Text(label, style: context.theme.typography.xs.copyWith(color: context.theme.colors.mutedForeground))]);
+}
+
+/// The semester average: one number first, what it means, and where it sits on the 1 to 6 scale.
+class _Summary extends StatelessWidget {
+  const _Summary({required this.average, required this.below, required this.label});
+
+  final double? average;
+  final List<String> below;
+  final String label;
 
   @override
   Widget build(BuildContext context) {
-    final svc = SchoolDataService.instance;
-    final myGrades = svc.myGradesByExam;
-
-    final graded = [
-      for (final e in svc.exams)
-        if (e.id != null && myGrades.containsKey(e.id)) e,
-    ];
-    if (graded.isEmpty) {
-      return _RefreshableEmpty(onRefresh: svc.refresh, text: 'No grades yet');
-    }
-
-    final semKeys = {for (final e in graded) _semesterKey(e.date)};
-    final yearsDesc = {for (final k in semKeys) k ~/ 10}.toList()
-      ..sort((a, b) => b.compareTo(a));
-    final periods = <int>[];
-    for (final y in yearsDesc) {
-      if (y == 0) {
-        periods.add(0); // undated
-        continue;
-      }
-      final halves = [for (final h in [2, 1]) if (semKeys.contains(y * 10 + h)) y * 10 + h];
-      if (halves.length > 1) periods.add(y * 10); // whole-year option
-      periods.addAll(halves);
-    }
-    final newestSemester = semKeys.where((k) => !_isYear(k)).fold(0, (m, k) => k > m ? k : m);
-    final selected = (_selectedKey != null && periods.contains(_selectedKey))
-        ? _selectedKey!
-        : (periods.contains(newestSemester) ? newestSemester : periods.first);
-
-    bool inSelection(int examKey) =>
-        _isYear(selected) ? examKey ~/ 10 == selected ~/ 10 : examKey == selected;
-
-    final classNames = <String?, String?>{
-      for (final c in (svc.me?.classes ?? const <UserClassDto>[])) c.classId: c.className,
-      ...svc.classNameById,
-    };
-    final byClass = <String, List<ExamDto>>{};
-    for (final e in graded) {
-      if (!inSelection(_semesterKey(e.date))) continue;
-      byClass.putIfAbsent(e.classId ?? '-', () => []).add(e);
-    }
-    for (final list in byClass.values) {
-      list.sort((a, b) => (a.date?.compareTo(b.date ?? a.date!) ?? 0));
-    }
-
-    return Column(
-      children: [
-        if (periods.length > 1)
+    final t = AppLocalizations.of(context)!;
+    final colors = context.theme.colors;
+    final tokens = context.tokens;
+    final typography = context.theme.typography;
+    final avg = average;
+    final ok = below.isEmpty;
+    return Container(
+      padding: const EdgeInsets.only(top: 2, bottom: 20),
+      decoration: BoxDecoration(border: Border(bottom: BorderSide(color: colors.border))),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Eyebrow(label),
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-            child: Align(
-              alignment: Alignment.centerRight,
-              child: SizedBox(
-                width: 150,
-                child: FSelect<int>(
-                  control: FSelectControl<int>.lifted(
-                    value: selected,
-                    onChange: (k) => setState(() => _selectedKey = k ?? selected),
-                  ),
-                  items: {for (final k in periods) _periodLabel(k): k},
-                ),
-              ),
-            ),
-          ),
-        Expanded(
-          child: RefreshIndicator(
-            onRefresh: svc.refresh,
-            child: ListView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
+            padding: const EdgeInsets.only(top: 4, bottom: 14),
+            child: Row(
               children: [
-                for (final entry in byClass.entries)
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 10),
-                    child: _ClassSection(
-                      title: classNames[entry.key] ?? 'Class',
-                      exams: entry.value,
-                      myGrades: myGrades,
-                    ),
+                Text(avg == null ? '-' : avg.toStringAsFixed(1), style: typography.xl6.copyWith(fontWeight: FontWeight.w600, letterSpacing: -2)),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(ok ? t.gradesOnTrack : t.gradesBelowFour(below.length), style: typography.xl.copyWith(fontSize: 17, fontWeight: FontWeight.w600, color: ok ? tokens.good : tokens.bad)),
+                      Text(ok ? t.gradesOnTrackDetail : below.join(', '), maxLines: 2, overflow: TextOverflow.ellipsis, style: typography.sm.copyWith(color: colors.mutedForeground)),
+                    ],
                   ),
+                ),
               ],
             ),
           ),
-        ),
-      ],
+          if (avg != null) _Scale(value: avg),
+        ],
+      ),
     );
   }
 }
 
-class _ClassSection extends StatelessWidget {
-  final String title;
-  final List<ExamDto> exams;
-  final Map<String, GradeDto> myGrades;
-  const _ClassSection({required this.title, required this.exams, required this.myGrades});
+/// The 1 to 6 scale with the fail zone tinted, the pass mark at 4 and the average as a dot in the accent.
+class _Scale extends StatelessWidget {
+  const _Scale({required this.value});
+
+  final double value;
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.theme.colors;
+    final tokens = context.tokens;
     final typography = context.theme.typography;
+    return SizedBox(
+      height: 34,
+      child: LayoutBuilder(builder: (context, c) {
+        final w = c.maxWidth;
+        return Stack(
+          clipBehavior: Clip.none,
+          children: [
+            Positioned(
+              left: 0,
+              right: 0,
+              top: 8,
+              height: 6,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(3),
+                child: Row(children: [Expanded(flex: 60, child: ColoredBox(color: tokens.badBackground)), Expanded(flex: 40, child: ColoredBox(color: colors.muted))]),
+              ),
+            ),
+            Positioned(left: w * 0.6, top: 3, child: Container(width: 2, height: 16, color: colors.mutedForeground)),
+            Positioned(
+              left: gradePosition(value) * w - 8,
+              top: 3,
+              child: Container(width: 16, height: 16, decoration: BoxDecoration(shape: BoxShape.circle, color: tokens.ink, border: Border.all(color: colors.background, width: 3))),
+            ),
+            for (var g = 1; g <= 6; g++)
+              Positioned(
+                top: 21,
+                left: g == 6 ? null : (g == 1 ? 0 : gradePosition(g) * w - 3),
+                right: g == 6 ? 0 : null,
+                child: Text('$g', style: typography.xs.copyWith(fontSize: 11, color: colors.mutedForeground)),
+              ),
+          ],
+        );
+      }),
+    );
+  }
+}
 
-    double ws = 0, ss = 0;
-    for (final e in exams) {
-      final g = myGrades[e.id];
-      if (g == null || !isGraded(g.score)) continue;
-      final w = (g.weighting ?? 1).toDouble();
-      ws += w;
-      ss += g.score!.toDouble() * w;
-    }
-    final avg = ws > 0 ? ss / ws : null;
+/// A subject's name, grade count and raw average, its Zeugnis grade, and the 1 to 6 line with a dot per grade and an
+/// average tick.
+class _SubjectHead extends StatelessWidget {
+  const _SubjectHead({required this.subject, required this.t});
 
+  final SubjectGrades subject;
+  final AppLocalizations t;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.theme.colors;
+    final typography = context.theme.typography;
+    final avg = subject.average;
+    final scores = [
+      for (final e in subject.exams)
+        if (isGradedScore(SchoolDataService.instance.myGradesByExam[e.id]?.score)) SchoolDataService.instance.myGradesByExam[e.id]!.score!,
+    ];
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(4, 4, 4, 8),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Flexible(child: Text(title, style: typography.base.copyWith(fontWeight: FontWeight.w600))),
-              if (avg != null)
-                Text('⌀ ${formatGrade(avg)}',
-                    style: typography.sm.copyWith(color: gradeColor(context, avg), fontWeight: FontWeight.w700)),
-            ],
-          ),
-        ),
-        for (final e in exams)
-          Padding(
-            padding: const EdgeInsets.only(bottom: 8),
-            child: FTile(
-              title: Text(e.name),
-              subtitle: Text([
-                if ((myGrades[e.id]?.weighting ?? 1) != 1) 'weight ${formatGrade(myGrades[e.id]!.weighting ?? 1)}',
-                if (isGraded(e.classAverage)) 'class ⌀ ${formatGrade(e.classAverage)}',
-              ].join(' · ')),
-              suffix: GradePill(myGrades[e.id]?.score),
-              onPress: () => _showExamDetail(context, e, myGrades[e.id]),
+        Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(subject.name, style: typography.lg.copyWith(fontWeight: FontWeight.w500)),
+                  Text(
+                    avg == null ? t.gradesCount(scores.length) : '${t.gradesCount(scores.length)} · ⌀ ${avg.raw.toStringAsFixed(2)}',
+                    style: typography.xs.copyWith(color: colors.mutedForeground),
+                  ),
+                ],
+              ),
             ),
-          ),
+            const SizedBox(width: 12),
+            GradePill(avg?.grade),
+          ],
+        ),
+        const SizedBox(height: 8),
+        GradeDotLine(scores: scores, average: avg?.raw),
       ],
     );
   }
 }
 
-void _showExamDetail(BuildContext context, ExamDto exam, GradeDto? grade) {
-  showFSheet<void>(
-    context: context,
-    side: FLayout.btt,
-    mainAxisMaxRatio: null,
-    builder: (sheetCtx) => _ExamDetailSheet(exam: exam, grade: grade),
-  );
-}
+/// The 1 to 6 line: a dot per grade in its tone and the average as a tick in the accent.
+class GradeDotLine extends StatelessWidget {
+  const GradeDotLine({super.key, required this.scores, required this.average});
 
-class _ExamDetailSheet extends StatelessWidget {
-  final ExamDto exam;
-  final GradeDto? grade;
-  const _ExamDetailSheet({required this.exam, required this.grade});
+  final List<double> scores;
+  final double? average;
 
   @override
   Widget build(BuildContext context) {
     final colors = context.theme.colors;
-    final typography = context.theme.typography;
-    final score = grade?.score;
-    final classAvg = exam.classAverage;
-
-    Widget bar(String label, num? value) {
-      final v = value ?? 0;
-      final pct = (v / 6).clamp(0.0, 1.0);
-      final c = isGraded(value) ? gradeColor(context, v) : colors.muted;
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(label, style: typography.sm.copyWith(color: colors.mutedForeground)),
-              Text(isGraded(value) ? formatGrade(v) : '-',
-                  style: typography.sm.copyWith(fontWeight: FontWeight.w700, color: c)),
-            ],
-          ),
-          const SizedBox(height: 4),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(6),
-            child: LinearProgressIndicator(
-              value: pct,
-              minHeight: 8,
-              backgroundColor: colors.muted,
-              valueColor: AlwaysStoppedAnimation(c),
-            ),
-          ),
-        ],
-      );
-    }
-
-    return Container(
-      decoration: BoxDecoration(color: colors.background),
-      padding: EdgeInsets.fromLTRB(20, 20, 20, 24 + MediaQuery.viewPaddingOf(context).bottom),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Text(exam.name, style: typography.lg.copyWith(fontWeight: FontWeight.w700)),
-          if ((exam.description?.isNotEmpty ?? false)) ...[
-            const SizedBox(height: 4),
-            Text(exam.description!, style: TextStyle(color: colors.mutedForeground)),
+    final tokens = context.tokens;
+    return SizedBox(
+      height: 14,
+      child: LayoutBuilder(builder: (context, c) {
+        final w = c.maxWidth;
+        return Stack(
+          clipBehavior: Clip.none,
+          children: [
+            Positioned(left: 0, right: 0, top: 6, child: Container(height: 2, decoration: BoxDecoration(color: colors.mutedForeground.withValues(alpha: 0.3), borderRadius: BorderRadius.circular(1)))),
+            Positioned(left: w * 0.6, top: 2, child: Container(width: 1, height: 10, color: colors.mutedForeground.withValues(alpha: 0.5))),
+            for (final g in scores)
+              Positioned(
+                left: gradePosition(g) * w - 6,
+                top: 1,
+                child: Container(width: 12, height: 12, decoration: BoxDecoration(shape: BoxShape.circle, color: gradeDotColor(context, g), border: Border.all(color: colors.background, width: 2))),
+              ),
+            if (average != null)
+              Positioned(
+                left: gradePosition(average!) * w - 2.5,
+                top: -1,
+                child: Container(width: 5, height: 16, decoration: BoxDecoration(color: tokens.ink, borderRadius: BorderRadius.circular(2), border: Border.all(color: colors.background, width: 1))),
+              ),
           ],
-          const SizedBox(height: 20),
-          bar('Your score', score),
-          const SizedBox(height: 14),
-          bar('Class average', classAvg),
-          if ((grade?.weighting ?? 1) != 1) ...[
-            const SizedBox(height: 16),
-            Text('Weighting: ${formatGrade(grade!.weighting ?? 1)}',
-                style: typography.sm.copyWith(color: colors.mutedForeground)),
-          ],
-        ],
-      ),
-    );
-  }
-}
-
-class _RefreshableEmpty extends StatelessWidget {
-  final Future<void> Function() onRefresh;
-  final String text;
-  const _RefreshableEmpty({required this.onRefresh, required this.text});
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = context.theme.colors;
-    return RefreshIndicator(
-      onRefresh: onRefresh,
-      child: ListView(
-        physics: const AlwaysScrollableScrollPhysics(),
-        children: [
-          SizedBox(
-            height: 360,
-            child: Center(child: Text(text, style: TextStyle(color: colors.mutedForeground))),
-          ),
-        ],
-      ),
+        );
+      }),
     );
   }
 }

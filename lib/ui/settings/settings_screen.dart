@@ -16,6 +16,9 @@ import '../../services/theme_service.dart';
 import 'notification_settings_section.dart';
 import 'privacy_settings_section.dart';
 import 'update_settings_section.dart';
+import 'settings_card.dart';
+import '../core/theme/schuly_theme.dart';
+import '../core/ui/kit.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -27,117 +30,66 @@ class SettingsScreen extends StatefulWidget {
 class _SettingsScreenState extends State<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
-    final server = BackendConfig.isCustom ? BackendConfig.url : 'Schuly Cloud';
+    final t = AppLocalizations.of(context)!;
+    final typography = context.theme.typography;
+    final colors = context.theme.colors;
+    final server = BackendConfig.isCustom ? BackendConfig.url : t.serverCloud;
+    final isPrivate = AppModeService.instance.isPrivate;
 
-    return FScaffold(
-      header: FHeader.nested(
-        title: const Text('Settings'),
-        prefixes: [
-          FHeaderAction.back(onPress: () => Navigator.of(context).pop()),
-        ],
-      ),
-      child: ListView(
-        padding: EdgeInsets.fromLTRB(16, 8, 16, 24 + MediaQuery.viewPaddingOf(context).bottom),
-        children: [
-          if (!AppModeService.instance.isPrivate) ...[
-            const _SectionLabel('Account'),
-            Padding(
-              padding: const EdgeInsets.only(bottom: 8),
-              child: FTile(
-                prefix: const Icon(FIcons.circleUser),
-                title: const Text('Manage account'),
-                subtitle: const Text('Profile, password & security'),
-                suffix: const Icon(FIcons.externalLink),
+    return SubPage(
+      backLabel: t.tabAccount,
+      title: t.settingsTitle,
+      children: [
+        const _AppearanceCard(),
+        const NotificationSettingsSection(),
+        if (!isPrivate)
+          SettingsCard(
+            title: t.settingsSecurity,
+            description: t.settingsSecurityDetail,
+            children: [
+              FTile(
+                title: Text(t.settingsManageAccount),
+                subtitle: Text(t.settingsManageAccountDetail),
+                suffix: FButton(style: FButtonStyle.outline(), mainAxisSize: MainAxisSize.min, onPress: _openAccountConsole, child: Text(t.settingsOpen)),
                 onPress: _openAccountConsole,
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(bottom: 8),
-              child: FTile(
-                prefix: const Icon(FIcons.image),
-                title: const Text('Profile picture'),
-                subtitle: const Text('Upload or change your picture'),
-                suffix: const Icon(FIcons.externalLink),
+              FTile(
+                title: Text(t.settingsProfilePicture),
+                subtitle: Text(t.settingsProfilePictureDetail),
+                suffix: FButton(style: FButtonStyle.outline(), mainAxisSize: MainAxisSize.min, onPress: _openProfilePicture, child: Text(t.settingsChange)),
                 onPress: _openProfilePicture,
               ),
-            ),
-            const SizedBox(height: 12),
-          ],
-          if (!AppModeService.instance.isPrivate) ...[
-            const _SectionLabel('Connections'),
-            Padding(
-              padding: const EdgeInsets.only(bottom: 8),
-              child: FTile(
-                prefix: const Icon(FIcons.link),
-                title: const Text('Schools & accounts'),
-                subtitle: const Text('Link, re-sign-in and unlink your accounts'),
-                suffix: const Icon(FIcons.chevronRight),
+              FTile(
+                title: Text(t.accountsTitle),
+                subtitle: Text(t.settingsAccountsDetail),
+                suffix: chevron(),
                 onPress: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const SchoolsAccountsScreen())),
               ),
-            ),
-          ],
-          const SizedBox(height: 12),
-          const _SectionLabel('Appearance'),
-          AnimatedBuilder(
-            animation: ThemeService.instance,
-            builder: (context, _) {
-              final mode = ThemeService.instance.mode;
-              final colors = context.theme.colors;
-              Widget modeTile(ThemeMode value, String label) => Padding(
-                    padding: const EdgeInsets.only(bottom: 8),
-                    child: FTile(
-                      title: Text(label),
-                      suffix: mode == value
-                          ? Icon(FIcons.check, color: colors.primary)
-                          : null,
-                      onPress: () => ThemeService.instance.setMode(value),
-                    ),
-                  );
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  modeTile(ThemeMode.system, 'System'),
-                  modeTile(ThemeMode.light, 'Light'),
-                  modeTile(ThemeMode.dark, 'Dark'),
-                ],
-              );
-            },
+            ],
           ),
-          const SizedBox(height: 12),
-          const NotificationSettingsSection(),
-          const _SectionLabel('Server'),
-          Padding(
-            padding: const EdgeInsets.only(bottom: 8),
-            child: FTile(
-              prefix: const Icon(FIcons.server),
-              title: const Text('Backend server'),
+        SettingsCard(
+          title: t.settingsServer,
+          children: [
+            FTile(
+              title: Text(t.settingsBackend),
               subtitle: Text(server),
-              suffix: const Icon(FIcons.chevronRight),
+              suffix: FButton(style: FButtonStyle.outline(), mainAxisSize: MainAxisSize.min, onPress: _openServerDialog, child: Text(t.settingsChange)),
               onPress: _openServerDialog,
             ),
-          ),
-          const SizedBox(height: 12),
-          const PrivacySettingsSection(),
-          const UpdateSettingsSection(),
-          const _SectionLabel('About'),
-          FTile(
-            prefix: const Icon(FIcons.fileText),
-            title: const Text('Open-source licenses'),
-            suffix: const Icon(FIcons.chevronRight),
-            onPress: () => showLicensePage(
-              context: context,
-              applicationName: 'Schuly',
+            FTile(
+              title: Text(t.settingsLicences),
+              suffix: chevron(),
+              onPress: () => showLicensePage(context: context, applicationName: t.appTitle),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(4, 12, 4, 0),
-            child: Text(
-              AppLocalizations.of(context)!.trademarkNotice,
-              style: context.theme.typography.xs.copyWith(color: context.theme.colors.mutedForeground),
-            ),
-          ),
-        ],
-      ),
+          ],
+        ),
+        const UpdateSettingsSection(),
+        const PrivacySettingsSection(),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(4, 0, 4, 0),
+          child: Text(t.trademarkNotice, style: typography.xs.copyWith(color: colors.mutedForeground)),
+        ),
+      ],
     );
   }
 
@@ -145,7 +97,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final url = Uri.parse('${BackendConfig.url}/settings');
     if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
       if (mounted) {
-        showFToast(context: context, title: const Text("Couldn't open the account page"));
+        showFToast(context: context, title: Text(AppLocalizations.of(context)!.settingsOpenFailed));
       }
     }
   }
@@ -154,7 +106,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final url = Uri.parse('${BackendConfig.url}/settings');
     if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
       if (mounted) {
-        showFToast(context: context, title: const Text("Couldn't open the picture page"));
+        showFToast(context: context, title: Text(AppLocalizations.of(context)!.settingsOpenFailed));
       }
       return;
     }
@@ -168,21 +120,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
     if (changed != true || !mounted) return;
     Navigator.of(context).popUntil((route) => route.isFirst);
-  }
-}
-
-class _SectionLabel extends StatelessWidget {
-  final String text;
-  const _SectionLabel(this.text);
-  @override
-  Widget build(BuildContext context) {
-    final c = context.theme.colors;
-    final t = context.theme.typography;
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(4, 0, 4, 8),
-      child: Text(text.toUpperCase(),
-          style: t.xs.copyWith(color: c.mutedForeground, fontWeight: FontWeight.w600, letterSpacing: 0.5)),
-    );
   }
 }
 
@@ -224,7 +161,7 @@ class _ServerDialogState extends State<_ServerDialog> {
           (uri.isScheme('http') || uri.isScheme('https')) &&
           uri.host.isNotEmpty;
       if (!valid) {
-        setState(() => _error = 'Enter a valid http(s) URL.');
+        setState(() => _error = AppLocalizations.of(context)!.serverInvalidUrl);
         return;
       }
       if (BackendConfig.isInsecure(raw)) {
@@ -240,7 +177,7 @@ class _ServerDialogState extends State<_ServerDialog> {
       if (version == null) {
         setState(() {
           _busy = false;
-          _error = "Couldn't reach a Schuly backend at this URL.";
+          _error = AppLocalizations.of(context)!.serverUnreachable;
         });
         return;
       }
@@ -265,6 +202,7 @@ class _ServerDialogState extends State<_ServerDialog> {
   Widget build(BuildContext context) {
     final colors = context.theme.colors;
     final typography = context.theme.typography;
+    final t = AppLocalizations.of(context)!;
 
     Widget option(String label, String sub, bool selected, VoidCallback onTap) {
       return GestureDetector(
@@ -275,11 +213,7 @@ class _ServerDialogState extends State<_ServerDialog> {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Icon(
-                selected ? FIcons.circleCheck : FIcons.circle,
-                size: 20,
-                color: selected ? colors.primary : colors.mutedForeground,
-              ),
+              FRadio(value: selected, onChange: _busy ? null : (_) => onTap()),
               const SizedBox(width: 10),
               Expanded(
                 child: Column(
@@ -301,30 +235,30 @@ class _ServerDialogState extends State<_ServerDialog> {
 
     return FDialog(
       animation: widget.animation,
-      title: const Text('Backend server'),
+      title: Text(t.settingsBackend),
       body: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          option('Schuly Cloud', 'The official Schuly server', !_custom,
+          option(t.serverCloud, t.serverCloudDetail, !_custom,
               () => setState(() {
                     _custom = false;
                     _error = null;
                   })),
-          option('Self-hosted', 'Your own Schuly backend', _custom,
+          option(t.serverSelfHosted, t.serverSelfHostedDetail, _custom,
               () => setState(() => _custom = true)),
           if (_custom) ...[
             const SizedBox(height: 10),
             FTextField(
               control: FTextFieldControl.managed(controller: _urlCtrl),
-              label: const Text('Backend URL'),
+              label: Text(t.serverUrl),
               hint: 'https://schuly.example.com',
               autocorrect: false,
             ),
             if (BackendConfig.isInsecure(_urlCtrl.text)) ...[
               const SizedBox(height: 6),
               Text(
-                'Use https:// (http only works for localhost)',
+                t.serverHttps,
                 style: typography.xs.copyWith(color: colors.destructive),
               ),
             ],
@@ -334,7 +268,7 @@ class _ServerDialogState extends State<_ServerDialog> {
             Text(_error!, style: typography.sm.copyWith(color: colors.error)),
           ],
           const SizedBox(height: 12),
-          Text('Changing the server signs you out.',
+          Text(t.serverSignsOut,
               style: typography.xs.copyWith(color: colors.mutedForeground)),
         ],
       ),
@@ -342,13 +276,112 @@ class _ServerDialogState extends State<_ServerDialog> {
         FButton(
           style: FButtonStyle.outline(),
           onPress: _busy ? null : () => Navigator.of(context).pop(false),
-          child: const Text('Cancel'),
+          child: Text(t.cancel),
         ),
         FButton(
           onPress: _busy ? null : _save,
-          child: Text(_busy ? 'Checking...' : 'Save'),
+          child: Text(_busy ? t.serverChecking : t.save),
         ),
       ],
+    );
+  }
+}
+
+/// Appearance: the six accent swatches and System, Light or Dark.
+class _AppearanceCard extends StatelessWidget {
+  const _AppearanceCard();
+
+  @override
+  Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context)!;
+    final typography = context.theme.typography;
+    final colors = context.theme.colors;
+    return AnimatedBuilder(
+      animation: ThemeService.instance,
+      builder: (context, _) {
+        final svc = ThemeService.instance;
+        final brightness = colors.brightness;
+        return SettingsCard(
+          title: t.settingsAppearance,
+          description: t.settingsAppearanceDetail,
+          header: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(8, 6, 8, 10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [for (final a in AppAccent.values) AccentSwatch(accent: a, brightness: brightness, selected: a == svc.accent, label: accentName(t, a), onPress: () => svc.setAccent(a))],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(14, 0, 14, 12),
+                child: Text.rich(TextSpan(children: [
+                  TextSpan(text: '${t.settingsAccent} · '),
+                  TextSpan(text: accentName(t, svc.accent), style: TextStyle(color: colors.foreground, fontWeight: FontWeight.w500)),
+                ]), style: typography.sm.copyWith(color: colors.mutedForeground)),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(14, 0, 14, 14),
+                child: Segmented<ThemeMode>(
+                  value: svc.mode,
+                  onChange: svc.setMode,
+                  segments: [(ThemeMode.system, t.settingsThemeSystem), (ThemeMode.light, t.settingsThemeLight), (ThemeMode.dark, t.settingsThemeDark)],
+                ),
+              ),
+            ],
+          ),
+          children: const [],
+        );
+      },
+    );
+  }
+}
+
+String accentName(AppLocalizations t, AppAccent a) => switch (a) {
+      AppAccent.zinc => t.accentZinc,
+      AppAccent.blue => t.accentBlue,
+      AppAccent.violet => t.accentViolet,
+      AppAccent.green => t.accentGreen,
+      AppAccent.orange => t.accentOrange,
+      AppAccent.rose => t.accentRose,
+    };
+
+/// One accent colour: a filled circle, ringed with a check mark when chosen.
+class AccentSwatch extends StatelessWidget {
+  const AccentSwatch({super.key, required this.accent, required this.brightness, required this.selected, required this.label, required this.onPress});
+
+  final AppAccent accent;
+  final Brightness brightness;
+  final bool selected;
+  final String label;
+  final VoidCallback onPress;
+
+  @override
+  Widget build(BuildContext context) {
+    final c = accent.swatch(brightness);
+    return FTappable(
+      onPress: onPress,
+      selected: selected,
+      semanticsLabel: label,
+      builder: (context, states, _) => SizedBox(
+        width: 44,
+        height: 44,
+        child: Center(
+          child: Container(
+            width: 26,
+            height: 26,
+            decoration: BoxDecoration(
+              color: c,
+              shape: BoxShape.circle,
+              boxShadow: selected
+                  ? [BoxShadow(color: context.tokens.card, spreadRadius: 2), BoxShadow(color: c, spreadRadius: 4)]
+                  : [BoxShadow(color: context.theme.colors.foreground.withValues(alpha: 0.12), spreadRadius: 1)],
+            ),
+            child: selected ? Icon(FIcons.check, size: 14, color: accent.swatchCheck(brightness)) : null,
+          ),
+        ),
+      ),
     );
   }
 }

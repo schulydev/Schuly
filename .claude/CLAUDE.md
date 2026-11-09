@@ -16,9 +16,20 @@ Minimal Flutter app. UI built with [Forui](https://forui.dev) (`FTheme` + `F*` w
 
 ## UI conventions
 
-Lists (Settings, Home, Grades, Absences, Account, ...) are individually spaced outlined
-`FTile`s under a section label (small, muted, uppercase) - never `FTileGroup`. Use Lucide
-icons (`FIcons`) for prefixes/suffixes, never Material icons or widgets.
+The look follows the web app (spartan "nova" dark tokens, Geist, radius 10). Tokens and the
+six accents live in `lib/ui/core/theme/schuly_theme.dart` and are applied through
+`FThemeData`, so use Forui's own widgets and let the theme style them; only draw custom
+widgets where Forui has nothing (timeline, week lanes, grade dot line, ID card).
+
+- Lists are `FTileGroup`s of `FTile`s (bordered card, hairlines between rows) under a
+  section heading (`SectionHead` in `lib/ui/core/ui/kit.dart`).
+- The accent (`context.tokens.ink`, `colors.primary`) marks only what is active. Status
+  colours (good, warn, bad) and calendar colours never follow it.
+- Icons only in the tab bar, on "Report absence", as chevrons on rows that open something,
+  as check marks in steps and swatches, and on "Turn over". No icons on headings, tiles or
+  ordinary rows. Lucide (`FIcons`) only, never Material icons or widgets.
+- Every Home list shows at most `kHomeMaxItems` (3) items.
+- Dialog-like flows are bottom sheets (`SchulySheet` in `lib/ui/core/ui/sheet.dart`).
 
 ## Code formatting
 

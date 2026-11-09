@@ -1,73 +1,96 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' show MaterialPageRoute;
+import 'package:flutter/widgets.dart';
 import 'package:forui/forui.dart';
-import 'package:schuly_api/schuly_api.dart';
 
 import '../../config/backend_config.dart';
+import '../../l10n/app_localizations.dart';
 import '../../services/active_account_service.dart';
 import '../../services/api_client.dart';
-import '../../services/api_error.dart';
+import '../../services/app_mode_service.dart';
+import '../../services/linked_accounts_controller.dart';
+import '../../services/linking_service.dart';
 import '../../services/school_data_service.dart';
-import '../../services/toast_service.dart';
-import '../classes/class_detail_screen.dart';
+import '../../services/totp_vault.dart';
+import '../../services/update/update_service.dart';
+import '../authenticator/authenticator_vault_screen.dart';
+import '../core/dates.dart';
+import '../core/theme/schuly_theme.dart';
+import '../core/ui/kit.dart';
+import '../core/ui/sheet.dart';
+import '../dashboard/dashboard_scope.dart';
+import '../dashboard/schools_sheet.dart';
 import '../documents/documents_page.dart';
+import '../linking/schools_accounts_screen.dart';
+import '../settings/settings_screen.dart';
+import 'student_id_sheet.dart';
+import 'teachers_screen.dart';
 
+/// Account: the Schuly account on top; below it what belongs to the school picked in the Schools sheet (the
+/// Lernendenausweis, documents, teachers and contact details); then schools and accounts, the authenticator,
+/// settings and sign-out.
 class AccountPage extends StatefulWidget {
   final String? pictureUrl;
   final String? userName;
+  final String? userEmail;
   final VoidCallback onSignOut;
   final bool visible;
   final ActiveAccountService? accountService;
+  final LinkedAccountsController? linkedAccounts;
   final Future<Map<String, dynamic>?> Function(String path)? fetchJson;
-  const AccountPage({
-    super.key,
-    required this.pictureUrl,
-    required this.userName,
-    required this.onSignOut,
-    this.visible = true,
-    this.accountService,
-    this.fetchJson,
-  });
+  const AccountPage({super.key, required this.pictureUrl, required this.userName, this.userEmail, required this.onSignOut, this.visible = true, this.accountService, this.linkedAccounts, this.fetchJson});
 
   @override
   State<AccountPage> createState() => _AccountPageState();
 }
 
 class _AccountPageState extends State<AccountPage> {
+  /// The school connection's plugin version, shown in the version line.
   String? _version;
-  bool _syncing = false;
-  String? _syncMsg;
   DateTime? _lastSync;
   String? _syncStatus;
   String? _syncError;
+  int? _codes;
   (String?, String?, String?) _pluginKey = (null, null, null);
 
   ActiveAccountService get _accountService => widget.accountService ?? ActiveAccountService.instance;
+  LinkedAccountsController get _linked => widget.linkedAccounts ?? LinkedAccountsController.instance;
 
   @override
   void initState() {
     super.initState();
     _accountService.addListener(_onActiveChanged);
+    SchoolDataService.instance.addListener(_onData);
+    _linked.addListener(_onData);
     _pluginKey = _currentPluginKey();
     _loadVersion();
     _loadSyncStatus();
+    _loadCodes();
   }
 
   @override
   void dispose() {
     _accountService.removeListener(_onActiveChanged);
+    SchoolDataService.instance.removeListener(_onData);
+    _linked.removeListener(_onData);
     super.dispose();
+  }
+
+  void _onData() {
+    if (mounted) setState(() {});
   }
 
   @override
   void didUpdateWidget(covariant AccountPage oldWidget) {
     super.didUpdateWidget(oldWidget);
-    // This page lives inside a dashboard IndexedStack, so it can go from
-    // hidden to visible without ever being rebuilt for a new active school -
-    // only the tab index changes. Catch the case where plugin detection
-    // finished while the tab was hidden and nothing ever fetched.
-    if (widget.visible && !oldWidget.visible && _version == null && _syncStatus == null && _lastSync == null) {
-      _loadVersion();
-      _loadSyncStatus();
+    // This page lives inside a dashboard IndexedStack, so it can go from hidden to visible without ever being rebuilt
+    // for a new active school - only the tab index changes. Catch the case where plugin detection finished while the
+    // tab was hidden and nothing ever fetched.
+    if (widget.visible && !oldWidget.visible) {
+      _loadCodes();
+      if (_version == null && _syncStatus == null && _lastSync == null) {
+        _loadVersion();
+        _loadSyncStatus();
+      }
     }
   }
 
@@ -77,6 +100,7 @@ class _AccountPageState extends State<AccountPage> {
   }
 
   void _onActiveChanged() {
+    if (mounted) setState(() {});
     final key = _currentPluginKey();
     if (key == _pluginKey) return;
     _pluginKey = key;
@@ -110,8 +134,7 @@ class _AccountPageState extends State<AccountPage> {
 
   Future<void> _loadVersion() async {
     try {
-      final active = _accountService.active;
-      final base = active?.pluginBasePath;
+      final base = _accountService.active?.pluginBasePath;
       if (base == null || base.isEmpty) return;
       final data = await _fetchJson('$base/status');
       if (mounted) setState(() => _version = data?['version']?.toString());
@@ -120,244 +143,213 @@ class _AccountPageState extends State<AccountPage> {
     }
   }
 
-  Future<void> _syncNow() async {
-    final active = _accountService.active;
-    if (active == null) {
-      setState(() => _syncMsg = 'No connected account to sync');
-      return;
-    }
-    final target = await _accountService.resolvePluginTarget(active);
-    if (target == null) {
-      if (!mounted) return;
-      setState(() => _syncMsg = 'No connected account to sync');
-      return;
-    }
-    setState(() {
-      _syncing = true;
-      _syncMsg = null;
-    });
+  Future<void> _loadCodes() async {
     try {
-      await ApiClient.instance.dio.post<dynamic>(
-        '${target.basePath}/accounts/${target.accountId}/sync',
-        options: ApiClient.handled(),
-      );
-      await SchoolDataService.instance.refresh();
-      await _loadSyncStatus();
-      if (mounted) setState(() => _syncMsg = 'Synced just now');
-      ToastService.success('Synced', 'Fetched fresh data from the provider.');
-    } catch (e) {
-      // One path for every failure: the reason on the row, and a toast because
-      // the user may have scrolled away from it.
-      if (mounted) setState(() => _syncMsg = ApiError.describe(e));
-      ToastService.error('Sync failed', e);
-    } finally {
-      if (mounted) setState(() => _syncing = false);
-    }
+      final entries = await TotpVault.instance.load();
+      if (mounted) setState(() => _codes = entries.length);
+    } catch (_) {}
+  }
+
+  Future<void> _refresh() async {
+    await SchoolDataService.instance.refresh();
+    await _loadVersion();
+    await _loadSyncStatus();
+    await _loadCodes();
+  }
+
+  void _push(Widget screen) => Navigator.of(context).push(MaterialPageRoute(builder: (_) => screen)).then((_) => _loadCodes());
+
+  /// The one-line status under "Schools & accounts": a sign-in to renew first, then a sync error, then the last sync.
+  Widget? _accountsStatus(AppLocalizations t) {
+    final tokens = context.tokens;
+    final colors = context.theme.colors;
+    final accounts = _linked.accounts.where((a) => !a.isProviderError).toList();
+    final expired = accounts.where((a) => a.status == LinkedAccountStatus.expired || a.status == LinkedAccountStatus.error).length;
+    if (expired > 0) return StatusLabel(t.accountsNeedSignIn(expired), color: tokens.warn);
+    if (_linked.syncing) return StatusLabel(t.accountsSyncing, color: colors.mutedForeground, dot: tokens.ink);
+    if (_syncError?.isNotEmpty ?? false) return StatusLabel(_syncError!, color: tokens.bad);
+    if (_lastSync != null) return StatusLabel(_syncStatus?.isNotEmpty == true ? '${t.accountsSynced(_ago(t, _lastSync!))} · $_syncStatus' : t.accountsSynced(_ago(t, _lastSync!)), color: colors.mutedForeground, dot: tokens.good);
+    if (_pluginKey.$2 != null) return StatusLabel(t.accountsNeverSynced, color: colors.mutedForeground, dot: colors.mutedForeground);
+    return null;
+  }
+
+  static String _ago(AppLocalizations t, DateTime when) {
+    final d = DateTime.now().difference(when);
+    if (d.inMinutes < 1) return t.agoJustNow;
+    if (d.inMinutes < 60) return t.agoMinutes(d.inMinutes);
+    if (d.inHours < 24) return t.agoHours(d.inHours);
+    return '${when.day}.${when.month}.${when.year}';
+  }
+
+  Future<void> _confirmSignOut() async {
+    final t = AppLocalizations.of(context)!;
+    final ok = await showSchulySheet<bool>(
+      context,
+      builder: (ctx) => SchulySheet(
+        title: t.signOutQuestion,
+        subtitle: AppModeService.instance.isPrivate ? t.signOutPrivateBody : t.signOutBody,
+        footer: SheetButtons(
+          left: FButton(style: blockButton(FButtonStyle.outline), onPress: () => Navigator.of(ctx).pop(false), child: Text(t.cancel)),
+          right: FButton(style: blockButton(FButtonStyle.destructive), onPress: () => Navigator.of(ctx).pop(true), child: Text(t.signOut)),
+        ),
+      ),
+    );
+    if (ok == true) widget.onSignOut();
   }
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context)!;
     final colors = context.theme.colors;
     final typography = context.theme.typography;
-    final me = SchoolDataService.instance.me;
-    final classes = me?.classes ?? const <UserClassDto>[];
+    final dates = Dates(context);
+    final svc = SchoolDataService.instance;
+    final me = svc.me;
+    final isPrivate = AppModeService.instance.isPrivate;
+    final scope = DashboardScope.maybeOf(context);
+    final active = _accountService.active;
 
-    final fullName = me == null
-        ? (widget.userName ?? '-')
-        : '${me.firstName} ${me.lastName}'.trim();
-    final initial = fullName.isNotEmpty ? fullName.characters.first.toUpperCase() : '?';
-    final fallback = Text(initial,
-        style: TextStyle(color: colors.mutedForeground, fontWeight: FontWeight.w600));
-    final providerPfp = BackendConfig.resolveUrl(me?.profilePictureUrl);
-    final avatarUrl = providerPfp ?? widget.pictureUrl;
+    final name = isPrivate ? (scope?.privateTitle ?? widget.userName) : (widget.userName ?? scope?.userName);
+    final email = isPrivate ? null : (widget.userEmail ?? scope?.userEmail);
+    final schoolPicture = BackendConfig.resolveUrl(me?.profilePictureUrl);
+    final linkedCount = _linked.accounts.where((a) => !a.isProviderError).length;
+    final version = UpdateService.instance.installedVersion;
+    final server = BackendConfig.isCustom ? BackendConfig.url : t.serverCloud;
 
-    return RefreshIndicator(
-      onRefresh: () async {
-        await SchoolDataService.instance.refresh();
-        await _loadVersion();
-        await _loadSyncStatus();
-      },
-      child: ListView(
-      physics: const AlwaysScrollableScrollPhysics(),
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
+    return PageList(
+      onRefresh: _refresh,
+      bottom: 32,
       children: [
-        Row(
+        const SchoolHeader(),
+        PageTitle(t.tabAccount),
+        FTileGroup(
+          style: cardGroup,
           children: [
-            (avatarUrl == null || avatarUrl.isEmpty)
-                ? FAvatar.raw(size: 56, child: fallback)
-                : FAvatar(size: 56, image: NetworkImage(avatarUrl), fallback: fallback),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(
+            FTile(
+              style: (s) => s.copyWith(contentStyle: (c) => c.copyWith(padding: const EdgeInsetsDirectional.all(16), prefixIconSpacing: 14)),
+              prefix: Avatar(url: widget.pictureUrl ?? scope?.pictureUrl, name: name, size: 60),
+              title: Text(name?.isNotEmpty == true ? name! : t.tabAccount, style: typography.xl.copyWith(fontWeight: FontWeight.w600, letterSpacing: -0.18)),
+              subtitle: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(fullName.isEmpty ? 'Account' : fullName,
-                      style: typography.lg.copyWith(fontWeight: FontWeight.w700)),
-                  if (me?.role != null)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 4),
-                      child: _Badge(_roleLabel(me!.role)),
-                    ),
+                  if (email != null) Text(email),
+                  Text(isPrivate ? t.accountPrivateMode : t.accountSchuly),
                 ],
               ),
             ),
           ],
         ),
-        const SizedBox(height: 20),
-        _SectionLabel('Profile'),
-        _InfoTile(icon: FIcons.mail, label: 'Email', value: me?.email),
-        const SizedBox(height: 20),
-        if (classes.isNotEmpty) ...[
-          _SectionLabel('My classes'),
-          for (final c in classes)
-            Padding(
-              padding: const EdgeInsets.only(bottom: 8),
-              child: FTile(
-                prefix: const Icon(FIcons.users),
-                title: Text(c.className),
-                suffix: const Icon(FIcons.chevronRight),
-                onPress: () => Navigator.of(context).push(MaterialPageRoute(
-                  builder: (_) => ClassDetailScreen(
-                    classId: c.classId,
-                    title: c.className,
-                  ),
-                )),
-              ),
+        SectionHead(t.accountThisSchool, link: t.accountSwitch, onLink: () => openSchoolsSheet(context)),
+        FTileGroup(
+          style: cardGroup,
+          divider: FItemDivider.full,
+          children: [
+            FTile(
+              style: (s) => s.copyWith(contentStyle: (c) => c.copyWith(padding: const EdgeInsetsDirectional.fromSTEB(16, 14, 16, 14))),
+              title: Text(active?.fullName?.isNotEmpty == true ? active!.fullName! : (active?.name ?? me?.schoolName ?? '-'), style: typography.base.copyWith(fontWeight: FontWeight.w600)),
+              subtitle: active?.name != null && active?.fullName?.isNotEmpty == true ? Text(active!.name) : null,
             ),
+            FTile(
+              style: (s) => s.copyWith(contentStyle: (c) => c.copyWith(padding: const EdgeInsetsDirectional.fromSTEB(16, 14, 16, 14), prefixIconSpacing: 10)),
+              prefix: const _MiniId(),
+              title: Text(t.studentIdTitle),
+              details: Text(t.accountShow),
+              suffix: chevron(),
+              enabled: me != null,
+              onPress: me == null ? null : () => showStudentId(context, StudentId.fromProfile(me, schoolName: active?.fullName ?? me.schoolName, photoUrl: schoolPicture ?? widget.pictureUrl)),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        FTileGroup(
+          divider: FItemDivider.full,
+          children: [
+            FTile(
+              title: Text(t.accountDocuments),
+              details: svc.documents.isEmpty ? null : Text('${svc.documents.length}'),
+              suffix: chevron(),
+              onPress: () => _push(const DocumentsScreen()),
+            ),
+            FTile(
+              title: Text(t.accountTeachers),
+              details: svc.teachers.isEmpty ? null : Text('${svc.teachers.length}'),
+              suffix: chevron(),
+              onPress: () => _push(const TeachersScreen()),
+            ),
+          ],
+        ),
+        if (me != null) ...[
           const SizedBox(height: 12),
+          FTileGroup(
+            divider: FItemDivider.full,
+            children: [
+              keyValueTile(context, t.accountEmail, me.email.isEmpty ? '-' : me.email),
+              if (me.entryDate != null) keyValueTile(context, t.accountSince, dates.full(DateTime(me.entryDate!.year, me.entryDate!.month, me.entryDate!.day))),
+            ],
+          ),
         ],
-        if (SchoolDataService.instance.teachers.isNotEmpty) ...[
-          _SectionLabel('Teachers'),
-          for (final t in SchoolDataService.instance.teachers)
-            Padding(
-              padding: const EdgeInsets.only(bottom: 8),
-              child: FTile(
-                prefix: const Icon(FIcons.user),
-                title: Text('${t.firstName} ${t.lastName}'.trim()),
-                subtitle: t.code.isNotEmpty ? Text(t.code) : null,
+        const SizedBox(height: 26),
+        FTileGroup(
+          divider: FItemDivider.full,
+          children: [
+            if (!isPrivate)
+              FTile(
+                title: Text(t.accountsTitle),
+                subtitle: _accountsStatus(t),
+                details: linkedCount == 0 ? null : Text('$linkedCount'),
+                suffix: chevron(),
+                onPress: () => _push(const SchoolsAccountsScreen()),
               ),
+            FTile(
+              title: Text(t.authenticatorTitle),
+              details: _codes == null || _codes == 0 ? null : Text(t.authenticatorCodes(_codes!)),
+              suffix: chevron(),
+              onPress: () => _push(const AuthenticatorVaultScreen()),
             ),
-          const SizedBox(height: 12),
-        ],
-        _SectionLabel('Documents'),
-        Padding(
-          padding: const EdgeInsets.only(bottom: 12),
-          child: FTile(
-            prefix: const Icon(FIcons.folder),
-            title: const Text('Documents'),
-            details: SchoolDataService.instance.documents.isNotEmpty
-                ? Text('${SchoolDataService.instance.documents.length}')
-                : null,
-            suffix: const Icon(FIcons.chevronRight),
-            onPress: () => Navigator.of(context).push(
-                MaterialPageRoute(builder: (_) => const DocumentsScreen())),
-          ),
-        ),
-        _SectionLabel('Plugin'),
-        Padding(
-          padding: const EdgeInsets.only(bottom: 8),
-          child: FTile(
-            prefix: _syncing
-                ? const FCircularProgress()
-                : const Icon(FIcons.refreshCw),
-            title: const Text('Sync now'),
-            subtitle: _syncMsg != null
-                ? Text(_syncMsg!)
-                : const Text('Fetch fresh data from the provider'),
-            onPress: _syncing ? null : _syncNow,
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(bottom: 8),
-          child: FTile(
-            prefix: Icon(
-              (_syncError?.isNotEmpty ?? false) ? FIcons.circleAlert : FIcons.circleCheck,
-              color: (_syncError?.isNotEmpty ?? false) ? colors.destructive : null,
+            FTile(
+              title: Text(t.settingsTitle),
+              suffix: chevron(),
+              onPress: () => _push(const SettingsScreen()),
             ),
-            title: const Text('Last sync'),
-            subtitle: (_syncError?.isNotEmpty ?? false)
-                ? Text(_syncError!, style: TextStyle(color: colors.destructive))
-                : (_syncStatus != null ? Text(_syncStatus!) : null),
-            details: Text(_lastSync != null ? _fmtSyncTime(_lastSync!) : 'Never'),
-          ),
+          ],
         ),
+        const SizedBox(height: 26),
+        FButton(style: blockButton(FButtonStyle.outline, text: colors.destructive), onPress: _confirmSignOut, child: Text(t.signOut)),
         Padding(
-          padding: const EdgeInsets.only(bottom: 8),
-          child: FTile(
-            prefix: const Icon(FIcons.info),
-            title: const Text('Version'),
-            suffix: Text(_version ?? '-', style: TextStyle(color: colors.mutedForeground)),
+          padding: const EdgeInsets.only(top: 12),
+          child: Text(
+            [
+              version.isEmpty ? t.appTitle : '${t.appTitle} $version',
+              server,
+              if (_version != null) t.accountPluginVersion(_version!),
+            ].join(' · '),
+            textAlign: TextAlign.center,
+            style: typography.xs.copyWith(color: colors.mutedForeground),
           ),
-        ),
-        const SizedBox(height: 4),
-        FButton(
-          prefix: const Icon(FIcons.logOut),
-          onPress: widget.onSignOut,
-          child: const Text('Sign out'),
         ),
       ],
-      ),
-    );
-  }
-
-  static String _fmtSyncTime(DateTime t) {
-    final d = DateTime.now().difference(t);
-    if (d.inMinutes < 1) return 'just now';
-    if (d.inMinutes < 60) return '${d.inMinutes}m ago';
-    if (d.inHours < 24) return '${d.inHours}h ago';
-    return '${t.day}.${t.month}.${t.year}';
-  }
-
-  static String _roleLabel(Roles? r) => switch (r) {
-        Roles.teacher => 'Teacher',
-        _ => 'Student',
-      };
-}
-
-class _SectionLabel extends StatelessWidget {
-  final String text;
-  const _SectionLabel(this.text);
-  @override
-  Widget build(BuildContext context) {
-    final c = context.theme.colors;
-    final t = context.theme.typography;
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(4, 0, 4, 8),
-      child: Text(text.toUpperCase(),
-          style: t.xs.copyWith(color: c.mutedForeground, fontWeight: FontWeight.w600, letterSpacing: 0.5)),
     );
   }
 }
 
-class _InfoTile extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final String? value;
-  const _InfoTile({required this.icon, required this.label, required this.value});
-  @override
-  Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.only(bottom: 8),
-        child: FTile(
-          prefix: Icon(icon),
-          title: Text(label),
-          details: Text((value?.isNotEmpty ?? false) ? value! : '-'),
-        ),
-      );
-}
+/// A tiny ID card drawing in front of "Lernendenausweis".
+class _MiniId extends StatelessWidget {
+  const _MiniId();
 
-class _Badge extends StatelessWidget {
-  final String text;
-  const _Badge(this.text);
   @override
   Widget build(BuildContext context) {
-    final c = context.theme.colors;
+    final muted = context.theme.colors.mutedForeground;
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-      decoration: BoxDecoration(
-        color: c.secondary,
-        borderRadius: BorderRadius.circular(6),
+      width: 30,
+      height: 20,
+      decoration: BoxDecoration(borderRadius: BorderRadius.circular(4), border: Border.all(color: context.tokens.input)),
+      child: Stack(
+        children: [
+          Positioned(left: 3, top: 3, child: Container(width: 8, height: 12, decoration: BoxDecoration(color: muted.withValues(alpha: 0.6), borderRadius: BorderRadius.circular(2)))),
+          Positioned(left: 14, right: 3, top: 5, child: Container(height: 2, color: muted.withValues(alpha: 0.5))),
+          Positioned(left: 14, right: 3, top: 9, child: Container(height: 2, color: muted.withValues(alpha: 0.5))),
+        ],
       ),
-      child: Text(text, style: TextStyle(color: c.secondaryForeground, fontWeight: FontWeight.w600, fontSize: 12)),
     );
   }
 }

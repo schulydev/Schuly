@@ -11,7 +11,9 @@ import '../../l10n/app_localizations.dart';
 import '../../services/api_client.dart';
 import '../../services/app_mode_service.dart';
 import '../../services/toast_service.dart';
+import '../core/ui/kit.dart';
 import '../core/ui/root_screen.dart';
+import 'settings_card.dart';
 
 const _handled = <String, dynamic>{ApiClient.handlesErrors: true};
 
@@ -67,50 +69,32 @@ class _PrivacySettingsSectionState extends State<PrivacySettingsSection> {
 
   @override
   Widget build(BuildContext context) {
-    final colors = context.theme.colors;
-    final typography = context.theme.typography;
     final t = AppLocalizations.of(context)!;
 
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(4, 0, 4, 8),
-            child: Text(
-              t.privacySectionLabel.toUpperCase(),
-              style: typography.xs.copyWith(
-                color: colors.mutedForeground,
-                fontWeight: FontWeight.w600,
-                letterSpacing: 0.5,
-              ),
-            ),
-          ),
-          if (AppModeService.instance.isPrivate)
-            FTile(
-              prefix: const Icon(FIcons.shieldCheck),
-              title: Text(t.privacyPrivateModeTitle),
-              subtitle: Text(t.privacyPrivateModeSubtitle),
-            )
-          else ...[
-            FTile(
-              prefix: const Icon(FIcons.download),
-              title: Text(t.exportDataTitle),
-              subtitle: Text(t.exportDataSubtitle),
-              suffix: _exporting ? const FCircularProgress() : null,
-              onPress: _exporting ? null : _export,
-            ),
-            const SizedBox(height: 8),
-            FTile(
-              prefix: Icon(FIcons.trash2, color: colors.destructive),
-              title: Text(t.deleteAccountTitle, style: TextStyle(color: colors.destructive)),
-              subtitle: Text(t.deleteAccountSubtitle),
-              onPress: _delete,
-            ),
-          ],
-        ],
-      ),
+    if (AppModeService.instance.isPrivate) {
+      return SettingsCard(
+        title: t.privacySectionLabel,
+        children: [FTile(title: Text(t.privacyPrivateModeTitle), subtitle: Text(t.privacyPrivateModeSubtitle))],
+      );
+    }
+    return SettingsCard(
+      title: t.settingsDangerZone,
+      description: t.settingsDangerZoneDetail,
+      danger: true,
+      children: [
+        FTile(
+          title: Text(t.exportDataTitle),
+          subtitle: Text(t.exportDataSubtitle),
+          suffix: FButton(style: FButtonStyle.outline(), mainAxisSize: MainAxisSize.min, onPress: _exporting ? null : _export, child: Text(_exporting ? t.exporting : t.exportAction)),
+          onPress: _exporting ? null : _export,
+        ),
+        FTile(
+          title: Text(t.deleteAccountTitle),
+          subtitle: Text(t.deleteAccountSubtitle),
+          suffix: FButton(style: dangerOutline(context), mainAxisSize: MainAxisSize.min, onPress: _delete, child: Text(t.delete)),
+          onPress: _delete,
+        ),
+      ],
     );
   }
 }
