@@ -57,8 +57,9 @@ class _GradesPageState extends State<GradesPage> {
         t.tabGrades,
         trailing: periods.length > 1
             ? SizedBox(
-                width: 170,
+                width: 190,
                 child: FSelect<int>(
+                  style: compactSelect(context),
                   control: FSelectControl<int>.lifted(value: period, onChange: (k) => setState(() => _period = k ?? period)),
                   items: {for (final k in periods) periodLabel(t, k): k},
                 ),
@@ -216,7 +217,7 @@ class _Scale extends StatelessWidget {
               height: 6,
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(3),
-                child: Row(children: [Expanded(flex: 60, child: ColoredBox(color: tokens.badBackground)), Expanded(flex: 40, child: ColoredBox(color: colors.muted))]),
+                child: Row(crossAxisAlignment: CrossAxisAlignment.stretch, children: [Expanded(flex: 60, child: ColoredBox(color: tokens.badBackground)), Expanded(flex: 40, child: ColoredBox(color: colors.muted))]),
               ),
             ),
             Positioned(left: w * 0.6, top: 3, child: Container(width: 2, height: 16, color: colors.mutedForeground)),

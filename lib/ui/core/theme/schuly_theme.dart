@@ -352,11 +352,12 @@ FThemeData buildSchulyTheme(Brightness brightness, AppAccent accent) {
       focusColor: tokens.ink,
       trackColor: FWidgetStateMap({
         WidgetState.disabled & WidgetState.selected: colors.disable(colors.primary),
-        WidgetState.disabled: colors.disable(brightness == Brightness.dark ? colors.muted : colors.border),
+        WidgetState.disabled: brightness == Brightness.dark ? colors.muted : const Color(0xFFE5E5E5),
         WidgetState.selected: colors.primary,
         WidgetState.any: brightness == Brightness.dark ? colors.muted : const Color(0xFFD4D4D4),
       }),
       thumbColor: FWidgetStateMap({
+        WidgetState.disabled: offThumb.withValues(alpha: 0.45),
         WidgetState.selected: colors.primaryForeground,
         WidgetState.any: offThumb,
       }),

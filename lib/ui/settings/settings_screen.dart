@@ -375,7 +375,7 @@ class AccentSwatch extends StatelessWidget {
               color: c,
               shape: BoxShape.circle,
               boxShadow: selected
-                  ? [BoxShadow(color: context.tokens.card, spreadRadius: 2), BoxShadow(color: c, spreadRadius: 4)]
+                  ? [BoxShadow(color: c, spreadRadius: 4), BoxShadow(color: context.tokens.card, spreadRadius: 2)]
                   : [BoxShadow(color: context.theme.colors.foreground.withValues(alpha: 0.12), spreadRadius: 1)],
             ),
             child: selected ? Icon(FIcons.check, size: 14, color: accent.swatchCheck(brightness)) : null,

@@ -147,7 +147,7 @@
   "@absenceFrom": {
     "description": "Absence reporting: absenceFrom"
   },
-  "absenceTo": "To",
+  "absenceTo": "Until",
   "@absenceTo": {
     "description": "Absence reporting: absenceTo"
   },
@@ -837,7 +837,7 @@
   "settingsSecurity": "Security",
   "settingsSecurityDetail": "How you sign in, and where.",
   "settingsManageAccount": "Manage account",
-  "settingsManageAccountDetail": "Password, two-factor and devices, on the web",
+  "settingsManageAccountDetail": "Password, two-factor, devices",
   "settingsProfilePicture": "Profile picture",
   "settingsProfilePictureDetail": "Upload or change your picture",
   "settingsAccountsDetail": "Link, re-sign-in and unlink your accounts",

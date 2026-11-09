@@ -81,7 +81,12 @@ class _AbsencesPageState extends State<AbsencesPage> {
     var group = <FItem>[];
     void flush() {
       if (group.isEmpty) return;
-      rows.add(FItemGroup(divider: FItemDivider.full, children: group));
+      rows.add(FItemGroup(
+        divider: FItemDivider.full,
+        // Rows sit flush with the page gutter, as in the mockup.
+        style: (s) => s.copyWith(itemStyle: (i) => i.copyWith(contentStyle: (c) => c.copyWith(padding: const EdgeInsetsDirectional.fromSTEB(0, 11, 0, 11)))),
+        children: group,
+      ));
       group = [];
     }
 
@@ -119,8 +124,9 @@ class _AbsencesPageState extends State<AbsencesPage> {
               bottom: 0,
               trailing: periods.length > 1
                   ? SizedBox(
-                      width: 160,
+                      width: 190,
                       child: FSelect<int>(
+                        style: compactSelect(context),
                         control: FSelectControl<int>.lifted(value: period, onChange: (k) => setState(() => _period = k ?? period)),
                         items: {for (final k in periods) periodLabel(t, k): k},
                       ),

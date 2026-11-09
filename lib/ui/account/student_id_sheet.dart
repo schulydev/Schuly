@@ -107,7 +107,6 @@ class _Face extends StatelessWidget {
     final tokens = context.tokens;
     return Container(
       clipBehavior: Clip.antiAlias,
-      padding: padding,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: tokens.input),
@@ -116,11 +115,11 @@ class _Face extends StatelessWidget {
       child: Stack(
         children: [
           Positioned(
-            right: -60,
-            top: -60,
-            child: Container(width: 200, height: 160, decoration: BoxDecoration(shape: BoxShape.circle, gradient: RadialGradient(colors: [tokens.ink.withValues(alpha: 0.16), tokens.ink.withValues(alpha: 0)]))),
+            right: -90,
+            top: -110,
+            child: Container(width: 300, height: 260, decoration: BoxDecoration(shape: BoxShape.circle, gradient: RadialGradient(colors: [tokens.ink.withValues(alpha: 0.16), tokens.ink.withValues(alpha: 0)]))),
           ),
-          Positioned.fill(child: child),
+          Positioned.fill(child: Padding(padding: padding, child: child)),
         ],
       ),
     );

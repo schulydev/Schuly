@@ -89,7 +89,7 @@ class _TimetablePageState extends State<TimetablePage> {
           t.tabTimetable,
           subtitle: t.timetableWeekLine(dates.monthYear(selected), isoWeek(selected)),
           trailing: Segmented<_View>(
-            width: 132,
+            width: 156,
             value: _view,
             onChange: (v) => setState(() => _view = v),
             segments: [(_View.day, t.timetableDay), (_View.week, t.timetableWeek)],

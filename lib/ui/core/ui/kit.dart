@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart' show RefreshIndicator;
+import 'package:flutter/material.dart' show OutlineInputBorder, RefreshIndicator;
 import 'package:flutter/widgets.dart';
 import 'package:forui/forui.dart';
 
@@ -413,3 +413,13 @@ class SubPage extends StatelessWidget {
     );
   }
 }
+
+/// A compact [FSelect] field (36 px, 13 px medium text) for pickers next to a page title.
+FSelectStyle Function(FSelectStyle) compactSelect(BuildContext context) => (s) => s.copyWith(
+      selectFieldStyle: (f) => f.copyWith(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
+        contentTextStyle: f.contentTextStyle.map((t) => t.copyWith(fontSize: 13, fontWeight: FontWeight.w500)),
+        border: f.border.map((b) => b is OutlineInputBorder ? b.copyWith(borderRadius: BorderRadius.circular(SchulyRadii.button), borderSide: b.borderSide.copyWith(color: context.theme.colors.border)) : b),
+        fillColor: context.tokens.card,
+      ),
+    );
