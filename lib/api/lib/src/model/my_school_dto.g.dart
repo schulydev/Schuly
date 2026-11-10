@@ -21,6 +21,8 @@ class _$MySchoolDto extends MySchoolDto {
   final String? schoolSystemKey;
   @override
   final String? profilePictureUrl;
+  @override
+  final String? website;
 
   factory _$MySchoolDto([void Function(MySchoolDtoBuilder)? updates]) =>
       (MySchoolDtoBuilder()..update(updates))._build();
@@ -33,6 +35,7 @@ class _$MySchoolDto extends MySchoolDto {
     this.logoUrl,
     this.schoolSystemKey,
     this.profilePictureUrl,
+    this.website,
   }) : super._();
   @override
   MySchoolDto rebuild(void Function(MySchoolDtoBuilder) updates) =>
@@ -51,7 +54,8 @@ class _$MySchoolDto extends MySchoolDto {
         fullName == other.fullName &&
         logoUrl == other.logoUrl &&
         schoolSystemKey == other.schoolSystemKey &&
-        profilePictureUrl == other.profilePictureUrl;
+        profilePictureUrl == other.profilePictureUrl &&
+        website == other.website;
   }
 
   @override
@@ -64,6 +68,7 @@ class _$MySchoolDto extends MySchoolDto {
     _$hash = $jc(_$hash, logoUrl.hashCode);
     _$hash = $jc(_$hash, schoolSystemKey.hashCode);
     _$hash = $jc(_$hash, profilePictureUrl.hashCode);
+    _$hash = $jc(_$hash, website.hashCode);
     _$hash = $jf(_$hash);
     return _$hash;
   }
@@ -77,7 +82,8 @@ class _$MySchoolDto extends MySchoolDto {
           ..add('fullName', fullName)
           ..add('logoUrl', logoUrl)
           ..add('schoolSystemKey', schoolSystemKey)
-          ..add('profilePictureUrl', profilePictureUrl))
+          ..add('profilePictureUrl', profilePictureUrl)
+          ..add('website', website))
         .toString();
   }
 }
@@ -115,6 +121,10 @@ class MySchoolDtoBuilder implements Builder<MySchoolDto, MySchoolDtoBuilder> {
   set profilePictureUrl(String? profilePictureUrl) =>
       _$this._profilePictureUrl = profilePictureUrl;
 
+  String? _website;
+  String? get website => _$this._website;
+  set website(String? website) => _$this._website = website;
+
   MySchoolDtoBuilder() {
     MySchoolDto._defaults(this);
   }
@@ -129,6 +139,7 @@ class MySchoolDtoBuilder implements Builder<MySchoolDto, MySchoolDtoBuilder> {
       _logoUrl = $v.logoUrl;
       _schoolSystemKey = $v.schoolSystemKey;
       _profilePictureUrl = $v.profilePictureUrl;
+      _website = $v.website;
       _$v = null;
     }
     return this;
@@ -170,6 +181,7 @@ class MySchoolDtoBuilder implements Builder<MySchoolDto, MySchoolDtoBuilder> {
           logoUrl: logoUrl,
           schoolSystemKey: schoolSystemKey,
           profilePictureUrl: profilePictureUrl,
+          website: website,
         );
     replace(_$result);
     return _$result;

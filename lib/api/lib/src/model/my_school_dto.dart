@@ -41,6 +41,9 @@ abstract class MySchoolDto implements Built<MySchoolDto, MySchoolDtoBuilder> {
   @BuiltValueField(wireName: r'profilePictureUrl')
   String? get profilePictureUrl;
 
+  @BuiltValueField(wireName: r'website')
+  String? get website;
+
   MySchoolDto._();
 
   factory MySchoolDto([void updates(MySchoolDtoBuilder b)]) = _$MySchoolDto;
@@ -97,6 +100,13 @@ class _$MySchoolDtoSerializer implements PrimitiveSerializer<MySchoolDto> {
       yield r'schoolSystemKey';
       yield serializers.serialize(
         object.schoolSystemKey,
+        specifiedType: const FullType.nullable(String),
+      );
+    }
+    if (object.website != null) {
+      yield r'website';
+      yield serializers.serialize(
+        object.website,
         specifiedType: const FullType.nullable(String),
       );
     }
@@ -173,6 +183,14 @@ class _$MySchoolDtoSerializer implements PrimitiveSerializer<MySchoolDto> {
           ) as String?;
           if (valueDes == null) continue;
           result.schoolSystemKey = valueDes;
+          break;
+        case r'website':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType.nullable(String),
+          ) as String?;
+          if (valueDes == null) continue;
+          result.website = valueDes;
           break;
         case r'profilePictureUrl':
           final valueDes = serializers.deserialize(
