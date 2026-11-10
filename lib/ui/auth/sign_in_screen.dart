@@ -8,7 +8,6 @@ import '../../l10n/app_localizations.dart';
 import '../../services/auth_service.dart';
 import '../update/check_for_updates.dart';
 import '../widgets/remote_icon.dart';
-import 'microsoft_sign_in_button.dart';
 import '../privacy/privacy_notice_screen.dart';
 
 enum _Step { signIn, register, code, verifyEmail, forgot }
@@ -377,10 +376,7 @@ class _SignInScreenState extends State<SignInScreen> {
                     child: _busy ? const SizedBox(width: 16, height: 16, child: FCircularProgress()) : Text(_action),
                   ),
                   if (_step == _Step.signIn) ...[
-                    for (final provider in _providers)
-                      if (isMicrosoftProvider(provider))
-                        MicrosoftSignInButton(onPress: _busy ? null : () => _signInWith(provider))
-                      else
+                    for (final provider in _providers)
                       FButton(
                         style: FButtonStyle.outline(),
                         onPress: _busy ? null : () => _signInWith(provider),

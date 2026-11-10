@@ -359,10 +359,6 @@
   "privacyNoticeContinue": "Continue",
   "privacyNoticeSignOut": "Sign out",
   "privacyNoticeFailed": "That did not work. Try again.",
-  "signInWithMicrosoft": "Sign in with Microsoft",
-  "@signInWithMicrosoft": {
-    "description": "Label of the Sign in with Microsoft button, in Microsoft's own wording"
-  },
   "trademarkNotice": "Microsoft 365, Microsoft Outlook, Microsoft Teams, Microsoft OneDrive and Microsoft OneNote are trademarks of Microsoft Corporation. Schulnetz is a trademark of Centerboard AG. Schuly is an independent project and is not affiliated with Microsoft or Centerboard.",
   "@trademarkNotice": {
     "description": "Trademark notice under About in Settings"
