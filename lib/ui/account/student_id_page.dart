@@ -1,6 +1,8 @@
 import '../core/ui/auth_image.dart';
 import 'dart:math' as math;
 
+import 'package:flutter/foundation.dart' show Factory;
+import 'package:flutter/gestures.dart' show EagerGestureRecognizer, OneSequenceGestureRecognizer;
 import 'package:flutter/material.dart' show MaterialPageRoute;
 import 'package:flutter/widgets.dart';
 import 'package:forui/forui.dart';
@@ -197,7 +199,12 @@ class _StudentIdPageState extends State<StudentIdPage> {
     final typography = context.theme.typography;
     final dates = Dates(context);
     final card = _card;
-    final height = math.max(420.0, MediaQuery.sizeOf(context).height * 0.62);
+    // The card gets all the height the page has left below the title and above the "As of" row, so the page itself
+    // does not scroll; a card taller than that scrolls inside the WebView.
+    final media = MediaQuery.of(context);
+    double line(TextStyle style) => media.textScaler.scale(style.fontSize ?? 14) * (style.height ?? 1.2);
+    final chrome = 48 + 6 + 16 + line(typography.xl2) + 10 + 12 + line(typography.sm) + 24;
+    final height = math.max(320.0, media.size.height - media.viewPadding.top - media.viewPadding.bottom - chrome);
 
     final List<Widget> body;
     if (card != null) {
@@ -227,10 +234,13 @@ class _StudentIdPageState extends State<StudentIdPage> {
                 ),
               ),
               if (_loading)
-                const SizedBox(
-                  width: 14,
-                  height: 14,
-                  child: FCircularProgress(),
+                SizedBox.square(
+                  dimension: 14,
+                  child: FCircularProgress(
+                    style: (s) => s.copyWith(
+                      iconStyle: s.iconStyle.copyWith(size: 14),
+                    ),
+                  ),
                 ),
             ],
           ),
@@ -316,7 +326,13 @@ class _OfficialCardState extends State<_OfficialCard> {
   }
 
   @override
-  Widget build(BuildContext context) => WebViewWidget(controller: _controller);
+  Widget build(BuildContext context) => WebViewWidget(
+    controller: _controller,
+    // Drags on the card scroll the card, not the page, so a card taller than its box can be scrolled to its end.
+    gestureRecognizers: {
+      Factory<OneSequenceGestureRecognizer>(EagerGestureRecognizer.new),
+    },
+  );
 }
 
 /// The card Schuly draws itself from the school profile; tap or "Turn over" flips it.
