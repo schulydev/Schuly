@@ -12,9 +12,11 @@ import 'services/firebase_push.dart';
 import 'services/school_data_service.dart';
 import 'services/theme_service.dart';
 import 'services/toast_service.dart';
+import 'services/update/required_update_service.dart';
 import 'services/update/update_service.dart';
 import 'ui/core/theme/schuly_theme.dart';
 import 'ui/core/ui/root_screen.dart';
+import 'ui/update/required_update_screen.dart';
 import 'ui/update/update_dialog.dart';
 
 Future<void> main() async {
@@ -35,6 +37,8 @@ Future<void> main() async {
   WidgetsBinding.instance.addPostFrameCallback(
     (_) => UpdateService.instance.start(),
   );
+  // Asks the server whether this version is still supported; offline it lets the app in.
+  RequiredUpdateService.instance.start();
   // Firebase touches disk and the network, so it starts after the first frame
   // and never delays startup.
   unawaited(startPush());
@@ -82,7 +86,7 @@ class SchulyApp extends StatelessWidget {
               child: FToaster(
                 style: (s) =>
                     s.copyWith(toastAlignment: FToastAlignment.topCenter),
-                child: child!,
+                child: RequiredUpdateGate(child: child!),
               ),
             );
           },

@@ -5,6 +5,23 @@ const PORT = Number(process.env.PORT ?? 5591);
 // with an Outlook calendar, the other providers, and a profile picture that can be changed.
 const EXTRAS = process.env.EXTRAS === "1";
 const STATIC = import.meta.dir + "/static";
+// MIN_APP_VERSION=3.6.0 makes the API ask older apps to update, as the server's App:MinVersion does: /api/app names it,
+// and /api and /auth requests from an older app (X-Schuly-App-Version) get 426. "0.0.0", the default, is off.
+// MIN_APP_VERSION_426_ONLY=1 keeps /api/app at "0.0.0", so only the 426 answers tell the app.
+const MIN_APP_VERSION = process.env.MIN_APP_VERSION ?? "0.0.0";
+const MIN_APP_VERSION_426_ONLY = process.env.MIN_APP_VERSION_426_ONLY === "1";
+const versionParts = (v: string) => v.split(/[-+]/)[0].split(".").map((n) => Number(n) || 0);
+const olderThan = (v: string, min: string) => {
+  const a = versionParts(v), b = versionParts(min);
+  for (let i = 0; i < 3; i++) if ((a[i] ?? 0) !== (b[i] ?? 0)) return (a[i] ?? 0) < (b[i] ?? 0);
+  return false;
+};
+const tooOld = (req: Request, url: URL) => {
+  const p = url.pathname;
+  if (!(p.startsWith("/api/") || p.startsWith("/auth/")) || (p === "/api/app")) return false;
+  const sent = req.headers.get("x-schuly-app-version");
+  return !!sent && /^\d+(\.\d+){0,2}/.test(sent) && olderThan(sent, MIN_APP_VERSION);
+};
 
 // Europe/Zurich offset: CEST between last Sunday of March and last Sunday of October.
 function lastSunday(y: number, m: number) { const d = new Date(Date.UTC(y, m + 1, 0)); d.setUTCDate(d.getUTCDate() - d.getUTCDay()); return d; }
@@ -235,7 +252,7 @@ const slow = () => Bun.sleep(Number(process.env.SLOW ?? 0));
 const tokens = () => ({ access_token: "fake-access-" + Date.now(), refresh_token: "fake-refresh", expires_in: 86400, token_type: "Bearer" });
 
 const routes: Record<string, (req: Request, url: URL) => any> = {
-  "GET /api/app": () => ({ registrationEnabled: true, version: "3.2.0", policyVersion: "2026-05", policyUrl: "https://schuly.dev/en/privacy", swissSchoolConfirmationRequired: false }),
+  "GET /api/app": () => ({ registrationEnabled: true, version: "3.2.0", policyVersion: "2026-05", policyUrl: "https://schuly.dev/en/privacy", swissSchoolConfirmationRequired: false, minAppVersion: MIN_APP_VERSION_426_ONLY ? "0.0.0" : MIN_APP_VERSION }),
   "GET /api/app/school-systems": () => [{ key: "schulportal", displayName: "Schulportal", loginMethod: "credentials", enabled: true, sortOrder: 0, pluginBasePath: BASE, loginFields: [] }],
   "GET /auth/providers": () => (EXTRAS ? [{ key: "microsoft", display_name: "Microsoft", icon_url: null }] : []),
   "POST /auth/login": () => tokens(),
@@ -306,6 +323,10 @@ Bun.serve({
     if (url.pathname.startsWith("/static/")) {
       const f = Bun.file(STATIC + url.pathname.slice(7));
       return (await f.exists()) ? new Response(f, { headers: { "Content-Type": "image/jpeg" } }) : new Response("", { status: 404 });
+    }
+    if (tooOld(req, url)) {
+      console.log(`${new Date().toISOString().slice(11, 19)} ${req.method} ${url.pathname}  426 (app ${req.headers.get("x-schuly-app-version")})`);
+      return Response.json({ code: "app_update_required", minAppVersion: MIN_APP_VERSION, message: "This version of Schuly is too old. Update the app to continue." }, { status: 426 });
     }
     const key = `${req.method} ${url.pathname}`;
     const h = routes[key];

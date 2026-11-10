@@ -101,6 +101,8 @@ void _toastHttpError(DioException e) {
   if (e.requestOptions.extra[ApiClient.handlesErrors] == true) return;
 
   final code = e.response?.statusCode;
+  // Too old for the server: the update screen says so, a toast would only repeat it.
+  if (code == 426) return;
   if (code != null) {
     ToastService.error('Request failed ($code)', e);
   } else {

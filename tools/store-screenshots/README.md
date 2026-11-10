@@ -6,7 +6,7 @@ The app runs against a fake API with made-up data (Mia Muster, Berufsfachschule 
 
 | File | What it does |
 |---|---|
-| `fake-api/server.ts` | Bun server that answers the app's `/auth` and `/api` calls with fixed data on port 5591 (`PORT=` to change). It accepts any sign-in. `EXTRAS=1` adds what the store shots leave out: Schulnetz approval fields on absences, a linked Microsoft account with an Outlook week, the other providers, a Microsoft sign-in button, a changeable profile picture, and pictures that answer 401 without a bearer token, as the server does. |
+| `fake-api/server.ts` | Bun server that answers the app's `/auth` and `/api` calls with fixed data on port 5591 (`PORT=` to change). It accepts any sign-in. `EXTRAS=1` adds what the store shots leave out: Schulnetz approval fields on absences, a linked Microsoft account with an Outlook week, the other providers, a Microsoft sign-in button, a changeable profile picture, and pictures that answer 401 without a bearer token, as the server does. `MIN_APP_VERSION=3.6.0` asks older apps to update (`/api/app` names it, other calls answer 426); with `MIN_APP_VERSION_426_ONLY=1` only the 426 answers do. |
 | `fake-api/avatar.py` | Draws the made-up profile picture `fake-api/static/mia.jpg` (already committed). |
 | `capture.sh` | Emulator, build, sign-in, capture and framing steps. |
 | `ui.sh` | Lists the on-screen elements, their labels and bounds, for when a label `capture.sh` looks for has changed. |

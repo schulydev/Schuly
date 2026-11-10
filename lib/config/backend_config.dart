@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../services/update/required_update_service.dart';
+
 /// The backend the app talks to. Defaults to the hosted Schuly Cloud (baked in
 /// at build time via `--dart-define=BACKEND_BASE_URL`); a self-hoster can point
 /// it at their own instance during onboarding.
@@ -57,8 +59,9 @@ class BackendConfig {
     final url = normalise(baseUrl);
     if (url.isEmpty) return null;
     try {
+      final appVersion = RequiredUpdateService.instance.headerValue;
       final r = await http
-          .get(Uri.parse('$url/api/app'))
+          .get(Uri.parse('$url/api/app'), headers: appVersion.isEmpty ? null : {appVersionHeader: appVersion})
           .timeout(const Duration(seconds: 8));
       if (r.statusCode != 200) return null;
       final body = jsonDecode(r.body);
