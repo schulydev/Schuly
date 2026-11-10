@@ -243,7 +243,14 @@ const routes: Record<string, (req: Request, url: URL) => any> = {
   "POST /auth/logout": () => null,
   "GET /api/Auth/me": () => ({ id: APP_USER, externalId: "mia.muster", email: "mia.muster@bfs-beispielstadt.ch", displayName: "Mia Muster", profilePictureUrl: picture, createdAt: "2025-08-20T08:00:00Z", schoolUsers: [{ id: ME, firstName: "Mia", lastName: "Muster", email: "mia.muster@bfs-beispielstadt.ch", role: "Student" }] }),
   "GET /api/Auth/me/privacy-notice": () => ({ policyVersion: "2026-05", policyUrl: "https://schuly.dev/en/privacy", acceptanceRequired: false, swissSchoolConfirmationRequired: false, acceptedVersion: "2026-05", acceptedAt: "2026-05-12T07:00:00Z", swissSchoolConfirmedAt: "2026-05-12T07:00:00Z" }),
-  "GET /api/Schools/my-schools": () => [{ id: SCHOOL, name: "BFS Beispielstadt", fullName: "Berufsfachschule Beispielstadt", email: "mia.muster@bfs-beispielstadt.ch", logoUrl: null, schoolSystemKey: "schulportal", profilePictureUrl: "/static/mia.jpg" }],
+  "GET /api/Schools/my-schools": () => [
+    { id: SCHOOL, name: "BFS Beispielstadt", fullName: "Berufsfachschule Beispielstadt", email: "mia.muster@bfs-beispielstadt.ch", logoUrl: null, schoolSystemKey: "schulportal", profilePictureUrl: "/static/mia.jpg" },
+    // Two more schools for the Schools sheet: one with a bundled logo and a picture, one with the logo only.
+    ...(EXTRAS ? [
+      { id: "sch-bms", name: "BMS Beispielstadt", fullName: "Berufsmaturitätsschule Beispielstadt", email: "mia.muster@bms-beispielstadt.ch", logoUrl: null, schoolSystemKey: "schulnetz", profilePictureUrl: "/static/mia.jpg" },
+      { id: "sch-uek", name: "üK Beispielstadt", fullName: "Überbetriebliche Kurse Beispielstadt", email: "mia.muster@uek-beispielstadt.ch", logoUrl: null, schoolSystemKey: "odaorg", profilePictureUrl: null },
+    ] : []),
+  ],
   "GET /api/SchoolUsers": () => [schoolUser],
   "GET /api/Exams": () => exams,
   "GET /api/Agendas": () => agenda,
