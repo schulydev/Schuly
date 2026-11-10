@@ -106,6 +106,23 @@ flutter:
     - assets/cropped_schuly_icon.png
     - assets/schoolsystems/
     - assets/sso/
+    - assets/fonts/OFL.txt
+
+  # Geist (SIL Open Font License, assets/fonts/OFL.txt), the web app's typeface.
+  fonts:
+    - family: Geist
+      fonts:
+        - asset: assets/fonts/Geist-Regular.ttf
+        - asset: assets/fonts/Geist-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Geist-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/Geist-Bold.ttf
+          weight: 700
+    - family: GeistMono
+      fonts:
+        - asset: assets/fonts/GeistMono-Medium.ttf
+          weight: 500
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

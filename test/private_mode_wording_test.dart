@@ -7,7 +7,7 @@ void main() {
   const screens = [
     'lib/ui/onboarding/onboarding_screen.dart',
     'lib/ui/private/private_connect_screen.dart',
-    'lib/ui/dashboard/widgets/accounts_sidebar.dart',
+    'lib/ui/dashboard/schools_sheet.dart',
     'lib/l10n/app_en.arb',
     'lib/l10n/app_de.arb',
   ];

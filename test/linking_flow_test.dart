@@ -2,6 +2,7 @@ import 'package:flutter/material.dart' show MaterialApp;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:forui/forui.dart';
+import 'package:schuly/l10n/app_localizations.dart';
 import 'package:schuly/services/linked_accounts_controller.dart';
 import 'package:schuly/services/linking_service.dart';
 import 'package:schuly/ui/linking/link_flow_screen.dart';
@@ -12,8 +13,8 @@ import 'fakes/fake_linking_api.dart';
 LinkedAccountsController _controller(FakeLinkingApi api, {void Function()? onRefresh, Duration poll = const Duration(seconds: 3)}) => LinkedAccountsController(api: api, refreshDependents: () async => onRefresh?.call(), clearCaches: () async {}, pollInterval: poll);
 
 Widget _app(Widget home) => MaterialApp(
-      localizationsDelegates: FLocalizations.localizationsDelegates,
-      supportedLocales: FLocalizations.supportedLocales,
+      localizationsDelegates: const [...AppLocalizations.localizationsDelegates, ...FLocalizations.localizationsDelegates],
+      supportedLocales: AppLocalizations.supportedLocales,
       home: FTheme(data: FThemes.zinc.light, child: home),
     );
 

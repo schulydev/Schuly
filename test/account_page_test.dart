@@ -5,9 +5,29 @@ import 'package:forui/forui.dart';
 import 'package:schuly/domain/my_school.dart';
 import 'package:schuly/l10n/app_localizations.dart';
 import 'package:schuly/services/active_account_service.dart';
+import 'package:schuly/services/secure_store.dart';
 import 'package:schuly/ui/account/account_page.dart';
 
-Future<void> _pump(WidgetTester tester, Widget child) => tester.pumpWidget(
+class _EmptyStore implements SecureKeyValue {
+  @override
+  Future<String?> read(String key) async => null;
+
+  @override
+  Future<void> write(String key, String value) async {}
+
+  @override
+  Future<void> delete(String key) async {}
+
+  @override
+  Future<void> deleteAll() async {}
+}
+
+Future<void> _pump(WidgetTester tester, Widget child) {
+  // The page is a long list; a tall window builds all of it, down to the version line.
+  tester.view.physicalSize = const Size(800, 3000);
+  tester.view.devicePixelRatio = 1;
+  addTearDown(tester.view.reset);
+  return tester.pumpWidget(
       MaterialApp(
         localizationsDelegates: const [
           ...AppLocalizations.localizationsDelegates,
@@ -20,8 +40,12 @@ Future<void> _pump(WidgetTester tester, Widget child) => tester.pumpWidget(
         ),
       ),
     );
+}
 
 void main() {
+  // The authenticator count reads the keystore.
+  setUp(() => SecureStore.useBackend(_EmptyStore()));
+
   group('AccountPage', () {
     testWidgets('reloads version and sync status once plugin info arrives', (tester) async {
       final service = ActiveAccountService.forTest();
@@ -54,7 +78,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(calls, isEmpty);
-      expect(find.text('Never'), findsOneWidget);
+      expect(find.textContaining('Never synced'), findsNothing);
 
       // Plugin detection finishes and the service notifies - the page should
       // now fetch and render the version and sync status.
@@ -73,9 +97,10 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(calls, containsAll(['/api/plugins/schulware/status', '/api/plugins/schulware/accounts/acc-1/sync']));
-      expect(find.text('2.5.0'), findsOneWidget);
-      expect(find.text('Success'), findsOneWidget);
-      expect(find.text('Never'), findsNothing);
+      // The plugin version sits in the version line, the sync status under "Schools & accounts".
+      expect(find.textContaining('2.5.0'), findsOneWidget);
+      expect(find.textContaining('Success'), findsOneWidget);
+      expect(find.textContaining('Never synced'), findsNothing);
     });
 
     testWidgets('re-fetches when the account tab becomes visible with nothing loaded', (tester) async {
@@ -115,7 +140,7 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
-      expect(find.text('2.5.0'), findsNothing);
+      expect(find.textContaining('2.5.0'), findsNothing);
 
       fail = false;
 
@@ -134,8 +159,9 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('2.5.0'), findsOneWidget);
-      expect(find.text('Success'), findsOneWidget);
+      expect(find.textContaining('2.5.0'), findsOneWidget);
+      // No last sync yet: the row says so.
+      expect(find.textContaining('Never synced'), findsOneWidget);
     });
   });
 }

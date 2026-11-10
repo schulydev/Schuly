@@ -18,7 +18,11 @@ import '../grades/grades_page.dart';
 import '../home/home_page.dart';
 import '../timetable/timetable_page.dart';
 import 'tab_requests.dart';
-import 'widgets/accounts_sidebar.dart';
+import '../../l10n/app_localizations.dart';
+import '../../services/reported_absences.dart';
+import '../core/theme/schuly_theme.dart';
+import '../core/ui/kit.dart';
+import 'dashboard_scope.dart';
 import '../linking/add_account_flow.dart';
 import '../linking/schools_accounts_screen.dart';
 import '../../services/linked_accounts_controller.dart';
@@ -46,6 +50,7 @@ class _DashboardScreenState extends State<DashboardScreen> with WidgetsBindingOb
     ActiveAccountService.instance.addListener(_onActiveChanged);
     TabRequests.pending.addListener(_onTabRequested);
     _onTabRequested();
+    ReportedAbsences.instance.start();
     WidgetsBinding.instance.addPostFrameCallback((_) => _bootstrap());
   }
 
@@ -138,16 +143,6 @@ class _DashboardScreenState extends State<DashboardScreen> with WidgetsBindingOb
     if (mounted && !AppModeService.instance.isPrivate && ActiveAccountService.instance.schools.isNotEmpty) await SchoolDataService.instance.refresh();
   }
 
-  void _openSidebar() {
-    openAccountsSidebar(
-      context,
-      onSignOut: widget.onSignOut,
-      userName: _userName,
-      userEmail: _userEmail,
-      pictureUrl: _pictureUrl,
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final colors = context.theme.colors;
@@ -159,9 +154,7 @@ class _DashboardScreenState extends State<DashboardScreen> with WidgetsBindingOb
         LinkedAccountsController.instance,
       ]),
       builder: (context, _) {
-        final account = ActiveAccountService.instance;
         final data = SchoolDataService.instance;
-        final active = account.active;
 
         final pages = [
           const HomePage(),
@@ -171,6 +164,7 @@ class _DashboardScreenState extends State<DashboardScreen> with WidgetsBindingOb
           AccountPage(
             pictureUrl: _pictureUrl,
             userName: _userName,
+            userEmail: _userEmail,
             onSignOut: widget.onSignOut,
             visible: _index == 4,
           ),
@@ -205,100 +199,69 @@ class _DashboardScreenState extends State<DashboardScreen> with WidgetsBindingOb
           ]);
         }
 
-        return FScaffold(
-          header: _TopBar(
-            title: AppModeService.instance.isPrivate
-                ? (_privateTitle ?? 'Schuly')
-                : (active?.name ?? 'Schuly'),
-            subtitle:
-                AppModeService.instance.isPrivate ? null : active?.fullName,
-            pictureUrl: _pictureUrl,
-            userName: _userName,
-            onAvatar: _openSidebar,
-          ),
-          footer: SafeArea(
-            top: false,
-            child: FBottomNavigationBar(
-              index: _index,
-              onChange: (i) {
-                if (i != _index) HapticFeedback.selectionClick();
-                setState(() => _index = i);
-              },
-              children: const [
-                FBottomNavigationBarItem(icon: Icon(FIcons.house), label: Text('Home')),
-                FBottomNavigationBarItem(icon: Icon(FIcons.calendarDays), label: Text('Timetable')),
-                FBottomNavigationBarItem(icon: Icon(FIcons.chartColumn), label: Text('Grades')),
-                FBottomNavigationBarItem(icon: Icon(FIcons.calendarOff), label: Text('Absences')),
-                FBottomNavigationBarItem(icon: Icon(FIcons.user), label: Text('Account')),
-              ],
+        final t = AppLocalizations.of(context)!;
+        final ink = context.tokens.ink;
+        final avatarName = _userName ?? SchoolDataService.instance.me?.firstName;
+        final tabs = [
+          (FIcons.house, t.tabHome),
+          (FIcons.calendar, t.tabTimetable),
+          (FIcons.chartColumn, t.tabGrades),
+          (FIcons.calendarX, t.tabAbsences),
+          (null, t.tabAccount),
+        ];
+
+        return DashboardScope(
+          userName: _userName,
+          userEmail: _userEmail,
+          pictureUrl: _pictureUrl,
+          privateTitle: _privateTitle,
+          onSignOut: widget.onSignOut,
+          child: FScaffold(
+            footer: SafeArea(
+              top: false,
+              child: FBottomNavigationBar(
+                index: _index,
+                onChange: (i) {
+                  if (i != _index) HapticFeedback.selectionClick();
+                  setState(() => _index = i);
+                },
+                children: [
+                  for (final (i, (icon, label)) in tabs.indexed)
+                    FBottomNavigationBarItem(
+                      icon: _TabIcon(
+                        active: i == _index,
+                        ink: ink,
+                        child: icon != null ? Icon(icon) : Avatar(url: _pictureUrl, name: avatarName, size: 22, ring: i == _index ? ink : null),
+                      ),
+                      label: Text(label),
+                    ),
+                ],
+              ),
             ),
+            childPad: false,
+            child: SafeArea(bottom: false, child: body),
           ),
-          childPad: false,
-          child: body,
         );
       },
     );
   }
 }
 
-class _TopBar extends StatelessWidget {
-  final String title;
-  final String? subtitle;
-  final String? pictureUrl;
-  final String? userName;
-  final VoidCallback onAvatar;
-  const _TopBar({
-    required this.title,
-    required this.subtitle,
-    required this.pictureUrl,
-    required this.userName,
-    required this.onAvatar,
-  });
+/// A tab icon with the accent bar above it while its tab is open.
+class _TabIcon extends StatelessWidget {
+  const _TabIcon({required this.active, required this.ink, required this.child});
+
+  final bool active;
+  final Color ink;
+  final Widget child;
 
   @override
-  Widget build(BuildContext context) {
-    final colors = context.theme.colors;
-    final typography = context.theme.typography;
-    final initial = (userName?.isNotEmpty ?? false) ? userName!.characters.first.toUpperCase() : '?';
-    final fallback = Text(initial,
-        style: TextStyle(color: colors.mutedForeground, fontWeight: FontWeight.w600));
-
-    return SafeArea(
-      bottom: false,
-      child: Column(
+  Widget build(BuildContext context) => Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 10, 16, 10),
-            child: Row(
-              children: [
-                GestureDetector(
-                  onTap: onAvatar,
-                  child: (pictureUrl == null || pictureUrl!.isEmpty)
-                      ? FAvatar.raw(size: 40, child: fallback)
-                      : FAvatar(size: 40, image: NetworkImage(pictureUrl!), fallback: fallback),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(title,
-                          style: typography.lg.copyWith(fontWeight: FontWeight.w600),
-                          overflow: TextOverflow.ellipsis),
-                      if (subtitle?.isNotEmpty ?? false)
-                        Text(subtitle!,
-                            style: typography.sm.copyWith(color: colors.mutedForeground),
-                            overflow: TextOverflow.ellipsis),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-          FDivider(style: (s) => s.copyWith(padding: EdgeInsets.zero)),
+          Container(width: 20, height: 2, decoration: BoxDecoration(color: active ? ink : const Color(0x00000000), borderRadius: BorderRadius.circular(2))),
+          const SizedBox(height: 7),
+          SizedBox(height: 24, child: Center(child: child)),
         ],
-      ),
-    );
-  }
+      );
 }

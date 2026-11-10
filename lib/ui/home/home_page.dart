@@ -1,196 +1,192 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:forui/forui.dart';
 import 'package:schuly_api/schuly_api.dart';
 
+import '../../domain/absence_status.dart';
+import '../../domain/grade_math.dart';
+import '../../l10n/app_localizations.dart';
+import '../../services/reported_absences.dart';
 import '../../services/school_data_service.dart';
-import '../core/grade_color.dart';
+import '../absences/absence_detail_sheet.dart';
+import '../core/dates.dart';
+import '../core/theme/schuly_theme.dart';
+import '../core/ui/kit.dart';
 import '../core/ui/now_ticker.dart';
-import '../timetable/break_card.dart';
-import '../timetable/day_schedule.dart';
-import '../timetable/lesson_tile.dart';
+import '../dashboard/dashboard_scope.dart';
+import '../dashboard/tab_requests.dart';
+import '../grades/grade_data.dart';
+import '../grades/grade_detail_sheet.dart';
+import '../timetable/day_timeline.dart';
 
-class HomePage extends StatelessWidget {
+/// The newest graded exams, at most [kHomeMaxItems].
+List<ExamDto> latestGradedExams(SchoolDataService svc) {
+  final mine = svc.myGradesByExam;
+  final graded = svc.exams.where((e) => isGradedScore(mine[e.id]?.score)).toList()
+    ..sort((a, b) {
+      final da = examDay(a), db = examDay(b);
+      if (da == null) return db == null ? 0 : 1;
+      if (db == null) return -1;
+      return db.compareTo(da);
+    });
+  return graded.take(kHomeMaxItems).toList();
+}
+
+/// What comes after today: tests and events from tomorrow on, and holidays not yet over, at most [kHomeMaxItems].
+List<AgendaEntryDto> comingUp(Iterable<AgendaEntryDto> agenda, DateTime now) {
+  final today = DateTime(now.year, now.month, now.day);
+  final out = agenda.where((a) {
+    final start = dayOf(a.date);
+    return switch (a.entryType) {
+      AgendaEntryType.test || AgendaEntryType.event => start.isAfter(today),
+      AgendaEntryType.holiday => !dayOf(a.endDate ?? a.date).isBefore(today),
+      _ => false,
+    };
+  }).toList()
+    ..sort((a, b) => a.date.compareTo(b.date));
+  return out.take(kHomeMaxItems).toList();
+}
+
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
   // This page is const in the dashboard, so its parent rebuilding does not reach it.
   @override
-  Widget build(BuildContext context) => ListenableBuilder(listenable: SchoolDataService.instance, builder: (context, _) => _content(context));
+  void initState() {
+    super.initState();
+    SchoolDataService.instance.addListener(_changed);
+    ReportedAbsences.instance.addListener(_changed);
+  }
 
-  Widget _content(BuildContext context) {
+  @override
+  void dispose() {
+    SchoolDataService.instance.removeListener(_changed);
+    ReportedAbsences.instance.removeListener(_changed);
+    super.dispose();
+  }
+
+  void _changed() => setState(() {});
+
+  @override
+  Widget build(BuildContext context) => NowTicker(builder: (context, now) => _content(context, now));
+
+  Widget _content(BuildContext context, DateTime now) {
+    final t = AppLocalizations.of(context)!;
+    final dates = Dates(context);
     final svc = SchoolDataService.instance;
-    final now = DateTime.now();
+    final tokens = context.tokens;
     final today = DateTime(now.year, now.month, now.day);
 
-    bool sameDay(DateTime d) {
-      final local = d.toLocal();
-      return local.year == today.year && local.month == today.month && local.day == today.day;
-    }
+    final todayEntries = svc.agenda.where((a) => a.entryType != AgendaEntryType.holiday && sameDay(dayOf(a.date), today)).toList()
+      ..sort((a, b) => a.date.compareTo(b.date));
+    final firstTest = todayEntries.where((a) => a.entryType == AgendaEntryType.test).firstOrNull;
+    final lessonCount = todayEntries.where((a) => a.entryType != AgendaEntryType.event).length;
 
-    DateTime dayOf(DateTime d) {
-      final local = d.toLocal();
-      return DateTime(local.year, local.month, local.day);
-    }
+    final names = subjectNames(svc);
+    final grades = latestGradedExams(svc);
+    final reported = ReportedAbsences.instance.reported;
+    final unexcused = unexcusedAbsences(svc.absences);
+    final upcoming = comingUp(svc.agenda, now);
 
-    bool isHoliday(AgendaEntryDto a) => a.entryType == AgendaEntryType.holiday;
+    final firstName = svc.me?.firstName.trim().isNotEmpty == true ? svc.me!.firstName.trim() : DashboardScope.maybeOf(context)?.userName?.split(' ').first;
+    final hour = now.hour;
+    final greeting = hour < 5 || hour >= 18 ? t.homeGreetingEvening(firstName ?? '') : (hour < 12 ? t.homeGreetingMorning(firstName ?? '') : t.homeGreetingAfternoon(firstName ?? ''));
+    final greetingText = firstName == null || firstName.isEmpty ? greeting.replaceAll(RegExp(r',\s*$'), '') : greeting;
+    final subtitle = firstTest != null
+        ? t.homeSubtitleTest(dates.dayLong(now), firstTest.title, dates.hm(firstTest.date.toLocal()))
+        : lessonCount > 0
+            ? t.homeSubtitleLessons(dates.dayLong(now), lessonCount)
+            : dates.dayLong(now);
 
-    final todayEntries = svc.agenda.where((a) => !isHoliday(a) && sameDay(a.date)).toList()
-      ..sort((a, b) => a.date.toLocal().compareTo(b.date.toLocal()));
-
-    final holidays = svc.agenda
-        .where((a) => isHoliday(a) && !dayOf(a.endDate ?? a.date).isBefore(today))
-        .toList()
-      ..sort((a, b) => a.date.toLocal().compareTo(b.date.toLocal()));
-
-    final myGrades = svc.myGradesByExam;
-    final examById = {for (final e in svc.exams) e.id: e};
-    final examName = {for (final e in svc.exams) e.id: e.name};
-    final classNameById = <String?, String?>{
-      for (final c in (svc.me?.classes ?? const <UserClassDto>[])) c.classId: c.className,
-      ...svc.classNameById,
-    };
-    final recentGrades = myGrades.entries
-        .where((e) => isGraded(e.value.score))
-        .toList()
-      ..sort((a, b) {
-        final da = examById[a.key]?.date, db = examById[b.key]?.date;
-        if (da == null) return db == null ? 0 : 1;
-        if (db == null) return -1;
-        return db.compareTo(da);
-      });
-    final latestGrades = recentGrades.take(4).toList();
-
-    final recentAbsences = svc.absences.toList()
-      ..sort((a, b) => b.from.compareTo(a.from));
-
-    return RefreshIndicator(
-      onRefresh: svc.refresh,
-      child: ListView(
-      physics: const AlwaysScrollableScrollPhysics(),
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+    return PageList(
+      onRefresh: () => Future.wait([svc.refresh(), ReportedAbsences.instance.load()]),
       children: [
-        _Section(
-          title: 'Today',
-          emptyText: 'Nothing scheduled today',
-          tiles: [
-            if (todayEntries.isNotEmpty)
-              NowTicker(
-                builder: (context, now) {
-                  final items = buildDaySchedule(todayEntries);
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      for (final item in items)
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 8),
-                          child: switch (item) {
-                            LessonItem lesson => LessonTile(item: lesson, now: now),
-                            BreakItem brk => BreakCard(item: brk, now: now),
-                          },
-                        ),
-                    ],
-                  );
-                },
-              ),
-          ],
-        ),
-        const SizedBox(height: 16),
-        _Section(
-          title: 'Next holiday',
-          emptyText: 'No upcoming holidays',
-          tiles: [
-            if (holidays.isNotEmpty)
-              FTile(
-                prefix: const Icon(FIcons.treePalm),
-                title: Text(holidays.first.title.isNotEmpty ? holidays.first.title : 'Holiday'),
-                subtitle: Text(_holidayRange(holidays.first.date, holidays.first.endDate)),
-                details: Text(_countdown(today, holidays.first.date)),
-              ),
-          ],
-        ),
-        const SizedBox(height: 16),
-        _Section(
-          title: 'Latest grades',
-          emptyText: 'No grades yet',
-          tiles: [
-            for (final entry in latestGrades)
-              FTile(
-                title: Text(examName[entry.key] ?? 'Exam'),
-                subtitle: (classNameById[examById[entry.key]?.classId]?.isNotEmpty ?? false)
-                    ? Text(classNameById[examById[entry.key]?.classId]!)
-                    : null,
-                suffix: GradePill(entry.value.score),
-              ),
-          ],
-        ),
-        const SizedBox(height: 16),
-        _Section(
-          title: 'Recent absences',
-          emptyText: 'No absences',
-          tiles: [
-            for (final a in recentAbsences.take(4))
-              FTile(
-                prefix: const Icon(FIcons.calendarOff),
-                title: Text(a.reason.isNotEmpty == true ? a.reason : 'Absence'),
-                subtitle: Text(_rangeLabel(a.from, a.until)),
-              ),
-          ],
-        ),
+        const SchoolHeader(),
+        PageTitle(greetingText, subtitle: subtitle, bottom: 18),
+        SectionHead(t.homeToday, link: t.homeTimetableLink, onLink: () => TabRequests.request(DashboardTab.timetable), top: 0),
+        if (todayEntries.isEmpty) EmptyNote(t.homeNoLessons) else DayTimeline(entries: todayEntries, now: now, isToday: true, compact: true),
+        SectionHead(t.homeNewGrades, link: t.homeAllGrades, onLink: () => TabRequests.request(DashboardTab.grades)),
+        if (grades.isEmpty)
+          EmptyNote(t.gradesEmpty)
+        else
+          FTileGroup(
+            divider: FItemDivider.full,
+            children: [
+              for (final e in grades)
+                FTile(
+                  title: Text(e.name),
+                  subtitle: Text([names[e.classId], if (examDay(e) != null) dates.dayMonth(examDay(e)!)].whereType<String>().join(' · ')),
+                  suffix: GradePill(svc.myGradesByExam[e.id]?.score),
+                  onPress: () => showGradeDetail(context, e),
+                ),
+            ],
+          ),
+        if (unexcused.isNotEmpty) ...[
+          SectionHead(t.homeUnexcused, link: t.homeAllAbsences, onLink: () => TabRequests.request(DashboardTab.absences)),
+          FTileGroup(
+            divider: FItemDivider.full,
+            children: [
+              for (final a in unexcused.take(kHomeMaxItems))
+                _absenceTile(context, t, dates, a, absenceState(a, reported)),
+            ],
+          ),
+        ],
+        SectionHead(t.homeComingUp),
+        if (upcoming.isEmpty)
+          EmptyNote(t.homeNothingComing)
+        else
+          FTileGroup(
+            divider: FItemDivider.full,
+            children: [for (final a in upcoming) _comingTile(context, t, dates, a, today, tokens)],
+          ),
       ],
-      ),
     );
   }
 
-  static String _dateLabel(DateTime d) {
-    const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-    return '${days[d.weekday - 1]} ${d.day}.${d.month}.';
+  FTile _absenceTile(BuildContext context, AppLocalizations t, Dates dates, AbsenceDto a, AbsenceState state) {
+    final tokens = context.tokens;
+    final from = a.from.toLocal();
+    final waiting = state == AbsenceState.waiting;
+    return FTile(
+      prefix: DateTile(weekday: dates.weekdayShort(from), day: from.day),
+      title: Text(absenceTitle(t, a)),
+      subtitle: Text(absenceExtent(t, dates, a) ?? absenceWhen(dates, a)),
+      details: Text(waiting ? t.absenceWaiting : t.absenceNeedsExcuseShort, style: context.theme.typography.xs.copyWith(fontWeight: FontWeight.w500, color: waiting ? tokens.warn : tokens.bad)),
+      onPress: () => showAbsenceDetail(context, a, state, onReport: ReportedAbsences.instance.target == null ? null : () => TabRequests.request(DashboardTab.absences)),
+    );
   }
 
-  static String _countdown(DateTime today, DateTime from) {
-    final days = DateTime(from.year, from.month, from.day).difference(today).inDays;
-    if (days <= 0) return 'now';
-    if (days == 1) return 'tomorrow';
-    return 'in $days days';
-  }
-
-  static String _holidayRange(DateTime from, DateTime? end) {
-    String d(DateTime x) => '${x.day}.${x.month}.${x.year}';
-    if (end == null || end.difference(from).inDays.abs() < 1) return d(from);
-    return '${d(from)} – ${d(end)}';
-  }
-
-  static String _rangeLabel(DateTime from, DateTime? until) {
-    final f = _dateLabel(from);
-    if (until == null || until.difference(from).inDays.abs() < 1) return f;
-    return '$f – ${_dateLabel(until)}';
-  }
-}
-
-class _Section extends StatelessWidget {
-  final String title;
-  final List<Widget> tiles;
-  final String emptyText;
-  const _Section({required this.title, required this.tiles, required this.emptyText});
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = context.theme.colors;
+  FTile _comingTile(BuildContext context, AppLocalizations t, Dates dates, AgendaEntryDto a, DateTime today, SchulyTokens tokens) {
+    final start = a.date.toLocal();
     final typography = context.theme.typography;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(4, 0, 4, 8),
-          child: Text(title, style: typography.base.copyWith(fontWeight: FontWeight.w600)),
-        ),
-        if (tiles.isEmpty)
-          Padding(
-            padding: const EdgeInsets.only(left: 4, bottom: 4),
-            child: Text(emptyText, style: TextStyle(color: colors.mutedForeground)),
-          )
-        else
-          for (final t in tiles)
-            Padding(padding: const EdgeInsets.only(bottom: 8), child: t),
-      ],
+    final String kind;
+    final Color color;
+    final String sub;
+    switch (a.entryType) {
+      case AgendaEntryType.holiday:
+        final days = dayOf(a.date).difference(today).inDays;
+        kind = days <= 0 ? t.homeHolidayNow : t.homeInDays(days);
+        color = tokens.calendarHoliday;
+        final end = a.endDate?.toLocal();
+        sub = end == null || sameDay(dayOf(end), dayOf(start)) ? dates.full(start) : '${dates.full(start)} – ${dates.full(end)}';
+      case AgendaEntryType.event:
+        kind = t.entryTypeEvent;
+        color = tokens.calendarEvent;
+        sub = [dates.hm(start), a.place].whereType<String>().where((s) => s.isNotEmpty).join(' · ');
+      default:
+        kind = t.entryTypeTest;
+        color = tokens.calendarTest;
+        sub = [dates.hm(start), a.place].whereType<String>().where((s) => s.isNotEmpty).join(' · ');
+    }
+    return FTile(
+      prefix: DateTile(weekday: dates.weekdayShort(start), day: start.day),
+      title: Text(a.title.isNotEmpty ? a.title : kind),
+      subtitle: Text(sub),
+      details: Text(kind, style: typography.xs.copyWith(fontWeight: FontWeight.w500, color: color)),
     );
   }
 }

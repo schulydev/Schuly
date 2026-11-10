@@ -1,6 +1,8 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart' show LicenseEntryWithLineBreaks, LicenseRegistry;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:forui/forui.dart';
 
 import 'config/backend_config.dart';
@@ -11,11 +13,15 @@ import 'services/school_data_service.dart';
 import 'services/theme_service.dart';
 import 'services/toast_service.dart';
 import 'services/update/update_service.dart';
+import 'ui/core/theme/schuly_theme.dart';
 import 'ui/core/ui/root_screen.dart';
 import 'ui/update/update_dialog.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  LicenseRegistry.addLicense(() async* {
+    yield LicenseEntryWithLineBreaks(const ['Geist'], await rootBundle.loadString('assets/fonts/OFL.txt'));
+  });
   // Nothing before runApp may keep the app on its splash screen: each step is
   // bounded and a failed step keeps its defaults.
   await _startupStep('backend config', BackendConfig.load);
@@ -60,9 +66,9 @@ class SchulyApp extends StatelessWidget {
           supportedLocales: AppLocalizations.supportedLocales,
           themeMode: ThemeService.instance.mode,
           // ignore: experimental_member_use
-          theme: FThemes.zinc.light.toApproximateMaterialTheme(),
+          theme: buildSchulyTheme(Brightness.light, ThemeService.instance.accent).toApproximateMaterialTheme(),
           // ignore: experimental_member_use
-          darkTheme: FThemes.zinc.dark.toApproximateMaterialTheme(),
+          darkTheme: buildSchulyTheme(Brightness.dark, ThemeService.instance.accent).toApproximateMaterialTheme(),
           builder: (ctx, child) {
             final mode = ThemeService.instance.mode;
             final platformDark =
@@ -70,7 +76,7 @@ class SchulyApp extends StatelessWidget {
             final isDark =
                 mode == ThemeMode.dark ||
                 (mode == ThemeMode.system && platformDark);
-            final theme = isDark ? FThemes.zinc.dark : FThemes.zinc.light;
+            final theme = buildSchulyTheme(isDark ? Brightness.dark : Brightness.light, ThemeService.instance.accent);
             return FAnimatedTheme(
               data: theme,
               child: FToaster(
