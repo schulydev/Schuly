@@ -119,7 +119,7 @@ class _ProfilePictureButtonState extends State<ProfilePictureButton> with Single
                   width: 24,
                   height: 24,
                   decoration: BoxDecoration(shape: BoxShape.circle, color: colors.background, border: Border.all(color: colors.border)),
-                  child: _busy ? const Padding(padding: EdgeInsets.all(5), child: FCircularProgress()) : Icon(FIcons.pencil, size: 12, color: colors.foreground),
+                  child: _busy ? Padding(padding: const EdgeInsets.all(5), child: FCircularProgress(style: (s) => s.copyWith(iconStyle: s.iconStyle.copyWith(size: 12)))) : Icon(FIcons.pencil, size: 12, color: colors.foreground),
                 ),
               ),
             ],
