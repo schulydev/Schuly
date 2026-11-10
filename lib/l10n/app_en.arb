@@ -1005,5 +1005,21 @@
   "eventAllDayShort": "All day",
   "accentCustom": "Custom",
   "accentUse": "Use this colour",
-  "accentPreview": "Preview"
+  "accentPreview": "Preview",
+  "requiredUpdateTitle": "Please update Schuly",
+  "requiredUpdateBody": "This version of Schuly no longer works with the server. Update the app to keep using it.",
+  "requiredUpdateInstalled": "Installed",
+  "requiredUpdateRequired": "Required",
+  "requiredUpdateAtLeast": "{version} or newer",
+  "@requiredUpdateAtLeast": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "requiredUpdateUpdate": "Update",
+  "requiredUpdateRecheck": "Check again",
+  "requiredUpdateStillTooOld": "This version is still too old. Update the app first.",
+  "requiredUpdateCheckFailed": "Couldn't reach the server. Check your connection and try again."
 }

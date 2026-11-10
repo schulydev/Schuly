@@ -7,6 +7,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
 import 'secure_store.dart';
+import 'update/required_update_service.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../config/backend_config.dart';
@@ -87,15 +88,32 @@ class AuthService {
 
   static Uri _uri(String path) => Uri.parse('${BackendConfig.url}$path');
 
-  static Future<http.Response> _post(String path, Map<String, Object?> body, {String? accessToken}) {
-    return http.post(
+  /// The app version for the server, so it can ask a too-old app to update.
+  static Map<String, String> get _versionHeader {
+    final version = RequiredUpdateService.instance.headerValue;
+    return version.isEmpty ? const {} : {appVersionHeader: version};
+  }
+
+  /// A 426 "update required" shows the update screen.
+  static http.Response _checkVersion(http.Response response) {
+    if (response.statusCode == 426) {
+      try {
+        RequiredUpdateService.instance.report(response.statusCode, jsonDecode(response.body));
+      } catch (_) {}
+    }
+    return response;
+  }
+
+  static Future<http.Response> _post(String path, Map<String, Object?> body, {String? accessToken}) async {
+    return _checkVersion(await http.post(
       _uri(path),
       headers: {
         HttpHeaders.contentTypeHeader: 'application/json',
         if (accessToken != null) HttpHeaders.authorizationHeader: 'Bearer $accessToken',
+        ..._versionHeader,
       },
       body: jsonEncode(body),
-    ).timeout(const Duration(seconds: 20));
+    ).timeout(const Duration(seconds: 20)));
   }
 
   static AuthException _refusal(http.Response response, String fallback) {
@@ -144,7 +162,7 @@ class AuthService {
   /// The single sign-on providers the server offers; empty when it offers none.
   static Future<List<SignInProvider>> providers() async {
     try {
-      final response = await http.get(_uri('/auth/providers')).timeout(const Duration(seconds: 10));
+      final response = _checkVersion(await http.get(_uri('/auth/providers'), headers: _versionHeader).timeout(const Duration(seconds: 10)));
       if (response.statusCode != 200) return const [];
       return [
         for (final entry in jsonDecode(response.body) as List)

@@ -356,5 +356,14 @@
   "eventAllDayShort": "Ganztägig",
   "accentCustom": "Eigene Farbe",
   "accentUse": "Farbe übernehmen",
-  "accentPreview": "Vorschau"
+  "accentPreview": "Vorschau",
+  "requiredUpdateTitle": "Bitte aktualisiere Schuly",
+  "requiredUpdateBody": "Diese Version von Schuly funktioniert nicht mehr mit dem Server. Aktualisiere die App, um sie weiter zu nutzen.",
+  "requiredUpdateInstalled": "Installiert",
+  "requiredUpdateRequired": "Benötigt",
+  "requiredUpdateAtLeast": "{version} oder neuer",
+  "requiredUpdateUpdate": "Aktualisieren",
+  "requiredUpdateRecheck": "Erneut prüfen",
+  "requiredUpdateStillTooOld": "Diese Version ist immer noch zu alt. Aktualisiere zuerst die App.",
+  "requiredUpdateCheckFailed": "Server nicht erreichbar. Prüfe deine Verbindung und versuche es erneut."
 }
