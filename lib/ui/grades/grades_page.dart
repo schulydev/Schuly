@@ -44,40 +44,38 @@ class _GradesPageState extends State<GradesPage> {
     final mine = svc.myGradesByExam;
     final graded = [for (final e in svc.exams) if (e.id != null && mine.containsKey(e.id)) e];
 
+    // The web's options: semesters newest first, numbered from the first, then "Kein Datum" and "Alle Semester".
     final keys = graded.map((e) => semesterKey(examDay(e))).toList();
-    final options = semesterOptions(keys);
+    final periods = semesterOptions(keys);
     final firstYear = firstSchoolYear(keys);
-    final period = (_period != null && options.contains(_period)) ? _period! : defaultSemesterOption(options);
+    final period = (_period != null && periods.contains(_period)) ? _period! : defaultSemesterOption(periods);
     final subjects = subjectGrades(svc, include: (e) => period == kAllSemesters || semesterKey(examDay(e)) == period, unnamed: t.gradesSubjectFallback);
     final averaged = [for (final s in subjects) if (s.average != null) s.average!];
     final semAvg = semesterAverage(averaged);
     final below = subjects.where((s) => s.average != null && s.average!.grade < 4).toList();
 
-    // The web's semester select: newest first, numbered from the first semester, "No date" and "All semesters" last.
-    final picker = options.isEmpty
-        ? null
-        : Align(
-            alignment: AlignmentDirectional.centerStart,
-            child: SizedBox(
-              width: 224,
-              child: FSelect<int>(
-                style: compactSelect(context),
-                control: FSelectControl<int>.lifted(value: period, onChange: (k) => setState(() => _period = k ?? period)),
-                items: {for (final k in options) semesterOptionLabel(t, k, firstYear): k},
-              ),
-            ),
-          );
-
     final children = <Widget>[
       const SchoolHeader(),
-      PageTitle(t.tabGrades),
+      PageTitle(
+        t.tabGrades,
+        trailing: periods.length > 1
+            ? SizedBox(
+                width: 190,
+                child: FSelect<int>(
+                  style: compactSelect(context),
+                  control: FSelectControl<int>.lifted(value: period, onChange: (k) => setState(() => _period = k ?? period)),
+                  items: {for (final k in periods) semesterOptionLabel(t, k, firstYear): k},
+                ),
+              )
+            : null,
+      ),
     ];
 
     if (graded.isEmpty) {
       children.add(EmptyNote(t.gradesEmpty));
     } else {
       children.addAll([
-        _Summary(average: semAvg, below: below.map((s) => s.name).toList(), label: semesterOptionLabel(t, period, firstYear), picker: picker),
+        _Summary(average: semAvg, below: below.map((s) => s.name).toList(), label: isYearKey(period) ? t.gradesYearAverage : t.gradesSemesterAverage),
         Padding(
           padding: const EdgeInsets.only(top: 12),
           child: Wrap(
@@ -151,12 +149,9 @@ class _LegendItem extends StatelessWidget {
 
 /// The semester average: one number first, what it means, and where it sits on the 1 to 6 scale.
 class _Summary extends StatelessWidget {
-  const _Summary({required this.average, required this.below, required this.label, this.picker});
+  const _Summary({required this.average, required this.below, required this.label});
 
   final double? average;
-
-  /// The semester select, under the scale as on the web.
-  final Widget? picker;
   final List<String> below;
   final String label;
 
@@ -194,7 +189,6 @@ class _Summary extends StatelessWidget {
             ),
           ),
           if (avg != null) _Scale(value: avg),
-          if (picker != null) Padding(padding: const EdgeInsets.only(top: 14), child: picker!),
         ],
       ),
     );
