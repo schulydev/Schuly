@@ -2,13 +2,12 @@ import 'package:flutter/widgets.dart';
 import 'package:forui/forui.dart';
 import 'package:schuly_api/schuly_api.dart';
 
-import '../../domain/absence_rows.dart';
+import '../../domain/absence_status.dart';
 import '../../domain/grade_math.dart';
 import '../../l10n/app_localizations.dart';
 import '../../services/reported_absences.dart';
 import '../../services/school_data_service.dart';
 import '../absences/absence_detail_sheet.dart';
-import '../absences/absences_page.dart' show absenceRowsNow;
 import '../core/dates.dart';
 import '../core/theme/schuly_theme.dart';
 import '../core/ui/kit.dart';
@@ -89,8 +88,8 @@ class _HomePageState extends State<HomePage> {
 
     final names = subjectNames(svc);
     final grades = latestGradedExams(svc);
-    // The absences that still ask something of the student or the school, as the web's statuses say.
-    final unexcused = absenceRowsNow().where((r) => const {AbsenceState.needsExcuse, AbsenceState.unexcused, AbsenceState.rejected, AbsenceState.waiting}.contains(r.state)).toList();
+    final reported = ReportedAbsences.instance.reported;
+    final unexcused = unexcusedAbsences(svc.absences);
     final upcoming = comingUp(svc.agenda, now);
 
     final firstName = svc.me?.firstName.trim().isNotEmpty == true ? svc.me!.firstName.trim() : DashboardScope.maybeOf(context)?.userName?.split(' ').first;
@@ -132,7 +131,7 @@ class _HomePageState extends State<HomePage> {
             divider: FItemDivider.full,
             children: [
               for (final a in unexcused.take(kHomeMaxItems))
-                _absenceTile(context, t, dates, a),
+                _absenceTile(context, t, dates, a, absenceState(a, reported)),
             ],
           ),
         ],
@@ -148,12 +147,15 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  FTile _absenceTile(BuildContext context, AppLocalizations t, Dates dates, AbsenceRow a) {
-    final status = absenceStatusLabel(context, a);
+  FTile _absenceTile(BuildContext context, AppLocalizations t, Dates dates, AbsenceDto a, AbsenceState state) {
+    final tokens = context.tokens;
+    final from = a.from.toLocal();
+    final waiting = state == AbsenceState.waiting;
     return FTile(
-      prefix: DateTile(weekday: dates.weekdayShort(a.from), day: a.from.day),
-      title: Text(absenceReasonLine(t, a)),
-      subtitle: status ?? Text(absenceDetail(t, a) ?? absenceRange(dates, a)),
+      prefix: DateTile(weekday: dates.weekdayShort(from), day: from.day),
+      title: Text(absenceTitle(t, a)),
+      subtitle: Text(absenceExtent(t, dates, a) ?? absenceWhen(dates, a)),
+      details: Text(waiting ? t.absenceWaiting : t.absenceNeedsExcuseShort, style: context.theme.typography.xs.copyWith(fontWeight: FontWeight.w500, color: waiting ? tokens.warn : tokens.bad)),
       onPress: () => showAbsenceDetail(context, a),
     );
   }

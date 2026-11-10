@@ -97,7 +97,7 @@ void main() {
     await tester.pump();
 
     expect(find.textContaining(RegExp(r'^Exam \d$')), findsNWidgets(3));
-    expect(find.textContaining(RegExp(r'^Reason \d$')), findsNWidgets(3));
+    expect(find.textContaining(RegExp(r'^Absence · Reason \d$')), findsNWidgets(3));
     expect(find.textContaining(RegExp(r'^Test \d$')), findsNWidgets(3));
     expect(find.text('Unexcused absences'), findsOneWidget);
   });

@@ -38,21 +38,21 @@ void main() {
       _absence('late', DateTime(2026, 9, 1, 8), excused: false),
     ]);
     final byKey = {for (final r in rows) r.key: r};
-    expect(byKey['excused']!.state, AbsenceState.excused);
-    expect(byKey['waiting']!.state, AbsenceState.waiting);
+    expect(byKey['excused']!.state, RowState.excused);
+    expect(byKey['waiting']!.state, RowState.waiting);
     expect(byKey['waiting']!.waitingFor, StepKind.lehrmeister);
-    expect(byKey['rejected']!.state, AbsenceState.rejected);
+    expect(byKey['rejected']!.state, RowState.rejected);
     expect(byKey['rejected']!.rejectedBy, StepKind.parents);
-    expect(byKey['due']!.state, AbsenceState.needsExcuse);
+    expect(byKey['due']!.state, RowState.needsExcuse);
     expect(byKey['due']!.due, DateTime(2026, 11, 19));
     expect(byKey['due']!.dueExpected, isFalse);
-    expect(byKey['late']!.state, AbsenceState.unexcused);
+    expect(byKey['late']!.state, RowState.unexcused);
     expect(rows.first.key, 'due');
   });
 
   test('BBB expects 14 days and offers the print form while the Lehrmeister has not confirmed', () {
     final row = _rows([_absence('a', DateTime(2026, 11, 3, 8), excused: false)], bbb: true).single;
-    expect(row.state, AbsenceState.needsExcuse);
+    expect(row.state, RowState.needsExcuse);
     expect(row.due, DateTime(2026, 11, 17));
     expect(row.dueExpected, isTrue);
     expect(row.printUrl, 'https://schulnetz.bbbaden.ch/');
@@ -65,11 +65,11 @@ void main() {
     expect(rows, hasLength(2));
     expect(rows.last.key, 'a');
     expect(rows.last.report, report);
-    expect(rows.last.state, AbsenceState.waiting);
+    expect(rows.last.state, RowState.waiting);
     expect(rows.last.waitingFor, StepKind.school);
     expect(rows.first.report, alone);
     expect(rows.first.time, '08:15 – 09:50');
-    expect(rows.first.state, AbsenceState.waiting);
+    expect(rows.first.state, RowState.waiting);
   });
 
   test('days missed count weekdays once, lessons only when the school sent them', () {

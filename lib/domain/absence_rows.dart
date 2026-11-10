@@ -62,8 +62,8 @@ List<AbsenceStep> absenceSteps({required bool reported, String? parentStatus, St
   return steps;
 }
 
-/// Where an absence stands, as the web app words it.
-enum AbsenceState { excused, needsExcuse, unexcused, waiting, rejected, upcoming, unknown }
+/// Where an absence stands, as the web app words it (the drawer's status).
+enum RowState { excused, needsExcuse, unexcused, waiting, rejected, upcoming, unknown }
 
 /// One absence as the web's Absences page shows it: a report and the absence it became share one row.
 class AbsenceRow {
@@ -82,7 +82,7 @@ class AbsenceRow {
   /// The reason, or null for "Absent".
   final String? reason;
   final String? note;
-  final AbsenceState state;
+  final RowState state;
 
   /// The step being waited for, when [state] is waiting.
   final StepKind? waitingFor;
@@ -176,28 +176,28 @@ AbsenceRow _buildRow(AbsenceDto? absence, ReportedAbsence? report, {required Dat
   final schoolDeadline = _parseDay(absence?.excuseDeadline);
   final deadline = schoolDeadline ?? (bbb && !isDelay ? until.add(const Duration(days: _bbbExcuseDays)) : null);
 
-  AbsenceState state;
+  RowState state;
   DateTime? due;
   if (excused) {
-    state = AbsenceState.excused;
+    state = RowState.excused;
   } else if (rejectedBy != null) {
-    state = AbsenceState.rejected;
+    state = RowState.rejected;
   } else if (waitingFor != null && waitingFor != StepKind.reported) {
-    state = AbsenceState.waiting;
+    state = RowState.waiting;
   } else if (future) {
-    state = AbsenceState.upcoming;
+    state = RowState.upcoming;
   } else if (absence?.isExcused == false && !isDelay && deadline != null && !deadline.isBefore(today)) {
-    state = AbsenceState.needsExcuse;
+    state = RowState.needsExcuse;
     due = deadline;
   } else if (absence?.isExcused == false) {
-    state = AbsenceState.unexcused;
+    state = RowState.unexcused;
   } else {
-    state = AbsenceState.unknown;
+    state = RowState.unknown;
   }
 
   final trainer = approvalState(absence?.trainerStatus);
   final trainerDone = trainer == ApprovalState.confirmed || trainer == ApprovalState.excused;
-  final canPrint = bbb && !isDelay && !trainerDone && (state == AbsenceState.needsExcuse || state == AbsenceState.waiting);
+  final canPrint = bbb && !isDelay && !trainerDone && (state == RowState.needsExcuse || state == RowState.waiting);
   final reportTime = report?.hourFrom != null && report?.hourTo != null ? '${report!.hourFrom} – ${report.hourTo}' : null;
 
   String? text(String? s) => (s == null || s.trim().isEmpty) ? null : s.trim();
@@ -211,7 +211,7 @@ AbsenceRow _buildRow(AbsenceDto? absence, ReportedAbsence? report, {required Dat
     reason: text(absence?.reason) ?? text(report?.reason),
     note: text(absence?.comment) ?? text(report?.comment),
     state: state,
-    waitingFor: state == AbsenceState.waiting ? waitingFor : null,
+    waitingFor: state == RowState.waiting ? waitingFor : null,
     rejectedBy: rejectedBy,
     due: due,
     dueExpected: schoolDeadline == null,
