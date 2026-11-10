@@ -10,6 +10,7 @@ class ThemeService extends ChangeNotifier {
 
   static const _modeKey = 'settings.theme_mode';
   static const _accentKey = 'settings.theme_accent';
+  static const _customKey = 'settings.theme_accent_custom';
 
   ThemeMode _mode = ThemeMode.system;
   ThemeMode get mode => _mode;
@@ -24,6 +25,8 @@ class ThemeService extends ChangeNotifier {
       'dark' => ThemeMode.dark,
       _ => ThemeMode.system,
     };
+    final custom = prefs.getInt(_customKey);
+    if (custom != null) AppAccent.customColor = Color(custom);
     _accent = AppAccent.fromName(prefs.getString(_accentKey));
     notifyListeners();
   }
@@ -42,5 +45,17 @@ class ThemeService extends ChangeNotifier {
     notifyListeners();
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_accentKey, accent.name);
+  }
+
+  /// The colour picked on the wheel, which becomes the accent.
+  Color get customColor => AppAccent.customColor;
+
+  Future<void> setCustomColor(Color color) async {
+    AppAccent.customColor = color.withValues(alpha: 1);
+    _accent = AppAccent.custom;
+    notifyListeners();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(_customKey, AppAccent.customColor.toARGB32());
+    await prefs.setString(_accentKey, AppAccent.custom.name);
   }
 }

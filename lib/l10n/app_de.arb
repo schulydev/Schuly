@@ -346,5 +346,8 @@
   "eventFrom": "Aus {source}",
   "eventJoin": "Besprechung beitreten",
   "eventOpenOutlook": "In Outlook öffnen",
-  "eventAllDayShort": "Ganztägig"
+  "eventAllDayShort": "Ganztägig",
+  "accentCustom": "Eigene Farbe",
+  "accentUse": "Farbe übernehmen",
+  "accentPreview": "Vorschau"
 }

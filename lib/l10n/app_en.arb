@@ -988,5 +988,8 @@
   },
   "eventJoin": "Join meeting",
   "eventOpenOutlook": "Open in Outlook",
-  "eventAllDayShort": "All day"
+  "eventAllDayShort": "All day",
+  "accentCustom": "Custom",
+  "accentUse": "Use this colour",
+  "accentPreview": "Preview"
 }

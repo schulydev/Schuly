@@ -16,6 +16,7 @@ import '../../services/theme_service.dart';
 import 'notification_settings_section.dart';
 import 'privacy_settings_section.dart';
 import 'update_settings_section.dart';
+import 'accent_wheel.dart';
 import 'settings_card.dart';
 import '../core/theme/schuly_theme.dart';
 import '../core/ui/kit.dart';
@@ -287,7 +288,7 @@ class _ServerDialogState extends State<_ServerDialog> {
   }
 }
 
-/// Appearance: the six accent swatches and System, Light or Dark.
+/// Appearance: the six accent swatches, the colour wheel, and System, Light or Dark.
 class _AppearanceCard extends StatelessWidget {
   const _AppearanceCard();
 
@@ -311,7 +312,10 @@ class _AppearanceCard extends StatelessWidget {
                 padding: const EdgeInsets.fromLTRB(8, 6, 8, 10),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [for (final a in AppAccent.values) AccentSwatch(accent: a, brightness: brightness, selected: a == svc.accent, label: accentName(t, a), onPress: () => svc.setAccent(a))],
+                  children: [
+                    for (final a in AppAccent.presets) AccentSwatch(accent: a, brightness: brightness, selected: a == svc.accent, label: accentName(t, a), onPress: () => svc.setAccent(a)),
+                    RainbowSwatch(selected: svc.accent == AppAccent.custom, label: t.accentCustom, onPress: () => showAccentWheel(context)),
+                  ],
                 ),
               ),
               Padding(
@@ -345,6 +349,7 @@ String accentName(AppLocalizations t, AppAccent a) => switch (a) {
       AppAccent.green => t.accentGreen,
       AppAccent.orange => t.accentOrange,
       AppAccent.rose => t.accentRose,
+      AppAccent.custom => t.accentCustom,
     };
 
 /// One accent colour: a filled circle, ringed with a check mark when chosen.
