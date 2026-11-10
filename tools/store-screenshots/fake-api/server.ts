@@ -203,6 +203,35 @@ const outlookEvents = [
   { id: "ev4", title: "Training", start: at("2026-11-13", "18:00"), end: at("2026-11-13", "19:30"), isAllDay: false, location: "Sporthalle", organizer: null, preview: null, webLink: "https://outlook.office.com/calendar/item/ev4", joinUrl: null },
 ].map((e) => ({ ...e, accountId: MS_ACC, showAs: "busy", isCancelled: false }));
 
+// A made-up Lernendenausweis shaped like the Schulnetz one: elements placed absolutely with inline CSS, `data:` images,
+// and taller than a phone's card area, so the page has to show all of it.
+const qr = (() => {
+  let cells = "";
+  for (let y = 0; y < 25; y++) for (let x = 0; x < 25; x++) {
+    const finder = (a: number, b: number) => a >= 0 && a < 7 && b >= 0 && b < 7 && (a === 0 || a === 6 || b === 0 || b === 6 || (a > 1 && a < 5 && b > 1 && b < 5));
+    if (finder(x, y) || finder(x - 18, y) || finder(x, y - 18) || (!(x < 8 && y < 8) && !(x > 16 && y < 8) && !(x < 8 && y > 16) && (x * 7 + y * 13 + x * y) % 3 === 0)) cells += `<rect x="${x}" y="${y}" width="1" height="1"/>`;
+  }
+  return "data:image/svg+xml;base64," + Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 25 25">${cells}</svg>`).toString("base64");
+})();
+const studentIdCardHtml = async () => {
+  const photo = "data:image/jpeg;base64," + Buffer.from(await Bun.file(STATIC + "/mia.jpg").arrayBuffer()).toString("base64");
+  const t = "position:absolute;font-family:Arial,sans-serif;color:#111;";
+  return `<div style="position:absolute;left:0;top:0;width:340px;height:44px;background:#0b5394"></div>`
+    + `<div style="${t}left:16px;top:12px;font-size:16px;font-weight:bold;color:#fff">Lernendenausweis 2026/27</div>`
+    + `<div style="${t}left:16px;top:60px;font-size:13px">Berufsfachschule Beispielstadt</div>`
+    + `<img src="${photo}" style="position:absolute;left:16px;top:90px;width:150px;height:200px;object-fit:cover">`
+    + `<div style="${t}left:16px;top:306px;font-size:11px;color:#555">Name</div><div style="${t}left:16px;top:322px;font-size:18px;font-weight:bold">Muster</div>`
+    + `<div style="${t}left:16px;top:352px;font-size:11px;color:#555">Vorname</div><div style="${t}left:16px;top:368px;font-size:18px;font-weight:bold">Mia</div>`
+    + `<div style="${t}left:16px;top:398px;font-size:11px;color:#555">Geburtsdatum</div><div style="${t}left:16px;top:414px;font-size:15px">14.03.2009</div>`
+    + `<div style="${t}left:16px;top:442px;font-size:11px;color:#555">Ausbildung</div><div style="${t}left:16px;top:458px;font-size:15px">Informatikerin EFZ</div>`
+    + `<img src="${qr}" style="position:absolute;left:70px;top:496px;width:200px;height:200px">`
+    + `<div style="${t}left:16px;top:712px;font-size:12px;color:#555">Gültig bis 31.07.2027</div>`
+    + `<div style="position:absolute;left:0;top:740px;width:340px;height:16px;background:#0b5394"></div>`;
+};
+
+// SLOW=<ms> holds back the student ID card and the picture upload, to see their spinners.
+const slow = () => Bun.sleep(Number(process.env.SLOW ?? 0));
+
 const tokens = () => ({ access_token: "fake-access-" + Date.now(), refresh_token: "fake-refresh", expires_in: 86400, token_type: "Bearer" });
 
 const routes: Record<string, (req: Request, url: URL) => any> = {
@@ -234,6 +263,7 @@ const routes: Record<string, (req: Request, url: URL) => any> = {
     return { accounts: [{ id: MS_ACC, email: "mia.muster@bfs-beispielstadt.ch", displayName: "Mia Muster", status: "ok", message: null }], events };
   },
   "PUT /api/me/avatar": async (req) => {
+    await slow();
     const form = await req.formData();
     const file = form.get("file") as File | null;
     if (!file) return new Response(JSON.stringify({ message: "no file" }), { status: 400 });
@@ -251,6 +281,10 @@ const routes: Record<string, (req: Request, url: URL) => any> = {
   [`GET ${BASE}/accounts/${ACC}/sync`]: () => ({ lastSync: minutesAgo(12), syncStatus: "Up to date", syncError: null }),
   [`POST ${BASE}/accounts/${ACC}/sync`]: () => null,
   [`GET ${BASE}/accounts/${ACC}/absences/reported`]: () => reported,
+  [`GET ${BASE}/accounts/${ACC}/student-id-card`]: async () => {
+    await slow();
+    return { html: await studentIdCardHtml(), fetchedAt: nowIso(), source: "mobile" };
+  },
   [`GET ${BASE}/accounts/${ACC}/absences/reasons`]: () => ["Krankheit", "Arzttermin", "Unfall", "Familiäre Gründe", "Militär / Zivilschutz"],
 };
 
