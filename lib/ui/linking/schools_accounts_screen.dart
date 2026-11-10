@@ -9,7 +9,6 @@ import '../../services/linking_service.dart';
 import '../../services/school_data_service.dart';
 import '../../services/toast_service.dart';
 import '../core/theme/schuly_theme.dart';
-import '../core/ui/auth_image.dart';
 import '../core/ui/kit.dart';
 import 'add_account_flow.dart';
 import 'provider_icon.dart';
@@ -173,8 +172,8 @@ class _SchoolsAccountsScreenState extends State<SchoolsAccountsScreen> {
                 children: [
                   for (final a in entry.value)
                     FTile(
-                      // The provider's logo and the account's own picture, split diagonally; only the logo when it has no picture.
-                      prefix: a.isProviderError ? null : _AccountAvatar(account: a, provider: _c.provider(a.providerId), size: 36),
+                      // The account's own picture, as on the web's account cards; initials when it has none.
+                      prefix: a.isProviderError ? null : Avatar(url: a.pictureUrl, name: a.title, size: 36),
                       title: Text(a.isProviderError ? t.accountsProviderFailed(a.providerName) : a.title),
                       subtitle: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -199,77 +198,6 @@ class _SchoolsAccountsScreenState extends State<SchoolsAccountsScreen> {
 }
 
 /// A provider's logo, name and what it gives Schuly.
-/// An account's round picture, cut diagonally from top right to bottom left: the provider's logo in the top-left half,
-/// the account's own picture in the bottom-right half. Only the logo when the account has no picture, and the initial
-/// when the provider is unknown.
-class _AccountAvatar extends StatelessWidget {
-  const _AccountAvatar({required this.account, required this.provider, required this.size});
-
-  final LinkedAccount account;
-  final LinkProvider? provider;
-  final double size;
-
-  @override
-  Widget build(BuildContext context) {
-    final provider = this.provider;
-    if (provider == null) return Avatar(url: account.pictureUrl, name: account.title, size: size);
-    Widget logo(double s) => ProviderIcon(id: provider.id, lucide: provider.lucide, svgUrl: provider.svgUrl, size: s);
-    final url = account.pictureUrl;
-    if (url == null || url.isEmpty) return FAvatar.raw(size: size, child: logo(size * 0.5));
-    final colors = context.theme.colors;
-    return ClipOval(
-      child: SizedBox.square(
-        dimension: size,
-        child: Stack(
-          children: [
-            Positioned.fill(
-              child: ClipPath(
-                clipper: const _DiagonalHalf(topLeft: true),
-                child: ColoredBox(color: colors.muted),
-              ),
-            ),
-            // Centred in the top-left half disc, clear of the cut.
-            Positioned(left: size * 0.16, top: size * 0.16, child: logo(size * 0.32)),
-            Positioned.fill(
-              child: ClipPath(
-                clipper: const _DiagonalHalf(topLeft: false),
-                child: Image(image: AuthImage(url), fit: BoxFit.cover, errorBuilder: (_, _, _) => ColoredBox(color: colors.muted)),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-/// One side of the cut from the top-right to the bottom-left corner, leaving a thin gap along it.
-class _DiagonalHalf extends CustomClipper<Path> {
-  const _DiagonalHalf({required this.topLeft});
-
-  final bool topLeft;
-
-  @override
-  Path getClip(Size size) {
-    const gap = 1.0;
-    final w = size.width, h = size.height;
-    return topLeft
-        ? (Path()
-            ..moveTo(0, 0)
-            ..lineTo(w - gap, 0)
-            ..lineTo(0, h - gap)
-            ..close())
-        : (Path()
-            ..moveTo(w, gap)
-            ..lineTo(w, h)
-            ..lineTo(gap, h)
-            ..close());
-  }
-
-  @override
-  bool shouldReclip(_DiagonalHalf old) => old.topLeft != topLeft;
-}
-
 class _ProviderHead extends StatelessWidget {
   const _ProviderHead({required this.name, required this.provider});
 
