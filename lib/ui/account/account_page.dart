@@ -23,7 +23,7 @@ import '../documents/documents_page.dart';
 import '../linking/schools_accounts_screen.dart';
 import '../settings/settings_screen.dart';
 import 'profile_picture.dart';
-import 'student_id_sheet.dart';
+import 'student_id_page.dart';
 import 'teachers_screen.dart';
 
 /// Account: the Schuly account on top; below it what belongs to the school picked in the Schools sheet (the
@@ -264,8 +264,7 @@ class _AccountPageState extends State<AccountPage> {
               title: Text(t.studentIdTitle),
               details: Text(t.accountShow),
               suffix: chevron(),
-              enabled: me != null,
-              onPress: me == null ? null : () => showStudentId(context, StudentId.fromProfile(me, schoolName: active?.fullName ?? me.schoolName, photoUrl: schoolPicture ?? widget.pictureUrl)),
+              onPress: () => openStudentId(context, me == null ? null : StudentId.fromProfile(me, schoolName: active?.fullName ?? me.schoolName, photoUrl: schoolPicture ?? widget.pictureUrl)),
             ),
           ],
         ),
