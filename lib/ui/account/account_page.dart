@@ -252,7 +252,9 @@ class _AccountPageState extends State<AccountPage> {
           divider: FItemDivider.full,
           children: [
             FTile(
-              style: (s) => s.copyWith(contentStyle: (c) => c.copyWith(padding: const EdgeInsetsDirectional.fromSTEB(16, 14, 16, 14))),
+              style: (s) => s.copyWith(contentStyle: (c) => c.copyWith(padding: const EdgeInsetsDirectional.fromSTEB(16, 14, 16, 14), prefixIconSpacing: 12)),
+              // The picture of the account this school comes from, else the one the school holds.
+              prefix: Avatar(url: _linked.accounts.where((a) => a.id == active?.pluginAccountId).firstOrNull?.pictureUrl ?? active?.profilePictureUrl, name: active?.fullName ?? active?.name ?? me?.schoolName, size: 40),
               title: Text(active?.fullName?.isNotEmpty == true ? active!.fullName! : (active?.name ?? me?.schoolName ?? '-'), style: typography.base.copyWith(fontWeight: FontWeight.w600)),
               subtitle: active?.name != null && active?.fullName?.isNotEmpty == true ? Text(active!.name) : null,
             ),

@@ -172,6 +172,8 @@ class _SchoolsAccountsScreenState extends State<SchoolsAccountsScreen> {
                 children: [
                   for (final a in entry.value)
                     FTile(
+                      // The account's own picture, as on the web's account cards; initials when it has none.
+                      prefix: a.isProviderError ? null : Avatar(url: a.pictureUrl, name: a.title, size: 36),
                       title: Text(a.isProviderError ? t.accountsProviderFailed(a.providerName) : a.title),
                       subtitle: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,

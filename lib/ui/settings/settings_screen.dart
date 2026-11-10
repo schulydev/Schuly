@@ -16,10 +16,12 @@ import '../../services/theme_service.dart';
 import 'notification_settings_section.dart';
 import 'privacy_settings_section.dart';
 import 'update_settings_section.dart';
+import '../account/profile_picture.dart';
 import 'accent_wheel.dart';
 import 'settings_card.dart';
 import '../core/theme/schuly_theme.dart';
 import '../core/ui/kit.dart';
+import '../core/ui/sheet.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -103,15 +105,26 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
   }
 
+  /// The same choice as on the Account tab's picture: upload one, or remove it. The dashboard reloads the profile.
   Future<void> _openProfilePicture() async {
-    final url = Uri.parse('${BackendConfig.url}/settings');
-    if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
-      if (mounted) {
-        showFToast(context: context, title: Text(AppLocalizations.of(context)!.settingsOpenFailed));
-      }
-      return;
-    }
-    ProfileRefreshRequests.request();
+    final t = AppLocalizations.of(context)!;
+    final choice = await showSchulySheet<bool>(
+      context,
+      builder: (ctx) => SchulySheet(
+        title: t.profileChangePicture,
+        action: t.cancel,
+        body: FTileGroup(
+          divider: FItemDivider.full,
+          children: [
+            FTile(title: Text(t.profileUpload), onPress: () => Navigator.of(ctx).pop(true)),
+            FTile(title: Text(t.profileRemove, style: TextStyle(color: ctx.theme.colors.destructive)), onPress: () => Navigator.of(ctx).pop(false)),
+          ],
+        ),
+      ),
+    );
+    if (choice == null) return;
+    final changed = choice ? await uploadProfilePicture(t) : await removeProfilePicture(t);
+    if (changed) ProfileRefreshRequests.request();
   }
 
   Future<void> _openServerDialog() async {

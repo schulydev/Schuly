@@ -18,10 +18,14 @@ bool isBackendUrl(String url) {
 final Dio _plain = Dio(BaseOptions(connectTimeout: const Duration(seconds: 10), receiveTimeout: const Duration(seconds: 30)));
 final Map<String, Future<Uint8List>> _bytes = {};
 
-/// The bytes of an image. A Schuly server image goes through [ApiClient], which sends the bearer token (and renews
-/// it), so no user picture is ever fetched anonymously; anything else, such as a school's own logo host, is a plain
-/// GET. Kept per URL for the session; a failure is forgotten so the next build tries again.
+/// The bytes of an image. A Schuly server image (`/api/avatars/...`, which answers 401 without a token) goes through
+/// [ApiClient], which sends the bearer token and renews it, so no picture is ever fetched anonymously; a `data:` URL is
+/// decoded in place, and an external https URL is a plain GET. Kept per URL for the session: the server changes the
+/// `?v=` hash when a picture changes. A failure (401, 404, offline) is forgotten so a later build tries again, and the
+/// widgets show initials meanwhile.
 Future<Uint8List> fetchImageBytes(String url) => _bytes.putIfAbsent(url, () async {
+      // A picture the server inlines as a data URL needs no request at all.
+      if (url.startsWith('data:')) return UriData.parse(url).contentAsBytes();
       try {
         final options = Options(responseType: ResponseType.bytes);
         final res = isBackendUrl(url) ? await ApiClient.instance.dio.get<List<int>>(url, options: ApiClient.handled(options)) : await _plain.get<List<int>>(url, options: options);

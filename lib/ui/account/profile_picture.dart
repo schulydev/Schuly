@@ -21,6 +21,36 @@ DioMediaType? _mediaType(String name, String? mime) {
   return null;
 }
 
+/// Lets the student pick a photo and sends it to `PUT /api/me/avatar` with the account's token. True when the server
+/// took it; a too large picture or a failure is said in a toast.
+Future<bool> uploadProfilePicture(AppLocalizations t) async {
+  // Scaled down on the phone, so a camera photo fits the 2 MB the server takes.
+  final picked = await ImagePicker().pickImage(source: ImageSource.gallery, maxWidth: 1024, maxHeight: 1024, imageQuality: 85);
+  if (picked == null) return false;
+  final bytes = await picked.readAsBytes();
+  final type = _mediaType(picked.name, picked.mimeType);
+  if (bytes.length > _maxBytes || type == null) {
+    ToastService.error(t.profileChangePicture, t.profileTooLarge);
+    return false;
+  }
+  return _send(t, () => ApiClient.instance.api.getMeApi().apiMeAvatarPut(file: MultipartFile.fromBytes(bytes, filename: picked.name, contentType: type)));
+}
+
+/// Removes the picture (`DELETE /api/me/avatar`). True when the server took it.
+Future<bool> removeProfilePicture(AppLocalizations t) => _send(t, () => ApiClient.instance.api.getMeApi().apiMeAvatarDelete());
+
+Future<bool> _send(AppLocalizations t, Future<void> Function() change) async {
+  try {
+    await change();
+    // The picture may keep its address, so drop the cached one.
+    clearFetchedImages();
+    return true;
+  } on DioException catch (_) {
+    ToastService.error(t.profileChangePicture, t.profileUploadFailed);
+    return false;
+  }
+}
+
 /// The Schuly account's picture with a pencil on it; tapping opens the web's small menu: upload a picture, or remove
 /// the one there is. [onChanged] runs after the server took the change, to load the new picture.
 class ProfilePictureButton extends StatefulWidget {
@@ -45,39 +75,15 @@ class _ProfilePictureButtonState extends State<ProfilePictureButton> with Single
     super.dispose();
   }
 
-  Future<void> _run(Future<void> Function() change) async {
+  Future<void> _change(Future<bool> Function(AppLocalizations t) change) async {
     final t = AppLocalizations.of(context)!;
+    await _menu.hide();
     setState(() => _busy = true);
     try {
-      await change();
-      // The picture may keep its address, so drop the cached one.
-      clearFetchedImages();
-      await widget.onChanged();
-    } on DioException catch (_) {
-      ToastService.error(t.profileChangePicture, t.profileUploadFailed);
+      if (await change(t)) await widget.onChanged();
     } finally {
       if (mounted) setState(() => _busy = false);
     }
-  }
-
-  Future<void> _upload() async {
-    final t = AppLocalizations.of(context)!;
-    await _menu.hide();
-    // Scaled down on the phone, so a camera photo fits the 2 MB the server takes.
-    final picked = await ImagePicker().pickImage(source: ImageSource.gallery, maxWidth: 1024, maxHeight: 1024, imageQuality: 85);
-    if (picked == null) return;
-    final bytes = await picked.readAsBytes();
-    final type = _mediaType(picked.name, picked.mimeType);
-    if (bytes.length > _maxBytes || type == null) {
-      ToastService.error(t.profileChangePicture, t.profileTooLarge);
-      return;
-    }
-    await _run(() => ApiClient.instance.api.getMeApi().apiMeAvatarPut(file: MultipartFile.fromBytes(bytes, filename: picked.name, contentType: type)));
-  }
-
-  Future<void> _remove() async {
-    await _menu.hide();
-    await _run(() => ApiClient.instance.api.getMeApi().apiMeAvatarDelete());
   }
 
   @override
@@ -92,8 +98,8 @@ class _ProfilePictureButtonState extends State<ProfilePictureButton> with Single
       menu: [
         FTileGroup(
           children: [
-            FTile(title: Text(t.profileUpload), onPress: _upload),
-            if (hasPicture) FTile(title: Text(t.profileRemove, style: TextStyle(color: colors.destructive)), onPress: _remove),
+            FTile(title: Text(t.profileUpload), onPress: () => _change(uploadProfilePicture)),
+            if (hasPicture) FTile(title: Text(t.profileRemove, style: TextStyle(color: colors.destructive)), onPress: () => _change(removeProfilePicture)),
           ],
         ),
       ],
