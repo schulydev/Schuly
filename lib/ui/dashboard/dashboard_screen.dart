@@ -167,6 +167,7 @@ class _DashboardScreenState extends State<DashboardScreen> with WidgetsBindingOb
             userEmail: _userEmail,
             onSignOut: widget.onSignOut,
             visible: _index == 4,
+            onProfileChanged: _loadProfile,
           ),
         ];
 
