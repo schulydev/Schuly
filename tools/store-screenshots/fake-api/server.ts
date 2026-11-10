@@ -1,6 +1,9 @@
 // Fake Schuly API with made-up data for the app screenshots. Nothing here is real.
 // Usage: bun tools/store-screenshots/fake-api/server.ts   (PORT=5591 by default; the emulator reaches it at http://10.0.2.2:5591)
 const PORT = Number(process.env.PORT ?? 5591);
+// EXTRAS=1 adds what the store shots leave out: the school's approval fields on absences, a linked Microsoft account
+// with an Outlook calendar, the other providers, and a profile picture that can be changed.
+const EXTRAS = process.env.EXTRAS === "1";
 const STATIC = import.meta.dir + "/static";
 
 // Europe/Zurich offset: CEST between last Sunday of March and last Sunday of October.
@@ -135,6 +138,14 @@ const absences = [
   { id: "ab-6", reason: "Bus verpasst", type: "Delay", from: at("2026-08-25", "08:15"), until: at("2026-08-25", "08:25"), isExcused: true, schoolUserId: ME, schoolId: SCHOOL },
   { id: "ab-4", reason: "Grippe", type: "Absence", from: at("2026-09-01", "08:15"), until: at("2026-09-04", "15:15"), isExcused: true, schoolUserId: ME, schoolId: SCHOOL },
 ];
+if (EXTRAS) {
+  Object.assign(absences.find((a) => a.id === "ab-1")!, { parentStatus: "ofAge", trainerStatus: "open", comment: "Arztzeugnis liegt bei", excuseDeadline: "2026-11-17", lessons: 6 });
+  absences.push(
+    { id: "ab-7", reason: "Familiäre Gründe", type: "Absence", from: at("2026-11-06", "12:45"), until: at("2026-11-06", "15:15"), isExcused: false, schoolUserId: ME, schoolId: SCHOOL, parentStatus: "ofAge", trainerStatus: "declined", trainerComment: "Bitte vorher absprechen", lessons: 3 } as any,
+    { id: "ab-8", reason: "Krankheit", type: "Absence", from: at("2026-11-09", "08:15"), until: at("2026-11-09", "15:15"), isExcused: false, schoolUserId: ME, schoolId: SCHOOL, excuseDeadline: "2026-11-23", lessons: 7 } as any,
+  );
+  for (const a of absences) if (a.isExcused && !(a as any).lessons && a.type === "Absence") (a as any).lessons = 2;
+}
 const reported = [
   { ids: ["rep-1", "rep-2"], dateFrom: "2026-11-10", dateTo: "2026-11-10", hourFrom: "08:15", hourTo: "11:45", reason: "Arzttermin", comment: "Zeugnis folgt", profiles: ["M164", "Englisch"], reportedAt: at("2026-11-05", "18:12") },
 ];
@@ -157,6 +168,10 @@ const documents = [
   { id: "doc-2", schoolUserId: ME, title: "Bestätigung Lehrverhältnis", category: "Bestätigung", enteredBy: "Sekretariat", fileName: "Bestaetigung.pdf", fileSizeBytes: 92160, createdAt: at("2026-08-17", "09:30") },
 ];
 
+let picture: string | null = "/static/mia.jpg";
+let uploaded: { bytes: Uint8Array; type: string } | null = null;
+let pictureVersion = 0;
+
 const nowIso = () => new Date().toISOString();
 const minutesAgo = (m: number) => new Date(Date.now() - m * 60000).toISOString();
 const linkedAccount = () => ({
@@ -165,16 +180,39 @@ const linkedAccount = () => ({
   capabilities: [{ kind: "school_data", label: "School data" }, { kind: "absence_reporting", label: "Absence reporting", basePath: `${BASE}/accounts` }],
 });
 
+const MS_ACC = "acc-ms";
+const microsoftAccount = () => ({
+  providerId: "microsoft", providerName: "Microsoft", id: MS_ACC, title: "mia.muster@bfs-beispielstadt.ch", detail: "Mia Muster", status: "ok",
+  pictureUrl: `/api/avatars/accounts/${MS_ACC}?v=1`,
+  linkedAt: "2026-09-01T08:00:00Z", lastSyncedAt: minutesAgo(5), canReauth: true,
+  capabilities: [{ kind: "mail", label: "Mail" }, { kind: "calendar", label: "Calendar", basePath: "/api/plugins/microsoft/calendar" }],
+});
+const providers = () => [
+  { id: "schulportal", displayName: "Schulportal", description: "Grades, timetable and absences from your school", icon: { lucide: "graduation-cap" }, capabilities: [{ kind: "school_data", label: "School data" }, { kind: "absence_reporting", label: "Absence reporting" }], flows: [], sortOrder: 0 },
+  ...(EXTRAS ? [
+    { id: "schulnetz", displayName: "Schulnetz", description: "Noten, Stundenplan und Absenzen", icon: { lucide: "graduation-cap" }, capabilities: [], flows: [{ id: "schulnetz", label: "Schulnetz" }], sortOrder: 1 },
+    { id: "odaorg", displayName: "OdA Org", description: "Überbetriebliche Kurse", icon: { lucide: "book-open" }, capabilities: [], flows: [{ id: "credentials", label: "OdA Org" }], sortOrder: 2 },
+    { id: "microsoft", displayName: "Microsoft", description: "Mail, Teams und Kalender", icon: { lucide: "layout-grid" }, capabilities: [{ kind: "calendar", label: "Calendar" }], flows: [{ id: "web", label: "Microsoft" }], sortOrder: 3 },
+  ] : []),
+];
+// The week of Tue 10.11.2026, Mia's Outlook calendar.
+const outlookEvents = [
+  { id: "ev1", title: "Lernpartnerschaft Mathe", start: at("2026-11-10", "15:00"), end: at("2026-11-10", "16:00"), isAllDay: false, location: "Microsoft Teams-Besprechung", organizer: "Luca Baumann", preview: "Wir gehen die Aufgaben zu den Funktionen durch.", webLink: "https://outlook.office.com/calendar/item/ev1", joinUrl: "https://teams.microsoft.com/l/meetup-join/ev1" },
+  { id: "ev2", title: "Zahnarzt", start: at("2026-11-10", "17:30"), end: at("2026-11-10", "18:00"), isAllDay: false, location: "Praxis Beispielstadt", organizer: null, preview: null, webLink: "https://outlook.office.com/calendar/item/ev2", joinUrl: null },
+  { id: "ev3", title: "Projektabgabe M164", start: "2026-11-12", end: "2026-11-13", isAllDay: true, location: null, organizer: "Sandra Huber", preview: "Abgabe über Teams bis 23:59.", webLink: "https://outlook.office.com/calendar/item/ev3", joinUrl: null },
+  { id: "ev4", title: "Training", start: at("2026-11-13", "18:00"), end: at("2026-11-13", "19:30"), isAllDay: false, location: "Sporthalle", organizer: null, preview: null, webLink: "https://outlook.office.com/calendar/item/ev4", joinUrl: null },
+].map((e) => ({ ...e, accountId: MS_ACC, showAs: "busy", isCancelled: false }));
+
 const tokens = () => ({ access_token: "fake-access-" + Date.now(), refresh_token: "fake-refresh", expires_in: 86400, token_type: "Bearer" });
 
 const routes: Record<string, (req: Request, url: URL) => any> = {
   "GET /api/app": () => ({ registrationEnabled: true, version: "3.2.0", policyVersion: "2026-05", policyUrl: "https://schuly.dev/en/privacy", swissSchoolConfirmationRequired: false }),
   "GET /api/app/school-systems": () => [{ key: "schulportal", displayName: "Schulportal", loginMethod: "credentials", enabled: true, sortOrder: 0, pluginBasePath: BASE, loginFields: [] }],
-  "GET /auth/providers": () => [],
+  "GET /auth/providers": () => (EXTRAS ? [{ key: "microsoft", display_name: "Microsoft", icon_url: null }] : []),
   "POST /auth/login": () => tokens(),
   "POST /auth/refresh": () => tokens(),
   "POST /auth/logout": () => null,
-  "GET /api/Auth/me": () => ({ id: APP_USER, externalId: "mia.muster", email: "mia.muster@bfs-beispielstadt.ch", displayName: "Mia Muster", profilePictureUrl: "/static/mia.jpg", createdAt: "2025-08-20T08:00:00Z", schoolUsers: [{ id: ME, firstName: "Mia", lastName: "Muster", email: "mia.muster@bfs-beispielstadt.ch", role: "Student" }] }),
+  "GET /api/Auth/me": () => ({ id: APP_USER, externalId: "mia.muster", email: "mia.muster@bfs-beispielstadt.ch", displayName: "Mia Muster", profilePictureUrl: picture, createdAt: "2025-08-20T08:00:00Z", schoolUsers: [{ id: ME, firstName: "Mia", lastName: "Muster", email: "mia.muster@bfs-beispielstadt.ch", role: "Student" }] }),
   "GET /api/Auth/me/privacy-notice": () => ({ policyVersion: "2026-05", policyUrl: "https://schuly.dev/en/privacy", acceptanceRequired: false, swissSchoolConfirmationRequired: false, acceptedVersion: "2026-05", acceptedAt: "2026-05-12T07:00:00Z", swissSchoolConfirmedAt: "2026-05-12T07:00:00Z" }),
   "GET /api/Schools/my-schools": () => [{ id: SCHOOL, name: "BFS Beispielstadt", fullName: "Berufsfachschule Beispielstadt", email: "mia.muster@bfs-beispielstadt.ch", logoUrl: null, schoolSystemKey: "schulportal", profilePictureUrl: "/static/mia.jpg" }],
   "GET /api/SchoolUsers": () => [schoolUser],
@@ -188,8 +226,26 @@ const routes: Record<string, (req: Request, url: URL) => any> = {
   "GET /api/documents": () => documents,
   "GET /api/notifications/preferences": () => ({ grades: true, absences: true, agenda: true, includeGradeValue: true, includeDetails: false }),
   "POST /api/notifications/devices": () => null,
-  "GET /api/linking/providers": () => [{ id: "schulportal", displayName: "Schulportal", description: "Grades, timetable and absences from your school", capabilities: [{ kind: "school_data", label: "School data" }, { kind: "absence_reporting", label: "Absence reporting" }], flows: [], sortOrder: 0 }],
-  "GET /api/linking/accounts": () => [linkedAccount()],
+  "GET /api/linking/providers": () => providers(),
+  "GET /api/linking/accounts": () => (EXTRAS ? [linkedAccount(), microsoftAccount()] : [linkedAccount()]),
+  "GET /api/plugins/microsoft/calendar": (_r, u) => {
+    const start = Date.parse(u.searchParams.get("start") ?? ""), end = Date.parse(u.searchParams.get("end") ?? "");
+    const events = outlookEvents.filter((e) => Date.parse(e.start) < end && Date.parse(e.end) > start);
+    return { accounts: [{ id: MS_ACC, email: "mia.muster@bfs-beispielstadt.ch", displayName: "Mia Muster", status: "ok", message: null }], events };
+  },
+  "PUT /api/me/avatar": async (req) => {
+    const form = await req.formData();
+    const file = form.get("file") as File | null;
+    if (!file) return new Response(JSON.stringify({ message: "no file" }), { status: 400 });
+    uploaded = { bytes: new Uint8Array(await file.arrayBuffer()), type: file.type || "image/jpeg" };
+    picture = `/static/upload?v=${++pictureVersion}`;
+    console.log(`  avatar upload ${uploaded.bytes.length} bytes ${uploaded.type}`);
+    return null;
+  },
+  // Like the server: pictures only with a bearer token.
+  [`GET /api/avatars/accounts/${MS_ACC}`]: async (req) =>
+    req.headers.get("authorization") ? new Response(Bun.file(STATIC + "/mia.jpg"), { headers: { "Content-Type": "image/jpeg", "Cache-Control": "private, max-age=3600" } }) : new Response("", { status: 401 }),
+  "DELETE /api/me/avatar": () => { picture = null; uploaded = null; return null; },
   [`GET ${BASE}/accounts`]: () => [{ id: ACC, schoolUserId: ME }],
   [`GET ${BASE}/status`]: () => ({ version: "1.8.2" }),
   [`GET ${BASE}/accounts/${ACC}/sync`]: () => ({ lastSync: minutesAgo(12), syncStatus: "Up to date", syncError: null }),
@@ -203,6 +259,9 @@ Bun.serve({
   hostname: "0.0.0.0",
   async fetch(req) {
     const url = new URL(req.url);
+    if (url.pathname.startsWith("/static/")) console.log(`${new Date().toISOString().slice(11, 19)} GET ${url.pathname} auth=${req.headers.get("authorization") ? "bearer" : "none"}`);
+    if (EXTRAS && url.pathname.startsWith("/static/") && !req.headers.get("authorization")) return new Response("", { status: 401 });
+    if (url.pathname === "/static/upload" && uploaded) return new Response(uploaded.bytes, { headers: { "Content-Type": uploaded.type } });
     if (url.pathname.startsWith("/static/")) {
       const f = Bun.file(STATIC + url.pathname.slice(7));
       return (await f.exists()) ? new Response(f, { headers: { "Content-Type": "image/jpeg" } }) : new Response("", { status: 404 });
@@ -211,8 +270,9 @@ Bun.serve({
     const h = routes[key];
     console.log(`${new Date().toISOString().slice(11, 19)} ${key}${h ? "" : "  <-- UNHANDLED"}`);
     if (!h) return new Response(JSON.stringify({ message: "not found" }), { status: 404, headers: { "Content-Type": "application/json" } });
-    const body = h(req, url);
+    const body = await h(req, url);
     if (body === null) return new Response(null, { status: 204 });
+    if (body instanceof Response) return body;
     return Response.json(body);
   },
 });
