@@ -70,6 +70,10 @@ dependencies:
   markdown: ^7.3.1
   flutter_svg: ^2.2.0
   image_picker: ^1.2.4
+  # Lernendenausweis: full brightness and no screen lock while the card is shown, and AES-GCM for its offline copy.
+  screen_brightness: ^2.1.11
+  wakelock_plus: ^1.5.2
+  cryptography: ^2.9.0
 
 dev_dependencies:
   flutter_test:
