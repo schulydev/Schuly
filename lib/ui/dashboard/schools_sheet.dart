@@ -123,27 +123,93 @@ class _SchoolsSheet extends StatelessWidget {
   }
 }
 
-/// The school's logo, or the profile picture the school holds, in a rounded square.
+/// The school's logo in a rounded square. With a profile picture the circle is cut diagonally from top right to bottom
+/// left: the logo in the top-left half, the picture in the bottom-right half.
 class _SchoolLogo extends StatelessWidget {
   const _SchoolLogo({required this.school});
 
   final MySchool school;
+
+  static const _size = 40.0;
 
   @override
   Widget build(BuildContext context) {
     final colors = context.theme.colors;
     final initials = school.name.trim().isEmpty ? '?' : school.name.trim().characters.take(2).toString().toUpperCase();
     final fallback = Center(child: Text(initials, style: context.theme.typography.base.copyWith(fontWeight: FontWeight.w600)));
-    Widget network(String? url) => url == null || url.isEmpty ? fallback : Image(image: AuthImage(url), fit: BoxFit.cover, errorBuilder: (_, _, _) => fallback);
-    if (school.profilePictureUrl?.isNotEmpty == true) return Avatar(url: school.profilePictureUrl, name: school.name, size: 40);
+    Widget logo(Widget fallback) {
+      Widget network(String? url) => url == null || url.isEmpty ? fallback : Image(image: AuthImage(url), fit: BoxFit.cover, errorBuilder: (_, _, _) => fallback);
+      return school.schoolSystemKey != null
+          ? Image.asset('assets/schoolsystems/${school.schoolSystemKey}.webp', fit: BoxFit.contain, errorBuilder: (_, _, _) => network(school.logoUrl))
+          : network(school.logoUrl);
+    }
+
+    final picture = school.profilePictureUrl;
+    if (picture != null && picture.isNotEmpty) {
+      const logoSize = _size * 0.32;
+      return ClipOval(
+        child: SizedBox.square(
+          dimension: _size,
+          child: Stack(
+            children: [
+              Positioned.fill(
+                child: ClipPath(
+                  clipper: const _DiagonalHalf(topLeft: true),
+                  child: ColoredBox(color: colors.muted),
+                ),
+              ),
+              // Centred in the top-left half disc, clear of the cut.
+              Positioned(
+                left: _size * 0.16,
+                top: _size * 0.16,
+                width: logoSize,
+                height: logoSize,
+                child: logo(FittedBox(child: fallback)),
+              ),
+              Positioned.fill(
+                child: ClipPath(
+                  clipper: const _DiagonalHalf(topLeft: false),
+                  child: Image(image: AuthImage(picture), fit: BoxFit.cover, errorBuilder: (_, _, _) => ColoredBox(color: colors.muted)),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
     return Container(
-      width: 40,
-      height: 40,
+      width: _size,
+      height: _size,
       clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(color: colors.muted, borderRadius: BorderRadius.circular(SchulyRadii.base)),
-      child: school.schoolSystemKey != null
-          ? Padding(padding: const EdgeInsets.all(7), child: Image.asset('assets/schoolsystems/${school.schoolSystemKey}.webp', fit: BoxFit.contain, errorBuilder: (_, _, _) => network(school.logoUrl)))
-          : network(school.logoUrl),
+      child: school.schoolSystemKey != null ? Padding(padding: const EdgeInsets.all(7), child: logo(fallback)) : logo(fallback),
     );
   }
+}
+
+/// One side of the cut from the top-right to the bottom-left corner, leaving a thin gap along it.
+class _DiagonalHalf extends CustomClipper<Path> {
+  const _DiagonalHalf({required this.topLeft});
+
+  final bool topLeft;
+
+  @override
+  Path getClip(Size size) {
+    const gap = 1.0;
+    final w = size.width, h = size.height;
+    return topLeft
+        ? (Path()
+            ..moveTo(0, 0)
+            ..lineTo(w - gap, 0)
+            ..lineTo(0, h - gap)
+            ..close())
+        : (Path()
+            ..moveTo(w, gap)
+            ..lineTo(w, h)
+            ..lineTo(gap, h)
+            ..close());
+  }
+
+  @override
+  bool shouldReclip(_DiagonalHalf old) => old.topLeft != topLeft;
 }
