@@ -4,6 +4,7 @@ import 'package:forui/forui.dart';
 
 import '../../../domain/grade_math.dart';
 import '../theme/schuly_theme.dart';
+import 'auth_image.dart';
 
 /// Small helpers around Forui's own widgets for the redesigned screens. Lists are [FTileGroup]s and [FTile]s, buttons
 /// [FButton]s, tags and grade pills [FBadge]s, segmented controls [FTabs], pictures [FAvatar]s; the theme in
@@ -296,7 +297,7 @@ class Avatar extends StatelessWidget {
     final colors = context.theme.colors;
     final initial = (name?.trim().isNotEmpty ?? false) ? name!.trim().characters.first.toUpperCase() : '?';
     final fallback = Text(initial, style: TextStyle(color: colors.mutedForeground, fontWeight: FontWeight.w600, fontSize: size * 0.4));
-    final avatar = (url == null || url!.isEmpty) ? FAvatar.raw(size: size, child: fallback) : FAvatar(size: size, image: NetworkImage(url!), fallback: fallback);
+    final avatar = (url == null || url!.isEmpty) ? FAvatar.raw(size: size, child: fallback) : FAvatar(size: size, image: AuthImage(url!), fallback: fallback);
     if (ring == null) return avatar;
     return Container(padding: const EdgeInsets.all(1.5), decoration: BoxDecoration(shape: BoxShape.circle, color: ring), child: avatar);
   }

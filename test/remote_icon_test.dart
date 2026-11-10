@@ -1,5 +1,6 @@
-import 'package:flutter/widgets.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:schuly/ui/widgets/remote_icon.dart';
 
@@ -11,10 +12,9 @@ void main() {
     expect(isSvgUrl('https://server.example/icon?file=a.svg'), isFalse);
   });
 
-  testWidgets('a raster url is drawn as an image, not as svg', (tester) async {
-    await tester.pumpWidget(const Directionality(textDirection: TextDirection.ltr, child: RemoteIcon('https://server.example/sso-icons/google.png', size: 18)));
-    expect(find.byType(Image), findsOneWidget);
-    expect(find.byType(SvgPicture), findsNothing);
-    await tester.pumpWidget(const SizedBox());
+  test('svg content is recognised whatever the url says', () {
+    expect(looksLikeSvg(Uint8List.fromList(utf8.encode('  <svg xmlns="http://www.w3.org/2000/svg"/>'))), isTrue);
+    expect(looksLikeSvg(Uint8List.fromList(utf8.encode('<?xml version="1.0"?><svg/>'))), isTrue);
+    expect(looksLikeSvg(Uint8List.fromList([0x89, 0x50, 0x4E, 0x47])), isFalse);
   });
 }

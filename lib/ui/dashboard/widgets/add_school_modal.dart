@@ -4,6 +4,7 @@ import 'package:forui/forui.dart';
 import '../../../config/backend_config.dart';
 import '../../../domain/school_system.dart';
 import '../../../services/school_systems_service.dart';
+import '../../core/ui/auth_image.dart';
 
 Future<List<SchoolSystem>?> fetchSystemsOrShowError(BuildContext context) async {
   List<SchoolSystem> systems;
@@ -90,7 +91,7 @@ class _SystemCard extends StatelessWidget {
       width: 36,
       height: 36,
       errorBuilder: (_, _, _) => logoUrl != null
-          ? Image.network(logoUrl,
+          ? Image(image: AuthImage(logoUrl),
               width: 36, height: 36, errorBuilder: (_, _, _) => fallbackIcon)
           : fallbackIcon,
     );
