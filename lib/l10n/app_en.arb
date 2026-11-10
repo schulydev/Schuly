@@ -832,6 +832,7 @@
   "studentIdUnavailable": "Couldn't load the Lernendenausweis",
   "studentIdSavedCopy": "Showing the copy saved on this device.",
   "studentIdPullToRetry": "Pull down to try again.",
+  "studentIdRefresh": "Refresh",
   "settingsAppearance": "Appearance",
   "settingsAppearanceDetail": "Your accent marks what's active.",
   "settingsAccent": "Accent",

@@ -78,7 +78,7 @@ void main() {
     expect((await cache.read('account:a1'))!.html, 'new');
   });
 
-  testWidgets('pulling down really asks the server again', (tester) async {
+  testWidgets('the refresh button really asks the server again', (tester) async {
     var calls = 0;
     final service = StudentIdCardService.withDeps(get: (_) async {
       calls++;
@@ -89,11 +89,13 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('HTML:card 1'), findsOneWidget);
 
-    await tester.fling(find.text('Lernendenausweis').first, const Offset(0, 400), 1000);
+    await tester.tap(find.bySemanticsLabel('Aktualisieren'));
     await tester.pumpAndSettle();
 
     expect(calls, 2);
     expect(find.text('HTML:card 2'), findsOneWidget);
+    // Lets the button's press feedback timer run out.
+    await tester.pump(const Duration(seconds: 1));
   });
 
   testWidgets('only a school without the card gets the self-built one, labelled as not official', (tester) async {
@@ -115,8 +117,25 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('HTML:saved'), findsOneWidget);
-    expect(find.text('Deine Schulanmeldung ist abgelaufen'), findsOneWidget);
+    expect(find.textContaining('Deine Schulanmeldung ist abgelaufen'), findsOneWidget);
     expect(find.byKey(const ValueKey('student-id-self-built')), findsNothing);
+  });
+
+  testWidgets('the card fills the screen with no title, and the close button leaves the page', (tester) async {
+    final service = StudentIdCardService.withDeps(get: (_) async => _body('card', '2026-11-10T07:30:00Z'), cache: MemoryCardCache());
+    await _pump(tester, Builder(builder: (context) => Center(child: GestureDetector(onTap: () => Navigator.of(context).push(PageRouteBuilder<void>(pageBuilder: (_, _, _) => StudentIdPage(service: service, target: _target, screen: _FakeScreen(), cardView: _view))), child: const Text('open')))));
+    await tester.tap(find.text('open'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('HTML:card'), findsOneWidget);
+    expect(find.text('Lernendenausweis'), findsNothing);
+    expect(tester.getSize(find.byKey(const ValueKey('student-id-official'))).width, 800);
+    expect(find.textContaining('Stand: 10.11.2026'), findsOneWidget);
+
+    await tester.tap(find.bySemanticsLabel('Schliessen'));
+    await tester.pumpAndSettle();
+    expect(find.text('HTML:card'), findsNothing);
+    expect(find.text('open'), findsOneWidget);
   });
 
   testWidgets('brightness and wake lock are raised while open and restored on exit', (tester) async {

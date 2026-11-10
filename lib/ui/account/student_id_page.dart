@@ -4,6 +4,7 @@ import 'dart:math' as math;
 import 'package:flutter/foundation.dart' show Factory;
 import 'package:flutter/gestures.dart' show EagerGestureRecognizer, OneSequenceGestureRecognizer;
 import 'package:flutter/material.dart' show MaterialPageRoute;
+import 'package:flutter/services.dart' show SystemChrome, SystemUiMode;
 import 'package:flutter/widgets.dart';
 import 'package:forui/forui.dart';
 import 'package:schuly_api/schuly_api.dart';
@@ -70,11 +71,15 @@ bool studentIdCardAllowsNavigation(String url) {
   return scheme == 'data' || scheme == 'about';
 }
 
-/// Full brightness and no screen lock while the card is shown, so a QR reader at the door can scan it; both are put back on exit.
+/// Full brightness, no screen lock and no system bars while the card is shown, so a QR reader at the door can scan it;
+/// all are put back on exit.
 class StudentIdScreen {
   const StudentIdScreen();
 
   Future<bool> enter() async {
+    try {
+      await SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+    } catch (_) {}
     var wasAwake = false;
     try {
       wasAwake = await WakelockPlus.enabled;
@@ -88,6 +93,9 @@ class StudentIdScreen {
 
   Future<void> leave({required bool wasAwake}) async {
     try {
+      await SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+    } catch (_) {}
+    try {
       await ScreenBrightness.instance.resetApplicationScreenBrightness();
     } catch (_) {}
     try {
@@ -97,8 +105,8 @@ class StudentIdScreen {
 }
 
 /// The official Lernendenausweis as Schulnetz renders it, unchanged, in a WebView without JavaScript. The saved copy shows
-/// at once and is refreshed in the background; pulling down asks Schulnetz again. Only a school that does not offer the
-/// card gets the self-built [fallback], marked as not the official one.
+/// at once, on the whole screen, and is refreshed in the background; the refresh button asks Schulnetz again. Only a
+/// school that does not offer the card gets the self-built [fallback], marked as not the official one.
 class StudentIdPage extends StatefulWidget {
   const StudentIdPage({
     super.key,
@@ -195,66 +203,13 @@ class _StudentIdPageState extends State<StudentIdPage> {
   @override
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context)!;
-    final colors = context.theme.colors;
-    final typography = context.theme.typography;
-    final dates = Dates(context);
     final card = _card;
-    // The card gets all the height the page has left below the title and above the "As of" row, so the page itself
-    // does not scroll; a card taller than that scrolls inside the WebView.
-    final media = MediaQuery.of(context);
-    double line(TextStyle style) => media.textScaler.scale(style.fontSize ?? 14) * (style.height ?? 1.2);
-    final chrome = 48 + 6 + 16 + line(typography.xl2) + 10 + 12 + line(typography.sm) + 24;
-    final height = math.max(320.0, media.size.height - media.viewPadding.top - media.viewPadding.bottom - chrome);
+    final height = math.max(420.0, MediaQuery.sizeOf(context).height * 0.62);
+
+    if (card != null) return _fullscreen(context, card);
 
     final List<Widget> body;
-    if (card != null) {
-      body = [
-        Container(
-          key: const ValueKey('student-id-official'),
-          height: height,
-          clipBehavior: Clip.antiAlias,
-          decoration: BoxDecoration(
-            color: const Color(0xFFFFFFFF),
-            borderRadius: BorderRadius.circular(SchulyRadii.card),
-          ),
-          child: (widget.cardView ?? (html) => _OfficialCard(html: html))(
-            card.html,
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(top: 10, bottom: 12),
-          child: Row(
-            children: [
-              Expanded(
-                child: Text(
-                  t.studentIdAsOf(
-                    '${dates.full(card.fetchedAt)} ${dates.hm(card.fetchedAt)}',
-                  ),
-                  style: typography.sm.copyWith(color: colors.mutedForeground),
-                ),
-              ),
-              if (_loading)
-                SizedBox.square(
-                  dimension: 14,
-                  child: FCircularProgress(
-                    style: (s) => s.copyWith(
-                      iconStyle: s.iconStyle.copyWith(size: 14),
-                    ),
-                  ),
-                ),
-            ],
-          ),
-        ),
-        if (_failure == StudentIdCardFailure.signInExpired)
-          Callout(
-            title: t.studentIdSignInExpired,
-            text: t.studentIdSavedCopy,
-            bad: true,
-          ),
-        if (_failure == StudentIdCardFailure.unavailable)
-          Callout(title: t.studentIdUnavailable, text: t.studentIdSavedCopy),
-      ];
-    } else if (_failure == StudentIdCardFailure.notOffered) {
+    if (_failure == StudentIdCardFailure.notOffered) {
       final fallback = widget.fallback;
       body = [
         Callout(
@@ -291,6 +246,115 @@ class _StudentIdPageState extends State<StudentIdPage> {
       title: t.studentIdTitle,
       onRefresh: _refresh,
       children: body,
+    );
+  }
+
+  /// The official card on the whole screen: no title, only a small close button in the top corner and one line at the
+  /// bottom with the date, the refresh and what went wrong. A card taller than the screen scrolls inside the WebView.
+  Widget _fullscreen(BuildContext context, StudentIdCard card) {
+    final t = AppLocalizations.of(context)!;
+    final colors = context.theme.colors;
+    final typography = context.theme.typography;
+    final dates = Dates(context);
+    final padding = MediaQuery.paddingOf(context);
+    final failure = switch (_failure) {
+      StudentIdCardFailure.signInExpired => t.studentIdSignInExpired,
+      StudentIdCardFailure.unavailable => t.studentIdUnavailable,
+      _ => null,
+    };
+    return FScaffold(
+      childPad: false,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Expanded(
+            child: Stack(
+              children: [
+                Positioned.fill(
+                  child: ColoredBox(
+                    key: const ValueKey('student-id-official'),
+                    color: const Color(0xFFFFFFFF),
+                    child: (widget.cardView ?? (html) => _OfficialCard(html: html))(card.html),
+                  ),
+                ),
+                Positioned(
+                  top: padding.top + 8,
+                  right: padding.right + 8,
+                  child: _RoundButton(
+                    label: t.close,
+                    icon: FIcons.x,
+                    onPress: () => Navigator.of(context).maybePop(),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.fromLTRB(padding.left + 16, 6, padding.right + 8, padding.bottom + 6),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (failure != null)
+                        Text(
+                          '$failure. ${t.studentIdSavedCopy}',
+                          style: typography.xs.copyWith(color: context.tokens.bad),
+                        ),
+                      Text(
+                        t.studentIdAsOf('${dates.full(card.fetchedAt)} ${dates.hm(card.fetchedAt)}'),
+                        style: typography.xs.copyWith(color: colors.mutedForeground),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox.square(
+                  dimension: 36,
+                  child: _loading
+                      ? Center(
+                          child: SizedBox.square(
+                            dimension: 14,
+                            child: FCircularProgress(style: (s) => s.copyWith(iconStyle: s.iconStyle.copyWith(size: 14))),
+                          ),
+                        )
+                      : _RoundButton(label: t.studentIdRefresh, icon: FIcons.refreshCw, onPress: _refresh, plain: true),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// A small round icon button for the fullscreen card: dark and see-through over the card, or [plain] in the footer.
+class _RoundButton extends StatelessWidget {
+  const _RoundButton({required this.label, required this.icon, required this.onPress, this.plain = false});
+
+  final String label;
+  final IconData icon;
+  final VoidCallback onPress;
+  final bool plain;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.theme.colors;
+    return Semantics(
+      button: true,
+      label: label,
+      child: FTappable(
+        onPress: onPress,
+        child: Container(
+          width: 36,
+          height: 36,
+          alignment: Alignment.center,
+          decoration: plain ? null : const BoxDecoration(shape: BoxShape.circle, color: Color(0x73000000)),
+          child: Icon(icon, size: 18, color: plain ? colors.mutedForeground : const Color(0xFFFFFFFF)),
+        ),
+      ),
     );
   }
 }
