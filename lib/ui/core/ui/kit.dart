@@ -275,7 +275,8 @@ class Segmented<T> extends StatelessWidget {
     final index = segments.indexWhere((s) => s.$1 == value);
     final tabs = FTabs(
       control: FTabControl.lifted(index: index < 0 ? 0 : index, onChange: (i) => onChange(segments[i].$1)),
-      children: [for (final s in segments) FTabEntry(label: Text(s.$2), child: const SizedBox.shrink())],
+      // One line always: a label that would wrap ("Verspätungen" in a third of a phone) shrinks a little instead.
+      children: [for (final s in segments) FTabEntry(label: FittedBox(fit: BoxFit.scaleDown, child: Text(s.$2, maxLines: 1, softWrap: false)), child: const SizedBox.shrink())],
     );
     return SizedBox(width: width, child: tabs);
   }

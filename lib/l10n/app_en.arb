@@ -882,5 +882,111 @@
   "updateUnknown": "unknown",
   "updatesAuto": "Check automatically",
   "updatesAutoDetail": "On app start, at most every 6 hours",
-  "updatesAutoDev": "Off by default in the dev build"
+  "updatesAutoDev": "Off by default in the dev build",
+  "absenceStatusUpcoming": "Upcoming",
+  "absenceStatusNotExcused": "Not excused",
+  "absenceStatusNeedsExcuse": "Needs an excuse {due}",
+  "@absenceStatusNeedsExcuse": {
+    "placeholders": {
+      "due": {
+        "type": "String"
+      }
+    }
+  },
+  "absenceStatusDue": "by {date}",
+  "@absenceStatusDue": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "absenceStatusDueExpected": "by {date} (expected)",
+  "@absenceStatusDueExpected": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "absenceStatusWaitingParents": "Waiting for parents",
+  "absenceStatusWaitingLehrmeister": "Waiting for Lehrmeister",
+  "absenceStatusWaitingSchool": "Waiting for school",
+  "absenceStatusRejectedParents": "Rejected by parents",
+  "absenceStatusRejectedLehrmeister": "Rejected by Lehrmeister",
+  "absenceStepParents": "Parents",
+  "absenceStepLehrmeister": "Lehrmeister",
+  "absenceProgress": "Progress",
+  "absenceTrainerComment": "Lehrmeister: {comment}",
+  "@absenceTrainerComment": {
+    "placeholders": {
+      "comment": {
+        "type": "String"
+      }
+    }
+  },
+  "absencePrint": "Print the form in Schulnetz",
+  "absenceAbsent": "Absent",
+  "absenceDays": "{count, plural, =1{1 day} other{{count} days}}",
+  "@absenceDays": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "absenceDaysMissed": "Days missed",
+  "absenceLessonsLabel": "Lessons",
+  "absenceWithdrawDescription": "Your school will no longer see this absence report. You can report it again if you still need to.",
+  "absenceKeepReport": "Keep report",
+  "absenceEmptySemester": "No absences in this semester.",
+  "semesterNumbered": "Semester {number} · {years}",
+  "@semesterNumbered": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      },
+      "years": {
+        "type": "String"
+      }
+    }
+  },
+  "gradesAllSemesters": "All semesters",
+  "gradesNoDate": "No date",
+  "profileChangePicture": "Change profile picture",
+  "profileUpload": "Upload a picture…",
+  "profileRemove": "Remove",
+  "profileTooLarge": "The picture must be at most 2 MB.",
+  "profileUploadFailed": "The picture could not be saved. Try again.",
+  "eventAllDay": "{date}, all day",
+  "@eventAllDay": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "eventRange": "{from} to {to}",
+  "@eventRange": {
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
+    }
+  },
+  "eventCancelled": "Cancelled.",
+  "eventFrom": "From {source}",
+  "@eventFrom": {
+    "placeholders": {
+      "source": {
+        "type": "String"
+      }
+    }
+  },
+  "eventJoin": "Join meeting",
+  "eventOpenOutlook": "Open in Outlook",
+  "eventAllDayShort": "All day"
 }

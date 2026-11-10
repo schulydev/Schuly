@@ -89,3 +89,32 @@ String periodLabel(AppLocalizations t, int key) {
   final b = ((year + 1) % 100).toString().padLeft(2, '0');
   return half == 0 ? t.periodYear('$a/$b') : t.periodSemester(half, '$a/$b');
 }
+
+/// "All semesters" in the semester select.
+const kAllSemesters = -1;
+
+/// The web's semester options: the semesters newest first, then "No date" when undated grades exist, then "All
+/// semesters" when there is more than one choice.
+List<int> semesterOptions(Iterable<int> keys) {
+  final set = keys.toSet();
+  final semesters = set.where((k) => k > 0).toList()..sort((a, b) => b.compareTo(a));
+  final undated = set.contains(0);
+  return [...semesters, if (undated) 0, if (semesters.length > 1 || undated) kAllSemesters];
+}
+
+/// The newest semester, else "No date", else "All semesters", as the web opens the page.
+int defaultSemesterOption(List<int> options) => options.firstWhere((k) => k > 0, orElse: () => options.contains(0) ? 0 : kAllSemesters);
+
+/// The first school year of [keys], which semester numbers count from, as a Zeugnis does.
+int firstSchoolYear(Iterable<int> keys) {
+  final years = keys.where((k) => k > 0).map((k) => k ~/ 10);
+  return years.isEmpty ? DateTime.now().year : years.reduce((a, b) => a < b ? a : b);
+}
+
+/// "Semester 3 · 2026/27", "No date" or "All semesters", the web's wording.
+String semesterOptionLabel(AppLocalizations t, int key, int firstYear) {
+  if (key == 0) return t.gradesNoDate;
+  if (key == kAllSemesters) return t.gradesAllSemesters;
+  final year = key ~/ 10, half = key % 10;
+  return t.semesterNumbered((year - firstYear) * 2 + half, '$year/${((year + 1) % 100).toString().padLeft(2, '0')}');
+}
