@@ -818,6 +818,20 @@
     }
   },
   "studentIdBackNote": "Only valid with an official ID. Programme, validity and the student number appear once your school connection provides them.",
+  "studentIdAsOf": "As of {date}",
+  "@studentIdAsOf": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "studentIdNotOfficialTitle": "Not the official Lernendenausweis",
+  "studentIdNotOfficialBody": "Your school does not offer the Lernendenausweis in Schulnetz. This card is drawn by Schuly from your school profile and does not replace the official ID.",
+  "studentIdSignInExpired": "Your school sign-in expired",
+  "studentIdUnavailable": "Couldn't load the Lernendenausweis",
+  "studentIdSavedCopy": "Showing the copy saved on this device.",
+  "studentIdPullToRetry": "Pull down to try again.",
   "settingsAppearance": "Appearance",
   "settingsAppearanceDetail": "Your accent marks what's active.",
   "settingsAccent": "Accent",

@@ -11,6 +11,7 @@ import 'private_account_store.dart';
 import 'private_data_adapter.dart';
 import 'school_data_snapshot.dart';
 import 'scrape_proxy_client.dart';
+import 'student_id_card_service.dart';
 import 'toast_service.dart';
 import 'token_proxy_client.dart';
 
@@ -319,5 +320,7 @@ class SchoolDataService extends ChangeNotifier {
 
   Future<void> clearCache() async {
     await SchoolDataSnapshotStore.instance.clear();
+    // Runs on sign-out and on unlinking an account; the offline Lernendenausweis goes with the rest.
+    await StudentIdCardService.instance.clearCache();
   }
 }
