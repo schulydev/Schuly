@@ -10,6 +10,7 @@ import '../../services/linked_accounts_controller.dart';
 import '../../services/school_data_service.dart';
 import '../../services/toast_service.dart';
 import '../core/theme/schuly_theme.dart';
+import '../core/ui/auth_image.dart';
 import '../core/ui/kit.dart';
 import '../core/ui/sheet.dart';
 import '../linking/schools_accounts_screen.dart';
@@ -133,7 +134,7 @@ class _SchoolLogo extends StatelessWidget {
     final colors = context.theme.colors;
     final initials = school.name.trim().isEmpty ? '?' : school.name.trim().characters.take(2).toString().toUpperCase();
     final fallback = Center(child: Text(initials, style: context.theme.typography.base.copyWith(fontWeight: FontWeight.w600)));
-    Widget network(String? url) => url == null || url.isEmpty ? fallback : Image.network(url, fit: BoxFit.cover, errorBuilder: (_, _, _) => fallback);
+    Widget network(String? url) => url == null || url.isEmpty ? fallback : Image(image: AuthImage(url), fit: BoxFit.cover, errorBuilder: (_, _, _) => fallback);
     if (school.profilePictureUrl?.isNotEmpty == true) return Avatar(url: school.profilePictureUrl, name: school.name, size: 40);
     return Container(
       width: 40,

@@ -7,8 +7,8 @@ import 'package:forui/forui.dart';
 import '../../l10n/app_localizations.dart';
 import '../../services/auth_service.dart';
 import '../update/check_for_updates.dart';
+import '../linking/provider_icon.dart';
 import '../widgets/remote_icon.dart';
-import 'microsoft_sign_in_button.dart';
 import '../privacy/privacy_notice_screen.dart';
 
 enum _Step { signIn, register, code, verifyEmail, forgot }
@@ -378,13 +378,12 @@ class _SignInScreenState extends State<SignInScreen> {
                   ),
                   if (_step == _Step.signIn) ...[
                     for (final provider in _providers)
-                      if (isMicrosoftProvider(provider))
-                        MicrosoftSignInButton(onPress: _busy ? null : () => _signInWith(provider))
-                      else
+
                       FButton(
                         style: FButtonStyle.outline(),
                         onPress: _busy ? null : () => _signInWith(provider),
-                        prefix: provider.iconUrl == null ? null : RemoteIcon(provider.iconUrl!, size: 18),
+                        // A bundled logo first: before sign-in there is no token to fetch one with.
+                        prefix: hasBundledLogo(provider.key) ? ProviderIcon(id: provider.key, size: 18) : (provider.iconUrl == null ? null : RemoteIcon(provider.iconUrl!, size: 18)),
                         child: Text('Continue with ${provider.displayName}'),
                       ),
                     FButton(style: FButtonStyle.ghost(), onPress: () => _go(_Step.forgot), child: const Text('Forgot password?')),

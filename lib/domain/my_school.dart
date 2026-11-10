@@ -14,6 +14,9 @@ class MySchool {
   final String? schoolSystemKey;
   final String? profilePictureUrl;
 
+  /// The school's own site, which says whose rules apply (BBB's Schulnetz).
+  final String? website;
+
   const MySchool({
     required this.id,
     required this.name,
@@ -25,6 +28,7 @@ class MySchool {
     this.logoUrl,
     this.schoolSystemKey,
     this.profilePictureUrl,
+    this.website,
   });
 
   factory MySchool.fromDto(
@@ -44,5 +48,6 @@ class MySchool {
         logoUrl: BackendConfig.resolveUrl(dto.logoUrl),
         schoolSystemKey: dto.schoolSystemKey,
         profilePictureUrl: BackendConfig.resolveUrl(dto.profilePictureUrl),
+        website: dto.website,
       );
 }

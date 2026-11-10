@@ -69,6 +69,7 @@ dependencies:
   package_info_plus: ^9.0.1
   markdown: ^7.3.1
   flutter_svg: ^2.2.0
+  image_picker: ^1.2.4
 
 dev_dependencies:
   flutter_test:
@@ -105,7 +106,7 @@ flutter:
     - assets/schuly_icon.png
     - assets/cropped_schuly_icon.png
     - assets/schoolsystems/
-    - assets/sso/
+    - assets/providers/
     - assets/fonts/OFL.txt
 
   # Geist (SIL Open Font License, assets/fonts/OFL.txt), the web app's typeface.

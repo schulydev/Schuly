@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 
+import '../config/backend_config.dart';
 import 'api_client.dart';
 import 'api_error.dart';
 
@@ -65,7 +66,10 @@ class LinkedAccount {
   final DateTime? lastSyncedAt;
   final List<LinkCapability> capabilities;
   final bool canReauth;
-  const LinkedAccount({required this.providerId, required this.providerName, required this.id, required this.title, this.detail, this.status = LinkedAccountStatus.ok, this.message, this.linkedAt, this.lastSyncedAt, this.capabilities = const [], this.canReauth = false});
+
+  /// The account's picture (`/api/avatars/accounts/{id}?v=...`), absolute; only loaded with the bearer token.
+  final String? pictureUrl;
+  const LinkedAccount({required this.providerId, required this.providerName, required this.id, required this.title, this.detail, this.status = LinkedAccountStatus.ok, this.message, this.linkedAt, this.lastSyncedAt, this.capabilities = const [], this.canReauth = false, this.pictureUrl});
 
   factory LinkedAccount.fromJson(Map<String, dynamic> j) => LinkedAccount(
         providerId: j['providerId'] as String,
@@ -84,6 +88,7 @@ class LinkedAccount {
         lastSyncedAt: DateTime.tryParse(j['lastSyncedAt'] as String? ?? ''),
         capabilities: [for (final c in j['capabilities'] as List<dynamic>? ?? const []) LinkCapability.fromJson(c as Map<String, dynamic>)],
         canReauth: j['canReauth'] as bool? ?? false,
+        pictureUrl: BackendConfig.resolveUrl(j['pictureUrl'] as String?),
       );
 
   /// A provider that failed to list its accounts is reported as one entry with an empty id and status error.

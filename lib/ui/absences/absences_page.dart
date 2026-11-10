@@ -76,6 +76,9 @@ class _AbsencesPageState extends State<AbsencesPage> {
       };
     }).toList();
 
+    // The row's status in the web's words (the same the drawer shows).
+    final webRows = {for (final r in absenceRowsNow()) if (r.absence?.id != null) r.absence!.id!: r};
+
     final rows = <Widget>[];
     String? month;
     var group = <FItem>[];
@@ -100,12 +103,12 @@ class _AbsencesPageState extends State<AbsencesPage> {
           child: Text(m, style: context.theme.typography.xs.copyWith(fontWeight: FontWeight.w600, color: context.theme.colors.mutedForeground)),
         ));
       }
-      final state = absenceState(a, reported);
+      final web = webRows[a.id];
       group.add(FItem(
         title: Text(absenceWhen(dates, a)),
         subtitle: Text(absenceTitle(t, a)),
-        suffix: absenceStateLabel(context, state),
-        onPress: () => _openDetail(context, a, state),
+        suffix: (web == null ? null : absenceStatusLabel(context, web)) ?? absenceStateLabel(context, absenceState(a, reported)),
+        onPress: () => _openDetail(context, a),
       ));
     }
     flush();
@@ -185,18 +188,16 @@ class _AbsencesPageState extends State<AbsencesPage> {
 
   static String _reportText(ReportedAbsence r) => [r.reason, r.comment].whereType<String>().where((s) => s.trim().isNotEmpty).join(' · ');
 
-  Future<void> _openDetail(BuildContext context, AbsenceDto a, AbsenceState state) => showAbsenceDetail(
+  Future<void> _openDetail(BuildContext context, AbsenceDto a) => showAbsenceDetail(
         context,
         a,
-        state,
-        onReport: _reports.target == null ? null : () => _openReport(context, from: a.from.toLocal(), until: a.until.toLocal()),
         onEdit: _reports.target == null ? () => _openForm(context, existing: a) : null,
       );
 
-  Future<void> _openReport(BuildContext context, {DateTime? from, DateTime? until}) async {
+  Future<void> _openReport(BuildContext context) async {
     final target = _reports.target;
     if (target == null) return _openForm(context);
-    final changed = await showSchulySheet<bool>(context, builder: (_) => ReportAbsenceSheet(target: target, initialFrom: from, initialTo: until));
+    final changed = await showSchulySheet<bool>(context, builder: (_) => ReportAbsenceSheet(target: target));
     if (changed == true) await _refresh();
   }
 

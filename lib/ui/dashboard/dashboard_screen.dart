@@ -50,6 +50,7 @@ class _DashboardScreenState extends State<DashboardScreen> with WidgetsBindingOb
     ActiveAccountService.instance.addListener(_onActiveChanged);
     TabRequests.pending.addListener(_onTabRequested);
     _onTabRequested();
+    ProfileRefreshRequests.pending.addListener(_onProfileRequested);
     ReportedAbsences.instance.start();
     WidgetsBinding.instance.addPostFrameCallback((_) => _bootstrap());
   }
@@ -59,6 +60,7 @@ class _DashboardScreenState extends State<DashboardScreen> with WidgetsBindingOb
     WidgetsBinding.instance.removeObserver(this);
     ActiveAccountService.instance.removeListener(_onActiveChanged);
     TabRequests.pending.removeListener(_onTabRequested);
+    ProfileRefreshRequests.pending.removeListener(_onProfileRequested);
     super.dispose();
   }
 
@@ -87,6 +89,13 @@ class _DashboardScreenState extends State<DashboardScreen> with WidgetsBindingOb
         _userEmail = me.email.isEmpty ? null : me.email;
       });
     } catch (_) {}
+  }
+
+  /// A picture changed in Settings: load the profile now, as the Account tab does.
+  void _onProfileRequested() {
+    if (!ProfileRefreshRequests.pending.value || AppModeService.instance.isPrivate) return;
+    ProfileRefreshRequests.clear();
+    unawaited(_loadProfile());
   }
 
   void _onTabRequested() {
@@ -167,6 +176,7 @@ class _DashboardScreenState extends State<DashboardScreen> with WidgetsBindingOb
             userEmail: _userEmail,
             onSignOut: widget.onSignOut,
             visible: _index == 4,
+            onProfileChanged: _loadProfile,
           ),
         ];
 

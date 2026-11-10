@@ -22,6 +22,7 @@ import '../dashboard/schools_sheet.dart';
 import '../documents/documents_page.dart';
 import '../linking/schools_accounts_screen.dart';
 import '../settings/settings_screen.dart';
+import 'profile_picture.dart';
 import 'student_id_sheet.dart';
 import 'teachers_screen.dart';
 
@@ -37,7 +38,10 @@ class AccountPage extends StatefulWidget {
   final ActiveAccountService? accountService;
   final LinkedAccountsController? linkedAccounts;
   final Future<Map<String, dynamic>?> Function(String path)? fetchJson;
-  const AccountPage({super.key, required this.pictureUrl, required this.userName, this.userEmail, required this.onSignOut, this.visible = true, this.accountService, this.linkedAccounts, this.fetchJson});
+
+  /// Reloads the Schuly account after its picture changed.
+  final Future<void> Function()? onProfileChanged;
+  const AccountPage({super.key, required this.pictureUrl, required this.userName, this.userEmail, required this.onSignOut, this.visible = true, this.accountService, this.linkedAccounts, this.fetchJson, this.onProfileChanged});
 
   @override
   State<AccountPage> createState() => _AccountPageState();
@@ -227,7 +231,10 @@ class _AccountPageState extends State<AccountPage> {
           children: [
             FTile(
               style: (s) => s.copyWith(contentStyle: (c) => c.copyWith(padding: const EdgeInsetsDirectional.all(16), prefixIconSpacing: 14)),
-              prefix: Avatar(url: widget.pictureUrl ?? scope?.pictureUrl, name: name, size: 60),
+              // The Schuly account's picture is changed here, as on the web's profile card; private mode has no account.
+              prefix: isPrivate || widget.onProfileChanged == null
+                  ? Avatar(url: widget.pictureUrl ?? scope?.pictureUrl, name: name, size: 60)
+                  : ProfilePictureButton(url: widget.pictureUrl ?? scope?.pictureUrl, name: name, onChanged: widget.onProfileChanged!),
               title: Text(name?.isNotEmpty == true ? name! : t.tabAccount, style: typography.xl.copyWith(fontWeight: FontWeight.w600, letterSpacing: -0.18)),
               subtitle: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -245,7 +252,9 @@ class _AccountPageState extends State<AccountPage> {
           divider: FItemDivider.full,
           children: [
             FTile(
-              style: (s) => s.copyWith(contentStyle: (c) => c.copyWith(padding: const EdgeInsetsDirectional.fromSTEB(16, 14, 16, 14))),
+              style: (s) => s.copyWith(contentStyle: (c) => c.copyWith(padding: const EdgeInsetsDirectional.fromSTEB(16, 14, 16, 14), prefixIconSpacing: 12)),
+              // The picture of the account this school comes from, else the one the school holds.
+              prefix: Avatar(url: _linked.accounts.where((a) => a.id == active?.pluginAccountId).firstOrNull?.pictureUrl ?? active?.profilePictureUrl, name: active?.fullName ?? active?.name ?? me?.schoolName, size: 40),
               title: Text(active?.fullName?.isNotEmpty == true ? active!.fullName! : (active?.name ?? me?.schoolName ?? '-'), style: typography.base.copyWith(fontWeight: FontWeight.w600)),
               subtitle: active?.name != null && active?.fullName?.isNotEmpty == true ? Text(active!.name) : null,
             ),

@@ -183,9 +183,10 @@ class _LessonCard extends StatelessWidget {
           Text.rich(
             TextSpan(children: [
               TextSpan(text: title),
-              if (running) WidgetSpan(alignment: PlaceholderAlignment.middle, child: Tag(t.timelineNow, color: tokens.ink, background: tokens.soft)),
-              if (isTest) WidgetSpan(alignment: PlaceholderAlignment.middle, child: Tag(t.entryTypeTest, color: tokens.warn, background: tokens.warnBackground)),
-              if (isEvent) WidgetSpan(alignment: PlaceholderAlignment.middle, child: Tag(t.entryTypeEvent, color: tokens.calendarEvent, background: tokens.calendarEvent.withValues(alpha: 0.16))),
+              // Each tag keeps 7 px from the title before it.
+              if (running) WidgetSpan(alignment: PlaceholderAlignment.middle, child: Padding(padding: const EdgeInsetsDirectional.only(start: 7), child: Tag(t.timelineNow, color: tokens.ink, background: tokens.soft))),
+              if (isTest) WidgetSpan(alignment: PlaceholderAlignment.middle, child: Padding(padding: const EdgeInsetsDirectional.only(start: 7), child: Tag(t.entryTypeTest, color: tokens.warn, background: tokens.warnBackground))),
+              if (isEvent) WidgetSpan(alignment: PlaceholderAlignment.middle, child: Padding(padding: const EdgeInsetsDirectional.only(start: 7), child: Tag(t.entryTypeEvent, color: tokens.calendarEvent, background: tokens.calendarEvent.withValues(alpha: 0.16)))),
             ]),
             style: typography.base.copyWith(fontWeight: FontWeight.w500),
           ),

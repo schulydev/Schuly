@@ -6,12 +6,14 @@ import '../../l10n/app_localizations.dart';
 import '../core/dates.dart';
 import '../core/theme/schuly_theme.dart';
 import '../core/ui/sheet.dart';
+import '../../services/outlook_calendar.dart';
 import 'day_schedule.dart';
+import 'outlook_events.dart';
 
 /// The week at a glance, like the web calendar: a column per day with the lessons in lanes, an all-day row with
 /// Outlook-style "+N" for overflow, and the now line in the accent.
 class WeekGlance extends StatelessWidget {
-  const WeekGlance({super.key, required this.days, required this.entries, required this.agenda, required this.now});
+  const WeekGlance({super.key, required this.days, required this.entries, required this.agenda, required this.now, this.outlook = const []});
 
   final List<DateTime> days;
 
@@ -21,6 +23,9 @@ class WeekGlance extends StatelessWidget {
   /// Everything, for the all-day row (holidays started before the week still cover its days).
   final List<AgendaEntryDto> agenda;
   final DateTime now;
+
+  /// The linked accounts' calendar events this week, in their account's colour, as the web merges them.
+  final List<OutlookEvent> outlook;
 
   static const double _bodyHeight = 470;
   static const double _hoursWidth = 30;
@@ -41,12 +46,18 @@ class WeekGlance extends StatelessWidget {
     final typography = context.theme.typography;
     final today = DateTime(now.year, now.month, now.day);
     final timed = entries.where((a) => !_isAllDay(a)).toList();
+    final outlookTimed = outlook.where((e) => !e.allDay).toList();
 
     var startHour = 8, endHour = 16;
     for (final a in timed) {
       final s = a.date.toLocal(), e = (a.endDate ?? a.date.add(kFallbackLessonDuration)).toLocal();
       if (s.hour < startHour) startHour = s.hour;
       final eh = e.minute > 0 ? e.hour + 1 : e.hour;
+      if (eh > endHour) endHour = eh.clamp(0, 24);
+    }
+    for (final e in outlookTimed) {
+      if (e.start.hour < startHour) startHour = e.start.hour;
+      final eh = sameDay(e.start, e.end) ? (e.end.minute > 0 ? e.end.hour + 1 : e.end.hour) : 24;
       if (eh > endHour) endHour = eh.clamp(0, 24);
     }
     final minutes = (endHour - startHour) * 60;
@@ -78,15 +89,20 @@ class WeekGlance extends StatelessWidget {
       ],
     );
 
-    Widget chip(AgendaEntryDto a) {
-      final holiday = a.entryType == AgendaEntryType.holiday;
-      final c = holiday ? tokens.calendarHoliday : tokens.calendarEvent;
-      return Container(
+    Widget chip(_AllDay a) {
+      final box = Container(
         padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
-        decoration: BoxDecoration(color: c.withValues(alpha: 0.18), borderRadius: BorderRadius.circular(4)),
-        child: Text(a.title, maxLines: 1, overflow: TextOverflow.ellipsis, style: typography.xs.copyWith(fontSize: 10, fontWeight: FontWeight.w500, color: c, height: 1.3)),
+        decoration: BoxDecoration(color: a.color.withValues(alpha: 0.18), borderRadius: BorderRadius.circular(4)),
+        child: Text(a.title, maxLines: 1, overflow: TextOverflow.ellipsis, style: typography.xs.copyWith(fontSize: 10, fontWeight: FontWeight.w500, color: a.color, height: 1.3)),
       );
+      return a.onTap == null ? box : FTappable(onPress: a.onTap, child: box);
     }
+
+    List<_AllDay> allDayItems(DateTime d) => [
+          for (final a in allDayOf(d))
+            _AllDay(a.title, a.entryType == AgendaEntryType.holiday ? tokens.calendarHoliday : tokens.calendarEvent, a.entryType == AgendaEntryType.holiday ? t.entryTypeHoliday : t.entryTypeEvent, null),
+          for (final e in outlook.where((e) => e.allDay && e.coversDay(d))) _AllDay(e.title, outlookColor(e), OutlookCalendar.instance.account(e.accountId)?.email ?? 'Outlook', () => showOutlookEvent(context, e)),
+        ];
 
     final allDay = IntrinsicHeight(
       child: Row(
@@ -100,7 +116,7 @@ class WeekGlance extends StatelessWidget {
                 constraints: const BoxConstraints(minHeight: 26),
                 padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 3),
                 child: Builder(builder: (context) {
-                  final items = allDayOf(d);
+                  final items = allDayItems(d);
                   if (items.isEmpty) return const SizedBox.shrink();
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -148,7 +164,10 @@ class WeekGlance extends StatelessWidget {
             Expanded(
               child: cell(_DayColumn(
                 day: d,
-                entries: timed.where((a) => sameDay(dayOf(a.date), d)).toList(),
+                entries: [
+                  for (final a in timed.where((a) => sameDay(dayOf(a.date), d))) _Block.agenda(a, tokens),
+                  for (final e in outlookTimed.where((e) => sameDay(e.start, d))) _Block(e.start, sameDay(e.start, e.end) ? e.end : DateTime(d.year, d.month, d.day, 23, 59), e.title, e.location, outlookColor(e), () => showOutlookEvent(context, e)),
+                ],
                 isToday: sameDay(d, today),
                 now: now,
                 y: y,
@@ -186,6 +205,7 @@ class WeekGlance extends StatelessWidget {
               legend(tokens.calendarLesson, t.entryTypeLesson),
               legend(tokens.calendarTest, t.entryTypeTest),
               legend(tokens.calendarEvent, t.entryTypeEvent),
+              if (outlook.isNotEmpty) legend(outlookColor(outlook.first), 'Outlook'),
               legend(tokens.ink, t.timelineNow),
             ],
           ),
@@ -194,7 +214,7 @@ class WeekGlance extends StatelessWidget {
     );
   }
 
-  static Future<void> _showMore(BuildContext context, AppLocalizations t, Dates dates, DateTime day, List<AgendaEntryDto> items) => showSchulySheet<void>(
+  static Future<void> _showMore(BuildContext context, AppLocalizations t, Dates dates, DateTime day, List<_AllDay> items) => showSchulySheet<void>(
         context,
         builder: (_) => SchulySheet(
           title: dates.dayLong(day),
@@ -206,10 +226,8 @@ class WeekGlance extends StatelessWidget {
               for (final a in items)
                 FTile(
                   title: Text(a.title),
-                  details: Text(
-                    a.entryType == AgendaEntryType.holiday ? t.entryTypeHoliday : t.entryTypeEvent,
-                    style: context.theme.typography.xs.copyWith(fontWeight: FontWeight.w500, color: a.entryType == AgendaEntryType.holiday ? context.tokens.calendarHoliday : context.tokens.calendarEvent),
-                  ),
+                  details: Text(a.kind, style: context.theme.typography.xs.copyWith(fontWeight: FontWeight.w500, color: a.color)),
+                  onPress: a.onTap,
                 ),
             ],
           ),
@@ -217,11 +235,44 @@ class WeekGlance extends StatelessWidget {
       );
 }
 
+/// An all-day entry in the week's top row: a holiday or event, or an Outlook event that opens its sheet.
+class _AllDay {
+  const _AllDay(this.title, this.color, this.kind, this.onTap);
+  final String title;
+  final Color color;
+  final String kind;
+  final VoidCallback? onTap;
+}
+
+/// A timed block in a day column: a lesson, test or event, or an Outlook event in its account's colour.
+class _Block {
+  const _Block(this.start, this.end, this.title, this.place, this.color, this.onTap);
+
+  _Block.agenda(AgendaEntryDto a, SchulyTokens tokens)
+      : start = a.date.toLocal(),
+        end = (a.endDate ?? a.date.add(kFallbackLessonDuration)).toLocal(),
+        title = a.title,
+        place = a.place,
+        color = switch (a.entryType) {
+          AgendaEntryType.test => tokens.calendarTest,
+          AgendaEntryType.event => tokens.calendarEvent,
+          _ => tokens.calendarLesson,
+        },
+        onTap = null;
+
+  final DateTime start;
+  final DateTime end;
+  final String title;
+  final String? place;
+  final Color color;
+  final VoidCallback? onTap;
+}
+
 class _DayColumn extends StatelessWidget {
   const _DayColumn({required this.day, required this.entries, required this.isToday, required this.now, required this.y, required this.hourHeight, required this.hours});
 
   final DateTime day;
-  final List<AgendaEntryDto> entries;
+  final List<_Block> entries;
   final bool isToday;
   final DateTime now;
   final double Function(DateTime) y;
@@ -235,11 +286,11 @@ class _DayColumn extends StatelessWidget {
     final typography = context.theme.typography;
 
     // Lanes: overlapping entries share the column side by side.
-    final sorted = [...entries]..sort((a, b) => a.date.compareTo(b.date));
-    DateTime endOf(AgendaEntryDto a) => (a.endDate ?? a.date.add(kFallbackLessonDuration)).toLocal();
-    final lane = <AgendaEntryDto, int>{};
-    final lanesInCluster = <AgendaEntryDto, int>{};
-    var cluster = <AgendaEntryDto>[];
+    final sorted = [...entries]..sort((a, b) => a.start.compareTo(b.start));
+    DateTime endOf(_Block a) => a.end;
+    final lane = <_Block, int>{};
+    final lanesInCluster = <_Block, int>{};
+    var cluster = <_Block>[];
     var laneEnds = <DateTime>[];
     DateTime? clusterEnd;
     void closeCluster() {
@@ -252,7 +303,7 @@ class _DayColumn extends StatelessWidget {
     }
 
     for (final a in sorted) {
-      final s = a.date.toLocal();
+      final s = a.start;
       if (clusterEnd != null && !s.isBefore(clusterEnd!)) closeCluster();
       var l = laneEnds.indexWhere((e) => !s.isBefore(e));
       if (l < 0) {
@@ -278,14 +329,10 @@ class _DayColumn extends StatelessWidget {
               for (var h = 0; h < hours; h++) Positioned(top: h * hourHeight, left: 0, right: 0, child: Container(height: 1, color: colors.border)),
               for (final a in sorted)
                 Builder(builder: (context) {
-                  final color = switch (a.entryType) {
-                    AgendaEntryType.test => tokens.calendarTest,
-                    AgendaEntryType.event => tokens.calendarEvent,
-                    _ => tokens.calendarLesson,
-                  };
+                  final color = a.color;
                   final n = lanesInCluster[a] ?? 1;
                   final laneW = (w - 4) / n;
-                  final top = y(a.date.toLocal());
+                  final top = y(a.start);
                   final height = (y(endOf(a)) - top - 2).clamp(12.0, double.infinity);
                   final done = isToday && !endOf(a).isAfter(now);
                   return Positioned(
@@ -293,7 +340,9 @@ class _DayColumn extends StatelessWidget {
                     left: 2 + laneW * lane[a]!,
                     width: laneW - (n > 1 ? 1 : 0),
                     height: height,
-                    child: Opacity(
+                    child: FTappable(
+                      onPress: a.onTap,
+                      child: Opacity(
                       opacity: done ? 0.5 : 1,
                       child: Container(
                         padding: const EdgeInsets.fromLTRB(4, 3, 2, 3),
@@ -302,7 +351,9 @@ class _DayColumn extends StatelessWidget {
                           borderRadius: BorderRadius.circular(5),
                           border: Border(left: BorderSide(color: color, width: 2)),
                         ),
-                        child: ClipRect(
+                        // A short block shows what fits and cuts the rest off quietly.
+                        child: SingleChildScrollView(
+                          physics: const NeverScrollableScrollPhysics(),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -312,6 +363,7 @@ class _DayColumn extends StatelessWidget {
                           ),
                         ),
                       ),
+                    ),
                     ),
                   );
                 }),

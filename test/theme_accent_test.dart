@@ -7,8 +7,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 SchulyTokens _tokens(Brightness b, AppAccent a) => buildSchulyTheme(b, a).extensions.whereType<SchulyTokens>().single;
 
 void main() {
-  test('there are six accents, zinc first', () {
-    expect(AppAccent.values.map((a) => a.name), ['zinc', 'blue', 'violet', 'green', 'orange', 'rose']);
+  test('there are six accents, zinc first, and the custom one', () {
+    expect(AppAccent.presets.map((a) => a.name), ['zinc', 'blue', 'violet', 'green', 'orange', 'rose']);
+    expect(AppAccent.fromName('custom'), AppAccent.custom);
     expect(AppAccent.fromName(null), AppAccent.zinc);
     expect(AppAccent.fromName('nope'), AppAccent.zinc);
     expect(AppAccent.fromName('rose'), AppAccent.rose);
@@ -63,5 +64,27 @@ void main() {
     await ThemeService.instance.load();
     expect(ThemeService.instance.accent, AppAccent.green);
     expect(ThemeService.instance.mode, ThemeMode.dark);
+  });
+
+  test('a picked colour stays readable on both pages', () {
+    for (final picked in const [Color(0xFFFFFF00), Color(0xFF000080), Color(0xFF00FFFF), Color(0xFF7F7F7F)]) {
+      for (final b in Brightness.values) {
+        final c = customAccentColors(picked, b);
+        final page = b == Brightness.dark ? const Color(0xFF0A0A0A) : const Color(0xFFFFFFFF);
+        expect(contrastRatio(c.ink, page), greaterThanOrEqualTo(4.5), reason: '$picked ${b.name}');
+        expect(contrastRatio(c.primary, page), greaterThanOrEqualTo(3), reason: '$picked ${b.name}');
+        expect(contrastRatio(c.primaryForeground, c.primary), greaterThanOrEqualTo(3), reason: '$picked ${b.name}');
+      }
+    }
+  });
+
+  test('the custom colour is saved per device and becomes the accent', () async {
+    SharedPreferences.setMockInitialValues({});
+    await ThemeService.instance.load();
+    await ThemeService.instance.setCustomColor(const Color(0xFF123456));
+    expect(ThemeService.instance.accent, AppAccent.custom);
+    expect((await SharedPreferences.getInstance()).getInt('settings.theme_accent_custom'), 0xFF123456);
+    expect(buildSchulyTheme(Brightness.light, AppAccent.custom).colors.primary, customAccentColors(const Color(0xFF123456), Brightness.light).primary);
+    await ThemeService.instance.setAccent(AppAccent.zinc);
   });
 }

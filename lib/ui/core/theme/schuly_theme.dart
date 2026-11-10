@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 
-/// The six accents a student can pick. The accent marks what is active (the running lesson, the active tab, the
+/// The six accents a student can pick, and [custom], any colour from the colour wheel. The accent marks what is active (the running lesson, the active tab, the
 /// selected day, primary buttons, switches, the chosen radio, the average tick, the now line and "Done" in sheets).
 /// Status colours (good, warn, bad) and calendar colours never follow it.
 ///
@@ -45,7 +45,21 @@ enum AppAccent {
     light: (primary: Color(0xFFE11D48), primaryForeground: Color(0xFFFFF1F2), ink: Color(0xFFE11D48)),
     darkSwatch: Color(0xFFE11D48),
     lightSwatch: Color(0xFFE11D48),
+  ),
+
+  /// The colour picked on the wheel, [customColor]; its shades for each brightness come from [customAccentColors].
+  custom(
+    dark: (primary: Color(0xFF0EA5E9), primaryForeground: Color(0xFF0A0A0A), ink: Color(0xFF38BDF8)),
+    light: (primary: Color(0xFF0284C7), primaryForeground: Color(0xFFFAFAFA), ink: Color(0xFF0284C7)),
+    darkSwatch: Color(0xFF0EA5E9),
+    lightSwatch: Color(0xFF0EA5E9),
   );
+
+  /// The six fixed accents, without [custom].
+  static List<AppAccent> get presets => values.where((a) => a != custom).toList();
+
+  /// The colour [custom] stands for, set by the theme service.
+  static Color customColor = const Color(0xFF0EA5E9);
 
   const AppAccent({required this.dark, required this.light, required this.darkSwatch, required this.lightSwatch});
 
@@ -54,17 +68,45 @@ enum AppAccent {
   final Color darkSwatch;
   final Color lightSwatch;
 
-  AccentColors colors(Brightness brightness) => brightness == Brightness.dark ? dark : light;
+  AccentColors colors(Brightness brightness) => this == custom ? customAccentColors(customColor, brightness) : (brightness == Brightness.dark ? dark : light);
 
-  Color swatch(Brightness brightness) => brightness == Brightness.dark ? darkSwatch : lightSwatch;
+  Color swatch(Brightness brightness) => this == custom ? customColor : (brightness == Brightness.dark ? darkSwatch : lightSwatch);
 
   /// The check mark on the selected swatch: dark on the light zinc swatch, white on the others.
-  Color swatchCheck(Brightness brightness) => this == AppAccent.zinc && brightness == Brightness.dark ? const Color(0xFF18181B) : const Color(0xFFFFFFFF);
+  Color swatchCheck(Brightness brightness) => this == custom ? readableOn(customColor) : (this == AppAccent.zinc && brightness == Brightness.dark ? const Color(0xFF18181B) : const Color(0xFFFFFFFF));
 
   static AppAccent fromName(String? name) => AppAccent.values.firstWhere((a) => a.name == name, orElse: () => AppAccent.zinc);
 }
 
 typedef AccentColors = ({Color primary, Color primaryForeground, Color ink});
+
+/// WCAG contrast between two colours, 1 to 21.
+double contrastRatio(Color a, Color b) {
+  final la = a.computeLuminance(), lb = b.computeLuminance();
+  return (la > lb ? la + 0.05 : lb + 0.05) / (la > lb ? lb + 0.05 : la + 0.05);
+}
+
+/// Near-white or near-black, whichever reads better on [c].
+Color readableOn(Color c) => contrastRatio(c, const Color(0xFFFAFAFA)) >= contrastRatio(c, const Color(0xFF0A0A0A)) ? const Color(0xFFFAFAFA) : const Color(0xFF0A0A0A);
+
+Color _until(Color c, Color towards, Color background, double ratio) {
+  var x = c;
+  for (var i = 0; i < 20 && contrastRatio(x, background) < ratio; i++) {
+    x = Color.lerp(x, towards, 0.12)!;
+  }
+  return x;
+}
+
+/// A picked colour as an accent: lightened on dark and darkened on light until it stands out from the page (3:1 as a
+/// fill, 4.5:1 as text), with near-white or near-black text on it.
+AccentColors customAccentColors(Color picked, Brightness brightness) {
+  final c = picked.withValues(alpha: 1);
+  final dark = brightness == Brightness.dark;
+  final page = dark ? const Color(0xFF0A0A0A) : const Color(0xFFFFFFFF);
+  final towards = dark ? const Color(0xFFFFFFFF) : const Color(0xFF000000);
+  final primary = _until(c, towards, page, 3);
+  return (primary: primary, primaryForeground: readableOn(primary), ink: _until(c, towards, page, 4.5));
+}
 
 /// Radii from the web app (`--radius: 0.625rem`) and the mockup.
 abstract final class SchulyRadii {

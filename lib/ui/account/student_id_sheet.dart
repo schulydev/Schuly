@@ -7,6 +7,7 @@ import 'package:schuly_api/schuly_api.dart';
 import '../../l10n/app_localizations.dart';
 import '../core/dates.dart';
 import '../core/theme/schuly_theme.dart';
+import '../core/ui/auth_image.dart';
 import '../core/ui/kit.dart';
 import '../core/ui/sheet.dart';
 
@@ -171,7 +172,7 @@ class _Front extends StatelessWidget {
                     width: 74,
                     height: 98,
                     child: card.photoUrl?.isNotEmpty == true
-                        ? Image.network(card.photoUrl!, fit: BoxFit.cover, errorBuilder: (_, _, _) => ColoredBox(color: colors.muted))
+                        ? Image(image: AuthImage(card.photoUrl!), fit: BoxFit.cover, errorBuilder: (_, _, _) => ColoredBox(color: colors.muted))
                         : ColoredBox(color: colors.muted, child: Center(child: Text(card.fullName.isEmpty ? '?' : card.fullName.characters.first, style: typography.xl3.copyWith(color: colors.mutedForeground)))),
                   ),
                 ),

@@ -156,7 +156,7 @@ class _HomePageState extends State<HomePage> {
       title: Text(absenceTitle(t, a)),
       subtitle: Text(absenceExtent(t, dates, a) ?? absenceWhen(dates, a)),
       details: Text(waiting ? t.absenceWaiting : t.absenceNeedsExcuseShort, style: context.theme.typography.xs.copyWith(fontWeight: FontWeight.w500, color: waiting ? tokens.warn : tokens.bad)),
-      onPress: () => showAbsenceDetail(context, a, state, onReport: ReportedAbsences.instance.target == null ? null : () => TabRequests.request(DashboardTab.absences)),
+      onPress: () => showAbsenceDetail(context, a),
     );
   }
 

@@ -44,9 +44,12 @@ class _GradesPageState extends State<GradesPage> {
     final mine = svc.myGradesByExam;
     final graded = [for (final e in svc.exams) if (e.id != null && mine.containsKey(e.id)) e];
 
-    final periods = periodsFor(graded.map((e) => semesterKey(examDay(e))));
-    final period = (_period != null && periods.contains(_period)) ? _period! : defaultPeriod(periods);
-    final subjects = subjectGrades(svc, include: (e) => inPeriod(period, semesterKey(examDay(e))), unnamed: t.gradesSubjectFallback);
+    // The web's options: semesters newest first, numbered from the first, then "Kein Datum" and "Alle Semester".
+    final keys = graded.map((e) => semesterKey(examDay(e))).toList();
+    final periods = semesterOptions(keys);
+    final firstYear = firstSchoolYear(keys);
+    final period = (_period != null && periods.contains(_period)) ? _period! : defaultSemesterOption(periods);
+    final subjects = subjectGrades(svc, include: (e) => period == kAllSemesters || semesterKey(examDay(e)) == period, unnamed: t.gradesSubjectFallback);
     final averaged = [for (final s in subjects) if (s.average != null) s.average!];
     final semAvg = semesterAverage(averaged);
     final below = subjects.where((s) => s.average != null && s.average!.grade < 4).toList();
@@ -61,7 +64,7 @@ class _GradesPageState extends State<GradesPage> {
                 child: FSelect<int>(
                   style: compactSelect(context),
                   control: FSelectControl<int>.lifted(value: period, onChange: (k) => setState(() => _period = k ?? period)),
-                  items: {for (final k in periods) periodLabel(t, k): k},
+                  items: {for (final k in periods) semesterOptionLabel(t, k, firstYear): k},
                 ),
               )
             : null,

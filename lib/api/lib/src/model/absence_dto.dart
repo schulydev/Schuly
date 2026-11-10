@@ -18,6 +18,16 @@ part 'absence_dto.g.dart';
 /// * [from] 
 /// * [until] 
 /// * [isExcused] 
+/// * [startTime] 
+/// * [endTime] 
+/// * [parentStatus] 
+/// * [parentStatusDate] 
+/// * [trainerStatus] 
+/// * [trainerStatusDate] 
+/// * [trainerComment] 
+/// * [comment] 
+/// * [excuseDeadline] 
+/// * [lessons] 
 /// * [schoolUserId] 
 /// * [schoolId] 
 @BuiltValue()
@@ -40,6 +50,36 @@ abstract class AbsenceDto implements Built<AbsenceDto, AbsenceDtoBuilder> {
 
   @BuiltValueField(wireName: r'isExcused')
   bool? get isExcused;
+
+  @BuiltValueField(wireName: r'startTime')
+  String? get startTime;
+
+  @BuiltValueField(wireName: r'endTime')
+  String? get endTime;
+
+  @BuiltValueField(wireName: r'parentStatus')
+  String? get parentStatus;
+
+  @BuiltValueField(wireName: r'parentStatusDate')
+  String? get parentStatusDate;
+
+  @BuiltValueField(wireName: r'trainerStatus')
+  String? get trainerStatus;
+
+  @BuiltValueField(wireName: r'trainerStatusDate')
+  String? get trainerStatusDate;
+
+  @BuiltValueField(wireName: r'trainerComment')
+  String? get trainerComment;
+
+  @BuiltValueField(wireName: r'comment')
+  String? get comment;
+
+  @BuiltValueField(wireName: r'excuseDeadline')
+  String? get excuseDeadline;
+
+  @BuiltValueField(wireName: r'lessons')
+  int? get lessons;
 
   @BuiltValueField(wireName: r'schoolUserId')
   String? get schoolUserId;
@@ -102,6 +142,76 @@ class _$AbsenceDtoSerializer implements PrimitiveSerializer<AbsenceDto> {
       yield serializers.serialize(
         object.isExcused,
         specifiedType: const FullType.nullable(bool),
+      );
+    }
+    if (object.startTime != null) {
+      yield r'startTime';
+      yield serializers.serialize(
+        object.startTime,
+        specifiedType: const FullType.nullable(String),
+      );
+    }
+    if (object.endTime != null) {
+      yield r'endTime';
+      yield serializers.serialize(
+        object.endTime,
+        specifiedType: const FullType.nullable(String),
+      );
+    }
+    if (object.parentStatus != null) {
+      yield r'parentStatus';
+      yield serializers.serialize(
+        object.parentStatus,
+        specifiedType: const FullType.nullable(String),
+      );
+    }
+    if (object.parentStatusDate != null) {
+      yield r'parentStatusDate';
+      yield serializers.serialize(
+        object.parentStatusDate,
+        specifiedType: const FullType.nullable(String),
+      );
+    }
+    if (object.trainerStatus != null) {
+      yield r'trainerStatus';
+      yield serializers.serialize(
+        object.trainerStatus,
+        specifiedType: const FullType.nullable(String),
+      );
+    }
+    if (object.trainerStatusDate != null) {
+      yield r'trainerStatusDate';
+      yield serializers.serialize(
+        object.trainerStatusDate,
+        specifiedType: const FullType.nullable(String),
+      );
+    }
+    if (object.trainerComment != null) {
+      yield r'trainerComment';
+      yield serializers.serialize(
+        object.trainerComment,
+        specifiedType: const FullType.nullable(String),
+      );
+    }
+    if (object.comment != null) {
+      yield r'comment';
+      yield serializers.serialize(
+        object.comment,
+        specifiedType: const FullType.nullable(String),
+      );
+    }
+    if (object.excuseDeadline != null) {
+      yield r'excuseDeadline';
+      yield serializers.serialize(
+        object.excuseDeadline,
+        specifiedType: const FullType.nullable(String),
+      );
+    }
+    if (object.lessons != null) {
+      yield r'lessons';
+      yield serializers.serialize(
+        object.lessons,
+        specifiedType: const FullType.nullable(int),
       );
     }
     if (object.schoolUserId != null) {
@@ -183,6 +293,86 @@ class _$AbsenceDtoSerializer implements PrimitiveSerializer<AbsenceDto> {
           ) as bool?;
           if (valueDes == null) continue;
           result.isExcused = valueDes;
+          break;
+        case r'startTime':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType.nullable(String),
+          ) as String?;
+          if (valueDes == null) continue;
+          result.startTime = valueDes;
+          break;
+        case r'endTime':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType.nullable(String),
+          ) as String?;
+          if (valueDes == null) continue;
+          result.endTime = valueDes;
+          break;
+        case r'parentStatus':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType.nullable(String),
+          ) as String?;
+          if (valueDes == null) continue;
+          result.parentStatus = valueDes;
+          break;
+        case r'parentStatusDate':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType.nullable(String),
+          ) as String?;
+          if (valueDes == null) continue;
+          result.parentStatusDate = valueDes;
+          break;
+        case r'trainerStatus':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType.nullable(String),
+          ) as String?;
+          if (valueDes == null) continue;
+          result.trainerStatus = valueDes;
+          break;
+        case r'trainerStatusDate':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType.nullable(String),
+          ) as String?;
+          if (valueDes == null) continue;
+          result.trainerStatusDate = valueDes;
+          break;
+        case r'trainerComment':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType.nullable(String),
+          ) as String?;
+          if (valueDes == null) continue;
+          result.trainerComment = valueDes;
+          break;
+        case r'comment':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType.nullable(String),
+          ) as String?;
+          if (valueDes == null) continue;
+          result.comment = valueDes;
+          break;
+        case r'excuseDeadline':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType.nullable(String),
+          ) as String?;
+          if (valueDes == null) continue;
+          result.excuseDeadline = valueDes;
+          break;
+        case r'lessons':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType.nullable(int),
+          ) as int?;
+          if (valueDes == null) continue;
+          result.lessons = valueDes;
           break;
         case r'schoolUserId':
           final valueDes = serializers.deserialize(
