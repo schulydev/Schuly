@@ -4,8 +4,9 @@
 # DRY_RUN=1 prints the commands instead of running them.
 set -euo pipefail
 
-HERE="$(cd "$(dirname "$0")" && pwd)"
-ROOT="$(cd "$HERE/../.." && pwd)"
+# pwd -W gives C:/... paths in Git Bash, which adb needs because MSYS_NO_PATHCONV stops the path rewriting.
+HERE="$(cd "$(dirname "$0")" && (pwd -W 2>/dev/null || pwd))"
+ROOT="$(cd "$HERE/../.." && (pwd -W 2>/dev/null || pwd))"
 OUT="${OUT:-$HERE/out}"
 AVD="${AVD:-SchulyShots_Pixel8_API35}"
 IMAGE="${IMAGE:-system-images;android-35;google_apis;x86_64}"
@@ -15,14 +16,49 @@ API_PORT="${API_PORT:-5591}"
 PKG=com.schuly.app.dev
 CLOCK="${CLOCK:-110609412026.00}" # MMDDhhmmYYYY.ss: Fri 6.11.2026, 09:41
 PY="${PY:-$HERE/.venv/Scripts/python}"; [ -x "$PY" ] || PY="$HERE/.venv/bin/python"
+FLUTTER="${FLUTTER:-flutter}"
+LOCALE="${LOCALE:-en}"            # the website shows the English app; login and shoot find buttons by their English labels
+TT_DAY="${TT_DAY:-November 10, 2026}" # the day the timetable shot shows
+SUFFIX="${SUFFIX:-v3}"            # name suffix of the framed files; bump it whenever the images change
 
 run() { if [ -n "${DRY_RUN:-}" ]; then echo "+ $*"; else "$@"; fi; }
 # MSYS_NO_PATHCONV stops Git Bash on Windows from rewriting device paths such as /sdcard/... for adb.
 adbs() { if [ -n "${DRY_RUN:-}" ]; then echo "+ adb -s $SERIAL $*"; else MSYS_NO_PATHCONV=1 adb -s "$SERIAL" "$@"; fi; }
 quiet() { if [ -n "${DRY_RUN:-}" ]; then adbs "$@"; else adbs "$@" >/dev/null; fi; }
 demo() { quiet shell am broadcast -a com.android.systemui.demo -e command "$@"; }
-tap() { adbs shell input tap "$1" "$2"; sleep "${3:-1.5}"; }
-tab() { tap "$1" 2256; } # bottom navigation: 118 home, 330 timetable, 540 grades, 750 absences, 961 account
+
+# Prints the centre "x y" of an on-screen node, found in a uiautomator dump.
+# $1 is a regex matched against the node's text or content-desc (Flutter puts its semantics labels there, lines joined by \n).
+# $2 picks the match: 1 is the first, -1 (the default) the last, which is the bottom navigation when a label is on the page too.
+# $3 limits the search to one class, such as EditText.
+find_ui() {
+  MSYS_NO_PATHCONV=1 adb -s "$SERIAL" shell uiautomator dump /sdcard/ui.xml >/dev/null 2>&1 || return 1
+  MSYS_NO_PATHCONV=1 adb -s "$SERIAL" exec-out cat /sdcard/ui.xml | "$PY" -c '
+import html, re, sys
+pat, nth, cls = re.compile(sys.argv[1]), int(sys.argv[2]), sys.argv[3]
+hits = []
+for n in re.findall(r"<node [^>]*>", sys.stdin.read()):
+    g = lambda k: html.unescape((re.search(k + "=\"([^\"]*)\"", n) or [0, ""])[1])
+    if cls and not g("class").endswith(cls): continue
+    if not pat.search(g("text") or g("content-desc")): continue
+    x1, y1, x2, y2 = map(int, re.findall(r"\d+", g("bounds")))
+    hits.append(f"{(x1 + x2) // 2} {(y1 + y2) // 2}")
+if not hits or abs(nth) > len(hits) or nth == 0: sys.exit(1)
+print(hits[nth - 1 if nth > 0 else nth])
+' "$1" "${2:--1}" "${3:-}"
+}
+
+# Taps the node find_ui finds for $1 (trying up to 20 times; a dump can take 10 s while the app animates), then waits $2 seconds (1.5 by default).
+# $3 and $4 are passed on to find_ui as the match number and class.
+tap_ui() {
+  if [ -n "${DRY_RUN:-}" ]; then echo "+ tap '$1'"; return; fi
+  local xy="" i
+  for i in $(seq 20); do xy="$(find_ui "$1" "${3:--1}" "${4:-}")" && break; sleep 1; done
+  [ -n "$xy" ] || { echo "not on screen: $1 (run ui.sh to see what is)" >&2; exit 1; }
+  adbs shell input tap $xy; sleep "${2:-1.5}"
+}
+has_ui() { [ -n "${DRY_RUN:-}" ] || find_ui "$@" >/dev/null; }
+tab() { tap_ui "^$1(\$|\n)" 2; } # bottom navigation: Home, Timetable, Grades, Absences, Account
 
 # Resets the clock and status bar, then saves a 1080x2400 PNG.
 shot() {
@@ -54,13 +90,17 @@ step_boot() {
 }
 
 step_build() {
-  # Dev flavor, release mode, pointed at the fake API through the emulator's host alias.
-  (cd "$ROOT" && run flutter build apk --flavor dev --release --target-platform android-x64 --dart-define=BACKEND_BASE_URL="http://10.0.2.2:$API_PORT")
+  # Dev flavor (the prod flavor blocks plain HTTP to the fake API), pointed at it through the emulator's host alias.
+  # Release mode, because a debug build draws Flutter's DEBUG ribbon over the corner of every screen.
+  (cd "$ROOT" && run "$FLUTTER" build apk --flavor dev --release --target-platform android-x64 --dart-define=BACKEND_BASE_URL="http://10.0.2.2:$API_PORT")
 }
 
 step_prepare() {
   quiet root; sleep 3
   adbs install -r "$ROOT/build/app/outputs/flutter-apk/app-dev-release.apk"
+  # Start from nothing: no sign-in, default accent and theme settings.
+  adbs shell pm clear "$PKG"
+  adbs shell cmd locale set-app-locales "$PKG" --locales "$LOCALE"
   adbs shell settings put global auto_time 0
   adbs shell settings put global auto_time_zone 0
   adbs shell cmd alarm set-timezone Europe/Zurich
@@ -74,35 +114,39 @@ step_prepare() {
 }
 
 step_login() {
-  # Coordinates are for the Pixel 8 screen. If the app's onboarding changed, find the new ones with ui.sh.
-  quiet shell monkey -p "$PKG" -c android.intent.category.LAUNCHER 1; sleep 10
-  for _ in 1 2 3 4; do tap 540 2238 1.2; done # through the onboarding pages
-  tap 540 850 0.5; tap 540 2240              # account mode, continue
-  tap 540 1764                               # pick the school system
-  tap 540 790 0.5; adbs shell input text mia.muster
-  tap 540 990 0.5; adbs shell input text Beispiel2026
-  adbs shell input keyevent 111; sleep 0.5   # hide the keyboard
-  tap 540 1147 5                             # sign in (the fake API accepts any login)
+  # Finds the buttons by their labels, so the app has to be in English (LOCALE=en).
+  quiet shell monkey -p "$PKG" -c android.intent.category.LAUNCHER 1
+  tap_ui '^Next$' 1.2                                        # welcome
+  for _ in 1 2 3 4 5 6; do has_ui '^Which server\?' && break; tap_ui '^Next$' 1.2; done # the intro pages
+  tap_ui '^Schuly Cloud' 0.5; tap_ui '^Next$' 1.2             # BACKEND_BASE_URL stands in for the cloud
+  tap_ui '^Schuly account' 0.5; tap_ui '^Next$' 1.5
+  tap_ui '^I already have an account$'
+  tap_ui '' 0.5 1 EditText; adbs shell input text mia.muster@bfs-beispielstadt.ch
+  tap_ui '' 0.5 2 EditText; adbs shell input text Beispiel2026
+  adbs shell input keyevent 111; sleep 0.5                  # hide the keyboard
+  tap_ui '^Continue$' 3                                      # the fake API accepts any login
+  tap_ui '^Home$' 1                                          # waits for the home screen
 }
 
 step_shoot() {
   adbs shell am force-stop "$PKG"
-  quiet shell monkey -p "$PKG" -c android.intent.category.LAUNCHER 1; sleep 7
-  shot home-dark
-  tab 540; shot grades-dark
-  tab 750; shot absences-dark
-  tab 961; WAIT=2 shot account-dark
-  # Timetable on Tue 10.11.: swipe the date strip one week on, then tap the day.
-  tab 330
-  adbs shell input swipe 900 430 300 430 300; sleep 1.5
-  tap 326 430 1.2; shot agenda-dark
+  quiet shell date "$CLOCK"
+  quiet shell monkey -p "$PKG" -c android.intent.category.LAUNCHER 1
+  tab Home; sleep 3; shot home-dark
+  # Timetable on Tue 10.11.: the date carousel starts at today, so swipe it on until the day is there.
+  tab Timetable
+  for _ in 1 2 3; do has_ui "^$TT_DAY" && break; adbs shell input swipe 900 530 300 530 300; sleep 1; done
+  tap_ui "^$TT_DAY" 1.5; shot agenda-dark
+  tab Grades; shot grades-dark
+  tab Account; WAIT=2 shot account-dark
+  tab Absences; shot absences-dark
 }
 
 step_frame() {
   mkdir -p "$OUT/framed"
   for p in "home-dark start" "agenda-dark agenda" "grades-dark grades" "absences-dark absences" "account-dark account"; do
     set -- $p
-    run "$PY" "$HERE/frame.py" "$OUT/raw/$1.png" "$OUT/framed/schuly-$2-page-v2.png" "$OUT/framed/schuly-$2-page-v2.webp"
+    run "$PY" "$HERE/frame.py" "$OUT/raw/$1.png" "$OUT/framed/schuly-$2-page-$SUFFIX.png" "$OUT/framed/schuly-$2-page-$SUFFIX.webp"
   done
 }
 
