@@ -11,6 +11,7 @@ import '../../services/toast_service.dart';
 import '../core/theme/schuly_theme.dart';
 import '../core/ui/kit.dart';
 import 'add_account_flow.dart';
+import 'provider_icon.dart';
 
 /// "Schools & accounts": every linked account grouped by provider, with its status, Sync or Sign in, and unlink
 /// behind a tap. All of it comes from `/api/linking`.
@@ -194,7 +195,7 @@ class _SchoolsAccountsScreenState extends State<SchoolsAccountsScreen> {
   }
 }
 
-/// A provider's initial, name and what it gives Schuly.
+/// A provider's logo, name and what it gives Schuly.
 class _ProviderHead extends StatelessWidget {
   const _ProviderHead({required this.name, required this.provider});
 
@@ -214,7 +215,9 @@ class _ProviderHead extends StatelessWidget {
           height: 28,
           alignment: Alignment.center,
           decoration: BoxDecoration(color: colors.muted, borderRadius: BorderRadius.circular(SchulyRadii.md)),
-          child: Text(name.isEmpty ? '?' : name.characters.first.toUpperCase(), style: typography.xs.copyWith(fontWeight: FontWeight.w600)),
+          child: provider == null
+              ? Text(name.isEmpty ? '?' : name.characters.first.toUpperCase(), style: typography.xs.copyWith(fontWeight: FontWeight.w600))
+              : ProviderIcon(id: provider!.id, lucide: provider!.lucide, svgUrl: provider!.svgUrl, size: 16),
         ),
         const SizedBox(width: 10),
         Expanded(

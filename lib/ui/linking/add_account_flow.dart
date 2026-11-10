@@ -5,18 +5,7 @@ import '../../services/active_account_service.dart';
 import '../../services/linked_accounts_controller.dart';
 import '../../services/linking_service.dart';
 import 'link_flow_screen.dart';
-
-/// Icon for a provider: the Lucide name it declares when the app knows it, a generic one otherwise.
-IconData providerIcon(LinkProvider provider) => switch (provider.lucide) {
-      'graduation-cap' => FIcons.graduationCap,
-      'school' => FIcons.school,
-      'mail' => FIcons.mail,
-      'building' => FIcons.building,
-      'building-2' => FIcons.building2,
-      'key-round' => FIcons.keyRound,
-      'users' => FIcons.users,
-      _ => FIcons.link,
-    };
+import 'provider_icon.dart';
 
 /// Lets the person pick a provider (and flow, when it offers several) from the server's list, then
 /// runs the generic link flow. Returns the result, or null if they backed out or nothing is available.
@@ -65,7 +54,7 @@ Future<LinkProvider?> pickProvider(BuildContext context, List<LinkProvider> prov
         children: [
           for (final p in providers)
             FTile(
-              prefix: Icon(providerIcon(p)),
+              prefix: ProviderIcon(id: p.id, lucide: p.lucide, svgUrl: p.svgUrl),
               title: Text(p.displayName),
               subtitle: p.description == null ? null : Text(p.description!),
               suffix: const Icon(FIcons.chevronRight),
