@@ -125,6 +125,13 @@ class _TimetablePageState extends State<TimetablePage> {
       padding: const EdgeInsets.only(bottom: 16),
       child: FLineCalendar(
         key: ValueKey(_recentre),
+        // Only the chosen day and today's mark carry the accent; the other dates stay in the text colour.
+        style: (s) => s.copyWith(
+          dateTextStyle: FWidgetStateMap({
+            WidgetState.selected: s.dateTextStyle.resolve({WidgetState.selected}),
+            WidgetState.any: s.dateTextStyle.resolve({}).copyWith(color: context.theme.colors.foreground),
+          }),
+        ),
         start: DateTime(today.year - 1),
         end: DateTime(today.year + 2),
         today: today,
@@ -148,7 +155,7 @@ class _TimetablePageState extends State<TimetablePage> {
       builder: (context, now) {
         final List<Widget> body;
         if (_view == _View.week) {
-          body = [carousel, swipe(WeekGlance(days: days, entries: weekEntries, agenda: svc.agenda, now: now, outlook: outlook), step: 7)];
+          body = [carousel, WeekGlance(days: days, entries: weekEntries, agenda: svc.agenda, now: now, outlook: outlook)];
         } else {
           final entries = svc.agenda.where((a) => a.entryType != AgendaEntryType.holiday && sameDay(dayOf(a.date), selected)).toList()..sort((a, b) => a.date.compareTo(b.date));
           final holiday = svc.agenda.where((a) => a.entryType == AgendaEntryType.holiday && !dayOf(a.date).isAfter(selected) && !dayOf(a.endDate ?? a.date).isBefore(selected)).firstOrNull;
@@ -164,17 +171,18 @@ class _TimetablePageState extends State<TimetablePage> {
                 ],
               ),
             ),
-            swipe(
-              entries.isEmpty ? EmptyNote(holiday != null ? holiday.title : t.nothingScheduled) : DayTimeline(entries: entries, now: now, isToday: sameDay(selected, today)),
-              step: 1,
-            ),
+            if (entries.isEmpty) EmptyNote(holiday != null ? holiday.title : t.nothingScheduled) else DayTimeline(entries: entries, now: now, isToday: sameDay(selected, today)),
             ...outlookSection(context, [for (final e in outlook) if (e.coversDay(selected)) e]),
           ];
         }
-        return PageList(onRefresh: () async {
-          OutlookCalendar.instance.clear();
-          await svc.refresh();
-        }, children: [head, ...body]);
+        // The whole page swipes, so an empty day can be swiped past too; the carousel keeps its own scrolling.
+        return swipe(
+          PageList(onRefresh: () async {
+            OutlookCalendar.instance.clear();
+            await svc.refresh();
+          }, children: [head, ...body]),
+          step: _view == _View.week ? 7 : 1,
+        );
       },
     );
   }

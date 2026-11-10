@@ -100,8 +100,12 @@ class OutlookDayList extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   SizedBox(
-                    width: 48,
-                    child: Text(e.allDay ? t.eventAllDayShort : '${dates.hm(e.start)}\n${dates.hm(e.end)}', style: small.copyWith(fontFeatures: const [FontFeature.tabularFigures()])),
+                    width: 56,
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: AlignmentDirectional.topStart,
+                      child: Text(e.allDay ? t.eventAllDayShort : '${dates.hm(e.start)}\n${dates.hm(e.end)}', maxLines: 2, style: small.copyWith(fontFeatures: const [FontFeature.tabularFigures()])),
+                    ),
                   ),
                   const SizedBox(width: 10),
                   Expanded(

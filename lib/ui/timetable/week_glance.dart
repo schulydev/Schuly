@@ -205,6 +205,7 @@ class WeekGlance extends StatelessWidget {
               legend(tokens.calendarLesson, t.entryTypeLesson),
               legend(tokens.calendarTest, t.entryTypeTest),
               legend(tokens.calendarEvent, t.entryTypeEvent),
+              if (outlook.isNotEmpty) legend(outlookColor(outlook.first), 'Outlook'),
               legend(tokens.ink, t.timelineNow),
             ],
           ),
@@ -350,7 +351,9 @@ class _DayColumn extends StatelessWidget {
                           borderRadius: BorderRadius.circular(5),
                           border: Border(left: BorderSide(color: color, width: 2)),
                         ),
-                        child: ClipRect(
+                        // A short block shows what fits and cuts the rest off quietly.
+                        child: SingleChildScrollView(
+                          physics: const NeverScrollableScrollPhysics(),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
