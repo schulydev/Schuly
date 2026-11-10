@@ -42,12 +42,28 @@ class RequiredUpdateScreen extends StatefulWidget {
   State<RequiredUpdateScreen> createState() => _RequiredUpdateScreenState();
 }
 
-class _RequiredUpdateScreenState extends State<RequiredUpdateScreen> {
+class _RequiredUpdateScreenState extends State<RequiredUpdateScreen> with WidgetsBindingObserver {
   RequiredUpdateService get _service => widget.service ?? RequiredUpdateService.instance;
   UpdateService get _updates => widget.updates ?? UpdateService.instance;
 
   bool _updating = false;
   String? _note;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  /// The system back does nothing here: the app's own navigator is gone, so without this Android would close the app.
+  @override
+  Future<bool> didPopRoute() async => true;
 
   /// The in-app install when there is one (Android), else the release page the update dialog also links to.
   Future<void> _update() async {

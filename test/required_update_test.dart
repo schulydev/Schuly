@@ -124,5 +124,10 @@ void main() {
     expect(find.text('3.6.0 oder neuer'), findsOneWidget);
     expect(find.text('Aktualisieren'), findsOneWidget);
     expect(find.text('Erneut prüfen'), findsOneWidget);
+
+    // The system back is swallowed, so it neither closes the app nor leaves the screen.
+    expect(await tester.binding.handlePopRoute(), isTrue);
+    await tester.pumpAndSettle();
+    expect(find.text('Bitte aktualisiere Schuly'), findsOneWidget);
   });
 }
