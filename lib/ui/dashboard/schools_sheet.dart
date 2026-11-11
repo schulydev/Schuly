@@ -74,7 +74,6 @@ class _SchoolsSheet extends StatelessWidget {
     if (AppModeService.instance.isPrivate) {
       return SchulySheet(
         title: t.schoolsTitle,
-        action: t.done,
         body: Text(t.schoolsPrivateNote, style: typography.sm.copyWith(color: colors.mutedForeground)),
       );
     }
@@ -86,7 +85,6 @@ class _SchoolsSheet extends StatelessWidget {
         return SchulySheet(
           title: t.schoolsTitle,
           subtitle: t.schoolsSubtitle,
-          action: t.done,
           body: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [

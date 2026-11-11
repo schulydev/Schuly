@@ -196,7 +196,6 @@ class _AbsenceDetailSheetState extends State<AbsenceDetailSheet> {
     return SchulySheet(
       title: absenceRange(dates, row),
       subtitle: absenceDetail(t, row),
-      action: t.done,
       footer: actions.isEmpty ? null : Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, spacing: 8, children: actions),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
