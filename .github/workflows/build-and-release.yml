@@ -183,7 +183,7 @@ jobs:
   # Signed App Store build, uploaded to App Store Connect (TestFlight). Runs once APPLE_TEAM_ID and the API key are set.
   appstore-ios:
     runs-on: macos-latest
-    if: github.event_name == 'release' && vars.APPLE_TEAM_ID != ''
+    if: vars.APPLE_TEAM_ID != ''
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
@@ -208,8 +208,7 @@ jobs:
 
       - name: Configure Flutter for the store build
         run: |
-          flutter build ios --release --config-only \
-            --build-name="${GITHUB_REF_NAME#v}" \
+          flutter build ios --release --config-only --no-codesign \
             --build-number="${{ github.run_number }}" \
             --dart-define=STORE_BUILD=true \
             --dart-define=APP_STORE_ID="${{ vars.APP_STORE_ID }}" \
