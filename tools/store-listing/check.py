@@ -10,7 +10,7 @@ from PIL import Image
 
 HERE = Path(__file__).resolve().parent
 LIMITS = {"play_short": 80, "apple_subtitle": 30, "apple_promo": 170, "apple_keywords": 100, "description": 4000, "whats_new": 500}
-SIZES = {"play/icon-512.png": (512, 512), "play/feature-graphic-*.png": (1024, 500), "play/*/*.png": (1200, 2400), "apple/*/*.png": (1320, 2868)}
+SIZES = {"play/icon-512.png": (512, 512), "play/feature-graphic-*.png": (1024, 500), "play/*/*.png": (1200, 2400), "apple/*/*.png": (1320, 2868), "apple-6.3/*/*.png": (1206, 2622), "apple/header-*.png": (3840, 1646)}
 
 text = (HERE / "listing.md").read_text(encoding="utf-8")
 bad = 0
