@@ -269,6 +269,7 @@
   "studentIdUnavailable": "Der Lernendenausweis konnte nicht geladen werden",
   "studentIdSavedCopy": "Angezeigt wird die auf diesem Gerät gespeicherte Kopie.",
   "studentIdPullToRetry": "Zum erneuten Versuchen nach unten ziehen.",
+  "studentIdRefresh": "Aktualisieren",
   "settingsAppearance": "Darstellung",
   "settingsAppearanceDetail": "Deine Akzentfarbe zeigt, was aktiv ist.",
   "settingsAccent": "Akzent",
