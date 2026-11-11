@@ -219,7 +219,6 @@ class WeekGlance extends StatelessWidget {
         builder: (_) => SchulySheet(
           title: dates.dayLong(day),
           subtitle: t.timetableAllDayCount(items.length),
-          action: t.done,
           body: FTileGroup(
             divider: FItemDivider.full,
             children: [

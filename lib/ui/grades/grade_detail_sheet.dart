@@ -52,7 +52,6 @@ class GradeDetailSheet extends StatelessWidget {
     return SchulySheet(
       title: exam.name,
       subtitle: [subjectName, if (day != null) dates.full(day)].join(' · '),
-      action: t.done,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [

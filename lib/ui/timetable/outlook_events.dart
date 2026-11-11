@@ -44,7 +44,6 @@ Future<void> showOutlookEvent(BuildContext context, OutlookEvent e) {
       return SchulySheet(
         title: e.title,
         subtitle: e.cancelled ? '${t.eventCancelled} ${outlookWhen(t, dates, e)}' : outlookWhen(t, dates, e),
-        action: t.done,
         footer: actions.isEmpty ? null : Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, spacing: 8, children: actions),
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
