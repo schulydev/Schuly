@@ -52,6 +52,11 @@ android {
         }
     }
 
+    // Google Play builds (STORE_BUILD=true) leave out the APK install permission of the GitHub build.
+    if (System.getenv("STORE_BUILD") == "true") {
+        sourceSets["prod"].manifest.srcFile("src/store/AndroidManifest.xml")
+    }
+
     signingConfigs {
         create("release") {
             keyAlias = keystoreProperties["keyAlias"] as String?

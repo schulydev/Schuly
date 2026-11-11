@@ -82,8 +82,12 @@ jobs:
 
       - name: Build Android AAB (App Bundle)
         working-directory: .
+        # The AAB goes to Google Play: no in-app updater and no APK install permission.
+        env:
+          STORE_BUILD: "true"
         run: |
           flutter build appbundle --release --flavor prod \
+            --dart-define=STORE_BUILD=true \
             --build-name="${{ github.ref_name }}" \
             --build-number="${{ github.run_number }}" \
             --dart-define=BACKEND_BASE_URL="${{ vars.BACKEND_BASE_URL || 'https://app.schuly.dev' }}" \
@@ -100,6 +104,18 @@ jobs:
           cp build/app/outputs/bundle/prodRelease/app-prod-release.aab artifacts/schuly-${{ github.ref_name }}.aab
           # The in-app updater verifies the downloaded APK against this checksum.
           (cd artifacts && sha256sum schuly-${{ github.ref_name }}.apk > schuly-${{ github.ref_name }}.apk.sha256)
+
+      - name: Upload to Google Play
+        if: github.event_name == 'release' && env.PLAY_SERVICE_ACCOUNT_JSON != ''
+        env:
+          PLAY_SERVICE_ACCOUNT_JSON: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+          packageName: com.schuly.app
+          releaseFiles: build/app/outputs/bundle/prodRelease/app-prod-release.aab
+          track: ${{ vars.PLAY_TRACK || 'internal' }}
+          status: ${{ vars.PLAY_RELEASE_STATUS || 'completed' }}
 
       - name: Upload Android artifacts
         uses: actions/upload-artifact@v4
@@ -138,7 +154,9 @@ jobs:
             --dart-define=FIREBASE_API_KEY="${{ vars.FIREBASE_API_KEY }}" \
             --dart-define=FIREBASE_APP_ID="${{ vars.FIREBASE_APP_ID }}" \
             --dart-define=FIREBASE_SENDER_ID="${{ vars.FIREBASE_SENDER_ID }}" \
-            --dart-define=FIREBASE_PROJECT_ID="${{ vars.FIREBASE_PROJECT_ID }}"
+            --dart-define=FIREBASE_PROJECT_ID="${{ vars.FIREBASE_PROJECT_ID }}" \
+            --dart-define=FIREBASE_IOS_API_KEY="${{ vars.FIREBASE_IOS_API_KEY }}" \
+            --dart-define=FIREBASE_IOS_APP_ID="${{ vars.FIREBASE_IOS_APP_ID }}"
 
       - name: Create iOS Archive
         working-directory: .
@@ -161,6 +179,61 @@ jobs:
         with:
           name: ios-build
           path: ./ios/artifacts/
+
+  # Signed App Store build, uploaded to App Store Connect (TestFlight). Runs once APPLE_TEAM_ID and the API key are set.
+  appstore-ios:
+    runs-on: macos-latest
+    if: github.event_name == 'release' && vars.APPLE_TEAM_ID != ''
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.44.x'
+          channel: 'stable'
+          cache: true
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Generate app icons
+        run: dart run flutter_launcher_icons
+
+      - name: App Store Connect API key
+        env:
+          APPSTORE_API_KEY_P8: ${{ secrets.APPSTORE_API_KEY_P8 }}
+        run: printf '%s' "$APPSTORE_API_KEY_P8" > "$RUNNER_TEMP/AuthKey.p8"
+
+      - name: Configure Flutter for the store build
+        run: |
+          flutter build ios --release --config-only \
+            --build-name="${GITHUB_REF_NAME#v}" \
+            --build-number="${{ github.run_number }}" \
+            --dart-define=STORE_BUILD=true \
+            --dart-define=APP_STORE_ID="${{ vars.APP_STORE_ID }}" \
+            --dart-define=BACKEND_BASE_URL="${{ vars.BACKEND_BASE_URL || 'https://app.schuly.dev' }}" \
+            --dart-define=FIREBASE_API_KEY="${{ vars.FIREBASE_API_KEY }}" \
+            --dart-define=FIREBASE_APP_ID="${{ vars.FIREBASE_APP_ID }}" \
+            --dart-define=FIREBASE_SENDER_ID="${{ vars.FIREBASE_SENDER_ID }}" \
+            --dart-define=FIREBASE_PROJECT_ID="${{ vars.FIREBASE_PROJECT_ID }}" \
+            --dart-define=FIREBASE_IOS_API_KEY="${{ vars.FIREBASE_IOS_API_KEY }}" \
+            --dart-define=FIREBASE_IOS_APP_ID="${{ vars.FIREBASE_IOS_APP_ID }}"
+
+      - name: Archive and upload to App Store Connect
+        working-directory: ios
+        env:
+          TEAM_ID: ${{ vars.APPLE_TEAM_ID }}
+          KEY_ID: ${{ vars.APPSTORE_API_KEY_ID }}
+          ISSUER_ID: ${{ vars.APPSTORE_API_ISSUER_ID }}
+        run: |
+          auth=(-allowProvisioningUpdates -authenticationKeyPath "$RUNNER_TEMP/AuthKey.p8" -authenticationKeyID "$KEY_ID" -authenticationKeyIssuerID "$ISSUER_ID")
+          xcodebuild -workspace Runner.xcworkspace -scheme Runner -configuration Release -destination generic/platform=iOS \
+            -archivePath build/Runner.xcarchive archive DEVELOPMENT_TEAM="$TEAM_ID" CODE_SIGN_STYLE=Automatic "${auth[@]}"
+          /usr/libexec/PlistBuddy -c "Add :method string app-store-connect" -c "Add :destination string upload" \
+            -c "Add :teamID string $TEAM_ID" -c "Add :signingStyle string automatic" build/ExportOptions.plist
+          xcodebuild -exportArchive -archivePath build/Runner.xcarchive -exportOptionsPlist build/ExportOptions.plist -exportPath build/export "${auth[@]}"
 
   upload-to-release:
     needs: [build-android, build-ios]
