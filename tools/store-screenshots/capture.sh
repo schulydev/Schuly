@@ -17,8 +17,13 @@ PKG=com.schuly.app.dev
 CLOCK="${CLOCK:-110609412026.00}" # MMDDhhmmYYYY.ss: Fri 6.11.2026, 09:41
 PY="${PY:-$HERE/.venv/Scripts/python}"; [ -x "$PY" ] || PY="$HERE/.venv/bin/python"
 FLUTTER="${FLUTTER:-flutter}"
-LOCALE="${LOCALE:-en}"            # the website shows the English app; login and shoot find buttons by their English labels
-TT_DAY="${TT_DAY:-November 10, 2026}" # the day the timetable shot shows
+LOCALE="${LOCALE:-en}"            # the app language of the shots: en (the website's) or de; login always runs in English
+case "$LOCALE" in                 # the bottom navigation's labels and the timetable day's label in that language
+  en) TABS=(Home Timetable Grades Absences Account); DAY_LABEL="November 10, 2026"; RAW="$OUT/raw"; FRAMED="$OUT/framed" ;;
+  de) TABS=(Start Stundenplan Noten Absenzen Account); DAY_LABEL="10. November 2026"; RAW="$OUT/raw-de"; FRAMED="$OUT/framed-de" ;;
+  *) echo "LOCALE must be en or de" >&2; exit 1 ;;
+esac
+TT_DAY="${TT_DAY:-$DAY_LABEL}"    # the day the timetable shot shows
 SUFFIX="${SUFFIX:-v3}"            # name suffix of the framed files; bump it whenever the images change
 
 run() { if [ -n "${DRY_RUN:-}" ]; then echo "+ $*"; else "$@"; fi; }
@@ -58,7 +63,8 @@ tap_ui() {
   adbs shell input tap $xy; sleep "${2:-1.5}"
 }
 has_ui() { [ -n "${DRY_RUN:-}" ] || find_ui "$@" >/dev/null; }
-tab() { tap_ui "^$1(\$|\n)" 2; } # bottom navigation: Home, Timetable, Grades, Absences, Account
+# Taps the bottom navigation's tab number $1 in TABS: 1 Home, 2 Timetable, 3 Grades, 4 Absences, 5 Account.
+tab() { tap_ui "^${TABS[$1 - 1]}(\$|\n)" 2; }
 
 # Resets the clock and status bar, then saves a 1080x2400 PNG.
 shot() {
@@ -68,8 +74,8 @@ shot() {
   demo clock -e hhmm 0941
   demo notifications -e visible false
   sleep "${WAIT:-1}"
-  mkdir -p "$OUT/raw"
-  if [ -n "${DRY_RUN:-}" ]; then echo "+ adb -s $SERIAL exec-out screencap -p > $OUT/raw/$1.png"; else MSYS_NO_PATHCONV=1 adb -s "$SERIAL" exec-out screencap -p > "$OUT/raw/$1.png"; fi
+  mkdir -p "$RAW"
+  if [ -n "${DRY_RUN:-}" ]; then echo "+ adb -s $SERIAL exec-out screencap -p > $RAW/$1.png"; else MSYS_NO_PATHCONV=1 adb -s "$SERIAL" exec-out screencap -p > "$RAW/$1.png"; fi
   echo "saved $1"
 }
 
@@ -100,7 +106,7 @@ step_prepare() {
   adbs install -r "$ROOT/build/app/outputs/flutter-apk/app-dev-release.apk"
   # Start from nothing: no sign-in, default accent and theme settings.
   adbs shell pm clear "$PKG"
-  adbs shell cmd locale set-app-locales "$PKG" --locales "$LOCALE"
+  adbs shell cmd locale set-app-locales "$PKG" --locales en # login finds the buttons by their English labels
   adbs shell settings put global auto_time 0
   adbs shell settings put global auto_time_zone 0
   adbs shell cmd alarm set-timezone Europe/Zurich
@@ -114,7 +120,7 @@ step_prepare() {
 }
 
 step_login() {
-  # Finds the buttons by their labels, so the app has to be in English (LOCALE=en).
+  # Finds the buttons by their English labels; prepare sets the app to English.
   quiet shell monkey -p "$PKG" -c android.intent.category.LAUNCHER 1
   tap_ui '^Next$' 1.2                                        # welcome
   for _ in 1 2 3 4 5 6; do has_ui '^Which server\?' && break; tap_ui '^Next$' 1.2; done # the intro pages
@@ -130,23 +136,25 @@ step_login() {
 
 step_shoot() {
   adbs shell am force-stop "$PKG"
+  adbs shell cmd locale set-app-locales "$PKG" --locales "$LOCALE"
+  adbs shell am force-stop "$PKG"
   quiet shell date "$CLOCK"
   quiet shell monkey -p "$PKG" -c android.intent.category.LAUNCHER 1
-  tab Home; sleep 3; shot home-dark
+  tab 1; sleep 3; shot home-dark
   # Timetable on Tue 10.11.: the date carousel starts at today, so swipe it on until the day is there.
-  tab Timetable
+  tab 2
   for _ in 1 2 3; do has_ui "^$TT_DAY" && break; adbs shell input swipe 900 530 300 530 300; sleep 1; done
   tap_ui "^$TT_DAY" 1.5; shot agenda-dark
-  tab Grades; shot grades-dark
-  tab Account; WAIT=2 shot account-dark
-  tab Absences; shot absences-dark
+  tab 3; shot grades-dark
+  tab 5; WAIT=2 shot account-dark
+  tab 4; shot absences-dark
 }
 
 step_frame() {
-  mkdir -p "$OUT/framed"
+  mkdir -p "$FRAMED"
   for p in "home-dark start" "agenda-dark agenda" "grades-dark grades" "absences-dark absences" "account-dark account"; do
     set -- $p
-    run "$PY" "$HERE/frame.py" "$OUT/raw/$1.png" "$OUT/framed/schuly-$2-page-$SUFFIX.png" "$OUT/framed/schuly-$2-page-$SUFFIX.webp"
+    run "$PY" "$HERE/frame.py" "$RAW/$1.png" "$FRAMED/schuly-$2-page-$SUFFIX.png" "$FRAMED/schuly-$2-page-$SUFFIX.webp"
   done
 }
 
