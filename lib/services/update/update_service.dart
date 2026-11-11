@@ -12,6 +12,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../config/distribution.dart';
 import 'apk_installer.dart';
 import 'app_version.dart';
 import 'release_info.dart';
@@ -49,7 +50,7 @@ class UpdateService extends ChangeNotifier with WidgetsBindingObserver {
         _dio = dio ?? Dio(),
         _installer = installer,
         _now = clock ?? DateTime.now,
-        _supported = supported ?? (!kIsWeb && (Platform.isAndroid || Platform.isIOS)),
+        _supported = supported ?? (!storeBuild && !kIsWeb && (Platform.isAndroid || Platform.isIOS)),
         _androidInstall = androidInstall ?? (!kIsWeb && Platform.isAndroid);
 
   static final UpdateService instance = UpdateService();

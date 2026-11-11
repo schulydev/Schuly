@@ -3,6 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:forui/forui.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../config/distribution.dart';
 import '../../l10n/app_localizations.dart';
 import '../../services/update/release_info.dart';
 import '../../services/update/required_update_service.dart';
@@ -67,6 +68,10 @@ class _RequiredUpdateScreenState extends State<RequiredUpdateScreen> with Widget
 
   /// The in-app install when there is one (Android), else the release page the update dialog also links to.
   Future<void> _update() async {
+    if (storePage case final page?) {
+      await launchUrl(page, mode: LaunchMode.externalApplication);
+      return;
+    }
     setState(() {
       _updating = true;
       _note = null;
