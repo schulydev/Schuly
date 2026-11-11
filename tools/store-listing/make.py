@@ -33,6 +33,8 @@ TAGLINE = {
 
 PLAY_SIZE = (1200, 2400)  # Play allows at most 2:1, the raw 1080x2400 is 2.22:1
 APPLE_SIZE = (1320, 2868)  # iPhone 6.9"
+APPLE_63_SIZE = (1206, 2622)  # "iPhone mit Dynamic Island (mittleres Display)", the slot App Store Connect asks for first
+HEADER_SIZE = (3840, 1646)  # App Store product page header ("Kopfzeile")
 
 
 def font(weight, size):
@@ -128,11 +130,33 @@ def screenshots(lang, status_bar, nav_bar):
         print(play_dir / name, apple_dir / name)
 
 
+def apple_63(lang):
+    """The 6.3" iPhone screenshots: the 6.9" ones scaled down (both are 9:19.5, so nothing is cut or padded)."""
+    src, dst = OUT / "apple" / lang, OUT / "apple-6.3" / lang
+    dst.mkdir(parents=True, exist_ok=True)
+    for f in sorted(src.glob("*.png")):
+        Image.open(f).convert("RGB").resize(APPLE_63_SIZE, Image.LANCZOS).save(dst / f.name, optimize=True)
+        print(dst / f.name)
+
+
+def header(lang):
+    """The App Store header banner: the feature graphic scaled to the banner height, its edges carried on to the full width."""
+    graphic = Image.open(OUT / "play" / f"feature-graphic-{lang}.png").convert("RGB")
+    h = HEADER_SIZE[1]
+    graphic = graphic.resize((round(graphic.width * h / graphic.height), h), Image.LANCZOS)
+    out = OUT / "apple" / f"header-{lang}.png"
+    pad_edges(graphic, HEADER_SIZE).save(out, optimize=True)
+    print(out)
+
+
 def images_only():
     (OUT / "play").mkdir(parents=True, exist_ok=True)
     play_icon()
     for lang in LANGS:
         feature_graphic(lang)
+        header(lang)
+        if (OUT / "apple" / lang).exists():
+            apple_63(lang)
 
 
 if __name__ == "__main__":
@@ -147,3 +171,5 @@ if __name__ == "__main__":
     for lang in LANGS:
         feature_graphic(lang)
         screenshots(lang, args.status_bar, args.nav_bar)
+        apple_63(lang)
+        header(lang)

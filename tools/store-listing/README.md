@@ -16,6 +16,8 @@ The images and texts for the Google Play and App Store listings. The images in `
 | `out/play/feature-graphic-{de,en}.png` | Play feature graphic | 1024×500 |
 | `out/play/{de,en}/0N-<page>.png` | Play phone screenshots | 1200×2400: the raw 1080×2400 shot widened with the page's own edge colours, since Play allows at most 2:1 |
 | `out/apple/{de,en}/0N-<page>.png` | App Store iPhone 6.9" screenshots | 1320×2868: the raw shot without the Android status bar (top 96 px) and gesture bar (bottom 63 px), scaled up without distortion and filled to size with the page's own top and bottom colours |
+| `out/apple-6.3/{de,en}/0N-<page>.png` | App Store iPhone 6.3" screenshots ("iPhone mit Dynamic Island (mittleres Display)", the slot App Store Connect asks for) | 1206×2622: the 6.9" shots scaled down; same 9:19.5 ratio, so nothing is cut |
+| `out/apple/header-{de,en}.png` | App Store product page header ("Kopfzeile") | 3840×1646: the feature graphic scaled to the banner height, its edge columns repeated out to the full width |
 
 The App Store has no iPhone shots of its own because there is no Mac to run the iOS simulator; the Android shots without the system bars show the same Flutter screens.
 
