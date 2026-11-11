@@ -1,6 +1,6 @@
 # Store screenshots
 
-Takes the app screenshots on an Android emulator and frames them in a Pixel phone. The website uses the five framed images: `public/assets/schuly-{start,agenda,grades,absences,account}-page-v3.{png,webp}` in SchulyWebsite. The same raw shots can go into store listings.
+Takes the app screenshots on an Android emulator and frames them in a Pixel phone. The website uses the five framed images: `public/assets/schuly-{start,agenda,grades,absences,account}-page-v3.{png,webp}` in SchulyWebsite. The same raw shots, in English and German, make the store listing images in `tools/store-listing`.
 
 The app runs against a fake API with made-up data (Mia Muster, Berufsfachschule Beispielstadt), so no real account or school is involved.
 
@@ -50,14 +50,14 @@ tools/store-screenshots/capture.sh cleanup    # stop the emulator and delete the
 | `build` | `flutter build apk --flavor dev --release --target-platform android-x64 --dart-define=BACKEND_BASE_URL=http://10.0.2.2:5591`. `10.0.2.2` is how the emulator reaches the host. It has to be the dev flavor, because the prod flavor blocks plain HTTP, and release mode, because a debug build draws Flutter's DEBUG ribbon on every screen. |
 | `prepare` | Installs the APK, clears the app's data (sign-in, accent colour, theme), sets the app language to English, turns off automatic time, sets the timezone to Europe/Zurich, the clock to Fri 6.11.2026 09:41 and 24-hour format, turns dark mode on and enters the status bar demo mode. |
 | `login` | Taps through onboarding (Schuly Cloud, Schuly account, I already have an account) and signs in as Mia Muster. |
-| `shoot` | Restarts the app, then saves home, the timetable on Tue 10.11. (day view with the date carousel), grades, account and absences to `out/raw/*.png` with `adb exec-out screencap`. Before each shot it resets the clock to 09:41, full Wi-Fi, no mobile signal and no notifications. |
-| `frame` | Writes `out/framed/schuly-<page>-page-<SUFFIX>.png` and `.webp` (`SUFFIX=v3` by default). |
+| `shoot` | Sets the app language to `LOCALE`, restarts the app, then saves home, the timetable on Tue 10.11. (day view with the date carousel), grades, account and absences to `out/raw/*.png` (`out/raw-de/` with `LOCALE=de`) with `adb exec-out screencap`. Before each shot it resets the clock to 09:41, full Wi-Fi, no mobile signal and no notifications. |
+| `frame` | Writes `out/framed/schuly-<page>-page-<SUFFIX>.png` and `.webp` (`SUFFIX=v3` by default; `out/framed-de/` with `LOCALE=de`). |
 
 Copy `out/framed/*` to SchulyWebsite's `public/assets/`. If the images change, give them a new name suffix (`SUFFIX=v4`) and update the references, so that caches load the new ones. The hero phone image on the website is `out/raw/home-dark.png`; see SchulyWebsite's `tools/hero-images`.
 
-Settings you can override with environment variables: `AVD`, `IMAGE`, `EMU_PORT` (use `EMU_PORT=5554` to run on an emulator that is already up, skipping `avd` and `boot`), `API_PORT`, `CLOCK` (`MMDDhhmmYYYY.ss`), `TT_DAY` (the timetable day's label, `November 10, 2026`), `SUFFIX`, `FLUTTER` (the flutter command), `OUT` and `PY`. `DRY_RUN=1` prints every command without running it.
+Settings you can override with environment variables: `LOCALE` (`en`, the default, or `de`: the app language of the shots), `AVD`, `IMAGE`, `EMU_PORT` (use `EMU_PORT=5554` to run on an emulator that is already up, skipping `avd` and `boot`), `API_PORT`, `CLOCK` (`MMDDhhmmYYYY.ss`), `TT_DAY` (the timetable day's label, `November 10, 2026`), `SUFFIX`, `FLUTTER` (the flutter command), `OUT` and `PY`. `DRY_RUN=1` prints every command without running it.
 
-`login` and `shoot` don't tap fixed coordinates: they read the screen with `uiautomator dump` and tap the element whose text or label matches, such as `Next`, `Continue` or the bottom navigation's `Home`, `Timetable`, `Grades`, `Absences` and `Account`. That only works in English, which `prepare` sets. If a step stops with `not on screen`, run `EMU_PORT=5554 tools/store-screenshots/ui.sh` to see the labels and update the one in `capture.sh`. Each dump can take up to 10 s, so `login` and `shoot` take a few minutes. To frame a single screenshot by hand, run `python frame.py <shot.png> <out.png> <out.webp>`.
+`login` and `shoot` don't tap fixed coordinates: they read the screen with `uiautomator dump` and tap the element whose text or label matches, such as `Next`, `Continue` or the bottom navigation's `Home`, `Timetable`, `Grades`, `Absences` and `Account`. `login` only works in English, which `prepare` sets; `shoot` knows the tab and day labels in English and German. For the German shots of an emulator that is already signed in, run `LOCALE=de tools/store-screenshots/capture.sh shoot frame`. If a step stops with `not on screen`, run `EMU_PORT=5554 tools/store-screenshots/ui.sh` to see the labels and update the one in `capture.sh`. Each dump can take up to 10 s, so `login` and `shoot` take a few minutes. To frame a single screenshot by hand, run `python frame.py <shot.png> <out.png> <out.webp>`.
 
 ## Licences
 
